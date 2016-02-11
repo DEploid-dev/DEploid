@@ -11,7 +11,7 @@
 //#include<iostream>
 //#include<vector>
 //#include<cassert>       // assert
-//#include<stdexcept>      // std::invalid_argument
+#include<stdexcept>      // std::invalid_argument
 //#include<stdlib.h>     /* strtol, strtod */
 //#include<climits> // INT_MAX
 
