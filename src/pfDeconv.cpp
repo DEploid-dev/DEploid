@@ -84,5 +84,6 @@ int main(){
     mcmcSamples.runMcmcChain();
 
     // Export log
+
     cout << "place holder!" << std::endl;
 }

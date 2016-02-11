@@ -18,6 +18,7 @@ McmcSample::McmcSample( size_t nSample, size_t mcmcSampleRate, size_t kStrain, s
 
 
 McmcSample::~McmcSample(){
+    this->rg_->clearFastFunc();
     delete rg_;
 }
 
