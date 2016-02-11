@@ -7,6 +7,7 @@
 //#include <boost/math/special_functions/gamma.hpp>
 #include<math.h>
 #include "mcmc.hpp"
+#include "panel.hpp"
 //#include<iostream>
 //#include<vector>
 //#include<cassert>       // assert

@@ -14,10 +14,11 @@ PROG = PFDECONV
 common_flags = -O3 -std=c++0x -Isrc/
 
 pfDeconv_SOURCES = src/pfDeconv.cpp \
-				 src/fastfunc.cpp \
-				 src/random_generator.cpp \
-				 src/mersenne_twister.cpp \
-				 src/mcmc.cpp
+				   src/fastfunc.cpp \
+				   src/random_generator.cpp \
+				   src/mersenne_twister.cpp \
+				   src/mcmc.cpp
+				   src/panel.cpp
 
 pfDeconv_dbg_SOURCES = $(pfDeconv_SOURCES)
 
