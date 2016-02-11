@@ -1,5 +1,4 @@
 #include <iostream>
-#include "mersenne_twister.hpp"
 #include <vector>
 #include <string>
 #include <sstream>      // std::stringstream
@@ -71,31 +70,19 @@ int main(){
 
 
     (void)readFileLines( "tests/PG0390_first100ref.txt", refCount);
-    cout <<" refCount.size() = "<< refCount.size()<<endl;
+    dout <<" refCount.size() = "<< refCount.size()<<endl;
     (void)readFileLines( "tests/PG0390_first100alt.txt", altCount);
-    cout <<" altCount.size() = "<< altCount.size()<<endl;
+    dout <<" altCount.size() = "<< altCount.size()<<endl;
     (void)readFileLines( "tests/labStrains_first100_PLAF.txt", plaf);
-    cout <<" plaf.size() = "<< plaf.size()<<endl;
+    dout <<" plaf.size() = "<< plaf.size()<<endl;
 
 
-    size_t nLoci = plaf.size();
+    //size_t nLoci = plaf.size();
 
     // Initilize mcmc
     McmcSample mcmcSamples;
-
-
-    // Run mcmc
-    size_t maxIteration = 100;
-    size_t mcmcSampleRate = 5;
-
-    for ( size_t it = 0 ; it < maxIteration ; it++){
-        mcmcSamples.sampleMcmcEvent();
-        if ( it % mcmcSampleRate == 0){
-            mcmcSamples.recordMcmcSample();
-        }
-    }
+    mcmcSamples.runMcmcChain();
 
     // Export log
-
-    std::cout << "place holder!" << std::endl;
+    cout << "place holder!" << std::endl;
 }

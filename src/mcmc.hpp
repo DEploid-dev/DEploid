@@ -1,103 +1,63 @@
-
 #include <vector>
+#include <iostream>
+#include "mersenne_twister.hpp"
+
+
+#ifndef NDEBUG
+#define dout std::cout
+#else
+#pragma GCC diagnostic ignored "-Wunused-value"
+#define dout 0 && std::cout
+#endif
+
+#ifndef MCMC
+#define MCMC
 
 using namespace std;
-
-//class BasicData{
-    //vector <double> chrom;
-    //vector <double> pos;
-    //vector <double> value;
-//};
-
-
-
-
-
-//class Falciparum{
-    //double prop;
-    //vector <unsigned short> hap;
-//};
-
-//class MixedFalciparum{
-    //vector <Falciparum> falciparums;
-
-//};
-
-//class McmcEvent{
-
-//};
-
-class McmcMachinary{
-
-};
 
 //enum EventType {PROPORTION, SINGLE, PAIR};
 
 class McmcSample {
   public:
-    McmcSample( size_t kStrain = 5, size_t seed = 88 ){
-        this->kStrain = kStrain;
-        this->seed = seed;
-        rg = new MersenneTwister(this->seed);
-    };
-
-    ~McmcSample(){
-        delete rg;
-    }
-
-    void sampleMcmcEvent(){
-        this->eventInt = this->rg->sampleInt(3);
-        if ( this->eventInt == 0 ){
-            this->updateProportion();
-        } else if ( this->eventInt == 1 ){
-            this->updateSingleHap();
-        } else if ( this->eventInt == 2 ){
-            this->updatePairHaps();
-        } else {
-            throw(" should never reach here!!!");
-            cout << "eventInt = " << this->eventInt << endl;
-        }
-    }
-
-
-    void recordMcmcSample(){
-        cout << "Record mcmc sample " <<endl;
-    }
-
+    McmcSample( size_t nSample = 100, size_t mcmcSampleRate = 5, size_t kStrain = 5, size_t seed = 88 );
+    ~McmcSample();
+    void runMcmcChain( );
 
   private:
     // Variables
-    int eventInt;
-    MersenneTwister* rg;
+    size_t kStrain_;
+
+    double burnIn_;
+    size_t maxIteration_;
+    size_t mcmcThresh_;
+    size_t mcmcSampleRate_;
+    int eventInt_;
+    MersenneTwister* rg_;
+
     //EventType currentUpdateEvent;
-    size_t seed;
-    size_t kStrain;
-    vector <double> currentTitre;
-    double currentLodPriorTitre;
-    vector <double> currentProp;
+    size_t seed_;
+
+    size_t currentMcmcIteration_;
+
+    vector <double> currentTitre_;
+    double currentLodPriorTitre_;
+    vector <double> currentProp_;
     vector < vector <double> > currentHap;
 
     // Methods
-    void initializeProp( size_t kStrain ){
-        //initial.propotion[1:initial.k]<-fun.sim_prop(initial.k, TRUE);
-        //initial.propotion<-initial.propotion/sum(initial.propotion);
-    }
+    void sampleMcmcEvent();
+    void recordMcmcSample();
+    void initializeProp();
+    void initializeTitre();
 
-    void initializeTitre( size_t kStrain ){
+    void calcMaxIteration( size_t nSample, size_t mcmcSampleRate );
 
-    }
+    // Moves
+    void updateProportion();
+    void updateSingleHap();
+    void updatePairHaps();
 
-    void updateProportion(){
-        cout << "update Proportion "<<endl;
-    }
 
-    void updateSingleHap(){
-        cout << "update Single Hap "<<endl;
-    }
-
-    void updatePairHaps(){
-        cout << "update Pair Hap "<<endl;
-    }
 //fun.initialiseBundle <- function ( Data, PLAF, n.event, initialK = 3, labelP = LABELP){
   //n.loci<-length(PLAF);
 
@@ -140,3 +100,28 @@ class McmcSample {
 //}
 
 };
+
+
+//class BasicData{
+    //vector <double> chrom;
+    //vector <double> pos;
+    //vector <double> value;
+//};
+
+
+//class Falciparum{
+    //double prop;
+    //vector <unsigned short> hap;
+//};
+
+//class MixedFalciparum{
+    //vector <Falciparum> falciparums;
+
+//};
+
+//class McmcEvent{
+
+//};
+
+#endif
+
