@@ -13,18 +13,23 @@ PROG = PFDECONV
 
 common_flags = -O3 -std=c++0x -Isrc/
 
-pfDeconv_SOURCES = src/pfDeconv.cpp \
-				 src/fastfunc.cpp \
-				 src/random_generator.cpp \
-				 src/mersenne_twister.cpp \
-				 src/mcmc.cpp
+common_src = src/fastfunc.cpp \
+			 src/random_generator.cpp \
+			 src/mersenne_twister.cpp \
+			 src/mcmc.cpp \
+			 src/panel.cpp
+
+pfDeconv_SOURCES = src/pfDeconv.cpp $(common_src)
 
 pfDeconv_dbg_SOURCES = $(pfDeconv_SOURCES)
 
 pfDeconv_CXXFLAGS = $(common_flags) -DNDEBUG
 pfDeconv_dbg_CXXFLAGS = -g $(common_flags)
 
-unit_tests_SOURCES = tests/unittest/test_runner.cpp
+unit_tests_SOURCES = $(common_src) \
+					 tests/unittest/test_panel.cpp \
+					 tests/unittest/test_runner.cpp
+
 unit_tests_CXXFLAGS = $(pfDeconv_CXXFLAGS)
 unit_tests_LDADD          = -lcppunit -ldl
 
