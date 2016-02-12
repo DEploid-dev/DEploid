@@ -17,7 +17,7 @@ pfDeconv_SOURCES = src/pfDeconv.cpp \
 				   src/fastfunc.cpp \
 				   src/random_generator.cpp \
 				   src/mersenne_twister.cpp \
-				   src/mcmc.cpp
+				   src/mcmc.cpp \
 				   src/panel.cpp
 
 pfDeconv_dbg_SOURCES = $(pfDeconv_SOURCES)
