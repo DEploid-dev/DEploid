@@ -44,8 +44,14 @@ test-driver
 
 .dirstamp
 pfDeconv
+pfDeconv_dbg
+pfdeconv*.tar.gz
+
+# unittest
 test-suite.log
 unit_tests
 unit_tests.log
 unit_tests.trs
 
+# doxygen
+html/

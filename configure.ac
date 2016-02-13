@@ -9,7 +9,7 @@ m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
 AM_SILENT_RULES([yes])
 
 # Load macros in 'm4'-dir
-AC_CONFIG_MACRO_DIR([m4])
+#AC_CONFIG_MACRO_DIR([m4])
 
 AC_PROG_INSTALL
 AC_PREREQ
@@ -24,7 +24,7 @@ AC_PROG_RANLIB
 # Checks for libraries
 AC_CHECK_LIB(cppunit,TestCase,[])
 
-# Checks for header files for scrm.
+# Checks for header files.
 AC_HEADER_STDC
 AC_LANG(C++)
 
@@ -49,6 +49,18 @@ AX_CXXFLAGS_WARN_ALL
 #AX_CHECK_COMPILE_FLAG([-Wunused], [OPT_CXXFLAGS="$OPT_CXXFLAGS -Wunused"], [], [-Werror])
 #AX_CHECK_COMPILE_FLAG([-Woverloaded-virtual], [OPT_CXXFLAGS="$OPT_CXXFLAGS -Woverloaded-virtual"], [], [-Werror])
 #AX_CHECK_COMPILE_FLAG([-pedantic], [OPT_CXXFLAGS="$OPT_CXXFLAGS -pedantic"], [], [-Werror])
+
+m4_include([m4/ac_doxygen.m4])
+DX_INIT_DOXYGEN(PfDeconv, Doxyfile, html/)
+DX_HTML_FEATURE(ON)
+DX_CHM_FEATURE(OFF)
+DX_CHI_FEATURE(OFF)
+DX_MAN_FEATURE(OFF)
+DX_RTF_FEATURE(OFF)
+DX_XML_FEATURE(OFF)
+DX_PDF_FEATURE(OFF)
+DX_PS_FEATURE(OFF)
+
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
