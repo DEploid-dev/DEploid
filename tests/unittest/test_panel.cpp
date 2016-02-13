@@ -44,9 +44,7 @@ class TestPanel : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL(this->panel_->content[99][1], 0.0);
         CPPUNIT_ASSERT_EQUAL(this->panel_->content[99][2], 0.0);
         CPPUNIT_ASSERT_EQUAL(this->panel_->content[99][3], 1.0);
-
     }
-
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestPanel );
