@@ -82,7 +82,7 @@ void McmcMachinery::initializeExpectedWsaf(){
 
 
 void McmcMachinery::initializellk(){
-    assert( this->currentLLks.size() == 0);
+    assert( this->currentLLks_.size() == 0);
     for ( size_t i = 0; i < this->input_->plaf.size(); i++ ){
         this->currentLLks_.push_back(0.0);
     }
