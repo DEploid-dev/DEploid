@@ -17,7 +17,6 @@ using namespace std;
 
 //enum EventType {PROPORTION, SINGLE, PAIR};
 
-
 class McmcSample {
   friend class McmcMachinery;
   private:
@@ -46,11 +45,12 @@ class McmcMachinery {
 
     size_t seed_;
     MersenneTwister* rg_;
-
-    //EventType currentUpdateEvent;
+    std::default_random_engine* std_generator_;// (this->seed_);
+    std::normal_distribution<double>* std_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);
+    double MN_LOG_TITRE;
+    double SD_LOG_TITRE;
 
     size_t currentMcmcIteration_;
-
     vector <double> currentTitre_;
     double currentLogPriorTitre_;
     vector <double> currentProp_;
@@ -58,11 +58,8 @@ class McmcMachinery {
     vector < vector <double> > currentHap_;
     vector < double > currentExpectedWsaf_;
 
-    std::default_random_engine* std_generator_;// (this->seed_);
-
-    std::normal_distribution<double>* std_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);
-
   /* Methods */
+    void calcMaxIteration( size_t nSample, size_t McmcMachineryRate );
    /* Initialize */
     void initializeMcmcChain();
      void initializeProp();
@@ -73,13 +70,9 @@ class McmcMachinery {
 
     void calcExpectedWsaf();
     void calcCurrentLLKs();
-    double rBernoulli(double p);
+    void calcLogPriorTitre();
     double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01, double fac=100 ) ;
-
-    void sampleMcmcEvent();
-    void recordMcmcMachinery();
-
-    void calcMaxIteration( size_t nSample, size_t McmcMachineryRate );
+    double rBernoulli(double p);
 
     double sum( vector <double>& array ){
         double tmp = 0.0;
@@ -103,10 +96,8 @@ class McmcMachinery {
         cout << endl;
     }
 
-    double MN_LOG_TITRE;
-    double SD_LOG_TITRE;
-
-    void calLogPriorTitre();
+    void sampleMcmcEvent();
+    void recordMcmcMachinery();
 
   /* Moves */
     void updateProportion();

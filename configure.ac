@@ -1,5 +1,8 @@
-AC_INIT([PfDeconv], esyscmd([sh -c "cat version | tr -d '\n'"]),[https://github.com/mcveanlab/PfDeconv/issues])
-AM_INIT_AUTOMAKE([subdir-objects -Wall -Werror foreign])
+AC_INIT([pfDeconv], esyscmd([sh -c "cat version | tr -d '\n'"]),[https://github.com/mcveanlab/PfDeconv/issues])
+#AC_INIT([hybrid-Lambda],esyscmd([sh -c "cat version | tr -d '\n'"]),[sha.joe.zhu@gmail.com])
+
+#AM_INIT_AUTOMAKE([subdir-objects -Wall foreign])
+AM_INIT_AUTOMAKE([1.9 tar-ustar subdir-objects -Wall foreign])
 
 # Use -O3 as default optimization level
 : ${CXXFLAGS="-O3"}

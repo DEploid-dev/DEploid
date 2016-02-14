@@ -106,7 +106,7 @@ void McmcMachinery::initializeProp( ){
 }
 
 
-void McmcMachinery::calLogPriorTitre(){
+void McmcMachinery::calcLogPriorTitre(){
     //sum(dnorm(titre, MN_LOG_TITRE, SD_LOG_TITRE, log=TRUE));
     vector <double> tmp;
     for ( auto const& value: this->currentTitre_ ){
@@ -125,7 +125,7 @@ void McmcMachinery::initializeTitre(){
         currentTitre_.push_back( tmp );
     }
 
-    this->calLogPriorTitre();
+    this->calcLogPriorTitre();
     this->initializeProp();
 }
 

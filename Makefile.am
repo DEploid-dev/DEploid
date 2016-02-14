@@ -1,7 +1,7 @@
-#PFDECONVVERSION = $(shell git show HEAD | head -1 | sed -e "s/commit //g" | cat)
+PFDECONVVERSION = $(shell git show HEAD | head -1 | sed -e "s/commit //g" | cat)
 EXTRA_DIST = bootstrap
-#COMPILEDATE = $(shell date -u | sed -e "s/ /-/g")
-#distdir = $(PACKAGE)-$(VERSION)
+COMPILEDATE = $(shell date -u | sed -e "s/ /-/g")
+distdir = $(PACKAGE)-$(VERSION)
 
 bin_PROGRAMS = pfDeconv
 
@@ -9,9 +9,9 @@ TESTS = unit_tests
 check_PROGRAMS = unit_tests pfDeconv_dbg
 PROG = PFDECONV
 
-#common_flags = -O3 -std=c++0x -Isrc/ -DPFDECONVVERSION=\"${PFDECONVVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
+common_flags = -O3 -std=c++0x -Isrc/ -DPFDECONVVERSION=\"${PFDECONVVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
 
-common_flags = -O3 -std=c++0x -Isrc/
+#common_flags = -O3 -std=c++0x -Isrc/
 
 common_src = src/fastfunc.cpp \
 			 src/random_generator.cpp \
