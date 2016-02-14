@@ -18,7 +18,7 @@
 using namespace std;
 
 class Input{
- friend class McmcSample;
+ friend class McmcMachinery;
  friend class TestInput;
   public:
     Input( const char plafFileName[],
@@ -33,16 +33,9 @@ class Input{
     vector <double> refCount;
     vector <double> altCount;
     size_t kStrain_;
+    size_t nLoci_;
 
     void readFileLines(const char inchar[], vector <double> & out_vec);
 };
-
-
-//template <typename T>
-//std::ostream& operator<<(std::ostream& os, const std::vector<T> &vec) {
-  //typename std::vector<T>::const_iterator it;
-  //for (it = vec.begin(); it != vec.end(); ++it) os << *it << " ";
-  //return os;
-//}
 
 #endif

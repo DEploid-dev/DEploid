@@ -24,6 +24,7 @@ class TestInput : public CppUnit::TestCase {
     }
 
     void testElement(){
+        CPPUNIT_ASSERT_EQUAL((size_t)100, this->input_->nLoci_);
         //"Pf3D7_01_v3"	93157	0.0190612159917058
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0190612159917058, this->input_->plaf[0], 0.000000000001);
         //"Pf3D7_01_v3"	93157	85

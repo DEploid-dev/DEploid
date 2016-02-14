@@ -1,7 +1,7 @@
 #include <vector>
 #include <iostream>
 #include "mersenne_twister.hpp"
-
+#include "param.hpp"
 
 #ifndef NDEBUG
 #define dout std::cout
@@ -17,87 +17,101 @@ using namespace std;
 
 //enum EventType {PROPORTION, SINGLE, PAIR};
 
+
 class McmcSample {
+  friend class McmcMachinery;
+  private:
+    vector< vector <double> > proportion;
+    vector< double > sumLLKs;
+};
+
+class McmcMachinery {
   public:
-    McmcSample( size_t nSample = 100, size_t mcmcSampleRate = 5, size_t kStrain = 5, size_t seed = 88 );
-    ~McmcSample();
+    McmcMachinery( Input* input,
+                size_t nSample = 100, size_t McmcMachineryRate = 5, size_t seed = 88 );
+    ~McmcMachinery();
     void runMcmcChain( );
 
   private:
-    // Variables
+  /* Variables */
+    Input* input_;
     size_t kStrain_;
+    size_t nLoci_;
 
     double burnIn_;
     size_t maxIteration_;
     size_t mcmcThresh_;
-    size_t mcmcSampleRate_;
+    size_t McmcMachineryRate_;
     int eventInt_;
+
+    size_t seed_;
     MersenneTwister* rg_;
 
     //EventType currentUpdateEvent;
-    size_t seed_;
 
     size_t currentMcmcIteration_;
 
     vector <double> currentTitre_;
-    double currentLodPriorTitre_;
+    double currentLogPriorTitre_;
     vector <double> currentProp_;
-    vector < vector <double> > currentHap;
+    vector <double> currentLLks_;
+    vector < vector <double> > currentHap_;
+    vector < double > currentExpectedWsaf_;
 
-    // Methods
+    std::default_random_engine* std_generator_;// (this->seed_);
+
+    std::normal_distribution<double>* std_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);
+
+  /* Methods */
+   /* Initialize */
+    void initializeMcmcChain();
+     void initializeProp();
+     void initializeTitre();
+     void initializeHap();
+     void initializellk();
+     void initializeExpectedWsaf();
+
+    void calcExpectedWsaf();
+    void calcCurrentLLKs();
+    double rBernoulli(double p);
+    double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01, double fac=100 ) ;
+
     void sampleMcmcEvent();
-    void recordMcmcSample();
-    void initializeProp();
-    void initializeTitre();
+    void recordMcmcMachinery();
 
-    void calcMaxIteration( size_t nSample, size_t mcmcSampleRate );
+    void calcMaxIteration( size_t nSample, size_t McmcMachineryRate );
 
-    // Moves
+    double sum( vector <double>& array ){
+        double tmp = 0.0;
+        for (auto const& value: array){
+            tmp += value;
+        }
+        return tmp;
+    }
+
+    void normalizeBySum ( vector <double> & array ){
+        double sumOfArray = sum(array);
+        for( vector<double>::iterator it = array.begin(); it != array.end(); ++it) {
+            *it /= sumOfArray;
+        }
+    }
+
+    void printArray ( vector <double> array ){
+        for (auto const& value: array){
+            cout << value << " ";
+        }
+        cout << endl;
+    }
+
+    double MN_LOG_TITRE;
+    double SD_LOG_TITRE;
+
+    void calLogPriorTitre();
+
+  /* Moves */
     void updateProportion();
     void updateSingleHap();
     void updatePairHaps();
-
-
-//fun.initialiseBundle <- function ( Data, PLAF, n.event, initialK = 3, labelP = LABELP){
-  //n.loci<-length(PLAF);
-
-  //#Initialise titres
-  //titre<-rnorm(initial.k, MN_LOG_TITRE, SD_LOG_TITRE);
-//###  titre<-rep(0, initial.k) # Set equal titres
-  //initial.propotion<-fun.titre2prop(titre);
-  //log.prior.titre<-sum(dnorm(titre, MN_LOG_TITRE, SD_LOG_TITRE, log=TRUE));
-
-
-//#  initial.haplotype<-array(0, c(n.loci, K_MAX));
-  //initial.haplotype<-array(0, c(n.loci, initial.k));
-  //initial.haplotype_counter<-array(0, c((n.loci+1), initial.k));
-  //initial.path_counter<-array(0, c((n.loci+1), initial.k));
-
-  //if (initial.k>0) for (i in 1:initial.k) initial.haplotype[,i]<-rbinom(n.loci, 1, PLAF);
-
-  //initial.expected.WSAF<-fun.calc.f.samp(initial.haplotype, initial.propotion);
-//#  initial.likelihood<-fun.llk.with.error(Data, initial.expected.WSAF, Beta.LLK.with.u,  type=mode);
-  //initial.likelihood<-fun.llk( Data, initial.expected.WSAF, type = mode)
-
-  //initial.accpt.rate<-rep(0, n.event);
-
-
-  //bundle = list( k = initial.k,                        #1
-                 //titre = titre,                        #2
-                 //prop = initial.propotion,             #3
-                 //h = initial.haplotype,                #4
-                 //llk.old = initial.likelihood,         #5
-                 //log.prior.titre = log.prior.titre,    #6
-                 //accpt.rate = initial.accpt.rate,      #7
-                 //expected.WSAF = initial.expected.WSAF,#8
-                 //count = initial.haplotype_counter,    #9
-                 //path = initial.path_counter,          #10
-                 //switch.updateOne.one = NA,
-                 //switch.updateTwo.one = NA,
-                 //switch.updateTwo.two = NA
-               //)
-  //return(bundle)
-//}
 
 };
 
@@ -122,6 +136,15 @@ class McmcSample {
 //class McmcEvent{
 
 //};
+
+template <typename T> // See http://stackoverflow.com/questions/10847007/using-the-gaussian-probability-density-function-in-c
+T normal_pdf(T x, T m, T s)
+{
+    static const T inv_sqrt_2pi = 0.3989422804014327;
+    T a = (x - m) / s;
+
+    return inv_sqrt_2pi / s * std::exp(-T(0.5) * a * a);
+}
 
 #endif
 

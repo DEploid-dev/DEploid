@@ -1,6 +1,4 @@
 #include <vector>
-#include <fstream>
-#include <stdexcept>      // std::invalid_argument
 
 #ifndef PANEL
 #define PANEL

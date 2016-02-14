@@ -1,15 +1,17 @@
 #include "param.hpp"
+#include<cassert>       // assert
 
 Input::Input( const char plafFileName[],
               const char refFileName[],
               const char altFileName[],
               size_t kStrain ){
     (void)readFileLines( refFileName, this->refCount);
-    //dout <<" refCount.size() = "<< refCount.size()<<endl;
     (void)readFileLines( altFileName, this->altCount);
-    //dout <<" altCount.size() = "<< altCount.size()<<endl;
     (void)readFileLines( plafFileName, this->plaf);
-    //dout <<" plaf.size() = "<< plaf.size()<<endl;
+    this->nLoci_ = refCount.size();
+    assert( this->nLoci_ == plaf.size() );
+    assert( altCount.size() == this->nLoci_ );
+
     this->kStrain_ = kStrain;
 }
 

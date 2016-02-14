@@ -1,3 +1,5 @@
+#include <fstream>
+#include <stdexcept>      // std::invalid_argument
 #include <iostream>
 #include "panel.hpp"
 
