@@ -46,9 +46,11 @@ class McmcMachinery {
     size_t seed_;
     MersenneTwister* rg_;
     std::default_random_engine* std_generator_;// (this->seed_);
-    std::normal_distribution<double>* std_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);
+    std::normal_distribution<double>* initialTitre_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);
+    std::normal_distribution<double>* deltaX_normal_distribution_;// (0, 1/PROP_SCALE);
     double MN_LOG_TITRE;
     double SD_LOG_TITRE;
+    double PROP_SCALE;
 
     size_t currentMcmcIteration_;
     vector <double> currentTitre_;
@@ -68,9 +70,12 @@ class McmcMachinery {
      void initializellk();
      void initializeExpectedWsaf();
 
-    void calcExpectedWsaf();
-    void calcCurrentLLKs();
-    void calcLogPriorTitre();
+    vector <double> calcExpectedWsaf(vector <double> &proportion );
+    vector <double> titre2prop(vector <double> & tmpTitre);
+    vector <double> calcLLKs( vector <double> &expectedWsaf );
+
+
+    double calcLogPriorTitre( vector <double> &tmpTitre);
     double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01, double fac=100 ) ;
     double rBernoulli(double p);
 
@@ -101,6 +106,10 @@ class McmcMachinery {
 
   /* Moves */
     void updateProportion();
+     vector <double> calcTmpTitre();
+     double deltaLLKs ( vector <double> &newLLKs );
+
+
     void updateSingleHap();
     void updatePairHaps();
 
@@ -136,6 +145,28 @@ T normal_pdf(T x, T m, T s)
 
     return inv_sqrt_2pi / s * std::exp(-T(0.5) * a * a);
 }
+
+template <typename T>
+T minOfVec( vector <T> x){
+    assert( x.size() > 0 );
+    T tmpMin = x[0];
+    for ( auto const& value: x ){
+        tmpMin = ( value < tmpMin ) ? value : tmpMin;
+    }
+    return tmpMin;
+}
+
+template <typename T>
+T maxOfVec( vector <T> x){
+    assert( x.size() > 0 );
+    T tmpMax = x[0];
+    for ( auto const& value: x ){
+        tmpMax = ( value > tmpMax ) ? value : tmpMax;
+    }
+    return tmpMax;
+}
+
+
 
 #endif
 
