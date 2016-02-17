@@ -1,6 +1,8 @@
 #include "mcmc.hpp"
+#include "utility.hpp"
 #include <math.h>       /* ceil */
 #include <random>
+#include "updateHap.hpp"
 
 McmcMachinery::McmcMachinery(Input* input,
                        size_t nSample, size_t McmcMachineryRate, size_t seed ){ // initialiseMCMCmachinery
@@ -54,9 +56,8 @@ void McmcMachinery::initializeMcmcChain( ){
     this->initializeHap();
     this->initializeProp();
 
-    this->initializeExpectedWsaf();
-
-    this->currentLLks_ = calcLLKs( this->currentExpectedWsaf_ );
+    this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
+    this->currentLLks_ = calcLLKs( this->input_->refCount, this->input_->altCount, this->currentExpectedWsaf_ );
 }
 
 
@@ -109,7 +110,7 @@ double McmcMachinery::calcLogPriorTitre( vector <double> &tmpTitre ){
     for ( auto const& value: tmpTitre ){
         tmp.push_back( log(normal_pdf(value, MN_LOG_TITRE, SD_LOG_TITRE)) );
     }
-    return sum(tmp);
+    return sumOfVec(tmp);
 }
 
 
@@ -129,7 +130,7 @@ vector <double> McmcMachinery::titre2prop(vector <double> & tmpTitre){
     for ( auto const& value: tmpTitre ){
         tmpExpTitre.push_back( exp(value) );
     }
-    double tmpSum = sum(tmpExpTitre);
+    double tmpSum = sumOfVec(tmpExpTitre);
 
     vector <double> tmpProp;
     for ( auto const& value: tmpExpTitre ){
@@ -178,25 +179,6 @@ vector <double> McmcMachinery::calcExpectedWsaf( vector <double> &proportion ){
 }
 
 
-vector <double> McmcMachinery::calcLLKs( vector <double> &expectedWsaf ){
-    vector <double> tmpLLKs (this->nLoci_, 0.0);
-    for ( size_t i = 0; i < this->currentLLks_.size(); i++ ){
-        tmpLLKs[i] = calcLLK( this->input_->refCount[i],
-                                         this->input_->altCount[i],
-                                         expectedWsaf[i]);
-    }
-    return tmpLLKs;
-}
-
-
-double McmcMachinery::calcLLK( double ref, double alt, double unadjustedWsaf, double err, double fac ) {
-    double adjustedWsaf = unadjustedWsaf+err*(1-2*unadjustedWsaf);
-    //double llk = lbeta(alt+adjustedWsaf*fac, ref+(1-adjustedWsaf)*fac)-lbeta(adjustedWsaf*fac,(1-adjustedWsaf)*fac);
-    double llk = lgamma(fac*adjustedWsaf+alt)+lgamma(fac*(1-adjustedWsaf)+ref)-lgamma(fac*adjustedWsaf)-lgamma(fac*(1-adjustedWsaf));
-    return llk;
-}
-
-
 void McmcMachinery::recordMcmcMachinery(){
     dout << "Record mcmc sample " <<endl;
 }
@@ -211,7 +193,7 @@ void McmcMachinery::updateProportion(){
     if ( minOfVec(tmpProp) < 0 || maxOfVec(tmpProp) > 1 ) return;
 
     vector <double> tmpExpecedWsaf = calcExpectedWsaf(tmpProp);
-    vector <double> tmpLLKs = calcLLKs (tmpExpecedWsaf);
+    vector <double> tmpLLKs = calcLLKs (this->input_->refCount, this->input_->altCount, tmpExpecedWsaf);
     double diffLLKs = this->deltaLLKs(tmpLLKs);
     double tmpLogPriorTitre = calcLogPriorTitre( tmpTitre );
     double priorPropRatio = exp(tmpLogPriorTitre - this->currentLogPriorTitre_ );
@@ -229,11 +211,13 @@ void McmcMachinery::updateProportion(){
 }
 
 double McmcMachinery::deltaLLKs ( vector <double> &newLLKs ){
-    double tmp = 0.0;
-    for ( size_t i = 0; i < newLLKs.size(); i++){
-        tmp += ( newLLKs[i] - this->currentLLks_[i] );
-    }
-    return tmp;
+    //double tmp = 0.0;
+    //for ( size_t i = 0; i < newLLKs.size(); i++){
+        //tmp += ( newLLKs[i] - this->currentLLks_[i] );
+    //}
+    //return tmp;
+    vector <double> tmpdiff = vecDiff ( newLLKs,  this->currentLLks_);
+    return sumOfVec(tmpdiff);
 }
 
 vector <double> McmcMachinery::calcTmpTitre(){
@@ -249,8 +233,17 @@ vector <double> McmcMachinery::calcTmpTitre(){
 
 
 void McmcMachinery::updateSingleHap(){
+
+    UpdateSingleHap updating( this->input_->refCount,
+                              this->input_->altCount,
+                              this->currentExpectedWsaf_,
+                              this->currentProp_, this->currentHap_, this->rg_);
+
+
+
     dout << "update Single Hap "<<endl;
 }
+
 
 
 void McmcMachinery::updatePairHaps(){

@@ -26,7 +26,7 @@ Panel::Panel(const char inchar[]){
                 field_start = field_end+1;
                 field_index++;
             }
-            this->content.push_back(contentRow);
+            this->content_.push_back(contentRow);
             getline ( in_file, tmp_line );
         }
     } else {
@@ -35,13 +35,16 @@ Panel::Panel(const char inchar[]){
     }
     in_file.close();
     //this->print();
+
+    this->nLoci_ = this->content_.size();
+    recombProbs_ = vector <double> (this->nLoci_, 0.0);
 }
 
 
 void Panel::print(){
-    for ( size_t i = 0; i < this->content.size(); i++){
-        for (size_t j = 0; j < this->content[i].size(); j++){
-            cout <<this->content[i][j]<<" ";
+    for ( size_t i = 0; i < this->content_.size(); i++){
+        for (size_t j = 0; j < this->content_[i].size(); j++){
+            cout <<this->content_[i][j]<<" ";
         }
         cout<<endl;
     }
