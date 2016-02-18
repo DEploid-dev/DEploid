@@ -25,11 +25,12 @@
 #include "utility.hpp"
 #include <math.h>       /* ceil */
 #include <random>
+#include <iomanip>      // std::setw
 #include "updateHap.hpp"
 
-McmcMachinery::McmcMachinery(Input* input, Panel *panel,
+McmcMachinery::McmcMachinery(Input* input, Panel *panel, McmcSample *mcmcSample,
                        size_t nSample, size_t McmcMachineryRate, size_t seed ){ // initialiseMCMCmachinery
-    this->seed_ = seed;
+    this->seed_ = (unsigned)(time(0));
     this->rg_ = new MersenneTwister(this->seed_);
     this->burnIn_ = 0.5;
     this->calcMaxIteration(nSample, McmcMachineryRate);
@@ -45,6 +46,7 @@ McmcMachinery::McmcMachinery(Input* input, Panel *panel,
 
     this->input_ = input;
     this->panel_ = panel;
+    this->mcmcSample_ = mcmcSample;
     this->kStrain_ = this->input_->kStrain_;
     this->nLoci_ = this->input_->plaf.size();
     this->initializeMcmcChain( );
@@ -167,6 +169,15 @@ void McmcMachinery::runMcmcChain( ){
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++){
         this->sampleMcmcEvent();
     }
+
+    ofstream hap_file( "tmp.hap", ios::out | ios::app | ios::binary );
+    for ( size_t i = 0; i < this->currentHap_.size(); i++ ){
+        for ( size_t ii = 0; ii < this->kStrain_; ii++){
+            hap_file << this->currentHap_[i][ii];
+            hap_file << ((ii < (this->kStrain_-1)) ? "\t" : "\n") ;
+        }
+    }
+    hap_file.close();
 }
 
 
@@ -192,12 +203,9 @@ vector <double> McmcMachinery::calcExpectedWsaf( vector <double> &proportion ){
     vector <double> expectedWsaf (this->nLoci_, 0.0);
     for ( size_t i = 0; i < currentHap_.size(); i++ ){
         assert( kStrain_ == currentHap_[i].size() );
-        //double tmp = 0.0;
         for ( size_t k = 0; k < kStrain_; k++){
             expectedWsaf[i] += currentHap_[i][k] * proportion[k];
         }
-        //cout << tmp << endl;
-        //expectedWsaf[i] = tmp;
     }
     return expectedWsaf;
 }
@@ -205,6 +213,19 @@ vector <double> McmcMachinery::calcExpectedWsaf( vector <double> &proportion ){
 
 void McmcMachinery::recordMcmcMachinery(){
     dout << "Record mcmc sample " <<endl;
+    this->mcmcSample_->proportion.push_back(this->currentProp_);
+
+    ofstream prop_file( "tmp.prop", ios::out | ios::app | ios::binary );
+    for ( size_t i = 0; i < this->kStrain_; i++){
+        prop_file << (10) << mcmcSample_->proportion.back()[i];
+        prop_file << ((i < (this->kStrain_-1)) ? "\t" : "\n") ;
+    }
+    prop_file.close();
+
+    this->mcmcSample_->sumLLKs.push_back(sumOfVec(this->currentLLks_));
+    ofstream llk_file( "tmp.llk", ios::out | ios::app | ios::binary );
+    llk_file << this->mcmcSample_->sumLLKs.back() << endl;
+    llk_file.close();
 }
 
 
@@ -231,7 +252,7 @@ void McmcMachinery::updateProportion(){
     this->currentLLks_ = tmpLLKs;
     this->currentLogPriorTitre_ = tmpLogPriorTitre;
     this->currentTitre_ = tmpTitre;
-
+    this->currentProp_ = tmpProp;
 }
 
 double McmcMachinery::deltaLLKs ( vector <double> &newLLKs ){
@@ -261,10 +282,24 @@ void McmcMachinery::updateSingleHap(){
                               this->currentProp_, this->currentHap_, this->rg_, this->panel_);
 
     dout << "update Single Hap "<<endl;
+    for ( size_t i = 0 ; i < this->nLoci_; i++ ){
+        this->currentHap_[i][updating.strainIndex_] = updating.hap_[i];
+    }
+    this->currentLLks_ = updating.newLLK;
 }
 
 
 
 void McmcMachinery::updatePairHaps(){
+    UpdatePairHap updating( this->input_->refCount,
+                            this->input_->altCount,
+                            this->currentExpectedWsaf_,
+                            this->currentProp_, this->currentHap_, this->rg_, this->panel_);
     dout << "update Pair Hap "<<endl;
+
+    //for ( size_t i = 0 ; i < this->nLoci_; i++ ){
+        //this->currentHap_[i][updating.strainIndex1_] = updating.hap1_[i];
+        //this->currentHap_[i][updating.strainIndex2_] = updating.hap2_[i];
+    //}
+    //this->currentLLks_ = updating.newLLK;
 }

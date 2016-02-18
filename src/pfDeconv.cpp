@@ -22,6 +22,7 @@
 */
 
 #include <iostream> // std::cout
+#include <stdio.h>
 //#include <string>
 //#include <boost/math/special_functions/gamma.hpp>
 //#include <math.h>
@@ -39,6 +40,10 @@ using namespace std;
 
 int main(){
 
+    remove( "tmp.llk" );
+    remove( "tmp.prop" );
+    remove( "tmp.hap" );
+
     Input input( "tests/labStrains_first100_PLAF.txt",
            "tests/PG0390_first100ref.txt",
            "tests/PG0390_first100alt.txt",
@@ -46,8 +51,10 @@ int main(){
 
     Panel panel("tests/lab_first100_Panel.txt");
 
+    McmcSample * mcmcSample = new McmcSample();
+
     // Initilize mcmc
-    McmcMachinery McmcMachinerys(&input, &panel);
+    McmcMachinery McmcMachinerys(&input, &panel, mcmcSample, 100, 5, 1);
     McmcMachinerys.runMcmcChain();
 
     // Export log
