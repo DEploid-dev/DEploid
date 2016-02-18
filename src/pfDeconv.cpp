@@ -24,7 +24,7 @@ int main(){
     Panel panel("tests/lab_first100_Panel.txt");
 
     // Initilize mcmc
-    McmcMachinery McmcMachinerys(&input);
+    McmcMachinery McmcMachinerys(&input, &panel);
     McmcMachinerys.runMcmcChain();
 
     // Export log

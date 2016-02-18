@@ -18,7 +18,9 @@ common_src = src/fastfunc.cpp \
 			 src/mersenne_twister.cpp \
 			 src/mcmc.cpp \
 			 src/panel.cpp \
-			 src/param.cpp
+			 src/param.cpp \
+			 src/utility.cpp \
+			 src/updateHap.cpp
 
 pfDeconv_SOURCES = src/pfDeconv.cpp $(common_src)
 

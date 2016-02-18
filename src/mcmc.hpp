@@ -2,6 +2,7 @@
 #include <iostream>
 #include "mersenne_twister.hpp"
 #include "param.hpp"
+#include "panel.hpp"
 
 #ifndef NDEBUG
 #define dout std::cout
@@ -26,14 +27,15 @@ class McmcSample {
 
 class McmcMachinery {
   public:
-    McmcMachinery( Input* input,
-                size_t nSample = 100, size_t McmcMachineryRate = 5, size_t seed = 88 );
+    McmcMachinery( Input* input, Panel *panel,
+                size_t nSample = 1000, size_t McmcMachineryRate = 5, size_t seed = 88 );
     ~McmcMachinery();
     void runMcmcChain( );
 
   private:
   /* Variables */
     Input* input_;
+    Panel* panel_;
     size_t kStrain_;
     size_t nLoci_;
 
@@ -72,27 +74,11 @@ class McmcMachinery {
 
     vector <double> calcExpectedWsaf(vector <double> &proportion );
     vector <double> titre2prop(vector <double> & tmpTitre);
-    vector <double> calcLLKs( vector <double> &expectedWsaf );
 
 
     double calcLogPriorTitre( vector <double> &tmpTitre);
-    double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01, double fac=100 ) ;
     double rBernoulli(double p);
 
-    double sum( vector <double>& array ){
-        double tmp = 0.0;
-        for (auto const& value: array){
-            tmp += value;
-        }
-        return tmp;
-    }
-
-    void normalizeBySum ( vector <double> & array ){
-        double sumOfArray = sum(array);
-        for( vector<double>::iterator it = array.begin(); it != array.end(); ++it) {
-            *it /= sumOfArray;
-        }
-    }
 
     void printArray ( vector <double> array ){
         for (auto const& value: array){
@@ -136,37 +122,6 @@ class McmcMachinery {
 //class McmcEvent{
 
 //};
-
-template <typename T> // See http://stackoverflow.com/questions/10847007/using-the-gaussian-probability-density-function-in-c
-T normal_pdf(T x, T m, T s)
-{
-    static const T inv_sqrt_2pi = 0.3989422804014327;
-    T a = (x - m) / s;
-
-    return inv_sqrt_2pi / s * std::exp(-T(0.5) * a * a);
-}
-
-template <typename T>
-T minOfVec( vector <T> x){
-    assert( x.size() > 0 );
-    T tmpMin = x[0];
-    for ( auto const& value: x ){
-        tmpMin = ( value < tmpMin ) ? value : tmpMin;
-    }
-    return tmpMin;
-}
-
-template <typename T>
-T maxOfVec( vector <T> x){
-    assert( x.size() > 0 );
-    T tmpMax = x[0];
-    for ( auto const& value: x ){
-        tmpMax = ( value > tmpMax ) ? value : tmpMax;
-    }
-    return tmpMax;
-}
-
-
 
 #endif
 
