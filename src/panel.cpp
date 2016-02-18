@@ -37,7 +37,9 @@ Panel::Panel(const char inchar[]){
     //this->print();
 
     this->nLoci_ = this->content_.size();
-    recombProbs_ = vector <double> (this->nLoci_, 0.0);
+    this->nPanel_ = this->content_.back().size();
+    //recombProbs_ = vector <double> (this->nLoci_, 0.0);
+    recombProbs_ = vector <double> (this->nLoci_, 0.01); // use constant recombination probability
 }
 
 

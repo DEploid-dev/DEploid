@@ -4,7 +4,7 @@
 #include <random>
 #include "updateHap.hpp"
 
-McmcMachinery::McmcMachinery(Input* input,
+McmcMachinery::McmcMachinery(Input* input, Panel *panel,
                        size_t nSample, size_t McmcMachineryRate, size_t seed ){ // initialiseMCMCmachinery
     this->seed_ = seed;
     this->rg_ = new MersenneTwister(this->seed_);
@@ -21,6 +21,7 @@ McmcMachinery::McmcMachinery(Input* input,
     deltaX_normal_distribution_ = new std::normal_distribution<double>(MN_LOG_TITRE, 1.0/PROP_SCALE);
 
     this->input_ = input;
+    this->panel_ = panel;
     this->kStrain_ = this->input_->kStrain_;
     this->nLoci_ = this->input_->plaf.size();
     this->initializeMcmcChain( );
@@ -230,16 +231,11 @@ vector <double> McmcMachinery::calcTmpTitre(){
 }
 
 
-
-
 void McmcMachinery::updateSingleHap(){
-
     UpdateSingleHap updating( this->input_->refCount,
                               this->input_->altCount,
                               this->currentExpectedWsaf_,
-                              this->currentProp_, this->currentHap_, this->rg_);
-
-
+                              this->currentProp_, this->currentHap_, this->rg_, this->panel_);
 
     dout << "update Single Hap "<<endl;
 }

@@ -2,6 +2,7 @@
 #include <iostream>
 #include "mersenne_twister.hpp"
 #include "param.hpp"
+#include "panel.hpp"
 
 #ifndef NDEBUG
 #define dout std::cout
@@ -26,14 +27,15 @@ class McmcSample {
 
 class McmcMachinery {
   public:
-    McmcMachinery( Input* input,
-                size_t nSample = 100, size_t McmcMachineryRate = 5, size_t seed = 88 );
+    McmcMachinery( Input* input, Panel *panel,
+                size_t nSample = 1000, size_t McmcMachineryRate = 5, size_t seed = 88 );
     ~McmcMachinery();
     void runMcmcChain( );
 
   private:
   /* Variables */
     Input* input_;
+    Panel* panel_;
     size_t kStrain_;
     size_t nLoci_;
 
