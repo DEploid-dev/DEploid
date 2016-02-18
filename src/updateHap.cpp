@@ -1,3 +1,26 @@
+/*
+ * pfDeconv is used for deconvoluting Plasmodium falciparum genome from
+ * mix-infected patient sample.
+ *
+ * Copyright (C) 2016, Sha (Joe) Zhu, Jacob Almagro and Prof. Gil McVean
+ *
+ * This file is part of pfDeconv.
+ *
+ * scrm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
 #include "updateHap.hpp"
 #include <algorithm>    // std::reverse
 
@@ -140,8 +163,9 @@ void UpdateSingleHap::samplePaths(){
 void UpdateSingleHap::addMissCopying(){
     newLLK = vector <double> (this->nLoci_, 0.0);
     for ( size_t i = 0; i < this->nLoci_; i++){
-        double tmpLLKmax = (this->llk0_[i] > this->llk1_[i] ? this->llk0_[i] : this->llk1_[i])+0.000000001; // Add 0.00000001, in order to prevent that tmpLLKmax = 0
+        double tmpLLKmax = (this->llk0_[i] > this->llk1_[i] ? this->llk0_[i] : this->llk1_[i]) +0.00000001; // Add 0.00000001, in order to prevent that tmpLLKmax = 0
         dout <<"site "<<i<<" tmpLLKmax = "<<tmpLLKmax <<" "<<this->llk0_[i]<<" "<<this->llk1_[i]<<endl;
+        dout <<"site "<<i<<" expectedWsaf0_[i] = "<<expectedWsaf0_[i] <<" expectedWsaf1_[i] = "<<expectedWsaf1_[i]<<endl;
         vector <double> emissionTmp ({exp(this->llk0_[i]/tmpLLKmax), exp(this->llk1_[i]/tmpLLKmax)});
         dout << "emissionTmp[0] = "<<emissionTmp[0]<<" emissionTmp[1] = "<<emissionTmp[1]<<endl;
         vector <double> sameDiffDist ({emissionTmp[path_[i]]*(1.0 - this->missCopyProb),

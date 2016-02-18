@@ -1,9 +1,10 @@
 /*
- * scrm is an implementation of the Sequential-Coalescent-with-Recombination Model.
+ * pfDeconv is used for deconvoluting Plasmodium falciparum genome from
+ * mix-infected patient sample.
  *
- * Copyright (C) 2013, 2014 Paul R. Staab, Sha (Joe) Zhu, Dirk Metzler and Gerton Lunter
+ * Copyright (C) 2016, Sha (Joe) Zhu, Jacob Almagro and Prof. Gil McVean
  *
- * This file is part of scrm.
+ * This file is part of pfDeconv.
  *
  * scrm is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
