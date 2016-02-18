@@ -29,7 +29,7 @@ UpdateSingleHap::UpdateSingleHap( vector <double> &refCount,
     this->buildEmission();
     this->calcFwdProbs();
     this->samplePaths();
-    //this->addMissCopying();
+    this->addMissCopying();
 }
 
 
@@ -50,8 +50,9 @@ void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <
     //expected.WSAF.1 <- expected.WSAF.0 + bundle$prop[ws] ;
     this->expectedWsaf1_ = expectedWsaf0_;
     for ( size_t i = 0; i < expectedWsaf1_.size(); i++ ){
-        expectedWsaf1_[i] += haplotypes[i][strainIndex_];
+        expectedWsaf1_[i] += proportion[strainIndex_] ;
     }
+    cout << "expectedWsaf[0] = "<<expectedWsaf[0]<< " expectedWsaf0_[0] = "<<expectedWsaf0_[0]<<" expectedWsaf1_[0] = "<<expectedWsaf1_[0]<<endl;
 }
 
 
@@ -110,9 +111,9 @@ void UpdateSingleHap::calcHapLLKs( vector <double> &refCount,
 void UpdateSingleHap::samplePaths(){
     assert ( this->path_.size() == 0 );
     size_t pathTmp = sampleIndexGivenProp ( fwdProbs_[nLoci_-1], this->rg_ );
-    cout << pathTmp << endl;
+    //cout << pathTmp << endl;
     this->path_.push_back( this->panel_->content_.back()[pathTmp]);
-    cout << path_.back()<<endl;
+    //cout << path_.back()<<endl;
     for ( size_t j = (this->nLoci_ - 1); j > 0; j--){
         dout << "j="<<j<<", ";
         double pRec = this->panel_->recombProbs_[j-1];
@@ -139,10 +140,13 @@ void UpdateSingleHap::samplePaths(){
 void UpdateSingleHap::addMissCopying(){
     newLLK = vector <double> (this->nLoci_, 0.0);
     for ( size_t i = 0; i < this->nLoci_; i++){
-        double tmpLLKmax = this->llk0_[i] > this->llk1_[i] ? this->llk0_[i] : this->llk1_[i];
+        double tmpLLKmax = (this->llk0_[i] > this->llk1_[i] ? this->llk0_[i] : this->llk1_[i])+0.000000001; // Add 0.00000001, in order to prevent that tmpLLKmax = 0
+        dout <<"site "<<i<<" tmpLLKmax = "<<tmpLLKmax <<" "<<this->llk0_[i]<<" "<<this->llk1_[i]<<endl;
         vector <double> emissionTmp ({exp(this->llk0_[i]/tmpLLKmax), exp(this->llk1_[i]/tmpLLKmax)});
+        dout << "emissionTmp[0] = "<<emissionTmp[0]<<" emissionTmp[1] = "<<emissionTmp[1]<<endl;
         vector <double> sameDiffDist ({emissionTmp[path_[i]]*(1.0 - this->missCopyProb),
                                        emissionTmp[ 1 -path_[i]] * this->missCopyProb });
+        (void)normalizeBySum(sameDiffDist);
         if ( sampleIndexGivenProp(sameDiffDist, this->rg_ ) == 1 ){
             this->hap_.push_back( 1 - this->path_[i] ); // differ
         } else {
@@ -156,7 +160,7 @@ void UpdateSingleHap::addMissCopying(){
         } else {
             throw("should never get here!");
         }
-        cout <<this->hap_[i] <<endl;
+        dout <<"site "<<i<<" "<<this->hap_[i] <<endl;
     }
 }
 

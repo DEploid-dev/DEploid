@@ -169,12 +169,12 @@ vector <double> McmcMachinery::calcExpectedWsaf( vector <double> &proportion ){
     vector <double> expectedWsaf (this->nLoci_, 0.0);
     for ( size_t i = 0; i < currentHap_.size(); i++ ){
         assert( kStrain_ == currentHap_[i].size() );
-        double tmp = 0.0;
+        //double tmp = 0.0;
         for ( size_t k = 0; k < kStrain_; k++){
-            tmp += currentHap_[i][k] * proportion[k];
+            expectedWsaf[i] += currentHap_[i][k] * proportion[k];
         }
         //cout << tmp << endl;
-        expectedWsaf[i] = tmp;
+        //expectedWsaf[i] = tmp;
     }
     return expectedWsaf;
 }

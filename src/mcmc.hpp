@@ -28,7 +28,7 @@ class McmcSample {
 class McmcMachinery {
   public:
     McmcMachinery( Input* input, Panel *panel,
-                size_t nSample = 1000, size_t McmcMachineryRate = 5, size_t seed = 88 );
+                size_t nSample = 2, size_t McmcMachineryRate = 5, size_t seed = 88 );
     ~McmcMachinery();
     void runMcmcChain( );
 
