@@ -55,3 +55,9 @@ unit_tests.trs
 
 # doxygen
 html/
+
+src/codeCogs/
+tmp.hap
+tmp.llk
+tmp.prop
+

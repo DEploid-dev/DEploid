@@ -29,6 +29,7 @@
 #include "mcmc.hpp"
 #include "panel.hpp"
 #include "param.hpp"
+//#include "utility.hpp"
 //#include<stdlib.h>     /* strtol, strtod */
 //#include<climits> // INT_MAX
 
@@ -44,20 +45,39 @@ int main(){
     remove( "tmp.prop" );
     remove( "tmp.hap" );
 
-    Input input( "tests/labStrains_first100_PLAF.txt",
-           "tests/PG0390_first100ref.txt",
-           "tests/PG0390_first100alt.txt",
-           (size_t)5);
+    //Input input( "tests/labStrains_first100_PLAF.txt",
+           //"tests/PG0390_first100ref.txt",
+           //"tests/PG0390_first100alt.txt",
+           //(size_t)5);
 
-    Panel panel("tests/lab_first100_Panel.txt");
+    //Panel panel("tests/lab_first100_Panel.txt");
+
+    Input input( "tests/labStrains_samples_PLAF.txt",
+           "tests/PG0394_ref.txt",
+           "tests/PG0394_alt.txt",
+           (size_t)5);
+    Panel panel("tests/clonalPanel.csv");
+
 
     McmcSample * mcmcSample = new McmcSample();
 
-    // Initilize mcmc
-    McmcMachinery McmcMachinerys(&input, &panel, mcmcSample, 100, 5, 1);
-    McmcMachinerys.runMcmcChain();
+    bool repeat = true;
+    size_t repeat_counter = 0;
+    while ( repeat && repeat_counter < 100 ){
+        mcmcSample->clear();
+        cout << "repeat_counter = "<< repeat_counter<<endl;
+        // Initilize mcmc
+        McmcMachinery McmcMachinerys(&input, &panel, mcmcSample, 1000, 5, 1);
+        McmcMachinerys.runMcmcChain();
 
+        //if ( mcmcSample->llkRange() < 600.0 ){
+            repeat = false;
+        //}
+        repeat_counter++;
+    }
     // Export log
+    mcmcSample->output();
 
+    delete mcmcSample;
     cout << "place holder!" << std::endl;
 }

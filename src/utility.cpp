@@ -22,6 +22,8 @@
 */
 
 #include "utility.hpp"
+//#include <boost/math/special_functions/gamma.hpp>
+
 
 vector <size_t> sampleNoReplace( vector <double> proportion, MersenneTwister* rg, size_t nSample ){
     vector <size_t> indexReturn;
@@ -81,12 +83,33 @@ double sumOfVec( vector <double>& array ){
 }
 
 
+double sumOfMat( vector <vector <double> > & matrix ){
+    double tmp = 0.0;
+    for (auto const& array: matrix){
+        for (auto const& value: array){
+            tmp += value;
+        }
+    }
+    return tmp;
+}
+
+
 void normalizeBySum ( vector <double> & array ){
     double sumOfArray = sumOfVec(array);
     for( vector<double>::iterator it = array.begin(); it != array.end(); ++it) {
         *it /= sumOfArray;
     }
 }
+
+void normalizeBySumMat ( vector <vector <double> > & matrix ){
+    double tmpsum = sumOfMat(matrix);
+    for( size_t i = 0; i < matrix.size(); i++ ){
+        for( vector<double>::iterator it = matrix[i].begin(); it != matrix[i].end(); ++it) {
+            *it /= tmpsum;
+        }
+    }
+}
+
 
 
 vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf ){
@@ -103,6 +126,7 @@ vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, 
 double calcLLK( double ref, double alt, double unadjustedWsaf, double err, double fac ) {
     double adjustedWsaf = unadjustedWsaf+err*(1-2*unadjustedWsaf);
     //double llk = logBeta(alt+adjustedWsaf*fac, ref+(1-adjustedWsaf)*fac)-logBeta(adjustedWsaf*fac,(1-adjustedWsaf)*fac);
+    //double llk = log(boost::math::beta(alt+adjustedWsaf*fac, ref+(1-adjustedWsaf)*fac)) - log(boost::math::beta(adjustedWsaf*fac,(1-adjustedWsaf)*fac));
 //    llk<-lgamma(fac*f.samp+cov.alt)+lgamma(fac*(1-f.samp)+cov.ref)-lgamma(fac*f.samp)-lgamma(fac*(1-f.samp));
     double llk = lgamma(fac*adjustedWsaf+alt)+lgamma(fac*(1-adjustedWsaf)+ref)-lgamma(fac*adjustedWsaf)-lgamma(fac*(1-adjustedWsaf));
     return llk;

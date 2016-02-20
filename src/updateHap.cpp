@@ -75,7 +75,7 @@ void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <
     for ( size_t i = 0; i < expectedWsaf1_.size(); i++ ){
         expectedWsaf1_[i] += proportion[strainIndex_] ;
     }
-    cout << "expectedWsaf[0] = "<<expectedWsaf[0]<< " expectedWsaf0_[0] = "<<expectedWsaf0_[0]<<" expectedWsaf1_[0] = "<<expectedWsaf1_[0]<<endl;
+    //cout << "expectedWsaf[0] = "<<expectedWsaf[0]<< " expectedWsaf0_[0] = "<<expectedWsaf0_[0]<<" expectedWsaf1_[0] = "<<expectedWsaf1_[0]<<endl;
 }
 
 
@@ -126,8 +126,8 @@ void UpdateSingleHap::calcFwdProbs(){
 
 void UpdateSingleHap::calcHapLLKs( vector <double> &refCount,
                                    vector <double> &altCount){
-    llk0_ = calcLLKs( refCount, altCount, expectedWsaf0_ );
-    llk1_ = calcLLKs( refCount, altCount, expectedWsaf1_ );
+    this->llk0_ = calcLLKs( refCount, altCount, expectedWsaf0_ );
+    this->llk1_ = calcLLKs( refCount, altCount, expectedWsaf1_ );
 }
 
 
@@ -188,4 +188,170 @@ void UpdateSingleHap::addMissCopying(){
     }
 }
 
+
+UpdatePairHap::UpdatePairHap( vector <double> &refCount,
+                              vector <double> &altCount,
+                              vector <double> &expectedWsaf,
+                              vector <double> &proportion,
+                              vector < vector <double> > &haplotypes, MersenneTwister* rg, Panel* panel):
+                UpdateHap(refCount, altCount, expectedWsaf, proportion, haplotypes, rg, panel){
+    this->findUpdatingStrain( proportion );
+    this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
+    this->calcHapLLKs(refCount, altCount);
+    this->buildEmission();
+    this->calcFwdProbs();
+    this->samplePaths();
+    this->addMissCopying();
+}
+
+void UpdatePairHap:: findUpdatingStrain( vector <double> proportion ){
+    vector <size_t> strainIndex = sampleNoReplace( proportion, this->rg_ , 2);
+    assert( strainIndex.size() == 2);
+    this->strainIndex1_ = strainIndex[0];
+    this->strainIndex2_ = strainIndex[1];
+    assert( strainIndex1_ != strainIndex2_ );
+}
+
+
+void UpdatePairHap:: calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes){
+  //expected.WSAF.00 <- expected.WSAF-(prop[ws[1]]*h[,ws[1]] + prop[ws[2]]*h[,ws[2]]);
+  //expected.WSAF.10 <- expected.WSAF.00 + prop[ws[1]];
+  //expected.WSAF.01 <- expected.WSAF.00 + prop[ws[2]];
+  //expected.WSAF.11 <- expected.WSAF.00 + prop[ws[1]] + prop[ws[2]];    //expected.WSAF.0 <- bundle$expected.WSAF - (bundle$prop[ws] * bundle$h[,ws]);
+    this->expectedWsaf00_ = expectedWsaf;
+    for ( size_t i = 0; i < expectedWsaf00_.size(); i++ ){
+        expectedWsaf00_[i] -= (proportion[strainIndex1_] * haplotypes[i][strainIndex1_] + proportion[strainIndex2_] * haplotypes[i][strainIndex2_]);
+    }
+
+    this->expectedWsaf10_ = expectedWsaf00_;
+    for ( size_t i = 0; i < expectedWsaf10_.size(); i++ ){
+        expectedWsaf10_[i] += proportion[strainIndex1_] ;
+    }
+
+    this->expectedWsaf01_ = expectedWsaf00_;
+    for ( size_t i = 0; i < expectedWsaf01_.size(); i++ ){
+        expectedWsaf01_[i] += proportion[strainIndex2_] ;
+    }
+
+    this->expectedWsaf11_ = expectedWsaf00_;
+    for ( size_t i = 0; i < expectedWsaf11_.size(); i++ ){
+        expectedWsaf11_[i] += (proportion[strainIndex1_] + proportion[strainIndex2_]);
+    }
+}
+
+
+void UpdatePairHap:: calcHapLLKs( vector <double> &refCount, vector <double> &altCount){
+    this->llk00_ = calcLLKs( refCount, altCount, expectedWsaf00_ );
+    this->llk10_ = calcLLKs( refCount, altCount, expectedWsaf10_ );
+    this->llk01_ = calcLLKs( refCount, altCount, expectedWsaf01_ );
+    this->llk11_ = calcLLKs( refCount, altCount, expectedWsaf11_ );
+}
+
+
+void UpdatePairHap:: buildEmission(){
+    //llk.00 = logemiss[,1]
+    //llk.10 = logemiss[,2]
+    //llk.01 = logemiss[,3]
+    //llk.11 = logemiss[,4]
+
+    //log.omu = log(1-miss.copy.rate)
+    //log.u = log(miss.copy.rate)
+    vector <double> noMissProb (this->nLoci_, log(1.0 - this->missCopyProb));
+    vector <double> missProb (this->nLoci_, log(this->missCopyProb));
+    vector <double> noNo = vecSum(noMissProb, noMissProb);
+    vector <double> misMis = vecSum(missProb, missProb);
+    vector <double> misNo = vecSum(noMissProb, missProb);
+
+    vector <double> tmp_00_1 = vecSum(llk00_, noNo);
+    vector <double> tmp_00_2 = vecSum(llk10_, misNo);
+    vector <double> tmp_00_3 = vecSum(llk01_, misNo);
+    vector <double> tmp_00_4 = vecSum(llk11_, misMis);
+
+    vector <double> tmp_01_1 = vecSum(llk01_, noNo);
+    vector <double> tmp_01_2 = vecSum(llk00_, misNo);
+    vector <double> tmp_01_3 = vecSum(llk11_, misNo);
+    vector <double> tmp_01_4 = vecSum(llk10_, misMis);
+
+    vector <double> tmp_10_1 = vecSum(llk10_, noNo);
+    vector <double> tmp_10_2 = vecSum(llk00_, misNo);
+    vector <double> tmp_10_3 = vecSum(llk11_, misNo);
+    vector <double> tmp_10_4 = vecSum(llk01_, misMis);
+
+    vector <double> tmp_11_1 = vecSum(llk11_, noNo);
+    vector <double> tmp_11_2 = vecSum(llk10_, misNo);
+    vector <double> tmp_11_3 = vecSum(llk01_, misNo);
+    vector <double> tmp_11_4 = vecSum(llk00_, misMis);
+
+    //tmp.max = apply(cbind(tmp.00.1, tmp.00.2, tmp.00.3, tmp.00.4,
+                          //tmp.10.1, tmp.10.2, tmp.10.3, tmp.10.4,
+                          //tmp.01.1, tmp.01.2, tmp.01.3, tmp.01.4,
+                          //tmp.11.1, tmp.11.2, tmp.11.3, tmp.11.4), 1, max)
+    //emiss = cbind ( exp( tmp.00.1-tmp.max ) + exp( tmp.00.2-tmp.max ) + exp( tmp.00.3-tmp.max ) + exp( tmp.00.4-tmp.max ),
+                    //exp( tmp.10.1-tmp.max ) + exp( tmp.10.2-tmp.max ) + exp( tmp.10.3-tmp.max ) + exp( tmp.10.4-tmp.max ),
+                    //exp( tmp.01.1-tmp.max ) + exp( tmp.01.2-tmp.max ) + exp( tmp.01.3-tmp.max ) + exp( tmp.01.4-tmp.max ),
+                    //exp( tmp.11.1-tmp.max ) + exp( tmp.11.2-tmp.max ) + exp( tmp.11.3-tmp.max ) + exp( tmp.11.4-tmp.max ))
+
+    assert(emission_.size() == 0 );
+    for ( size_t i = 0; i < this->nLoci_; i++){
+        vector <double> tmp ({tmp_00_1[i], tmp_00_2[i], tmp_00_3[i], tmp_00_4[i],
+                              tmp_01_1[i], tmp_01_2[i], tmp_01_3[i], tmp_01_4[i],
+                              tmp_10_1[i], tmp_10_2[i], tmp_10_3[i], tmp_10_4[i],
+                              tmp_11_1[i], tmp_11_2[i], tmp_11_3[i], tmp_11_4[i]});
+        double tmaxTmp = maxOfVec(tmp);
+        vector <double> emissRow ({exp(tmp_00_1[i] - tmaxTmp) + exp(tmp_00_2[i] - tmaxTmp) + exp(tmp_00_3[i] - tmaxTmp) + exp(tmp_00_4[i] - tmaxTmp),
+                                   exp(tmp_01_1[i] - tmaxTmp) + exp(tmp_01_2[i] - tmaxTmp) + exp(tmp_01_3[i] - tmaxTmp) + exp(tmp_01_4[i] - tmaxTmp),
+                                   exp(tmp_10_1[i] - tmaxTmp) + exp(tmp_10_2[i] - tmaxTmp) + exp(tmp_10_3[i] - tmaxTmp) + exp(tmp_10_4[i] - tmaxTmp),
+                                   exp(tmp_11_1[i] - tmaxTmp) + exp(tmp_11_2[i] - tmaxTmp) + exp(tmp_11_3[i] - tmaxTmp) + exp(tmp_11_4[i] - tmaxTmp)});
+        this->emission_.push_back(emissRow);
+    }
+}
+
+
+void UpdatePairHap:: calcFwdProbs(){
+    assert ( this->fwdProbs_.size() == 0 );
+    vector < vector < double > > fwd1st;
+    for ( size_t i = 0 ; i < this->nPanel_; i++){
+        size_t rowObs = (size_t)this->panel_->content_[0][i];
+        vector <double> fwd1stRow (this->nPanel_, 0.0);
+        for ( size_t ii = 0 ; ii < this->nPanel_; ii++){
+            size_t colObs = (size_t)this->panel_->content_[0][ii];
+            size_t obs = rowObs*2 + colObs;
+            fwd1stRow[i] = this->emission_[0][obs];
+        }
+        fwd1st.push_back(fwd1stRow);
+    }
+
+    (void)normalizeBySumMat(fwd1st);
+    this->fwdProbs_.push_back(fwd1st);
+
+    for ( size_t j = 1; j < this->nLoci_; j++ ){
+        double pRec = this->panel_->recombProbs_[j-1];
+        double pRecEachHap = pRec / nPanel_;
+        double pNoRec = 1.0 - pRec;
+
+        double recRec = pRecEachHap * pRecEachHap
+        double recNorec = pRecEachHap * pNoRec
+        double norecNorec = pNoRec * pNoRec
+
+
+
+        //fwdList[[j]] =  ( rec.rec * sum(fwdList[[j-1]]) +
+                           //norec.norec * fwdList[[j-1]] +
+                           //rec.norec * marginalOfRows * marginalOfCols ) *
+                         //fun.buildEmission( ref.panel[,j], emiss[j,] )
+        //diag( fwdList[[j]] ) <- 0
+        //fwdList[[j]] = fun.normalize.bymax(fwdList[[j]])
+
+        //double massFromRec = sumOfVec(fwdProbs_[j-1]) * pRecEachHap;
+        //vector <double> fwdTmp (this->nPanel_, 0.0);
+        //for ( size_t i = 0 ; i < this->nPanel_; i++){
+            //fwdTmp[i] = this->emission_[j][this->panel_->content_[j][i]] * (fwdProbs_[j-1][i] * pNoRec + massFromRec);
+        //}
+        //(void)normalizeBySum(fwdTmp);
+        //this->fwdProbs_.push_back(fwdTmp);
+    }
+
+}
+void UpdatePairHap:: samplePaths(){}
+void UpdatePairHap:: addMissCopying(){}
 

@@ -31,6 +31,7 @@ using namespace std;
 class Panel{
  friend class TestPanel;
  friend class UpdateSingleHap;
+ friend class UpdatePairHap;
  friend class UpdateHap;
   private:
     // Member

@@ -43,6 +43,7 @@ using namespace std;
 class UpdateHap{
   friend class McmcMachinery;
   friend class UpdateSingleHap;
+  friend class UpdatePairHap;
     UpdateHap( vector <double> &refCount,
                vector <double> &altCount,
                vector <double> &expectedWsaf,
@@ -59,7 +60,6 @@ class UpdateHap{
     size_t nPanel_;
 
     vector < vector <double> > emission_;
-    vector < vector <double> > fwdProbs_;
 
     // Methods
     virtual void findUpdatingStrain( vector <double> proportion ){};
@@ -73,6 +73,7 @@ class UpdateHap{
 
 
 class UpdateSingleHap : public UpdateHap{
+ friend class McmcMachinery;
   public:
      UpdateSingleHap( vector <double> &refCount,
                       vector <double> &altCount,
@@ -81,6 +82,8 @@ class UpdateSingleHap : public UpdateHap{
                       vector < vector <double> > &haplotypes, MersenneTwister* rg, Panel* panel);
     ~UpdateSingleHap(){}
   private:
+    vector < vector <double> > fwdProbs_;
+
     size_t strainIndex_;
     vector <double> expectedWsaf0_;
     vector <double> expectedWsaf1_;
@@ -102,5 +105,44 @@ class UpdateSingleHap : public UpdateHap{
 };
 
 
+class UpdatePairHap : public UpdateHap{
+ friend class McmcMachinery;
+  public:
+     UpdatePairHap( vector <double> &refCount,
+                      vector <double> &altCount,
+                      vector <double> &expectedWsaf,
+                      vector <double> &proportion,
+                      vector < vector <double> > &haplotypes, MersenneTwister* rg, Panel* panel);
+    ~UpdatePairHap(){}
+  private:
+    vector< vector < vector <double> > > fwdProbs_;
+
+    size_t strainIndex1_;
+    size_t strainIndex2_;
+
+    vector <double> expectedWsaf00_;
+    vector <double> expectedWsaf01_;
+    vector <double> expectedWsaf10_;
+    vector <double> expectedWsaf11_;
+    vector <double> llk00_;
+    vector <double> llk01_;
+    vector <double> llk10_;
+    vector <double> llk11_;
+
+    vector <double> path1_;
+    vector <double> path2_;
+    vector <double> hap1_;
+    vector <double> hap2_;
+    vector <double> newLLK;
+
+    // Methods
+    void findUpdatingStrain( vector <double> proportion );
+    void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
+    void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
+    void buildEmission();
+    void calcFwdProbs();
+    void samplePaths();
+    void addMissCopying();
+};
 
 #endif

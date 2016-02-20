@@ -25,7 +25,6 @@
 #include "utility.hpp"
 #include <math.h>       /* ceil */
 #include <random>
-#include <iomanip>      // std::setw
 #include "updateHap.hpp"
 
 McmcMachinery::McmcMachinery(Input* input, Panel *panel, McmcSample *mcmcSample,
@@ -169,15 +168,7 @@ void McmcMachinery::runMcmcChain( ){
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++){
         this->sampleMcmcEvent();
     }
-
-    ofstream hap_file( "tmp.hap", ios::out | ios::app | ios::binary );
-    for ( size_t i = 0; i < this->currentHap_.size(); i++ ){
-        for ( size_t ii = 0; ii < this->kStrain_; ii++){
-            hap_file << this->currentHap_[i][ii];
-            hap_file << ((ii < (this->kStrain_-1)) ? "\t" : "\n") ;
-        }
-    }
-    hap_file.close();
+    this->mcmcSample_->hap = this->currentHap_;
 }
 
 
@@ -215,17 +206,7 @@ void McmcMachinery::recordMcmcMachinery(){
     dout << "Record mcmc sample " <<endl;
     this->mcmcSample_->proportion.push_back(this->currentProp_);
 
-    ofstream prop_file( "tmp.prop", ios::out | ios::app | ios::binary );
-    for ( size_t i = 0; i < this->kStrain_; i++){
-        prop_file << (10) << mcmcSample_->proportion.back()[i];
-        prop_file << ((i < (this->kStrain_-1)) ? "\t" : "\n") ;
-    }
-    prop_file.close();
-
     this->mcmcSample_->sumLLKs.push_back(sumOfVec(this->currentLLks_));
-    ofstream llk_file( "tmp.llk", ios::out | ios::app | ios::binary );
-    llk_file << this->mcmcSample_->sumLLKs.back() << endl;
-    llk_file.close();
 }
 
 

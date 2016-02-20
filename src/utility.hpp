@@ -106,7 +106,9 @@ vector <T> vecProd ( vector<T> &vecA, vector<T> &vecB ){
 
 vector <double> computeCdf ( vector <double> & dist );
 double sumOfVec( vector <double>& array );
+double sumOfMat( vector <vector <double> > & matrix );
 void normalizeBySum ( vector <double> & array );
+void normalizeBySumMat ( vector <vector <double> > & matrix );
 vector <size_t> sampleNoReplace( vector <double> proportion, MersenneTwister* rg, size_t nSample = 1);
 size_t sampleIndexGivenProp ( vector <double> proportion, MersenneTwister* rg );
 vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf );

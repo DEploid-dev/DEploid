@@ -3,7 +3,7 @@ EXTRA_DIST = bootstrap
 COMPILEDATE = $(shell date -u | sed -e "s/ /-/g")
 distdir = $(PACKAGE)-$(VERSION)
 
-bin_PROGRAMS = pfDeconv
+bin_PROGRAMS = pfDeconv pfDeconv_dbg
 
 TESTS = unit_tests
 check_PROGRAMS = unit_tests pfDeconv_dbg

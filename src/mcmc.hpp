@@ -23,9 +23,11 @@
 
 #include <vector>
 #include <iostream>
+#include <iomanip>      // std::setw
 #include "mersenne_twister.hpp"
 #include "param.hpp"
 #include "panel.hpp"
+#include "utility.hpp"
 
 #ifndef NDEBUG
 #define dout std::cout
@@ -43,19 +45,59 @@ using namespace std;
 
 class McmcSample {
   friend class McmcMachinery;
+  public:
+    McmcSample(){}
+    ~McmcSample(){}
+    double llkRange(){
+        return (maxOfVec(this->sumLLKs) - minOfVec(this->sumLLKs) );
+    }
+    void clear(){
+        proportion.clear();
+        sumLLKs.clear();
+    }
+
+    void output(){
+        ofstream prop_file( "tmp.prop", ios::out | ios::app | ios::binary );
+        for ( size_t i = 0; i < this->proportion.size(); i++){
+            for ( size_t ii = 0; ii < this->proportion[i].size(); ii++){
+                prop_file << setw(10) << this->proportion[i][ii];
+                prop_file << ((ii < (this->proportion[i].size()-1)) ? "\t" : "\n") ;
+            }
+        }
+        prop_file.close();
+
+
+        ofstream llk_file( "tmp.llk", ios::out | ios::app | ios::binary );
+        for ( size_t i = 0; i < this->sumLLKs.size(); i++){
+            llk_file << this->sumLLKs[i] << endl;
+        }
+        llk_file.close();
+
+        ofstream hap_file( "tmp.hap", ios::out | ios::app | ios::binary );
+        for ( size_t i = 0; i < this->hap.size(); i++ ){
+            for ( size_t ii = 0; ii < this->hap[i].size(); ii++){
+                hap_file << this->hap[i][ii];
+                hap_file << ((ii < (this->hap[i].size()-1)) ? "\t" : "\n") ;
+            }
+        }
+        hap_file.close();
+    }
   private:
+    vector < vector <double> > hap;
     vector< vector <double> > proportion;
     vector< double > sumLLKs;
 };
 
+
 class McmcMachinery {
   public:
-    McmcMachinery( Input* input, Panel *panel,
-                size_t nSample = 2, size_t McmcMachineryRate = 5, size_t seed = 88 );
+    McmcMachinery( Input* input, Panel *panel, McmcSample *mcmcSample,
+                size_t nSample = 100, size_t McmcMachineryRate = 5, size_t seed = 88 );
     ~McmcMachinery();
     void runMcmcChain( );
 
   private:
+    McmcSample *mcmcSample_;
   /* Variables */
     Input* input_;
     Panel* panel_;
