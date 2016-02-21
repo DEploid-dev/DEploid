@@ -56,8 +56,10 @@ unit_tests.trs
 # doxygen
 html/
 
-src/codeCogs/
 tmp.hap
 tmp.llk
 tmp.prop
+
+src/haplotype-sampling.cpp
+src/haplotype-sampling.r
 

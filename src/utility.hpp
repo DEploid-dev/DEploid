@@ -24,7 +24,6 @@
 #include <vector>
 #include <iostream>
 #include "mersenne_twister.hpp"
-//#include "logbeta.h"
 
 #ifndef NDEBUG
 #define dout std::cout

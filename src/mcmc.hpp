@@ -82,9 +82,11 @@ class McmcSample {
         }
         hap_file.close();
     }
+
+    vector< vector <double> > proportion;
+
   private:
     vector < vector <double> > hap;
-    vector< vector <double> > proportion;
     vector< double > sumLLKs;
 };
 
