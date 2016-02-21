@@ -165,12 +165,11 @@ void UpdateSingleHap::addMissCopying(){
     assert( this->hap_.size() == 0 );
     newLLK = vector <double> (this->nLoci_, 0.0);
     for ( size_t i = 0; i < this->nLoci_; i++){
-          double tmpLLKmax = (this->llk0_[i] > this->llk1_[i] ? this->llk0_[i] : this->llk1_[i]) +0.00000001; // Add 0.00000001, in order to prevent that tmpLLKmax = 0
+          //double tmpLLKmax = (this->llk0_[i] > this->llk1_[i] ? this->llk0_[i] : this->llk1_[i]) +0.00000001; // Add 0.00000001, in order to prevent that tmpLLKmax = 0
         //dout <<"site "<<i<<" tmpLLKmax = "<<tmpLLKmax <<" "<<this->llk0_[i]<<" "<<this->llk1_[i]<<endl;
         //dout <<"site "<<i<<" expectedWsaf0_[i] = "<<expectedWsaf0_[i] <<" expectedWsaf1_[i] = "<<expectedWsaf1_[i]<<endl;
         //vector <double> emissionTmp ({exp(this->llk0_[i]/tmpLLKmax), exp(this->llk1_[i]/tmpLLKmax)});
         vector <double> emissionTmp ({exp(this->llk0_[i]), exp(this->llk1_[i])});
-        //dout << "emissionTmp[0] = "<<emissionTmp[0]<<" emissionTmp[1] = "<<emissionTmp[1]<<endl;
         vector <double> sameDiffDist ({emissionTmp[path_[i]]*(1.0 - this->missCopyProb), // probability of the same
                                        emissionTmp[(size_t)(1 -path_[i])] * this->missCopyProb }); // probability of differ
         (void)normalizeBySum(sameDiffDist);
@@ -315,7 +314,7 @@ void UpdatePairHap:: buildEmission(){
 }
 
 
-vector <double> computeRowMarginalDist( vector < vector < double > > & probDist ){
+vector <double> UpdatePairHap::computeRowMarginalDist( vector < vector < double > > & probDist ){
     vector <double> marginalDist (probDist.size(), 0.0);
     for ( size_t i = 0; i < probDist.size(); i++ ){
         marginalDist[i] = sumOfVec(probDist[i]);
@@ -324,7 +323,7 @@ vector <double> computeRowMarginalDist( vector < vector < double > > & probDist 
 }
 
 
-vector <double> computeColMarginalDist( vector < vector < double > > & probDist ){
+vector <double> UpdatePairHap::computeColMarginalDist( vector < vector < double > > & probDist ){
     vector <double> marginalDist (probDist.size(), 0.0);
     for ( size_t coli = 0; coli < probDist[0].size(); coli++ ){
         for ( size_t rowi = 0; rowi < probDist.size(); rowi++ ){
@@ -376,22 +375,22 @@ void UpdatePairHap:: calcFwdProbs(){
         //vector <double> marginalOfRows =
 
 
-        //vector < vector < double > > fwdTmp;
-        //for ( size_t i = 0 ; i < this->nPanel_; i++){
-            //size_t rowObs = (size_t)this->panel_->content_[0][i];
-            //vector <double> fwdTmpRow (this->nPanel_, 0.0);
-            //for ( size_t ii = 0 ; ii < this->nPanel_; ii++){
-                //if ( i == ii ) continue;
+        vector < vector < double > > fwdTmp;
+        for ( size_t i = 0 ; i < this->nPanel_; i++){
+            size_t rowObs = (size_t)this->panel_->content_[0][i];
+            vector <double> fwdTmpRow (this->nPanel_, 0.0);
+            for ( size_t ii = 0 ; ii < this->nPanel_; ii++){
+                if ( i == ii ) continue;
 
-                //size_t colObs = (size_t)this->panel_->content_[0][ii];
-                //size_t obs = rowObs*2 + colObs;
-                //// TODO, get row sum and column sum
+                size_t colObs = (size_t)this->panel_->content_[0][ii];
+                size_t obs = rowObs*2 + colObs;
+                // TODO, get row sum and column sum
                 //fwdTmpRow[ii] = this->emission_[0][obs] * (sumOfMat(this->fwdProbs_.back())*recRec +
                                                            //fwdProbs_.back()[i][ii]*norecNorec+
                                                            //);
-            //}
-            //fwdTmp.push_back(fwdTmpRow);
-        //}
+            }
+            fwdTmp.push_back(fwdTmpRow);
+        }
         //(void)normalizeBySumMat(fwdTmp);
         //this->fwdProbs_.push_back(fwdTmp);
 

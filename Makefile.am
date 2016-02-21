@@ -30,7 +30,8 @@ pfDeconv_dbg_CXXFLAGS = -g $(common_flags)
 unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_panel.cpp \
 					 tests/unittest/test_param.cpp \
-					 tests/unittest/test_runner.cpp
+					 tests/unittest/test_runner.cpp \
+					 tests/unittest/test_updatePairHap.cpp
 
 unit_tests_CXXFLAGS = $(pfDeconv_CXXFLAGS)
 unit_tests_LDADD          = -lcppunit -ldl

@@ -44,6 +44,7 @@ class UpdateHap{
   friend class McmcMachinery;
   friend class UpdateSingleHap;
   friend class UpdatePairHap;
+    UpdateHap(){}
     UpdateHap( vector <double> &refCount,
                vector <double> &altCount,
                vector <double> &expectedWsaf,
@@ -107,7 +108,9 @@ class UpdateSingleHap : public UpdateHap{
 
 class UpdatePairHap : public UpdateHap{
  friend class McmcMachinery;
+ friend class TestUpdatePairHap;
   public:
+     UpdatePairHap():UpdateHap(){}
      UpdatePairHap( vector <double> &refCount,
                       vector <double> &altCount,
                       vector <double> &expectedWsaf,
@@ -143,6 +146,11 @@ class UpdatePairHap : public UpdateHap{
     void calcFwdProbs();
     void samplePaths();
     void addMissCopying();
+
+    // Own methods
+    vector <double> computeRowMarginalDist( vector < vector < double > > & probDist );
+    vector <double> computeColMarginalDist( vector < vector < double > > & probDist );
+
 };
 
 #endif
