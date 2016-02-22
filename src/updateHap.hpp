@@ -70,6 +70,10 @@ class UpdateHap{
     virtual void calcFwdProbs(){};
     virtual void samplePaths(){};
     virtual void addMissCopying(){};
+
+    size_t sampleIndexGivenProp ( vector <double> proportion );
+    vector <size_t> sampleNoReplace( vector <double> proportion, size_t nSample = 1);
+
 };
 
 
@@ -151,6 +155,8 @@ class UpdatePairHap : public UpdateHap{
     vector <double> computeRowMarginalDist( vector < vector < double > > & probDist );
     vector <double> computeColMarginalDist( vector < vector < double > > & probDist );
 
+    vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );
+    vector <size_t> sampleMatrixIndex( vector < vector < double > > &probDist );
 };
 
 #endif

@@ -23,43 +23,6 @@
 
 #include "logbeta.h"
 #include "utility.hpp"
-//#include <boost/math/special_functions/gamma.hpp>
-
-
-vector <size_t> sampleNoReplace( vector <double> proportion, MersenneTwister* rg, size_t nSample ){
-    vector <size_t> indexReturn;
-    assert( indexReturn.size() == 0 );
-    vector <double> tmpDist(proportion) ;
-    vector <size_t> tmpIndex;
-    for ( size_t i = 0; i < proportion.size(); i++ ){
-        tmpIndex.push_back(i);
-    }
-    for ( size_t nSampleRemaining = nSample; nSampleRemaining > 0; nSampleRemaining-- ){
-        // Compute cdf of tmpDist
-        vector <double> tmpCdf = computeCdf(tmpDist);
-        double u = rg->sample();
-        size_t i = 0;
-        for ( ; i < tmpCdf.size() ; i++){
-            if ( u < tmpCdf[i] ){
-                indexReturn.push_back(tmpIndex[i]);
-                break;
-            }
-        }
-        // Reduce tmpDist and tmpIndex
-        tmpDist.erase(tmpDist.begin()+i);
-        (void)normalizeBySum(tmpDist);
-        tmpIndex.erase(tmpIndex.begin()+i);
-    }
-    return indexReturn;
-}
-
-
-size_t sampleIndexGivenProp ( vector <double> proportion, MersenneTwister* rg ){
-    vector <size_t> strainIndex = sampleNoReplace( proportion, rg);
-    assert( strainIndex.size() == 1);
-    return strainIndex[0];
-}
-
 
 
 vector <double> computeCdf ( vector <double> & dist ){

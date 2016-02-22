@@ -284,7 +284,6 @@ void McmcMachinery::updateSingleHap(){
 }
 
 
-
 void McmcMachinery::updatePairHaps(){
     UpdatePairHap updating( this->input_->refCount,
                             this->input_->altCount,
@@ -292,9 +291,10 @@ void McmcMachinery::updatePairHaps(){
                             this->currentProp_, this->currentHap_, this->rg_, this->panel_);
     dout << "update Pair Hap "<<endl;
 
-    //for ( size_t i = 0 ; i < this->nLoci_; i++ ){
-        //this->currentHap_[i][updating.strainIndex1_] = updating.hap1_[i];
-        //this->currentHap_[i][updating.strainIndex2_] = updating.hap2_[i];
-    //}
-    //this->currentLLks_ = updating.newLLK;
+    for ( size_t i = 0 ; i < this->nLoci_; i++ ){
+        this->currentHap_[i][updating.strainIndex1_] = updating.hap1_[i];
+        this->currentHap_[i][updating.strainIndex2_] = updating.hap2_[i];
+    }
+    this->currentLLks_ = updating.newLLK;
+    this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }

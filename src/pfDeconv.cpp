@@ -23,21 +23,11 @@
 
 #include <iostream> // std::cout
 #include <stdio.h>
-//#include <string>
-//#include <boost/math/special_functions/gamma.hpp>
-//#include <math.h>
 #include "mcmc.hpp"
 #include "panel.hpp"
 #include "param.hpp"
-//#include "utility.hpp"
-//#include<stdlib.h>     /* strtol, strtod */
-//#include<climits> // INT_MAX
-
 
 using namespace std;
-//#include "param.hpp"
-
-
 
 int main(){
 
@@ -78,7 +68,7 @@ int main(){
         McmcMachinery McmcMachinerys(&input, &panel, mcmcSample, 1000, 5, repeat_counter);
         McmcMachinerys.runMcmcChain();
 
-        if ( mcmcSample->llkRange() < 1000.0 ){
+        if ( mcmcSample->llkRange() < 300.0 ){
             repeat = false;
         }
             for ( size_t ii = 0; ii < mcmcSample->proportion.back().size(); ii++){
@@ -91,5 +81,4 @@ int main(){
     mcmcSample->output();
 
     delete mcmcSample;
-    cout << "place holder!" << std::endl;
 }
