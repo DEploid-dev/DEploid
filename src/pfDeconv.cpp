@@ -22,35 +22,63 @@
 */
 
 #include <iostream> // std::cout
-//#include <string>
-//#include <boost/math/special_functions/gamma.hpp>
-//#include <math.h>
+#include <stdio.h>
 #include "mcmc.hpp"
 #include "panel.hpp"
 #include "param.hpp"
-//#include<stdlib.h>     /* strtol, strtod */
-//#include<climits> // INT_MAX
-
 
 using namespace std;
-//#include "param.hpp"
-
-
 
 int main(){
 
-    Input input( "tests/labStrains_first100_PLAF.txt",
-           "tests/PG0390_first100ref.txt",
-           "tests/PG0390_first100alt.txt",
+    remove( "tmp.llk" );
+    remove( "tmp.prop" );
+    remove( "tmp.hap" );
+
+    //Input input( "tests/labStrains_first100_PLAF.txt",
+           //"tests/PG0390_first100ref.txt",
+           //"tests/PG0390_first100alt.txt",
+           //(size_t)5);
+    //Input input( "tests/labStrains_first100_PLAF.txt",
+           //"tests/PG0390_first100ref.txt",
+           //"tests/PG0390_first100alt.txt",
+           //(size_t)2);
+
+    //Panel panel("tests/lab_first100_Panel.txt");
+
+    Input input( "tests/labStrains_samples_PLAF.txt",
+           "tests/PG0394_ref.txt",
+           "tests/PG0394_alt.txt",
+           //"tests/PG0393_ref.txt",
+           //"tests/PG0393_alt.txt",
+           //"tests/PG0390_ref.txt",
+           //"tests/PG0390_alt.txt",
            (size_t)5);
+    Panel panel("tests/clonalPanel.csv");
 
-    Panel panel("tests/lab_first100_Panel.txt");
 
-    // Initilize mcmc
-    McmcMachinery McmcMachinerys(&input, &panel);
-    McmcMachinerys.runMcmcChain();
+    McmcSample * mcmcSample = new McmcSample();
 
+    bool repeat = true;
+    size_t repeat_counter = 0;
+    while ( repeat && repeat_counter < 100 ){
+        mcmcSample->clear();
+        cout << "repeat_counter = "<< repeat_counter<<endl;
+        // Initilize mcmc
+        McmcMachinery McmcMachinerys(&input, &panel, mcmcSample, 1000, 5, repeat_counter);
+        McmcMachinerys.runMcmcChain();
+
+        if ( mcmcSample->llkRange() < 300.0 ){
+            repeat = false;
+        }
+            for ( size_t ii = 0; ii < mcmcSample->proportion.back().size(); ii++){
+                cout << setw(10) << mcmcSample->proportion.back()[ii];
+                cout << ((ii < (mcmcSample->proportion.back().size()-1)) ? "\t" : "\n") ;
+            }
+        repeat_counter++;
+    }
     // Export log
+    mcmcSample->output();
 
-    cout << "place holder!" << std::endl;
+    delete mcmcSample;
 }

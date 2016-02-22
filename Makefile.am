@@ -3,15 +3,13 @@ EXTRA_DIST = bootstrap
 COMPILEDATE = $(shell date -u | sed -e "s/ /-/g")
 distdir = $(PACKAGE)-$(VERSION)
 
-bin_PROGRAMS = pfDeconv
+bin_PROGRAMS = pfDeconv pfDeconv_dbg
 
 TESTS = unit_tests
 check_PROGRAMS = unit_tests pfDeconv_dbg
 PROG = PFDECONV
 
-common_flags = -O3 -std=c++0x -Isrc/ -DPFDECONVVERSION=\"${PFDECONVVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
-
-#common_flags = -O3 -std=c++0x -Isrc/
+common_flags = -O3 -std=c++0x -Isrc/ -Isrc/codeCogs/ -DPFDECONVVERSION=\"${PFDECONVVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
 
 common_src = src/fastfunc.cpp \
 			 src/random_generator.cpp \
@@ -32,7 +30,8 @@ pfDeconv_dbg_CXXFLAGS = -g $(common_flags)
 unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_panel.cpp \
 					 tests/unittest/test_param.cpp \
-					 tests/unittest/test_runner.cpp
+					 tests/unittest/test_runner.cpp \
+					 tests/unittest/test_updatePairHap.cpp
 
 unit_tests_CXXFLAGS = $(pfDeconv_CXXFLAGS)
 unit_tests_LDADD          = -lcppunit -ldl

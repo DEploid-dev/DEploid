@@ -55,3 +55,11 @@ unit_tests.trs
 
 # doxygen
 html/
+
+tmp.hap
+tmp.llk
+tmp.prop
+
+src/haplotype-sampling.cpp
+src/haplotype-sampling.r
+src/jacob

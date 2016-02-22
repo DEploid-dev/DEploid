@@ -27,8 +27,9 @@
 #include <random>
 #include "updateHap.hpp"
 
-McmcMachinery::McmcMachinery(Input* input, Panel *panel,
+McmcMachinery::McmcMachinery(Input* input, Panel *panel, McmcSample *mcmcSample,
                        size_t nSample, size_t McmcMachineryRate, size_t seed ){ // initialiseMCMCmachinery
+    //this->seed_ = (unsigned)(time(0));
     this->seed_ = seed;
     this->rg_ = new MersenneTwister(this->seed_);
     this->burnIn_ = 0.5;
@@ -45,6 +46,7 @@ McmcMachinery::McmcMachinery(Input* input, Panel *panel,
 
     this->input_ = input;
     this->panel_ = panel;
+    this->mcmcSample_ = mcmcSample;
     this->kStrain_ = this->input_->kStrain_;
     this->nLoci_ = this->input_->plaf.size();
     this->initializeMcmcChain( );
@@ -81,7 +83,9 @@ void McmcMachinery::initializeMcmcChain( ){
     this->initializeProp();
 
     this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
+
     this->currentLLks_ = calcLLKs( this->input_->refCount, this->input_->altCount, this->currentExpectedWsaf_ );
+    dout << "Initialization finished." << endl;
 }
 
 
@@ -106,9 +110,8 @@ double McmcMachinery::rBernoulli(double p){
 
 void McmcMachinery::initializeExpectedWsaf(){
     assert( this->currentExpectedWsaf_.size() == 0);
-    this->currentExpectedWsaf_ = vector <double> (this->input_->plaf.size(), 0.0);
+    this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
     assert( this->currentExpectedWsaf_.size() == this->nLoci_ );
-    this->calcExpectedWsaf( this->currentProp_ );
 }
 
 
@@ -159,19 +162,26 @@ vector <double> McmcMachinery::titre2prop(vector <double> & tmpTitre){
     vector <double> tmpProp;
     for ( auto const& value: tmpExpTitre ){
         tmpProp.push_back( value/tmpSum );
+        assert (tmpProp.back() > 0);
+        assert (tmpProp.back() < 1);
+        dout << tmpProp.back() << " ";
     }
+    dout<<endl;
     return tmpProp;
 }
 
 void McmcMachinery::runMcmcChain( ){
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++){
+        dout << "Run mcmcChain at iteration: " << this->currentMcmcIteration_ << endl;
         this->sampleMcmcEvent();
     }
+    this->mcmcSample_->hap = this->currentHap_;
 }
 
 
 void McmcMachinery::sampleMcmcEvent( ){
     this->eventInt_ = this->rg_->sampleInt(3);
+    dout  << " current event = " << this->eventInt_<<endl;
     if ( this->eventInt_ == 0 ){
         this->updateProportion();
     } else if ( this->eventInt_ == 1 ){
@@ -189,15 +199,15 @@ void McmcMachinery::sampleMcmcEvent( ){
 
 
 vector <double> McmcMachinery::calcExpectedWsaf( vector <double> &proportion ){
+    //assert ( sumOfVec(proportion) == 1.0); // this fails ...
     vector <double> expectedWsaf (this->nLoci_, 0.0);
     for ( size_t i = 0; i < currentHap_.size(); i++ ){
         assert( kStrain_ == currentHap_[i].size() );
-        //double tmp = 0.0;
         for ( size_t k = 0; k < kStrain_; k++){
             expectedWsaf[i] += currentHap_[i][k] * proportion[k];
         }
-        //cout << tmp << endl;
-        //expectedWsaf[i] = tmp;
+        assert ( expectedWsaf[i] >= 0 );
+        //assert ( expectedWsaf[i] <= 1.0 );
     }
     return expectedWsaf;
 }
@@ -205,15 +215,20 @@ vector <double> McmcMachinery::calcExpectedWsaf( vector <double> &proportion ){
 
 void McmcMachinery::recordMcmcMachinery(){
     dout << "Record mcmc sample " <<endl;
+    this->mcmcSample_->proportion.push_back(this->currentProp_);
+
+    this->mcmcSample_->sumLLKs.push_back(sumOfVec(this->currentLLks_));
 }
 
 
 void McmcMachinery::updateProportion(){
+    dout << "Attempt of updating proportion "<<endl;
     if ( this->kStrain_ < 2 ) return;
 
     // calculate dt
     vector <double> tmpTitre = calcTmpTitre();
     vector <double> tmpProp = titre2prop(tmpTitre);
+    //(void)normalizeBySum(tmpProp);
     if ( minOfVec(tmpProp) < 0 || maxOfVec(tmpProp) > 1 ) return;
 
     vector <double> tmpExpecedWsaf = calcExpectedWsaf(tmpProp);
@@ -231,7 +246,7 @@ void McmcMachinery::updateProportion(){
     this->currentLLks_ = tmpLLKs;
     this->currentLogPriorTitre_ = tmpLogPriorTitre;
     this->currentTitre_ = tmpTitre;
-
+    this->currentProp_ = tmpProp;
 }
 
 double McmcMachinery::deltaLLKs ( vector <double> &newLLKs ){
@@ -261,10 +276,25 @@ void McmcMachinery::updateSingleHap(){
                               this->currentProp_, this->currentHap_, this->rg_, this->panel_);
 
     dout << "update Single Hap "<<endl;
+    for ( size_t i = 0 ; i < this->nLoci_; i++ ){
+        this->currentHap_[i][updating.strainIndex_] = updating.hap_[i];
+    }
+    this->currentLLks_ = updating.newLLK;
+    this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
 
-
 void McmcMachinery::updatePairHaps(){
+    UpdatePairHap updating( this->input_->refCount,
+                            this->input_->altCount,
+                            this->currentExpectedWsaf_,
+                            this->currentProp_, this->currentHap_, this->rg_, this->panel_);
     dout << "update Pair Hap "<<endl;
+
+    for ( size_t i = 0 ; i < this->nLoci_; i++ ){
+        this->currentHap_[i][updating.strainIndex1_] = updating.hap1_[i];
+        this->currentHap_[i][updating.strainIndex2_] = updating.hap2_[i];
+    }
+    this->currentLLks_ = updating.newLLK;
+    this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }

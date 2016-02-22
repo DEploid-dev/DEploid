@@ -24,7 +24,6 @@
 #include <vector>
 #include <iostream>
 #include "mersenne_twister.hpp"
-//#include "logbeta.h"
 
 #ifndef NDEBUG
 #define dout std::cout
@@ -106,9 +105,9 @@ vector <T> vecProd ( vector<T> &vecA, vector<T> &vecB ){
 
 vector <double> computeCdf ( vector <double> & dist );
 double sumOfVec( vector <double>& array );
+double sumOfMat( vector <vector <double> > & matrix );
 void normalizeBySum ( vector <double> & array );
-vector <size_t> sampleNoReplace( vector <double> proportion, MersenneTwister* rg, size_t nSample = 1);
-size_t sampleIndexGivenProp ( vector <double> proportion, MersenneTwister* rg );
+void normalizeBySumMat ( vector <vector <double> > & matrix );
 vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf );
 double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01, double fac=100 ) ;
 
