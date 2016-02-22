@@ -47,10 +47,10 @@ int main(){
     //Panel panel("tests/lab_first100_Panel.txt");
 
     Input input( "tests/labStrains_samples_PLAF.txt",
-           "tests/PG0394_ref.txt",
-           "tests/PG0394_alt.txt",
-           //"tests/PG0393_ref.txt",
-           //"tests/PG0393_alt.txt",
+           //"tests/PG0394_ref.txt",
+           //"tests/PG0394_alt.txt",
+           "tests/PG0393_ref.txt",
+           "tests/PG0393_alt.txt",
            //"tests/PG0390_ref.txt",
            //"tests/PG0390_alt.txt",
            (size_t)5);
@@ -68,13 +68,10 @@ int main(){
         McmcMachinery McmcMachinerys(&input, &panel, mcmcSample, 1000, 5, repeat_counter);
         McmcMachinerys.runMcmcChain();
 
-        if ( mcmcSample->llkRange() < 300.0 ){
+        //if ( mcmcSample->llkRange() < 1000.0 ){
             repeat = false;
-        }
-            for ( size_t ii = 0; ii < mcmcSample->proportion.back().size(); ii++){
-                cout << setw(10) << mcmcSample->proportion.back()[ii];
-                cout << ((ii < (mcmcSample->proportion.back().size()-1)) ? "\t" : "\n") ;
-            }
+        //}
+
         repeat_counter++;
     }
     // Export log

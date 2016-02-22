@@ -54,6 +54,7 @@ class McmcSample {
     void clear(){
         proportion.clear();
         sumLLKs.clear();
+        moves.clear();
     }
 
     void output(){
@@ -69,7 +70,7 @@ class McmcSample {
 
         ofstream llk_file( "tmp.llk", ios::out | ios::app | ios::binary );
         for ( size_t i = 0; i < this->sumLLKs.size(); i++){
-            llk_file << this->sumLLKs[i] << endl;
+            llk_file << this->moves[i] << "\t" << this->sumLLKs[i] << endl;
         }
         llk_file.close();
 
@@ -83,11 +84,12 @@ class McmcSample {
         hap_file.close();
     }
 
-    vector< vector <double> > proportion;
 
   private:
+    vector < int > moves;
+    vector < vector <double> > proportion;
     vector < vector <double> > hap;
-    vector< double > sumLLKs;
+    vector < double > sumLLKs;
 };
 
 
@@ -162,33 +164,10 @@ class McmcMachinery {
      vector <double> calcTmpTitre();
      double deltaLLKs ( vector <double> &newLLKs );
 
-
     void updateSingleHap();
     void updatePairHaps();
 
 };
-
-
-//class BasicData{
-    //vector <double> chrom;
-    //vector <double> pos;
-    //vector <double> value;
-//};
-
-
-//class Falciparum{
-    //double prop;
-    //vector <unsigned short> hap;
-//};
-
-//class MixedFalciparum{
-    //vector <Falciparum> falciparums;
-
-//};
-
-//class McmcEvent{
-
-//};
 
 #endif
 

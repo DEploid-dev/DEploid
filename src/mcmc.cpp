@@ -29,8 +29,8 @@
 
 McmcMachinery::McmcMachinery(Input* input, Panel *panel, McmcSample *mcmcSample,
                        size_t nSample, size_t McmcMachineryRate, size_t seed ){ // initialiseMCMCmachinery
-    //this->seed_ = (unsigned)(time(0));
-    this->seed_ = seed;
+    this->seed_ = (unsigned)(time(0));
+    //this->seed_ = seed;
     this->rg_ = new MersenneTwister(this->seed_);
     this->burnIn_ = 0.5;
     this->calcMaxIteration(nSample, McmcMachineryRate);
@@ -69,7 +69,7 @@ McmcMachinery::~McmcMachinery(){
 
 void McmcMachinery::calcMaxIteration( size_t nSample, size_t McmcMachineryRate ){
     this->McmcMachineryRate_ = McmcMachineryRate;
-    this->maxIteration_ = (size_t)ceil((double)nSample*(double)McmcMachineryRate/(1.0-this->burnIn_));
+    this->maxIteration_ = (size_t)ceil((double)nSample*(double)McmcMachineryRate/(1.0-this->burnIn_))+1;
     this->mcmcThresh_ = (size_t)ceil((double)nSample*(double)McmcMachineryRate*this->burnIn_/(1.0-this->burnIn_));
 }
 
@@ -176,6 +176,11 @@ void McmcMachinery::runMcmcChain( ){
         this->sampleMcmcEvent();
     }
     this->mcmcSample_->hap = this->currentHap_;
+
+    for ( size_t ii = 0; ii < this->mcmcSample_->proportion.back().size(); ii++){
+        cout << setw(10) << this->mcmcSample_->proportion.back()[ii];
+        cout << ((ii < (this->mcmcSample_->proportion.back().size()-1)) ? "\t" : "\n") ;
+    }
 }
 
 
@@ -216,8 +221,8 @@ vector <double> McmcMachinery::calcExpectedWsaf( vector <double> &proportion ){
 void McmcMachinery::recordMcmcMachinery(){
     dout << "Record mcmc sample " <<endl;
     this->mcmcSample_->proportion.push_back(this->currentProp_);
-
     this->mcmcSample_->sumLLKs.push_back(sumOfVec(this->currentLLks_));
+    this->mcmcSample_->moves.push_back(this->eventInt_);
 }
 
 
@@ -248,6 +253,7 @@ void McmcMachinery::updateProportion(){
     this->currentTitre_ = tmpTitre;
     this->currentProp_ = tmpProp;
 }
+
 
 double McmcMachinery::deltaLLKs ( vector <double> &newLLKs ){
     //double tmp = 0.0;
