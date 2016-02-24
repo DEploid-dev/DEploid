@@ -34,18 +34,27 @@ class Panel{
  friend class UpdatePairHap;
  friend class UpdateHap;
   private:
-    // Member
+    // Members
     // content is a matrix of n.loci by n.strains, i.e. content length is n.loci
     vector < vector < double > > content_;
     vector < double > recombProbs_;
     size_t nLoci_;
     size_t nPanel_;
+    vector <string> chrom_;
+    int chromInex_;
+    vector < vector < double> > position_;
+    vector < double > tmpPosition_;
+
+    // Methods
+    void extractChrom( string & tmp_str );
+    void extractPOS ( string & tmp_str );
+    void computeRecombProbs( double averageCentimorganDistance = 15000.0, double Ne = 10.0);
 
   public:
     Panel(const char inchar[]);
     ~Panel(){};
 
-    // Method
+    // Methods
     void print();
 };
 
