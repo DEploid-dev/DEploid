@@ -25,6 +25,7 @@
 #include <stdexcept>      // std::invalid_argument
 #include <iostream>
 #include <cassert>
+#include <math.h>
 #include "panel.hpp"
 
 Panel::Panel(const char inchar[]){
@@ -66,12 +67,12 @@ Panel::Panel(const char inchar[]){
     in_file.close();
 
     this->position_.push_back( this->tmpPosition_ );
-    //this->print();
 
     this->nLoci_ = this->content_.size();
     this->nPanel_ = this->content_.back().size();
     //recombProbs_ = vector <double> (this->nLoci_, 0.0);
-    recombProbs_ = vector <double> (this->nLoci_, 0.01); // use constant recombination probability
+    //recombProbs_ = vector <double> (this->nLoci_, 0.01); // use constant recombination probability
+    this->computeRecombProbs();
 
     assert ( chromInex_ > -1 );
 }
@@ -102,8 +103,6 @@ void Panel::extractPOS( string & tmp_str ){
 }
 
 
-
-
 void Panel::print(){
     for ( size_t i = 0; i < this->content_.size(); i++){
         for (size_t j = 0; j < this->content_[i].size(); j++){
@@ -112,3 +111,22 @@ void Panel::print(){
         cout<<endl;
     }
 }
+
+
+void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne){
+    assert(recombProbs_.size() == 0 );
+    double averageMorganDistance = averageCentimorganDistance * 100;
+    double geneticDistance;
+    double rho;
+    for ( size_t i = 0; i < this->position_.size(); i++){
+        for ( size_t j = 1; j < this->position_[i].size(); j++){
+            geneticDistance = (this->position_[i][j] - this->position_[i][j-1])/averageMorganDistance ;
+            rho = geneticDistance * 2 * Ne;
+            this->recombProbs_.push_back( 1.0 - exp(-rho) );
+        }
+        this->recombProbs_.push_back(1.0);
+    }
+    assert(recombProbs_.size() == this->nLoci_ );
+}
+
+
