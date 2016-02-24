@@ -24,9 +24,12 @@
 #include <fstream>
 #include <stdexcept>      // std::invalid_argument
 #include <iostream>
+#include <cassert>
 #include "panel.hpp"
 
 Panel::Panel(const char inchar[]){
+    chromInex_ = -1;
+
     //cout << "Build Panel" << endl;
     ifstream in_file( inchar );
     string tmp_line;
@@ -43,9 +46,13 @@ Panel::Panel(const char inchar[]){
                 string tmp_str = tmp_line.substr( field_start, field_end - field_start );
 
                 if ( field_index > 1 ){
-                    //cout << strtod(tmp_str.c_str(), NULL) <<" ";
                     contentRow.push_back( strtod(tmp_str.c_str(), NULL) );
+                } else if ( field_index == 0 ){
+                    this->extractChrom( tmp_str );
+                } else if ( field_index == 1 ){
+                    this->extractPOS ( tmp_str );
                 }
+
                 field_start = field_end+1;
                 field_index++;
             }
@@ -57,13 +64,44 @@ Panel::Panel(const char inchar[]){
 
     }
     in_file.close();
+
+    this->position_.push_back( this->tmpPosition_ );
     //this->print();
 
     this->nLoci_ = this->content_.size();
     this->nPanel_ = this->content_.back().size();
     //recombProbs_ = vector <double> (this->nLoci_, 0.0);
     recombProbs_ = vector <double> (this->nLoci_, 0.01); // use constant recombination probability
+
+    assert ( chromInex_ > -1 );
 }
+
+
+void Panel::extractChrom( string & tmp_str ){
+    if ( chromInex_ >= 0 ){
+        if ( tmp_str != this->chrom_.back() ){
+            chromInex_++;
+            // save current positions
+            this->position_.push_back(this->tmpPosition_);
+
+            // start new chrom
+            this->tmpPosition_.clear();
+            this->chrom_.push_back(tmp_str);
+        }
+    } else {
+        chromInex_++;
+        assert (this->chrom_.size() == 0);
+        this->chrom_.push_back( tmp_str );
+        assert ( this->tmpPosition_.size() == 0 );
+        assert ( this->position_.size() == 0);
+    }
+}
+
+void Panel::extractPOS( string & tmp_str ){
+    this->tmpPosition_.push_back(strtod(tmp_str.c_str(), NULL));
+}
+
+
 
 
 void Panel::print(){

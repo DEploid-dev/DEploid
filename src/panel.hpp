@@ -40,6 +40,14 @@ class Panel{
     vector < double > recombProbs_;
     size_t nLoci_;
     size_t nPanel_;
+    vector <string> chrom_;
+    int chromInex_;
+    vector < vector < double> > position_;
+    vector < double > tmpPosition_;
+
+    void extractChrom( string & tmp_str );
+    void extractPOS ( string & tmp_str );
+
 
   public:
     Panel(const char inchar[]);
