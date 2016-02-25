@@ -25,57 +25,70 @@
 #include <stdio.h>
 #include "mcmc.hpp"
 #include "panel.hpp"
-#include "param.hpp"
+#include "pfDeconvIO.hpp"
 
 using namespace std;
 
-int main(){
+int main( int argc, char *argv[] ){
+    try {
 
-    remove( "tmp.llk" );
-    remove( "tmp.prop" );
-    remove( "tmp.hap" );
+        //remove( "tmp.llk" );
+        //remove( "tmp.prop" );
+        //remove( "tmp.hap" );
 
-    //Input input( "tests/labStrains_first100_PLAF.txt",
-           //"tests/PG0390_first100ref.txt",
-           //"tests/PG0390_first100alt.txt",
-           //(size_t)5);
-    //Input input( "tests/labStrains_first100_PLAF.txt",
-           //"tests/PG0390_first100ref.txt",
-           //"tests/PG0390_first100alt.txt",
-           //(size_t)2);
+        ////Input input( "tests/labStrains_first100_PLAF.txt",
+               ////"tests/PG0390_first100ref.txt",
+               ////"tests/PG0390_first100alt.txt",
+               ////(size_t)5);
+        ////Input input( "tests/labStrains_first100_PLAF.txt",
+               ////"tests/PG0390_first100ref.txt",
+               ////"tests/PG0390_first100alt.txt",
+               ////(size_t)2);
 
-    //Panel panel("tests/lab_first100_Panel.txt");
+        ////Panel panel("tests/lab_first100_Panel.txt");
 
-    Input input( "tests/labStrains_samples_PLAF.txt",
-           //"tests/PG0394_ref.txt",
-           //"tests/PG0394_alt.txt",
-           "tests/PG0393_ref.txt",
-           "tests/PG0393_alt.txt",
-           //"tests/PG0390_ref.txt",
-           //"tests/PG0390_alt.txt",
-           (size_t)5);
-    Panel panel("tests/clonalPanel.csv");
+        //Input input( "tests/labStrains_samples_PLAF.txt",
+               //"tests/PG0394_ref.txt",
+               //"tests/PG0394_alt.txt",
+               ////"tests/PG0393_ref.txt",
+               ////"tests/PG0393_alt.txt",
+               ////"tests/PG0390_ref.txt",
+               ////"tests/PG0390_alt.txt",
+               //(size_t)5);
+        //Panel panel("tests/clonalPanel.csv");
 
+        PfDeconvIO pfDeconvIO( argc, argv );
+        if ( pfDeconvIO.help() ){
+            pfDeconvIO.printHelp();
+            return EXIT_SUCCESS;
+        }
 
-    McmcSample * mcmcSample = new McmcSample();
+        Panel panel(pfDeconvIO.panelFileName_.c_str());
 
-    bool repeat = true;
-    size_t repeat_counter = 0;
-    while ( repeat && repeat_counter < 100 ){
-        mcmcSample->clear();
-        cout << "repeat_counter = "<< repeat_counter<<endl;
-        // Initilize mcmc
-        McmcMachinery McmcMachinerys(&input, &panel, mcmcSample, 1000, 5, repeat_counter);
-        McmcMachinerys.runMcmcChain();
+        McmcSample * mcmcSample = new McmcSample();
 
-        //if ( mcmcSample->llkRange() < 1000.0 ){
-            repeat = false;
-        //}
+        bool repeat = true;
+        size_t repeat_counter = 0;
+        while ( repeat && repeat_counter < 100 ){
+            mcmcSample->clear();
+            cout << "repeat_counter = "<< repeat_counter<<endl;
+            // Initilize mcmc
+            McmcMachinery McmcMachinerys(&pfDeconvIO, &panel, mcmcSample, 1000, 5 );
+            McmcMachinerys.runMcmcChain();
 
-        repeat_counter++;
+            //if ( mcmcSample->llkRange() < 1000.0 ){
+                repeat = false;
+            //}
+
+            repeat_counter++;
+        }
+        // Export log
+        mcmcSample->output();
+
+        delete mcmcSample;
     }
-    // Export log
-    mcmcSample->output();
-
-    delete mcmcSample;
+    catch (const exception &e) {
+      std::cerr << "Error: " << e.what() << std::endl;
+      return EXIT_FAILURE;
+    }
 }

@@ -1,19 +1,19 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "../../src/param.hpp"
+#include "../../src/pfDeconvIO.hpp"
 
-class TestInput : public CppUnit::TestCase {
+class TestIO : public CppUnit::TestCase {
 
-    CPPUNIT_TEST_SUITE( TestInput );
+    CPPUNIT_TEST_SUITE( TestIO );
     CPPUNIT_TEST( testElement );
     CPPUNIT_TEST_SUITE_END();
 
   private:
-    Input* input_;
+    PfDeconvIO* input_;
 
   public:
     void setUp() {
-        this->input_ = new Input( "tests/labStrains_first100_PLAF.txt",
+        this->input_ = new PfDeconvIO( "tests/labStrains_first100_PLAF.txt",
                                   "tests/PG0390_first100ref.txt",
                                   "tests/PG0390_first100alt.txt",
                                   (size_t)5);
@@ -55,4 +55,4 @@ class TestInput : public CppUnit::TestCase {
     }
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION( TestInput );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestIO );

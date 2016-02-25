@@ -37,6 +37,7 @@ UpdateHap::UpdateHap( vector <double> &refCount,
     this->missCopyProb = 0.01;
     this->kStrain_ = proportion.size();
     this->nLoci_ = expectedWsaf.size();
+    assert( this->nLoci_ == refCount.size() );
     this->rg_ = rg;
 }
 
@@ -333,7 +334,7 @@ void UpdatePairHap:: buildEmission(){
                     //exp( tmp.01.1-tmp.max ) + exp( tmp.01.2-tmp.max ) + exp( tmp.01.3-tmp.max ) + exp( tmp.01.4-tmp.max ),
                     //exp( tmp.11.1-tmp.max ) + exp( tmp.11.2-tmp.max ) + exp( tmp.11.3-tmp.max ) + exp( tmp.11.4-tmp.max ))
 
-    assert(emission_.size() == 0 );
+    assert(this->emission_.size() == 0 );
     for ( size_t i = 0; i < this->nLoci_; i++){
         vector <double> tmp ({tmp_00_1[i], tmp_00_2[i], tmp_00_3[i], tmp_00_4[i],
                               tmp_01_1[i], tmp_01_2[i], tmp_01_3[i], tmp_01_4[i],
@@ -346,6 +347,7 @@ void UpdatePairHap:: buildEmission(){
                                    exp(tmp_11_1[i] - tmaxTmp) + exp(tmp_11_2[i] - tmaxTmp) + exp(tmp_11_3[i] - tmaxTmp) + exp(tmp_11_4[i] - tmaxTmp)});
         this->emission_.push_back(emissRow);
     }
+    assert(this->emission_.size() == this->nLoci_ );
 }
 
 
@@ -387,7 +389,6 @@ void UpdatePairHap:: calcFwdProbs(){
         }
         fwd1st.push_back(fwd1stRow);
     }
-
     (void)normalizeBySumMat(fwd1st);
     this->fwdProbs_.push_back(fwd1st);
 

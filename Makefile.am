@@ -16,7 +16,7 @@ common_src = src/fastfunc.cpp \
 			 src/mersenne_twister.cpp \
 			 src/mcmc.cpp \
 			 src/panel.cpp \
-			 src/param.cpp \
+			 src/pfDeconvIO.cpp \
 			 src/utility.cpp \
 			 src/updateHap.cpp
 
@@ -29,7 +29,7 @@ pfDeconv_dbg_CXXFLAGS = -g $(common_flags)
 
 unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_panel.cpp \
-					 tests/unittest/test_param.cpp \
+					 tests/unittest/test_pfDeconvID.cpp \
 					 tests/unittest/test_runner.cpp \
 					 tests/unittest/test_updatePairHap.cpp
 

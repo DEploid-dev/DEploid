@@ -26,6 +26,23 @@ function test_pfDeconv {
   echo " done."
 }
 
-echo "Testing Initial Tree"
- test_pfDeconv || exit 1
+echo "Test no input"
+./pfDeconv_dbg > /dev/null
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "Executing \"./pfDeconv_dbg \" failed."
+  echo "Debug Call: make -mj2 pfDeconv_dbg && ./pfDeconv_dbg | less"
+  exit 1
+fi
+
+# Test for memory leaks
+valgrind --error-exitcode=1 --leak-check=full -q ./pfDeconv > /dev/null
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "Valgrind check of \"./pfDeconv \" failed."
+  exit 1
+fi
+
+echo "Testing examples"
+ test_pfDeconv -ref "tests/PG0390_first100ref.txt" -alt "tests/PG0390_first100alt.txt" -plaf "tests/labStrains_first100_PLAF.txt" -panel "tests/lab_first100_Panel.txt" -o tmp1 || exit 1
 echo ""
