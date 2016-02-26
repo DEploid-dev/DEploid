@@ -23,6 +23,7 @@
 
 #include "pfDeconvIO.hpp"
 #include <cassert>       // assert
+#include <iomanip>      // std::setw
 
 PfDeconvIO::PfDeconvIO( const char plafFileName[],
               const char refFileName[],
@@ -161,6 +162,24 @@ void PfDeconvIO::readFileLines(const char inchar[], vector <double> & out_vec){
 
 
 void PfDeconvIO::printHelp(){
-    cout << " print help "<< endl;
-     //pfDeconv -ref tests/PG0390_first100ref.txt -alt tests/PG0390_first100alt.txt -plaf tests/labStrains_first100_PLAF.txt -panel tests/lab_first100_Panel.txt -o tmp1
+    cout << endl
+         << "pfDeconv " << VERSION
+         << endl
+         << endl;
+    cout << "Usage:"
+         << endl;
+    cout << setw(20) << "-h or -help"         << "  --  " << "Help. List the following content."<<endl;
+    cout << setw(20) << "-ref STR"            << "  --  " << "Path of reference allele count file."<<endl;
+    cout << setw(20) << "-alt STR"            << "  --  " << "Path of alternative allele count file."<<endl;
+    cout << setw(20) << "-plaf STR"           << "  --  " << "Path of population level allele frequency file."<<endl;
+    cout << setw(20) << "-panel STR"          << "  --  " << "Path of reference panel."<<endl;
+    cout << setw(20) << "-o STR"              << "  --  " << "Specify the file name prefix of the output."<<endl;
+    cout << setw(20) << "-p INT"              << "  --  " << "Out put precision (default value 8)."<<endl;
+    cout << setw(20) << "-k INT"              << "  --  " << "Number of strain (default value 5)."<<endl;
+    cout << setw(20) << "-seed INT"           << "  --  " << "Random seed."<<endl
+         << endl;
+    cout << "Examples:"
+         << endl
+         << endl;
+    cout << "pfDeconv -ref tests/PG0390_first100ref.txt -alt tests/PG0390_first100alt.txt -plaf tests/labStrains_first100_PLAF.txt -panel tests/lab_first100_Panel.txt -o tmp1" << endl;
 }
