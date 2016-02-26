@@ -29,6 +29,7 @@
 #include <iostream> // std::cout
 #include <sstream>      // std::stringstream
 #include "global.h"
+#include "exceptions.hpp"
 
 #ifndef PARAM
 #define PARAM
@@ -82,6 +83,7 @@ class PfDeconvIO{
 
     void parse ();
     void checkInput();
+    void finalize();
 
     void readNextStringto( string &readto );
     void readFileLines(const char inchar[], vector <double> & out_vec);
@@ -90,7 +92,8 @@ class PfDeconvIO{
     T readNextInput() {
         string tmpFlag = *argv_i;
         ++argv_i;
-        if (argv_i == argv_.end() || (*argv_i)[0] == '-' ) throw std::invalid_argument(std::string("Not enough parameters when parsing options: ") + tmpFlag);
+        if (argv_i == argv_.end() || (*argv_i)[0] == '-' ) {
+            throw NotEnoughArg (tmpFlag);}
 
         return convert<T>(*argv_i);
     }
@@ -101,7 +104,7 @@ class PfDeconvIO{
         std::stringstream ss(arg);
         ss >> value;
         if (ss.fail()) {
-            throw std::invalid_argument(std::string("Failed to parse option: ") + arg);
+            throw WrongType(arg);
         }
         return value;
     }

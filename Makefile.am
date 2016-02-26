@@ -29,7 +29,7 @@ pfDeconv_dbg_CXXFLAGS = -g $(common_flags)
 
 unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_panel.cpp \
-					 tests/unittest/test_pfDeconvID.cpp \
+					 tests/unittest/test_pfDeconvIO.cpp \
 					 tests/unittest/test_runner.cpp \
 					 tests/unittest/test_updatePairHap.cpp
 

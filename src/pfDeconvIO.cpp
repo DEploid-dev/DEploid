@@ -47,8 +47,15 @@ PfDeconvIO::~PfDeconvIO(){}
 
 PfDeconvIO::PfDeconvIO(int argc, char *argv[]) {
     argv_ = std::vector<std::string>(argv + 1, argv + argc);
-    init();
+    this->init();
+    if ( argv_.size() == 0 ) {
+        this->set_help(true);
+        return;
+    }
+
     this->parse();
+    this->checkInput();
+    this->finalize();
 }
 
 
@@ -63,11 +70,16 @@ void PfDeconvIO::init() {
 }
 
 
+void PfDeconvIO::finalize(){
+    (void)readFileLines( refFileName_.c_str(), this->refCount_);
+    (void)readFileLines( altFileName_.c_str(), this->altCount_);
+    (void)readFileLines( plafFileName_.c_str(), this->plaf_);
+    this->nLoci_ = refCount_.size();
+    assert( this->nLoci_ == this->plaf_.size() );
+    assert( this->altCount_.size() == this->nLoci_ );
+}
+
 void PfDeconvIO::parse (){
-    if ( argv_.size() == 0 ) {
-        this->set_help(true);
-        return;
-    }
 
     do {
         if (*argv_i == "-ref") {
@@ -90,37 +102,29 @@ void PfDeconvIO::parse (){
         } else if (*argv_i == "-h" || *argv_i == "-help"){
             this->set_help(true);
         } else {
-            throw std::invalid_argument(std::string("unknown/unexpected argument: ") + *argv_i);
+            throw ( UnknowArg((*argv_i)) );
         }
     } while ( ++argv_i != argv_.end());
-
-    (void)checkInput();
-
-    (void)readFileLines( refFileName_.c_str(), this->refCount_);
-    (void)readFileLines( altFileName_.c_str(), this->altCount_);
-    (void)readFileLines( plafFileName_.c_str(), this->plaf_);
-    this->nLoci_ = refCount_.size();
-    assert( this->nLoci_ == this->plaf_.size() );
-    assert( this->altCount_.size() == this->nLoci_ );
 }
 
 
 void PfDeconvIO::checkInput(){
     if ( this->refFileName_.size() == 0 )
-        throw std::invalid_argument ( "Ref count file path missing!" );
+        throw FileNameMissing ( "Ref count" );
     if ( this->altFileName_.size() == 0 )
-        throw std::invalid_argument ( "Alt count file path missing!" );
+        throw FileNameMissing ( "Alt count" );
     if ( this->plafFileName_.size() == 0 )
-        throw std::invalid_argument ( "PLAF file path missing!" );
+        throw FileNameMissing ( "PLAF" );
     if ( this->panelFileName_.size() == 0 )
-        throw std::invalid_argument ( "Reference panel file path missing!" );
+        throw FileNameMissing ( "Reference panel" );
 }
 
 
 void PfDeconvIO::readNextStringto( string &readto ){
     string tmpFlag = *argv_i;
     ++argv_i;
-    if (argv_i == argv_.end() || (*argv_i)[0] == '-' ) throw std::invalid_argument(std::string("Not enough parameters when parsing options: ") + tmpFlag);
+    if (argv_i == argv_.end() || (*argv_i)[0] == '-' )
+        throw NotEnoughArg(tmpFlag);
     readto = *argv_i;
 }
 
@@ -149,7 +153,7 @@ void PfDeconvIO::readFileLines(const char inchar[], vector <double> & out_vec){
           getline ( in_file, tmp_line );
       }
     } else {
-        throw std::invalid_argument("Invalid input file. " + string (inchar) );
+        throw InvalidInputFile( string (inchar) );
 
     }
     in_file.close();
