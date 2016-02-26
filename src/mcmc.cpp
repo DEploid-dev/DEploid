@@ -27,10 +27,15 @@
 #include <random>
 #include "updateHap.hpp"
 
-McmcMachinery::McmcMachinery(Input* input, Panel *panel, McmcSample *mcmcSample,
-                       size_t nSample, size_t McmcMachineryRate, size_t seed ){ // initialiseMCMCmachinery
-    this->seed_ = (unsigned)(time(0));
-    //this->seed_ = seed;
+McmcMachinery::McmcMachinery(PfDeconvIO* input, Panel *panel, McmcSample *mcmcSample,
+                       size_t nSample, size_t McmcMachineryRate ){ // initialiseMCMCmachinery
+
+    this->input_ = input;
+    this->panel_ = panel;
+    this->mcmcSample_ = mcmcSample;
+
+    this->seed_ = ( this->input_->seed_set_ ) ? this->input_->random_seed_: (unsigned)(time(0));
+
     this->rg_ = new MersenneTwister(this->seed_);
     this->burnIn_ = 0.5;
     this->calcMaxIteration(nSample, McmcMachineryRate);
@@ -44,11 +49,8 @@ McmcMachinery::McmcMachinery(Input* input, Panel *panel, McmcSample *mcmcSample,
     initialTitre_normal_distribution_ = new std::normal_distribution<double>(MN_LOG_TITRE, SD_LOG_TITRE);
     deltaX_normal_distribution_ = new std::normal_distribution<double>(MN_LOG_TITRE, 1.0/PROP_SCALE);
 
-    this->input_ = input;
-    this->panel_ = panel;
-    this->mcmcSample_ = mcmcSample;
     this->kStrain_ = this->input_->kStrain_;
-    this->nLoci_ = this->input_->plaf.size();
+    this->nLoci_ = this->input_->plaf_.size();
     this->initializeMcmcChain( );
 
     //this->normalizeBySum(this->input_->refCount );
@@ -84,15 +86,15 @@ void McmcMachinery::initializeMcmcChain( ){
 
     this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
 
-    this->currentLLks_ = calcLLKs( this->input_->refCount, this->input_->altCount, this->currentExpectedWsaf_ );
+    this->currentLLks_ = calcLLKs( this->input_->refCount_, this->input_->altCount_, this->currentExpectedWsaf_ );
     dout << "Initialization finished." << endl;
 }
 
 
 void McmcMachinery::initializeHap(){
     assert( currentHap_.size() == 0);
-    for ( size_t i = 0; i < this->input_->plaf.size(); i++ ){
-        double currentPlaf = this->input_->plaf[i];
+    for ( size_t i = 0; i < this->input_->plaf_.size(); i++ ){
+        double currentPlaf = this->input_->plaf_[i];
         vector <double> tmpVec;
         for ( size_t k = 0; k < this->kStrain_; k++){
             tmpVec.push_back( this->rBernoulli(currentPlaf) );
@@ -237,7 +239,7 @@ void McmcMachinery::updateProportion(){
     if ( minOfVec(tmpProp) < 0 || maxOfVec(tmpProp) > 1 ) return;
 
     vector <double> tmpExpecedWsaf = calcExpectedWsaf(tmpProp);
-    vector <double> tmpLLKs = calcLLKs (this->input_->refCount, this->input_->altCount, tmpExpecedWsaf);
+    vector <double> tmpLLKs = calcLLKs (this->input_->refCount_, this->input_->altCount_, tmpExpecedWsaf);
     double diffLLKs = this->deltaLLKs(tmpLLKs);
     double tmpLogPriorTitre = calcLogPriorTitre( tmpTitre );
     double priorPropRatio = exp(tmpLogPriorTitre - this->currentLogPriorTitre_ );
@@ -276,8 +278,8 @@ vector <double> McmcMachinery::calcTmpTitre(){
 
 
 void McmcMachinery::updateSingleHap(){
-    UpdateSingleHap updating( this->input_->refCount,
-                              this->input_->altCount,
+    UpdateSingleHap updating( this->input_->refCount_,
+                              this->input_->altCount_,
                               this->currentExpectedWsaf_,
                               this->currentProp_, this->currentHap_, this->rg_, this->panel_);
 
@@ -291,8 +293,8 @@ void McmcMachinery::updateSingleHap(){
 
 
 void McmcMachinery::updatePairHaps(){
-    UpdatePairHap updating( this->input_->refCount,
-                            this->input_->altCount,
+    UpdatePairHap updating( this->input_->refCount_,
+                            this->input_->altCount_,
                             this->currentExpectedWsaf_,
                             this->currentProp_, this->currentHap_, this->rg_, this->panel_);
     dout << "update Pair Hap "<<endl;

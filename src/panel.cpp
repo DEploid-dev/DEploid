@@ -22,11 +22,11 @@
 */
 
 #include <fstream>
-#include <stdexcept>      // std::invalid_argument
 #include <iostream>
 #include <cassert>
 #include <math.h>
 #include "panel.hpp"
+#include "exceptions.hpp"
 
 Panel::Panel(const char inchar[]){
     chromInex_ = -1;
@@ -61,7 +61,7 @@ Panel::Panel(const char inchar[]){
             getline ( in_file, tmp_line );
         }
     } else {
-        throw std::invalid_argument("Invalid input file. " + string (inchar) );
+        throw InvalidInputFile( string (inchar) );
 
     }
     in_file.close();

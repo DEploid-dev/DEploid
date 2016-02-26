@@ -25,16 +25,10 @@
 #include <iostream>
 #include <iomanip>      // std::setw
 #include "mersenne_twister.hpp"
-#include "param.hpp"
+#include "pfDeconvIO.hpp"
 #include "panel.hpp"
 #include "utility.hpp"
-
-#ifndef NDEBUG
-#define dout std::cout
-#else
-#pragma GCC diagnostic ignored "-Wunused-value"
-#define dout 0 && std::cout
-#endif
+#include "global.h"
 
 #ifndef MCMC
 #define MCMC
@@ -70,6 +64,7 @@ class McmcSample {
 
         ofstream llk_file( "tmp.llk", ios::out | ios::app | ios::binary );
         for ( size_t i = 0; i < this->sumLLKs.size(); i++){
+            //if ( this->moves[i] != 2)
             llk_file << this->moves[i] << "\t" << this->sumLLKs[i] << endl;
         }
         llk_file.close();
@@ -95,15 +90,15 @@ class McmcSample {
 
 class McmcMachinery {
   public:
-    McmcMachinery( Input* input, Panel *panel, McmcSample *mcmcSample,
-                size_t nSample = 100, size_t McmcMachineryRate = 5, size_t seed = 88 );
+    McmcMachinery( PfDeconvIO* input, Panel *panel, McmcSample *mcmcSample,
+                size_t nSample = 100, size_t McmcMachineryRate = 5 );
     ~McmcMachinery();
     void runMcmcChain( );
 
   private:
     McmcSample *mcmcSample_;
   /* Variables */
-    Input* input_;
+    PfDeconvIO* input_;
     Panel* panel_;
     size_t kStrain_;
     size_t nLoci_;

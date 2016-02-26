@@ -2,9 +2,14 @@ tmpProp = read.table("tmp.prop", header=F)
 rainbowColorBin = 12
 barplot(t(tmpProp), beside=F, border=NA, col=rainbow(rainbowColorBin), space=0, xlab="Iteration", ylab="Component Freq", main="Components")
 
+#ref = read.table("tests/PG0390_first100ref.txt", header=T)[,3]
+#alt = read.table("tests/PG0390_first100alt.txt", header=T)[,3]
 
-ref = read.table("tests/PG0393_ref.txt", header=T)$V3
-alt = read.table("tests/PG0393_alt.txt", header=T)$V3
+#ref = read.table("tests/PG0393_ref.txt", header=T)$V3
+#alt = read.table("tests/PG0393_alt.txt", header=T)$V3
+
+ref = read.table("tests/PG0394_ref.txt", header=T)$V3
+alt = read.table("tests/PG0394_alt.txt", header=T)$V3
 
 prop = as.numeric(tmpProp[dim(tmpProp)[1],])
 hap = as.matrix(read.table("tmp.hap", header=F))
