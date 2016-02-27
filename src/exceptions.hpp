@@ -22,8 +22,6 @@
 */
 
 
-//#include <string>
-//#include <stdexcept>
 #include <exception>
 
 #ifndef EXCEPTION
