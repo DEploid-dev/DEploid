@@ -29,8 +29,7 @@
 #include <stdio.h>
 
 
-McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample,
-                       size_t nSample, size_t McmcMachineryRate ){ // initialiseMCMCmachinery
+McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample ){ // initialiseMCMCmachinery
 
     this->pfDeconvIO_ = pdfDeconfIO;
     this->panel_ = panel;
@@ -40,7 +39,7 @@ McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *
 
     this->rg_ = new MersenneTwister(this->seed_);
     this->burnIn_ = 0.5;
-    this->calcMaxIteration(nSample, McmcMachineryRate);
+    this->calcMaxIteration( pfDeconvIO_->nMcmcSample_ , pfDeconvIO_->mcmcMachineryRate_ );
 
 
     this->MN_LOG_TITRE = 0.0;
@@ -308,3 +307,6 @@ void McmcMachinery::updatePairHaps(){
     this->currentLLks_ = updating.newLLK;
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
+
+
+

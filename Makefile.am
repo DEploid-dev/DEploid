@@ -17,6 +17,7 @@ common_src = src/fastfunc.cpp \
 			 src/mcmc.cpp \
 			 src/panel.cpp \
 			 src/pfDeconvIO.cpp \
+			 src/pfDeconvIOExport.cpp \
 			 src/utility.cpp \
 			 src/updateHap.cpp
 
