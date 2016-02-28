@@ -90,7 +90,7 @@ class McmcSample {
 
 class McmcMachinery {
   public:
-    McmcMachinery( PfDeconvIO* input, Panel *panel, McmcSample *mcmcSample,
+    McmcMachinery( PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample,
                 size_t nSample = 100, size_t McmcMachineryRate = 5 );
     ~McmcMachinery();
     void runMcmcChain( );
@@ -98,7 +98,7 @@ class McmcMachinery {
   private:
     McmcSample *mcmcSample_;
   /* Variables */
-    PfDeconvIO* input_;
+    PfDeconvIO* pfDeconvIO_;
     Panel* panel_;
     size_t kStrain_;
     size_t nLoci_;

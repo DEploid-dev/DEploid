@@ -22,7 +22,6 @@
 */
 
 #include <iostream> // std::cout
-#include <stdio.h>
 #include "mcmc.hpp"
 #include "panel.hpp"
 #include "pfDeconvIO.hpp"
@@ -31,31 +30,6 @@ using namespace std;
 
 int main( int argc, char *argv[] ){
     try {
-
-        //remove( "tmp.llk" );
-        //remove( "tmp.prop" );
-        //remove( "tmp.hap" );
-
-        ////Input input( "tests/labStrains_first100_PLAF.txt",
-               ////"tests/PG0390_first100ref.txt",
-               ////"tests/PG0390_first100alt.txt",
-               ////(size_t)5);
-        ////Input input( "tests/labStrains_first100_PLAF.txt",
-               ////"tests/PG0390_first100ref.txt",
-               ////"tests/PG0390_first100alt.txt",
-               ////(size_t)2);
-
-        ////Panel panel("tests/lab_first100_Panel.txt");
-
-        //Input input( "tests/labStrains_samples_PLAF.txt",
-               //"tests/PG0394_ref.txt",
-               //"tests/PG0394_alt.txt",
-               ////"tests/PG0393_ref.txt",
-               ////"tests/PG0393_alt.txt",
-               ////"tests/PG0390_ref.txt",
-               ////"tests/PG0390_alt.txt",
-               //(size_t)5);
-        //Panel panel("tests/clonalPanel.csv");
 
         PfDeconvIO pfDeconvIO( argc, argv );
         if ( pfDeconvIO.help() ){
