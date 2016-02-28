@@ -48,6 +48,8 @@ PfDeconvIO::~PfDeconvIO(){}
 
 PfDeconvIO::PfDeconvIO(int argc, char *argv[]) {
     argv_ = std::vector<std::string>(argv + 1, argv + argc);
+    this->argv_i = argv_.begin();
+
     this->init();
     if ( argv_.size() == 0 ) {
         this->set_help(true);
@@ -67,7 +69,20 @@ void PfDeconvIO::init() {
     this->precision_ = 8;
     this->prefix_ = "pf3k-pfDeconv";
     this->kStrain_ = 5;
-    this->argv_i = argv_.begin();
+    this->nMcmcSample_ = 1000;
+    this->mcmcMachineryRate_ = 5;
+
+    #ifdef COMPILEDATE
+        compileTime_ = COMPILEDATE;
+    #else
+        compileTime_ = "";
+    #endif
+
+    #ifdef PFDECONVVERSION
+        pfDeconvVersion_ = PFDECONVVERSION;
+    #else
+        pfDeconvVersion_ = "";
+    #endif
 }
 
 
@@ -78,7 +93,29 @@ void PfDeconvIO::finalize(){
     this->nLoci_ = refCount_.size();
     assert( this->nLoci_ == this->plaf_.size() );
     assert( this->altCount_.size() == this->nLoci_ );
+
+    (void)removeFilesWithSameName();
 }
+
+
+void PfDeconvIO::removeFilesWithSameName(){
+    strExportLLK = this->prefix_ + ".llk";
+    strExportHap = this->prefix_ + ".hap";
+    strExportProp = this->prefix_ + ".prop";
+    strExportLog =  this->prefix_ + ".log";
+
+    remove(strExportLLK.c_str());
+    remove(strExportHap.c_str());
+    remove(strExportProp.c_str());
+    remove(strExportLog.c_str());
+}
+
+    //ofstream ofstreamExportLLK;
+    //ofstream ofstreamExportHap;
+    //ofstream ofstreamExportProp;
+
+
+
 
 void PfDeconvIO::parse (){
 
@@ -181,5 +218,8 @@ void PfDeconvIO::printHelp(){
     cout << "Examples:"
          << endl
          << endl;
-    cout << "pfDeconv -ref tests/PG0390_first100ref.txt -alt tests/PG0390_first100alt.txt -plaf tests/labStrains_first100_PLAF.txt -panel tests/lab_first100_Panel.txt -o tmp1" << endl;
+    cout << "./pfDeconv -ref tests/PG0390_first100ref.txt -alt tests/PG0390_first100alt.txt -plaf tests/labStrains_first100_PLAF.txt -panel tests/lab_first100_Panel.txt -o tmp1" << endl;
 }
+
+
+

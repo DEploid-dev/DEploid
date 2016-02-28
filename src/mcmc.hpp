@@ -39,6 +39,7 @@ using namespace std;
 
 class McmcSample {
   friend class McmcMachinery;
+  friend class PfDeconvIO;
   public:
     McmcSample(){}
     ~McmcSample(){}
@@ -49,34 +50,6 @@ class McmcSample {
         proportion.clear();
         sumLLKs.clear();
         moves.clear();
-    }
-
-    void output(){
-        ofstream prop_file( "tmp.prop", ios::out | ios::app | ios::binary );
-        for ( size_t i = 0; i < this->proportion.size(); i++){
-            for ( size_t ii = 0; ii < this->proportion[i].size(); ii++){
-                prop_file << setw(10) << this->proportion[i][ii];
-                prop_file << ((ii < (this->proportion[i].size()-1)) ? "\t" : "\n") ;
-            }
-        }
-        prop_file.close();
-
-
-        ofstream llk_file( "tmp.llk", ios::out | ios::app | ios::binary );
-        for ( size_t i = 0; i < this->sumLLKs.size(); i++){
-            //if ( this->moves[i] != 2)
-            llk_file << this->moves[i] << "\t" << this->sumLLKs[i] << endl;
-        }
-        llk_file.close();
-
-        ofstream hap_file( "tmp.hap", ios::out | ios::app | ios::binary );
-        for ( size_t i = 0; i < this->hap.size(); i++ ){
-            for ( size_t ii = 0; ii < this->hap[i].size(); ii++){
-                hap_file << this->hap[i][ii];
-                hap_file << ((ii < (this->hap[i].size()-1)) ? "\t" : "\n") ;
-            }
-        }
-        hap_file.close();
     }
 
 
@@ -90,15 +63,14 @@ class McmcSample {
 
 class McmcMachinery {
   public:
-    McmcMachinery( PfDeconvIO* input, Panel *panel, McmcSample *mcmcSample,
-                size_t nSample = 100, size_t McmcMachineryRate = 5 );
+    McmcMachinery( PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample );
     ~McmcMachinery();
     void runMcmcChain( );
 
   private:
-    McmcSample *mcmcSample_;
+    McmcSample* mcmcSample_;
   /* Variables */
-    PfDeconvIO* input_;
+    PfDeconvIO* pfDeconvIO_;
     Panel* panel_;
     size_t kStrain_;
     size_t nLoci_;

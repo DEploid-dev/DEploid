@@ -36,6 +36,8 @@
 
 using namespace std;
 
+class McmcSample;
+
 class PfDeconvIO{
  friend class McmcMachinery;
  friend class TestIO;
@@ -45,16 +47,20 @@ class PfDeconvIO{
                 const char altFileName[],
                 size_t kStrain );
     ~PfDeconvIO ();
-
     PfDeconvIO(int argc, char *argv[]);
 
     void init();
-
     void printHelp();
-
     bool help() const { return help_; }
-
     string panelFileName_;
+
+    // log
+    void write (McmcSample * mcmcSample);
+    void writeLLK (McmcSample * mcmcSample);
+    void writeProp (McmcSample * mcmcSample);
+    void writeHap (McmcSample * mcmcSample);
+    void writeLog ( ostream * writeTo );
+
   private:
     // Read in input
     string plafFileName_;
@@ -65,6 +71,9 @@ class PfDeconvIO{
     bool seed_set_;
     size_t kStrain_;
     size_t precision_;
+    size_t nMcmcSample_;
+    size_t mcmcMachineryRate_;
+
 
     vector <double> plaf_;
     vector <double> refCount_;
@@ -77,6 +86,19 @@ class PfDeconvIO{
 
 
     // Output stream
+    string pfDeconvVersion_;
+    string compileTime_;
+    string strExportLLK;
+    string strExportHap;
+    string strExportProp;
+    string strExportLog;
+    ofstream ofstreamExportLLK;
+    ofstream ofstreamExportHap;
+    ofstream ofstreamExportProp;
+    ofstream ofstreamExportLog;
+    void removeFilesWithSameName();
+
+
     // Methods
     void set_help(const bool help) { this->help_ = help; }
     void set_seed(const size_t seed){ this->random_seed_ = seed; }
@@ -108,6 +130,7 @@ class PfDeconvIO{
         }
         return value;
     }
+
 };
 
 #endif
