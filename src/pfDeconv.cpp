@@ -60,12 +60,12 @@ int main( int argc, char *argv[] ){
         //// Export log
         ////mcmcSample->output();
 
-        ////delete mcmcSample;
 
         McmcMachinery mcmcMachinery(&pfDeconvIO, &panel, mcmcSample);
         mcmcMachinery.runMcmcChain();
 
         pfDeconvIO.write(mcmcSample);
+        delete mcmcSample;
     }
     catch (const exception &e) {
       std::cerr << "Error: " << e.what() << std::endl;
