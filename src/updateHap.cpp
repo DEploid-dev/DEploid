@@ -258,8 +258,6 @@ void UpdatePairHap:: calcExpectedWsaf( vector <double> & expectedWsaf, vector <d
   //expected.WSAF.11 <- expected.WSAF.00 + prop[ws[1]] + prop[ws[2]];    //expected.WSAF.0 <- bundle$expected.WSAF - (bundle$prop[ws] * bundle$h[,ws]);
     this->expectedWsaf00_ = expectedWsaf;
     for ( size_t i = 0; i < expectedWsaf00_.size(); i++ ){
-        //expectedWsaf00_[i] -= proportion[strainIndex1_] * haplotypes[i][strainIndex1_];
-        //expectedWsaf00_[i] -= proportion[strainIndex2_] * haplotypes[i][strainIndex2_];
         expectedWsaf00_[i] -= (proportion[strainIndex1_] * haplotypes[i][strainIndex1_] + proportion[strainIndex2_] * haplotypes[i][strainIndex2_]);
         dout << expectedWsaf[i] << " " << expectedWsaf00_[i] << endl;
         assert (expectedWsaf00_[i] >= 0 );
@@ -356,6 +354,7 @@ vector <double> UpdatePairHap::computeRowMarginalDist( vector < vector < double 
     for ( size_t i = 0; i < probDist.size(); i++ ){
         marginalDist[i] = sumOfVec(probDist[i]);
     }
+    //assert ( sumOfVec (marginalDist) == sumOfMat(probDist));
     return marginalDist;
 }
 
@@ -368,6 +367,7 @@ vector <double> UpdatePairHap::computeColMarginalDist( vector < vector < double 
         }
     }
     //assert ( sumOfVec ( marginalDist ) == 1.0 );
+    //assert ( sumOfVec (marginalDist) == sumOfMat(probDist));
     return marginalDist;
 }
 
@@ -376,11 +376,11 @@ vector <double> UpdatePairHap::computeColMarginalDist( vector < vector < double 
 void UpdatePairHap:: calcFwdProbs(){
     assert ( this->fwdProbs_.size() == 0 );
     vector < vector < double > > fwd1st;
-    for ( size_t i = 0 ; i < this->nPanel_; i++){
+    for ( size_t i = 0 ; i < this->nPanel_; i++){ // Row of the matrix
         size_t rowObs = (size_t)this->panel_->content_[0][i];
         vector <double> fwd1stRow (this->nPanel_, 0.0);
 
-        for ( size_t ii = 0 ; ii < this->nPanel_; ii++){
+        for ( size_t ii = 0 ; ii < this->nPanel_; ii++){ // Column of the matrix
             if ( i == ii ) continue;
 
             size_t colObs = (size_t)this->panel_->content_[0][ii];
@@ -406,16 +406,16 @@ void UpdatePairHap:: calcFwdProbs(){
 
         vector < vector < double > > fwdTmp;
         for ( size_t i = 0 ; i < this->nPanel_; i++){
-            size_t rowObs = (size_t)this->panel_->content_[0][i];
+            size_t rowObs = (size_t)this->panel_->content_[j][i];
             vector <double> fwdTmpRow (this->nPanel_, 0.0);
             for ( size_t ii = 0 ; ii < this->nPanel_; ii++){
                 if ( i == ii ) continue;
 
-                size_t colObs = (size_t)this->panel_->content_[0][ii];
+                size_t colObs = (size_t)this->panel_->content_[j][ii];
                 size_t obs = rowObs*2 + colObs;
-                fwdTmpRow[ii] = this->emission_[0][obs] * (sumOfMat(this->fwdProbs_.back())*recRec +
+                fwdTmpRow[ii] = this->emission_[j][obs] * (sumOfMat(this->fwdProbs_.back())*recRec +
                                                            fwdProbs_.back()[i][ii]*norecNorec+
-                                                           recNorec *marginalOfRows[i]*marginalOfCols[ii]);
+                                                           recNorec *marginalOfRows[ii]*marginalOfCols[i]);
             }
             fwdTmp.push_back(fwdTmpRow);
         }
@@ -486,6 +486,7 @@ void UpdatePairHap::samplePaths(){
             tmpPath = sampleMatrixIndex(previousDist);
             rowI = tmpPath[0];
             colJ = tmpPath[1];
+            assert (rowI != colJ);
             //switch.two = switch.two + 1
             //switch.table = rbind(switch.table, c("twoSwitchTwo", j ))
         } else if ( tmpCase == (size_t)1 ){ // switching second strain
@@ -493,6 +494,7 @@ void UpdatePairHap::samplePaths(){
             vector <double> rowIdist = previousDist[rowI];
             (void)normalizeBySum(rowIdist);
             colJ = sampleIndexGivenProp(rowIdist);
+            assert (rowI != colJ);
             //switch.one = switch.one + 1
             //switch.table = rbind(switch.table, c("twoSwitchOne", j ))
         } else if ( tmpCase == (size_t)2 ){ // switching first strain
@@ -504,11 +506,13 @@ void UpdatePairHap::samplePaths(){
             (void)normalizeBySum(colJdist);
             rowI = sampleIndexGivenProp(colJdist);
             colJ = colJ;
+            assert (rowI != colJ);
             //switch.one = switch.one + 1
             //switch.table = rbind(switch.table, c("twoSwitchOne", j ))
         } else if ( tmpCase == (size_t)3 ) { // no switching
             rowI = rowI;
             colJ = colJ;
+            assert (rowI != colJ);
         } else {
             throw ("Unknow case ... Should never reach here!");
         }

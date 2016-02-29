@@ -26,8 +26,14 @@ plot(obsWSAF, expWSAF, pch=19, col="blue", xlab="Observed WSAF (ALT/(ALT+REF))",
      xlim = c(-0.05, 1.05), cex = 0.5, ylim = c(-0.05, 1.05));
 abline(0,1,lty="dotted");
 
-
-llkTable = read.table("tmp.llk", header=F)
+prefix = ("PD0390")
+prefix ="PD0390_canCopyFromSame"
+prefix ="PD0394_canCopyFromSame"
+#prefix ="PD0390_notCopyFromSame"
+#prefix ="PD0394_notCopyFromSame"
+#prefix = ("tmp1")
+png(paste( prefix, ".llk.png", sep= ""))
+llkTable = read.table( paste( prefix, ".llk", sep=""), header=F)
 llk = llkTable$V2
 llkEvent = llkTable$V1
 llk_sd = sd(llk)
@@ -40,3 +46,4 @@ index = c(1:length(llk))
 points(index[updateSingleAt], llk[updateSingleAt], cex = 0.6, col="red")
 points(index[updateBothAt], llk[updateBothAt], cex = 0.6, col="blue")
 points(index[updatePropAt], llk[updatePropAt], cex = 0.6, col="green")
+dev.off()
