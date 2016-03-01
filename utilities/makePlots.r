@@ -1,6 +1,9 @@
-tmpProp = read.table("tmp.prop", header=F)
+prefix = ("PG0390_seed3")
+png(paste( prefix, ".prop.png", sep= ""))
+tmpProp = read.table(paste(prefix,".prop",sep=""), header=F)
 rainbowColorBin = 12
 barplot(t(tmpProp), beside=F, border=NA, col=rainbow(rainbowColorBin), space=0, xlab="Iteration", ylab="Component Freq", main="Components")
+dev.off()
 
 #ref = read.table("tests/PG0390_first100ref.txt", header=T)[,3]
 #alt = read.table("tests/PG0390_first100alt.txt", header=T)[,3]
@@ -12,7 +15,7 @@ ref = read.table("tests/PG0394_ref.txt", header=T)$V3
 alt = read.table("tests/PG0394_alt.txt", header=T)$V3
 
 prop = as.numeric(tmpProp[dim(tmpProp)[1],])
-hap = as.matrix(read.table("tmp.hap", header=F))
+hap = as.matrix(read.table(paste(prefix,".hap",sep=""), header=F))
 
 obsWSAF = alt/(alt+ref+0.00000001)
 expWSAF = hap %*%prop
@@ -26,9 +29,8 @@ plot(obsWSAF, expWSAF, pch=19, col="blue", xlab="Observed WSAF (ALT/(ALT+REF))",
      xlim = c(-0.05, 1.05), cex = 0.5, ylim = c(-0.05, 1.05));
 abline(0,1,lty="dotted");
 
-prefix = ("PD0390")
-prefix ="PD0390_canCopyFromSame"
-prefix ="PD0394_canCopyFromSame"
+#prefix ="PD0390_canCopyFromSame"
+#prefix ="PD0394_canCopyFromSame"
 #prefix ="PD0390_notCopyFromSame"
 #prefix ="PD0394_notCopyFromSame"
 #prefix = ("tmp1")

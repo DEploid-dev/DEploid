@@ -6,10 +6,10 @@ distdir = $(PACKAGE)-$(VERSION)
 bin_PROGRAMS = pfDeconv pfDeconv_dbg
 
 TESTS = unit_tests
-check_PROGRAMS = unit_tests pfDeconv_dbg
+check_PROGRAMS = unit_tests pfDeconv_dbg pfDeconv_prof
 PROG = PFDECONV
 
-common_flags = -O3 -std=c++0x -Isrc/ -Isrc/codeCogs/ -DPFDECONVVERSION=\"${PFDECONVVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
+common_flags = -std=c++0x -Isrc/ -Isrc/codeCogs/ -DPFDECONVVERSION=\"${PFDECONVVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
 
 common_src = src/fastfunc.cpp \
 			 src/random_generator.cpp \
@@ -22,11 +22,13 @@ common_src = src/fastfunc.cpp \
 			 src/updateHap.cpp
 
 pfDeconv_SOURCES = src/pfDeconv.cpp $(common_src)
-
 pfDeconv_dbg_SOURCES = $(pfDeconv_SOURCES)
+pfDeconv_prof_SOURCES = $(pfDeconv_SOURCES)
 
-pfDeconv_CXXFLAGS = $(common_flags) -DNDEBUG
-pfDeconv_dbg_CXXFLAGS = -g $(common_flags)
+pfDeconv_CXXFLAGS = $(common_flags) -DNDEBUG -O3
+pfDeconv_dbg_CXXFLAGS = -g $(common_flags) -O3
+pfDeconv_prof_CXXFLAGS = $(common_flags) -DNDEBUG -fno-omit-frame-pointer -pg -O1
+
 
 unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_panel.cpp \
