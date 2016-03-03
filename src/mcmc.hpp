@@ -134,6 +134,9 @@ class McmcMachinery {
     void updateSingleHap();
     void updatePairHaps();
 
+  /* Debug */
+  bool doutProp();
+  bool doutLLK();
 };
 
 #endif

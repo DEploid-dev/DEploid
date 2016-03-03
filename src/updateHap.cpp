@@ -96,7 +96,7 @@ UpdateSingleHap::UpdateSingleHap( vector <double> &refCount,
 
 void UpdateSingleHap::findUpdatingStrain( vector <double> proportion ){
     this->strainIndex_ = sampleIndexGivenProp ( proportion );
-    dout << "Update single hap: "<< this->strainIndex_ << " strain"<<endl;
+    dout << "  Updating hap: "<< this->strainIndex_ <<endl;
 }
 
 void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes ){
@@ -246,6 +246,8 @@ void UpdatePairHap:: findUpdatingStrain( vector <double> proportion ){
     this->strainIndex1_ = strainIndex[0];
     this->strainIndex2_ = strainIndex[1];
     assert( strainIndex1_ != strainIndex2_ );
+    dout << "  Updating hap: "<< this->strainIndex1_ << " and " << strainIndex2_ <<endl;
+
 }
 
 
@@ -257,7 +259,7 @@ void UpdatePairHap:: calcExpectedWsaf( vector <double> & expectedWsaf, vector <d
     this->expectedWsaf00_ = expectedWsaf;
     for ( size_t i = 0; i < expectedWsaf00_.size(); i++ ){
         expectedWsaf00_[i] -= (proportion[strainIndex1_] * haplotypes[i][strainIndex1_] + proportion[strainIndex2_] * haplotypes[i][strainIndex2_]);
-        dout << expectedWsaf[i] << " " << expectedWsaf00_[i] << endl;
+        //dout << expectedWsaf[i] << " " << expectedWsaf00_[i] << endl;
         assert (expectedWsaf00_[i] >= 0 );
         assert (expectedWsaf00_[i] < 1 );
     }
