@@ -37,7 +37,15 @@ class Panel{
     // Members
     // content is a matrix of n.loci by n.strains, i.e. content length is n.loci
     vector < vector < double > > content_;
-    vector < double > recombProbs_;
+    vector < double > pRec_;
+    // Used in update single haplotype
+    vector < double > pRecEachHap_; // = pRec / nPanel_;
+    vector < double > pNoRec_; // = 1.0 - pRec;
+    // Used in update pair of haplotypes
+    vector < double > pRecRec_; // pRecEachHap * pRecEachHap;
+    vector < double > pRecNoRec_; // pRecEachHap * pNoRec;
+    vector < double > pNoRecNoRec_; // pNoRec * pNoRec;
+
     size_t nLoci_;
     size_t nPanel_;
     vector <string> chrom_;
@@ -48,7 +56,7 @@ class Panel{
     // Methods
     void extractChrom( string & tmp_str );
     void extractPOS ( string & tmp_str );
-    void computeRecombProbs( double averageCentimorganDistance = 15000.0, double Ne = 10.0);
+    void computeRecombProbs( double averageCentimorganDistance = 15000.0, double Ne = 10.0 );
 
   public:
     Panel(const char inchar[]);

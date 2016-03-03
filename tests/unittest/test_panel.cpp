@@ -11,6 +11,7 @@ class TestPanel : public CppUnit::TestCase {
     CPPUNIT_TEST( checkPOS );
     CPPUNIT_TEST( checkPOS2 );
     CPPUNIT_TEST( checkRecombProb );
+    CPPUNIT_TEST( checkRecombProbEach );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -19,7 +20,7 @@ class TestPanel : public CppUnit::TestCase {
   public:
     void setUp() {
         // in R: panel = read.csv("clonalPanel.csv", header = T)
-        this->panel_ = new Panel("tests/clonalPanel.csv");
+        this->panel_ = new Panel("labStrains/clonalPanel.csv");
     }
 
     void tearDown() {
@@ -101,28 +102,52 @@ class TestPanel : public CppUnit::TestCase {
     }
 
     void checkRecombProb(){
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.016725220801029, this->panel_->recombProbs_[0], 0.000000000001);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.000493211664453042, this->panel_->recombProbs_[1], 0.000000000001);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.000373263653116074, this->panel_->recombProbs_[2], 0.000000000001);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0136526127138115, this->panel_->recombProbs_[3], 0.000000000001);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.00151884538507896, this->panel_->recombProbs_[4], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.016725220801029, this->panel_->pRec_[0], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.000493211664453042, this->panel_->pRec_[1], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.000373263653116074, this->panel_->pRec_[2], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0136526127138115, this->panel_->pRec_[3], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.00151884538507896, this->panel_->pRec_[4], 0.000000000001);
 
         // in R: cumsum(table(panel$CHROM))-1
-        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->recombProbs_[589]);
-        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->recombProbs_[1294]);
-        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->recombProbs_[2036]);
-        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->recombProbs_[3583]);
-        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->recombProbs_[4520]);
-        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->recombProbs_[5476]);
-        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->recombProbs_[6908]);
-        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->recombProbs_[8088]);
-        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->recombProbs_[9167]);
-        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->recombProbs_[10442]);
-        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->recombProbs_[11827]);
-        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->recombProbs_[13067]);
-        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->recombProbs_[14911]);
-        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->recombProbs_[17114]);
+        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->pRec_[589]);
+        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->pRec_[1294]);
+        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->pRec_[2036]);
+        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->pRec_[3583]);
+        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->pRec_[4520]);
+        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->pRec_[5476]);
+        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->pRec_[6908]);
+        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->pRec_[8088]);
+        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->pRec_[9167]);
+        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->pRec_[10442]);
+        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->pRec_[11827]);
+        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->pRec_[13067]);
+        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->pRec_[14911]);
+        CPPUNIT_ASSERT_EQUAL(1.0, this->panel_->pRec_[17114]);
     }
+
+    void checkRecombProbEach(){
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.016725220801029/4.0, this->panel_->pRecEachHap_[0], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.000493211664453042/4.0, this->panel_->pRecEachHap_[1], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.000373263653116074/4.0, this->panel_->pRecEachHap_[2], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0136526127138115/4.0, this->panel_->pRecEachHap_[3], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.00151884538507896/4.0, this->panel_->pRecEachHap_[4], 0.000000000001);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[589], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[1294], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[2036], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[3583], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[4520], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[5476], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[6908], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[8088], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[9167], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[10442], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[11827], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[13067], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[14911], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[17114], 0.000000000001);
+    }
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestPanel );

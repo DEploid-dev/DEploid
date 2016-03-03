@@ -24,34 +24,47 @@
 #include "pfDeconvIO.hpp"
 #include "mcmc.hpp"
 
-void PfDeconvIO::write( McmcSample * mcmcSample){
+void PfDeconvIO::write( McmcSample * mcmcSample ){
     this->writeProp( mcmcSample );
     this->writeLLK( mcmcSample );
     this->writeHap( mcmcSample );
 
-    this->writeLog ( &std::cout );
+    this->writeLog ( mcmcSample, &std::cout );
+
     ofstreamExportLog.open( strExportLog.c_str(), ios::out | ios::app | ios::binary );
-    this->writeLog ( &ofstreamExportLog );
+    this->writeLog ( mcmcSample, &ofstreamExportLog );
     ofstreamExportLog.close();
 }
 
 
-void PfDeconvIO::writeLog ( ostream * writeTo ){
+void PfDeconvIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
     (*writeTo) << "#########################################\n";
     (*writeTo) << "#        pfDeconv "<< setw(10) << VERSION << " log        #\n";
     (*writeTo) << "#########################################\n";
     (*writeTo) << "Program was compiled on: " << compileTime_ << endl;
     (*writeTo) << "pfDeconv version: " << pfDeconvVersion_ << endl;
-    (*writeTo) << "input data: \n";
-    (*writeTo) << "PLAF: " << plafFileName_ << "\n";
-    (*writeTo) << "REF count: " << refFileName_  << "\n";
-    (*writeTo) << "ALT count: " << altFileName_  << "\n";
+    (*writeTo) << "\n";
+    (*writeTo) << "Input data: \n";
+    (*writeTo) << setw(12) << "Panel: "     << panelFileName_  << "\n";
+    (*writeTo) << setw(12) << "PLAF: "      << plafFileName_   << "\n";
+    (*writeTo) << setw(12) << "REF count: " << refFileName_    << "\n";
+    (*writeTo) << setw(12) << "ALT count: " << altFileName_    << "\n";
     (*writeTo) << "\n";
     (*writeTo) << "Mcmc chain parameters:"<< "\n";
     (*writeTo) << "MCMC sample: " << nMcmcSample_ << ", sample rate: " << mcmcMachineryRate_ <<"\n";
     if ( seed_set_ ) { (*writeTo) << "Random seed: "<< random_seed_ << "\n";}
     (*writeTo) << "\n";
+    (*writeTo) << "Output saved to:\n";
+    (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
+    (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
+    (*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
     (*writeTo) << "\n";
+    (*writeTo) << "Proportions at the last iteration:\n";
+    for ( size_t ii = 0; ii < mcmcSample->proportion.back().size(); ii++){
+        (*writeTo) << setw(10) << mcmcSample->proportion.back()[ii];
+        (*writeTo) << ((ii < (mcmcSample->proportion.back().size()-1)) ? "\t" : "\n") ;
+    }
+
 }
 
 

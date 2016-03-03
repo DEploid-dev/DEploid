@@ -59,7 +59,7 @@ class PfDeconvIO{
     void writeLLK (McmcSample * mcmcSample);
     void writeProp (McmcSample * mcmcSample);
     void writeHap (McmcSample * mcmcSample);
-    void writeLog ( ostream * writeTo );
+    void writeLog (McmcSample * mcmcSample, ostream * writeTo );
 
   private:
     // Read in input

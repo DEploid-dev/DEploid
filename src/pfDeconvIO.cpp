@@ -110,12 +110,6 @@ void PfDeconvIO::removeFilesWithSameName(){
     remove(strExportLog.c_str());
 }
 
-    //ofstream ofstreamExportLLK;
-    //ofstream ofstreamExportHap;
-    //ofstream ofstreamExportProp;
-
-
-
 
 void PfDeconvIO::parse (){
 
@@ -218,7 +212,7 @@ void PfDeconvIO::printHelp(){
     cout << "Examples:"
          << endl
          << endl;
-    cout << "./pfDeconv -ref tests/PG0390_first100ref.txt -alt tests/PG0390_first100alt.txt -plaf tests/labStrains_first100_PLAF.txt -panel tests/lab_first100_Panel.txt -o tmp1" << endl;
+    cout << "./pfDeconv -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -o tmp1" << endl;
 }
 
 

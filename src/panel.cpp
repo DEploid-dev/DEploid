@@ -70,8 +70,8 @@ Panel::Panel(const char inchar[]){
 
     this->nLoci_ = this->content_.size();
     this->nPanel_ = this->content_.back().size();
-    //recombProbs_ = vector <double> (this->nLoci_, 0.0);
-    //recombProbs_ = vector <double> (this->nLoci_, 0.01); // use constant recombination probability
+    //pRec_ = vector <double> (this->nLoci_, 0.0);
+    //pRec_ = vector <double> (this->nLoci_, 0.01); // use constant recombination probability
     this->computeRecombProbs();
 
     assert ( chromInex_ > -1 );
@@ -114,19 +114,49 @@ void Panel::print(){
 
 
 void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne){
-    assert(recombProbs_.size() == 0 );
+    assert(pRec_.size() == 0 );
+    assert(pRecEachHap_.size() == 0 );
+    assert(pNoRec_.size() == 0 );
+    assert(pRecRec_.size() == 0 );
+    assert(pRecNoRec_.size() == 0 );
+    assert(pNoRecNoRec_.size() == 0 );
+
     double averageMorganDistance = averageCentimorganDistance * 100;
     double geneticDistance;
     double rho;
+    double nPanelDouble = (double)this->nPanel_;
     for ( size_t i = 0; i < this->position_.size(); i++){
         for ( size_t j = 1; j < this->position_[i].size(); j++){
             geneticDistance = (this->position_[i][j] - this->position_[i][j-1])/averageMorganDistance ;
             rho = geneticDistance * 2 * Ne;
-            this->recombProbs_.push_back( 1.0 - exp(-rho) );
+
+            double pRecTmp = 1.0 - exp(-rho);
+            this->pRec_.push_back( pRecTmp );
+
+            double pRecEachHapTmp = pRecTmp / nPanelDouble;
+            this->pRecEachHap_.push_back( pRecTmp / nPanelDouble );
+
+            double pNoRecTmp = 1.0 - pRecTmp;
+            this->pNoRec_.push_back( pNoRecTmp );
+
+            this->pRecRec_.push_back ( pRecEachHapTmp * pRecEachHapTmp );
+            this->pRecNoRec_.push_back ( pRecEachHapTmp * pNoRecTmp );
+            this->pNoRecNoRec_.push_back ( pNoRecTmp * pNoRecTmp );
         }
-        this->recombProbs_.push_back(1.0);
+        this->pRec_.push_back(1.0);
+        this->pRecEachHap_.push_back( 1.0 / nPanelDouble );
+        this->pNoRec_.push_back(0.0);
+        this->pRecRec_.push_back ( 1.0 / nPanelDouble / nPanelDouble );
+        this->pRecNoRec_.push_back ( 0.0 );
+        this->pNoRecNoRec_.push_back ( 0.0 );
+
     }
-    assert(recombProbs_.size() == this->nLoci_ );
+    assert(pRec_.size() == this->nLoci_ );
+    assert(pRecEachHap_.size() == this->nLoci_ );
+    assert(pNoRec_.size() == this->nLoci_ );
+    assert(pRecRec_.size() == this->nLoci_ );
+    assert(pRecNoRec_.size() == this->nLoci_ );
+    assert(pNoRecNoRec_.size() == this->nLoci_ );
 }
 
 

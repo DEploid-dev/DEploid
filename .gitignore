@@ -64,3 +64,6 @@ src/haplotype-sampling.cpp
 src/haplotype-sampling.r
 src/jacob
 tests/recomb.prob
+pfDeconv_prof
+tmp
+labStrains/PG0*
