@@ -67,3 +67,4 @@ tests/recomb.prob
 pfDeconv_prof
 tmp
 labStrains/PG0*
+pf3k-pfDeconv.*
