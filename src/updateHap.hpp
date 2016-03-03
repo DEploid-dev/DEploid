@@ -53,6 +53,7 @@ class UpdateHap{
     size_t kStrain_;
     size_t nLoci_;
     size_t nPanel_;
+    vector <double> newLLK;
 
     vector < vector <double> > emission_;
 
@@ -64,6 +65,8 @@ class UpdateHap{
     virtual void calcFwdProbs(){};
     virtual void samplePaths(){};
     virtual void addMissCopying(){};
+    virtual void updateLLK(){};
+    virtual void sampleHapIndependently(){};
 
     size_t sampleIndexGivenProp ( vector <double> proportion );
     vector <size_t> sampleNoReplace( vector <double> proportion, size_t nSample = 1);
@@ -91,7 +94,6 @@ class UpdateSingleHap : public UpdateHap{
 
     vector <double> path_;
     vector <double> hap_;
-    vector <double> newLLK;
 
     // Methods
     void findUpdatingStrain( vector <double> proportion );
@@ -101,6 +103,8 @@ class UpdateSingleHap : public UpdateHap{
     void calcFwdProbs();
     void samplePaths();
     void addMissCopying();
+    void sampleHapIndependently();
+    void updateLLK();
 };
 
 
@@ -134,7 +138,6 @@ class UpdatePairHap : public UpdateHap{
     vector <double> path2_;
     vector <double> hap1_;
     vector <double> hap2_;
-    vector <double> newLLK;
 
     // Methods
     void findUpdatingStrain( vector <double> proportion );
@@ -144,6 +147,8 @@ class UpdatePairHap : public UpdateHap{
     void calcFwdProbs();
     void samplePaths();
     void addMissCopying();
+    void sampleHapIndependently();
+    void updateLLK();
 
     // Own methods
     vector <double> computeRowMarginalDist( vector < vector < double > > & probDist );

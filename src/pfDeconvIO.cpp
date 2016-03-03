@@ -66,6 +66,7 @@ void PfDeconvIO::init() {
     this->seed_set_ = false;
     this->set_seed( 0 );
     this->set_help(false);
+    this->set_panel(true);
     this->precision_ = 8;
     this->prefix_ = "pf3k-pfDeconv";
     this->kStrain_ = 5;
@@ -121,7 +122,15 @@ void PfDeconvIO::parse (){
         } else if (*argv_i == "-plaf") {
             this->readNextStringto ( this->plafFileName_ ) ;
         } else if (*argv_i == "-panel") {
+            if ( this->usePanel() == false ){
+                throw ("use panel?");
+            }
             this->readNextStringto ( this->panelFileName_ ) ;
+        } else if (*argv_i == "-noPanel"){
+            if ( usePanel() && this->panelFileName_.size() > 0 ){
+                throw ("use panel?");
+            }
+            this->set_panel(false);
         } else if (*argv_i == "-o") {
             this->readNextStringto ( this->prefix_ ) ;
         } else if ( *argv_i == "-p" ) {
@@ -151,7 +160,7 @@ void PfDeconvIO::checkInput(){
         throw FileNameMissing ( "Alt count" );
     if ( this->plafFileName_.size() == 0 )
         throw FileNameMissing ( "PLAF" );
-    if ( this->panelFileName_.size() == 0 )
+    if ( usePanel() && this->panelFileName_.size() == 0 )
         throw FileNameMissing ( "Reference panel" );
 }
 
@@ -219,6 +228,7 @@ void PfDeconvIO::printHelp(){
     cout << endl;
     cout << "./pfDeconv -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -o tmp1" << endl;
     cout << "./pfDeconv -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
+    cout << "./pfDeconv_dbg -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
 }
 
 

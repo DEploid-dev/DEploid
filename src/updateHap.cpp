@@ -24,7 +24,7 @@
 #include "updateHap.hpp"
 #include <algorithm>    // std::reverse
 #include <cstdlib> // div
-
+#include <valarray>
 
 UpdateHap::UpdateHap( vector <double> &refCount,
                       vector <double> &altCount,
@@ -32,7 +32,12 @@ UpdateHap::UpdateHap( vector <double> &refCount,
                       vector <double> &proportion,
                       vector < vector <double> > &haplotypes, MersenneTwister* rg, Panel* panel){
     this->panel_ = panel;
-    this->nPanel_ = this->panel_->nPanel_;
+
+    if ( this->panel_ != NULL ){
+        this->nPanel_ = this->panel_->nPanel_;
+    } else {
+        this->nPanel_ = 0;
+    }
 
     this->missCopyProb = 0.01;
     this->kStrain_ = proportion.size();
@@ -77,7 +82,6 @@ vector <size_t> UpdateHap::sampleNoReplace( vector <double> proportion, size_t n
 }
 
 
-
 UpdateSingleHap::UpdateSingleHap( vector <double> &refCount,
                                   vector <double> &altCount,
                                   vector <double> &expectedWsaf,
@@ -87,17 +91,23 @@ UpdateSingleHap::UpdateSingleHap( vector <double> &refCount,
     this->findUpdatingStrain( proportion );
     this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
     this->calcHapLLKs(refCount, altCount);
-    this->buildEmission();
-    this->calcFwdProbs();
-    this->samplePaths();
-    this->addMissCopying();
+    if ( this->panel_ != NULL ){
+        this->buildEmission();
+        this->calcFwdProbs();
+        this->samplePaths();
+        this->addMissCopying();
+    } else {
+        this->sampleHapIndependently();
+    }
+    this->updateLLK();
 }
 
 
 void UpdateSingleHap::findUpdatingStrain( vector <double> proportion ){
     this->strainIndex_ = sampleIndexGivenProp ( proportion );
-    dout << "Update single hap: "<< this->strainIndex_ << " strain"<<endl;
+    dout << "  Updating hap: "<< this->strainIndex_ <<endl;
 }
+
 
 void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes ){
     //expected.WSAF.0 <- bundle$expected.WSAF - (bundle$prop[ws] * bundle$h[,ws]);
@@ -197,12 +207,7 @@ void UpdateSingleHap::samplePaths(){
 
 void UpdateSingleHap::addMissCopying(){
     assert( this->hap_.size() == 0 );
-    newLLK = vector <double> (this->nLoci_, 0.0);
     for ( size_t i = 0; i < this->nLoci_; i++){
-          //double tmpLLKmax = (this->llk0_[i] > this->llk1_[i] ? this->llk0_[i] : this->llk1_[i]) +0.00000001; // Add 0.00000001, in order to prevent that tmpLLKmax = 0
-        //dout <<"site "<<i<<" tmpLLKmax = "<<tmpLLKmax <<" "<<this->llk0_[i]<<" "<<this->llk1_[i]<<endl;
-        //dout <<"site "<<i<<" expectedWsaf0_[i] = "<<expectedWsaf0_[i] <<" expectedWsaf1_[i] = "<<expectedWsaf1_[i]<<endl;
-        //vector <double> emissionTmp ({exp(this->llk0_[i]/tmpLLKmax), exp(this->llk1_[i]/tmpLLKmax)});
         vector <double> emissionTmp ({exp(this->llk0_[i]), exp(this->llk1_[i])});
         vector <double> sameDiffDist ({emissionTmp[path_[i]]*(1.0 - this->missCopyProb), // probability of the same
                                        emissionTmp[(size_t)(1 -path_[i])] * this->missCopyProb }); // probability of differ
@@ -212,7 +217,28 @@ void UpdateSingleHap::addMissCopying(){
         } else {
             this->hap_.push_back( this->path_[i] ); // same
         }
+    }
+    assert ( this->hap_.size() == this->nLoci_ );
+}
 
+
+void UpdateSingleHap::sampleHapIndependently(){
+    assert( this->hap_.size() == 0 );
+    for ( size_t i = 0; i < this->nLoci_; i++){
+        valarray <double> llkArray( {llk0_[i], llk1_[i]} );
+        double tmpMax = llkArray.max();
+        vector <double> tmpDist ( {exp(llk0_[i] - tmpMax),
+                                   exp(llk1_[i] - tmpMax)} );
+        (void)normalizeBySum(tmpDist);
+        this->hap_.push_back ( (double)sampleIndexGivenProp(tmpDist) );
+    }
+    assert ( this->hap_.size() == this->nLoci_ );
+}
+
+
+void UpdateSingleHap::updateLLK(){
+    newLLK = vector <double> (this->nLoci_, 0.0);
+    for ( size_t i = 0; i < this->nLoci_; i++){
         if ( this->hap_[i] == 0){
             newLLK[i] = llk0_[i];
         } else if (this->hap_[i] == 1){
@@ -220,7 +246,6 @@ void UpdateSingleHap::addMissCopying(){
         } else {
             throw("should never get here!");
         }
-        //dout <<"site "<<i<<" "<<this->hap_[i] <<endl;
     }
 }
 
@@ -234,11 +259,17 @@ UpdatePairHap::UpdatePairHap( vector <double> &refCount,
     this->findUpdatingStrain( proportion );
     this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
     this->calcHapLLKs(refCount, altCount);
-    this->buildEmission();
-    this->calcFwdProbs();
-    this->samplePaths();
-    this->addMissCopying();
+    if ( this->panel_ != NULL ){
+        this->buildEmission();
+        this->calcFwdProbs();
+        this->samplePaths();
+        this->addMissCopying();
+    } else {
+        this->sampleHapIndependently();
+    }
+    this->updateLLK();
 }
+
 
 void UpdatePairHap:: findUpdatingStrain( vector <double> proportion ){
     vector <size_t> strainIndex = sampleNoReplace( proportion, 2);
@@ -246,6 +277,8 @@ void UpdatePairHap:: findUpdatingStrain( vector <double> proportion ){
     this->strainIndex1_ = strainIndex[0];
     this->strainIndex2_ = strainIndex[1];
     assert( strainIndex1_ != strainIndex2_ );
+    dout << "  Updating hap: "<< this->strainIndex1_ << " and " << strainIndex2_ <<endl;
+
 }
 
 
@@ -257,7 +290,7 @@ void UpdatePairHap:: calcExpectedWsaf( vector <double> & expectedWsaf, vector <d
     this->expectedWsaf00_ = expectedWsaf;
     for ( size_t i = 0; i < expectedWsaf00_.size(); i++ ){
         expectedWsaf00_[i] -= (proportion[strainIndex1_] * haplotypes[i][strainIndex1_] + proportion[strainIndex2_] * haplotypes[i][strainIndex2_]);
-        dout << expectedWsaf[i] << " " << expectedWsaf00_[i] << endl;
+        //dout << expectedWsaf[i] << " " << expectedWsaf00_[i] << endl;
         assert (expectedWsaf00_[i] >= 0 );
         assert (expectedWsaf00_[i] < 1 );
     }
@@ -518,10 +551,9 @@ void UpdatePairHap::samplePaths(){
 }
 
 
-void UpdatePairHap:: addMissCopying(){
+void UpdatePairHap::addMissCopying(){
     assert( this->hap1_.size() == 0 );
     assert( this->hap2_.size() == 0 );
-    newLLK = vector <double> (this->nLoci_, 0.0);
 
     for ( size_t i = 0; i < this->nLoci_; i++){
         vector <double> emissionTmp ({exp(this->llk00_[i]), exp(this->llk01_[i]), exp(this->llk10_[i]), exp(this->llk11_[i])});
@@ -547,7 +579,54 @@ void UpdatePairHap:: addMissCopying(){
         } else {
             throw ("add missing copy should never reach here" );
         }
+    }
 
+    assert ( this->hap1_.size() == this->nLoci_ );
+    assert ( this->hap2_.size() == this->nLoci_ );
+}
+
+
+void UpdatePairHap::sampleHapIndependently(){
+    assert( this->hap1_.size() == 0 );
+    assert( this->hap2_.size() == 0 );
+
+    for ( size_t i = 0; i < this->nLoci_; i++){
+        valarray <double> llkArray( {llk00_[i], llk01_[i], llk10_[i], llk11_[i]} );
+        double tmpMax = llkArray.max();
+        vector <double> tmpDist ( {exp(llk00_[i] - tmpMax),
+                                   exp(llk01_[i] - tmpMax),
+                                   exp(llk10_[i] - tmpMax),
+                                   exp(llk11_[i] - tmpMax) } );
+        (void)normalizeBySum(tmpDist);
+
+        size_t tmpCase = sampleIndexGivenProp(tmpDist);
+
+        if ( tmpCase == 0 ){
+            this->hap1_.push_back( 0.0 );
+            this->hap2_.push_back( 0.0 );
+        } else if ( tmpCase == 1 ){
+            this->hap1_.push_back( 0.0 );
+            this->hap2_.push_back( 1.0 );
+        } else if ( tmpCase == 2 ){
+            this->hap1_.push_back( 1.0 );
+            this->hap2_.push_back( 0.0 );
+        } else if ( tmpCase == 3 ){
+            this->hap1_.push_back( 1.0 );
+            this->hap2_.push_back( 1.0 );
+        } else {
+            throw ("add missing copy should never reach here" );
+        }
+    }
+
+    assert ( this->hap1_.size() == this->nLoci_ );
+    assert ( this->hap2_.size() == this->nLoci_ );
+}
+
+
+
+void UpdatePairHap::updateLLK(){
+    newLLK = vector <double> (this->nLoci_, 0.0);
+    for ( size_t i = 0; i < this->nLoci_; i++){
         if ( this->hap1_[i] == 0 && this->hap2_[i] == 0 ){
             newLLK[i] = llk00_[i];
         } else if (this->hap1_[i] == 0 && this->hap2_[i] == 1){
@@ -561,4 +640,3 @@ void UpdatePairHap:: addMissCopying(){
         }
     }
 }
-

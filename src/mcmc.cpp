@@ -78,16 +78,22 @@ void McmcMachinery::calcMaxIteration( size_t nSample, size_t McmcMachineryRate )
 
 void McmcMachinery::initializeMcmcChain( ){
     // Initialization
+    dout << "###########################################"<< endl;
+    dout << "#            Initialization               #"<< endl;
+    dout << "###########################################"<< endl;
+
     this->initializeTitre();
     this->currentLogPriorTitre_ = this->calcLogPriorTitre(this->currentTitre_);
-
     this->initializeHap();
     this->initializeProp();
-
     this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
-
     this->currentLLks_ = calcLLKs( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->currentExpectedWsaf_ );
-    dout << "Initialization finished." << endl;
+
+    assert (doutProp());
+    assert (doutLLK());
+    dout << "###########################################"<< endl;
+    dout << "#        Initialization finished          #"<< endl;
+    dout << "###########################################"<< endl;
 }
 
 
@@ -166,15 +172,33 @@ vector <double> McmcMachinery::titre2prop(vector <double> & tmpTitre){
         tmpProp.push_back( value/tmpSum );
         assert (tmpProp.back() > 0);
         assert (tmpProp.back() < 1);
-        dout << tmpProp.back() << " ";
     }
-    dout<<endl;
     return tmpProp;
 }
 
+
+bool McmcMachinery::doutProp(){
+    dout << "  Update proportion to: ";
+
+    for ( auto const& value: this->currentProp_ ){
+        dout << value << " ";
+    }
+
+    dout<<endl;
+    return true;
+}
+
+
+bool McmcMachinery::doutLLK(){
+    dout << " Current log likelihood = " << sumOfVec( this->currentLLks_ ) << endl;
+    return true;
+}
+
+
 void McmcMachinery::runMcmcChain( ){
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++){
-        dout << "Run mcmcChain at iteration: " << this->currentMcmcIteration_ << endl;
+        dout << endl;
+        dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
         this->sampleMcmcEvent();
     }
     this->mcmcSample_->hap = this->currentHap_;
@@ -183,7 +207,6 @@ void McmcMachinery::runMcmcChain( ){
 
 void McmcMachinery::sampleMcmcEvent( ){
     this->eventInt_ = this->rg_->sampleInt(3);
-    dout  << " current event = " << this->eventInt_<<endl;
     if ( this->eventInt_ == 0 ){
         this->updateProportion();
     } else if ( this->eventInt_ == 1 ){
@@ -194,6 +217,9 @@ void McmcMachinery::sampleMcmcEvent( ){
         dout << "eventInt = " << this->eventInt_ << endl;
         throw(" should never reach here!!!");
     }
+
+    assert(doutLLK());
+
     if ( currentMcmcIteration_ > this->mcmcThresh_ && currentMcmcIteration_ % this->McmcMachineryRate_ == 0){
         this->recordMcmcMachinery();
     }
@@ -216,7 +242,7 @@ vector <double> McmcMachinery::calcExpectedWsaf( vector <double> &proportion ){
 
 
 void McmcMachinery::recordMcmcMachinery(){
-    dout << "Record mcmc sample " <<endl;
+    dout << "***Record mcmc sample " <<endl;
     this->mcmcSample_->proportion.push_back(this->currentProp_);
     this->mcmcSample_->sumLLKs.push_back(sumOfVec(this->currentLLks_));
     this->mcmcSample_->moves.push_back(this->eventInt_);
@@ -224,14 +250,22 @@ void McmcMachinery::recordMcmcMachinery(){
 
 
 void McmcMachinery::updateProportion(){
-    dout << "Attempt of updating proportion "<<endl;
-    if ( this->kStrain_ < 2 ) return;
+    dout << " Attempt of update proportion";
+
+    if ( this->kStrain_ < 2 ) {
+        dout << "(failed)" << endl;
+        return;
+    }
 
     // calculate dt
     vector <double> tmpTitre = calcTmpTitre();
     vector <double> tmpProp = titre2prop(tmpTitre);
+
     //(void)normalizeBySum(tmpProp);
-    if ( minOfVec(tmpProp) < 0 || maxOfVec(tmpProp) > 1 ) return;
+    if ( minOfVec(tmpProp) < 0 || maxOfVec(tmpProp) > 1 ) {
+        dout << "(failed)" << endl;
+        return;
+    }
 
     vector <double> tmpExpecedWsaf = calcExpectedWsaf(tmpProp);
     vector <double> tmpLLKs = calcLLKs (this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, tmpExpecedWsaf);
@@ -241,14 +275,20 @@ void McmcMachinery::updateProportion(){
     double hastingsRatio = 1.0;
 
     //runif(1)<prior.prop.ratio*hastings.ratio*exp(del.llk))
-    if ( this->rg_->sample() > priorPropRatio*hastingsRatio*exp(diffLLKs) ) return;
+    if ( this->rg_->sample() > priorPropRatio*hastingsRatio*exp(diffLLKs) ) {
+        dout << "(failed)" << endl;
+        return;
+    }
 
-    dout << "update Proportion "<<endl;
+    dout << "(successed) " << endl;
+
     this->currentExpectedWsaf_ = tmpExpecedWsaf;
     this->currentLLks_ = tmpLLKs;
     this->currentLogPriorTitre_ = tmpLogPriorTitre;
     this->currentTitre_ = tmpTitre;
     this->currentProp_ = tmpProp;
+
+    assert (doutProp());
 }
 
 
@@ -273,12 +313,13 @@ vector <double> McmcMachinery::calcTmpTitre(){
 
 
 void McmcMachinery::updateSingleHap(){
+    dout << " Update Single Hap "<<endl;
+
     UpdateSingleHap updating( this->pfDeconvIO_->refCount_,
                               this->pfDeconvIO_->altCount_,
                               this->currentExpectedWsaf_,
                               this->currentProp_, this->currentHap_, this->rg_, this->panel_);
 
-    dout << "update Single Hap "<<endl;
     for ( size_t i = 0 ; i < this->nLoci_; i++ ){
         this->currentHap_[i][updating.strainIndex_] = updating.hap_[i];
     }
@@ -288,11 +329,12 @@ void McmcMachinery::updateSingleHap(){
 
 
 void McmcMachinery::updatePairHaps(){
+    dout << " Update Pair Hap "<<endl;
+
     UpdatePairHap updating( this->pfDeconvIO_->refCount_,
                             this->pfDeconvIO_->altCount_,
                             this->currentExpectedWsaf_,
                             this->currentProp_, this->currentHap_, this->rg_, this->panel_);
-    dout << "update Pair Hap "<<endl;
 
     for ( size_t i = 0 ; i < this->nLoci_; i++ ){
         this->currentHap_[i][updating.strainIndex1_] = updating.hap1_[i];
