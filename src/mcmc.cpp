@@ -179,11 +179,6 @@ void McmcMachinery::runMcmcChain( ){
         this->sampleMcmcEvent();
     }
     this->mcmcSample_->hap = this->currentHap_;
-
-    for ( size_t ii = 0; ii < this->mcmcSample_->proportion.back().size(); ii++){
-        cout << setw(10) << this->mcmcSample_->proportion.back()[ii];
-        cout << ((ii < (this->mcmcSample_->proportion.back().size()-1)) ? "\t" : "\n") ;
-    }
 }
 
 

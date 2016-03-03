@@ -148,14 +148,14 @@ void UpdateSingleHap::calcFwdProbs(){
     this->fwdProbs_.push_back(fwd1st);
 
     for ( size_t j = 1; j < this->nLoci_; j++ ){
-        double pRec = this->panel_->recombProbs_[j-1];
-        double pRecEachHap = pRec / nPanel_;
-        double pNoRec = 1.0 - pRec;
+        size_t previous_site = j-1;
+        double pRecEachHap = this->panel_->pRecEachHap_[previous_site];
+        double pNoRec = this->panel_->pNoRec_[previous_site];
 
-        double massFromRec = sumOfVec(fwdProbs_[j-1]) * pRecEachHap;
+        double massFromRec = sumOfVec(fwdProbs_.back()) * pRecEachHap;
         vector <double> fwdTmp (this->nPanel_, 0.0);
         for ( size_t i = 0 ; i < this->nPanel_; i++){
-            fwdTmp[i] = this->emission_[j][this->panel_->content_[j][i]] * (fwdProbs_[j-1][i] * pNoRec + massFromRec);
+            fwdTmp[i] = this->emission_[j][this->panel_->content_[j][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec);
         }
         (void)normalizeBySum(fwdTmp);
         this->fwdProbs_.push_back(fwdTmp);
@@ -175,21 +175,19 @@ void UpdateSingleHap::samplePaths(){
     size_t pathTmp = sampleIndexGivenProp ( fwdProbs_[nLoci_-1] );
     this->path_.push_back( this->panel_->content_.back()[pathTmp]);
     for ( size_t j = (this->nLoci_ - 1); j > 0; j--){
-        //dout << "j="<<j<<", ";
-        double pRec = this->panel_->recombProbs_[j-1];
-        double pRecEachHap = pRec / nPanel_;
-        double pNoRec = 1.0 - pRec;
+        size_t previous_site = j-1;
+        double pRecEachHap = this->panel_->pRecEachHap_[previous_site];
+        double pNoRec = this->panel_->pNoRec_[previous_site];
 
-        vector <double> previousDist = fwdProbs_[j-1];
+        vector <double> previousDist = fwdProbs_[previous_site];
         vector <double> weightOfNoRecAndRec ({ previousDist[pathTmp]*pNoRec,
                                                sumOfVec(previousDist)*pRecEachHap});
         (void)normalizeBySum(weightOfNoRecAndRec);
         size_t tmpState = sampleIndexGivenProp(weightOfNoRecAndRec);
-        //dout <<" recomb state = " << tmpState<< ", ";
         if ( tmpState == (size_t)1){
             pathTmp = sampleIndexGivenProp( previousDist );
         }
-        //dout <<"path = "<<pathTmp<<endl;
+
         this->path_.push_back(this->panel_->content_[j][pathTmp]);
     }
     reverse(path_.begin(), path_.end());
@@ -393,13 +391,10 @@ void UpdatePairHap:: calcFwdProbs(){
     this->fwdProbs_.push_back(fwd1st);
 
     for ( size_t j = 1; j < this->nLoci_; j++ ){
-        double pRec = this->panel_->recombProbs_[j-1];
-        double pRecEachHap = pRec / nPanel_;
-        double pNoRec = 1.0 - pRec;
-
-        double recRec = pRecEachHap * pRecEachHap;
-        double recNorec = pRecEachHap * pNoRec;
-        double norecNorec = pNoRec * pNoRec;
+        size_t previous_site = j-1;
+        double recRec = this->panel_->pRecRec_[previous_site];
+        double recNorec = this->panel_->pRecNoRec_[previous_site];
+        double norecNorec = this->panel_->pNoRecNoRec_[previous_site];
 
         vector <double> marginalOfRows = this->computeRowMarginalDist( this->fwdProbs_.back() );
         vector <double> marginalOfCols = this->computeColMarginalDist( this->fwdProbs_.back() );
@@ -456,16 +451,12 @@ void UpdatePairHap::samplePaths(){
     this->path2_.push_back(this->panel_->content_.back()[colJ]);
 
     for ( size_t j = (this->nLoci_ - 1); j > 0; j--){
-        //dout <<"j = " << j <<endl;
-        double pRec = this->panel_->recombProbs_[j-1];
-        double pRecEachHap = pRec / nPanel_;
-        double pNoRec = 1.0 - pRec;
+        size_t previous_site = j-1;
+        double recRec = this->panel_->pRecRec_[previous_site];
+        double recNorec = this->panel_->pRecNoRec_[previous_site];
+        double norecNorec = this->panel_->pNoRecNoRec_[previous_site];
 
-        double recRec = pRecEachHap * pRecEachHap;
-        double recNorec = pRecEachHap * pNoRec;
-        double norecNorec = pNoRec * pNoRec;
-
-        vector < vector < double > > previousDist = fwdProbs_[j-1];
+        vector < vector < double > > previousDist = fwdProbs_[previous_site];
         double previousProbij =previousDist[rowI][colJ];
 
         double tmpRowSum = sumOfVec(previousDist[rowI]) - previousProbij;
