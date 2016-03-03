@@ -74,7 +74,6 @@ class PfDeconvIO{
     size_t nMcmcSample_;
     size_t mcmcMachineryRate_;
 
-
     vector <double> plaf_;
     vector <double> refCount_;
     vector <double> altCount_;

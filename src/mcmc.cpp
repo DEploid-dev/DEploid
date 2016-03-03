@@ -41,7 +41,6 @@ McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *
     this->burnIn_ = 0.5;
     this->calcMaxIteration( pfDeconvIO_->nMcmcSample_ , pfDeconvIO_->mcmcMachineryRate_ );
 
-
     this->MN_LOG_TITRE = 0.0;
     this->SD_LOG_TITRE = 3.0;
     this->PROP_SCALE = 40.0;

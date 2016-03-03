@@ -44,5 +44,6 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Testing examples"
+ test_pfDeconv -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3 || exit 1
  test_pfDeconv -ref "labStrains/PG0390_first100ref.txt" -alt "labStrains/PG0390_first100alt.txt" -plaf "labStrains/labStrains_first100_PLAF.txt" -panel "labStrains/lab_first100_Panel.txt" -o tmp1 || exit 1
 echo ""
