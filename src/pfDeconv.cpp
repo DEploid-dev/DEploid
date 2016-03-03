@@ -38,7 +38,11 @@ int main( int argc, char *argv[] ){
             return EXIT_SUCCESS;
         }
 
-        Panel panel(pfDeconvIO.panelFileName_.c_str());
+        Panel *panel = NULL;
+
+        if ( pfDeconvIO.usePanel() ){
+            panel = new Panel(pfDeconvIO.panelFileName_.c_str());
+        }
 
         McmcSample * mcmcSample = new McmcSample();
 
@@ -61,10 +65,14 @@ int main( int argc, char *argv[] ){
         ////mcmcSample->output();
 
 
-        McmcMachinery mcmcMachinery(&pfDeconvIO, &panel, mcmcSample);
+        McmcMachinery mcmcMachinery(&pfDeconvIO, panel, mcmcSample);
         mcmcMachinery.runMcmcChain();
 
         pfDeconvIO.write(mcmcSample);
+
+        if ( panel ){
+            delete panel;
+        }
         delete mcmcSample;
     }
     catch (const exception &e) {

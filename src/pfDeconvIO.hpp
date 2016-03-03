@@ -52,6 +52,7 @@ class PfDeconvIO{
     void init();
     void printHelp();
     bool help() const { return help_; }
+    bool usePanel() const { return usePanel_; }
     string panelFileName_;
 
     // log
@@ -79,6 +80,7 @@ class PfDeconvIO{
     vector <double> altCount_;
     size_t nLoci_;
     bool help_;
+    bool usePanel_;
 
     std::vector<std::string> argv_;
     std::vector<std::string>::iterator argv_i;
@@ -99,6 +101,7 @@ class PfDeconvIO{
 
 
     // Methods
+    void set_panel(const bool usePanel) { this->usePanel_ = usePanel; }
     void set_help(const bool help) { this->help_ = help; }
     void set_seed(const size_t seed){ this->random_seed_ = seed; }
 
