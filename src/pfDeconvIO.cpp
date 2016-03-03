@@ -212,7 +212,7 @@ void PfDeconvIO::printHelp(){
     cout << setw(20) << "-p INT"              << "  --  " << "Out put precision (default value 8)."<<endl;
     cout << setw(20) << "-k INT"              << "  --  " << "Number of strain (default value 5)."<<endl;
     cout << setw(20) << "-seed INT"           << "  --  " << "Random seed."<<endl;
-    cout << setw(20) << "-Nsample INT"        << "  --  " << "Number of MCMC samples."<<endl;
+    cout << setw(20) << "-nSample INT"        << "  --  " << "Number of MCMC samples."<<endl;
     cout << setw(20) << "-rate INT"           << "  --  " << "MCMC sample rate."<<endl;
     cout << endl;
     cout << "Examples:" << endl;
