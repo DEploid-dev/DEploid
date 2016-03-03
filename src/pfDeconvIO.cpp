@@ -128,6 +128,10 @@ void PfDeconvIO::parse (){
             this->precision_ = readNextInput<size_t>() ;
         } else if ( *argv_i == "-k" ) {
             this->kStrain_ = readNextInput<size_t>() ;
+        } else if ( *argv_i == "-nSample" ) {
+            this->nMcmcSample_ = readNextInput<size_t>() ;
+        } else if ( *argv_i == "-rate" ) {
+            this->mcmcMachineryRate_ = readNextInput<size_t>() ;
         } else if (*argv_i == "-seed"){
             this->random_seed_ = readNextInput<size_t>() ;
             this->seed_set_ = true;
@@ -207,12 +211,14 @@ void PfDeconvIO::printHelp(){
     cout << setw(20) << "-o STR"              << "  --  " << "Specify the file name prefix of the output."<<endl;
     cout << setw(20) << "-p INT"              << "  --  " << "Out put precision (default value 8)."<<endl;
     cout << setw(20) << "-k INT"              << "  --  " << "Number of strain (default value 5)."<<endl;
-    cout << setw(20) << "-seed INT"           << "  --  " << "Random seed."<<endl
-         << endl;
-    cout << "Examples:"
-         << endl
-         << endl;
+    cout << setw(20) << "-seed INT"           << "  --  " << "Random seed."<<endl;
+    cout << setw(20) << "-Nsample INT"        << "  --  " << "Number of MCMC samples."<<endl;
+    cout << setw(20) << "-rate INT"           << "  --  " << "MCMC sample rate."<<endl;
+    cout << endl;
+    cout << "Examples:" << endl;
+    cout << endl;
     cout << "./pfDeconv -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -o tmp1" << endl;
+    cout << "./pfDeconv -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
 }
 
 

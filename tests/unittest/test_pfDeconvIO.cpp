@@ -115,6 +115,7 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "labStrains/lab_first100_Panel.txt",
                          "-seed", "asdf"};
         CPPUNIT_ASSERT_THROW ( PfDeconvIO pars(10, argv2), NotEnoughArg );
+        CPPUNIT_ASSERT_THROW ( PfDeconvIO pars(11, argv2), WrongType );
 
         char *argv3[] = { "./pfDeconv",
                          "-ref", "labStrains/PG0390_first100ref.txt",
@@ -123,6 +124,7 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "labStrains/lab_first100_Panel.txt",
                          "-p", "asdf"};
         CPPUNIT_ASSERT_THROW ( PfDeconvIO pars(10, argv3), NotEnoughArg );
+        CPPUNIT_ASSERT_THROW ( PfDeconvIO pars(11, argv3), WrongType );
 
         char *argv4[] = { "./pfDeconv",
                          "-ref", "labStrains/PG0390_first100ref.txt",
@@ -131,6 +133,25 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "labStrains/lab_first100_Panel.txt",
                          "-k", "asdf"};
         CPPUNIT_ASSERT_THROW ( PfDeconvIO pars(10, argv4), NotEnoughArg );
+        CPPUNIT_ASSERT_THROW ( PfDeconvIO pars(11, argv4), WrongType );
+
+        char *argv5[] = { "./pfDeconv",
+                         "-ref", "labStrains/PG0390_first100ref.txt",
+                         "-alt", "labStrains/PG0390_first100alt.txt",
+                         "-plaf", "labStrains/labStrains_first100_PLAF.txt",
+                         "-panel", "labStrains/lab_first100_Panel.txt",
+                         "-nSample", "asdf"};
+        CPPUNIT_ASSERT_THROW ( PfDeconvIO pars(10, argv5), NotEnoughArg );
+        CPPUNIT_ASSERT_THROW ( PfDeconvIO pars(11, argv5), WrongType );
+
+        char *argv6[] = { "./pfDeconv",
+                         "-ref", "labStrains/PG0390_first100ref.txt",
+                         "-alt", "labStrains/PG0390_first100alt.txt",
+                         "-plaf", "labStrains/labStrains_first100_PLAF.txt",
+                         "-panel", "labStrains/lab_first100_Panel.txt",
+                         "-rate", "asdf"};
+        CPPUNIT_ASSERT_THROW ( PfDeconvIO pars(10, argv6), NotEnoughArg );
+        CPPUNIT_ASSERT_THROW ( PfDeconvIO pars(11, argv6), WrongType );
     }
 
 
