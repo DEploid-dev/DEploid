@@ -53,10 +53,6 @@ McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *
     this->nLoci_ = this->pfDeconvIO_->plaf_.size();
     this->initializeMcmcChain( );
 
-    //this->normalizeBySum(this->pfDeconvIO_->refCount );
-    //for (auto const& value: this->pfDeconvIO_->refCount){
-        //cout << value << endl;
-    //}
 }
 
 
@@ -261,7 +257,6 @@ void McmcMachinery::updateProportion(){
     vector <double> tmpTitre = calcTmpTitre();
     vector <double> tmpProp = titre2prop(tmpTitre);
 
-    //(void)normalizeBySum(tmpProp);
     if ( minOfVec(tmpProp) < 0 || maxOfVec(tmpProp) > 1 ) {
         dout << "(failed)" << endl;
         return;
@@ -301,6 +296,7 @@ double McmcMachinery::deltaLLKs ( vector <double> &newLLKs ){
     vector <double> tmpdiff = vecDiff ( newLLKs,  this->currentLLks_);
     return sumOfVec(tmpdiff);
 }
+
 
 vector <double> McmcMachinery::calcTmpTitre(){
     vector <double> tmpTitre;

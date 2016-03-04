@@ -80,11 +80,20 @@ void PfDeconvIO::finalize(){
 
     AtMarker plaf (plafFileName_.c_str());
     this->plaf_ = plaf.info_;
+    this->chrom_ = plaf.chrom_;
+    this->position_ = plaf.position_;
+
+    assert( indexOfChromStarts_.size() == 0 );
+    indexOfChromStarts_.push_back( (size_t) 0);
+
+    for ( ; indexOfChromStarts_.size() < this->chrom_.size(); ){
+        indexOfChromStarts_.push_back(indexOfChromStarts_.back()+this->position_[indexOfChromStarts_.size()].size());
+    }
+    assert( indexOfChromStarts_.size() == this->chrom_.size() );
 
     this->nLoci_ = refCount_.size();
     assert( this->nLoci_ == this->plaf_.size() );
     assert( this->altCount_.size() == this->nLoci_ );
-
     (void)removeFilesWithSameName();
 }
 

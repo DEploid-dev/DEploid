@@ -74,7 +74,6 @@ AtMarker::AtMarker(const char inchar[]){
                                   tmp_line.find('\n', field_start) );
 
                 string tmp_str = tmp_line.substr( field_start, field_end - field_start );
-
                 if ( field_index > 1 ){
                     contentRow.push_back( strtod(tmp_str.c_str(), NULL) );
                 } else if ( field_index == 0 ){
@@ -103,7 +102,9 @@ AtMarker::AtMarker(const char inchar[]){
     if ( this->nInfoLines_ == 1 ){
         this->reshapeContentToInfo();
     }
+
     assert ( tmpChromInex_ > -1 );
+    assert ( chrom_.size() == position_.size() );
 }
 
 

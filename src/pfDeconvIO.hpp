@@ -71,6 +71,9 @@ class PfDeconvIO{
     size_t nMcmcSample_;
     size_t mcmcMachineryRate_;
 
+    vector <string> chrom_;
+    vector < size_t > indexOfChromStarts_;
+    vector < vector < double> > position_;
     vector <double> plaf_;
     vector <double> refCount_;
     vector <double> altCount_;
