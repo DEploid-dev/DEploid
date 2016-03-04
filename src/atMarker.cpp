@@ -69,7 +69,10 @@ AtMarker::AtMarker(const char inchar[]){
             size_t field_index = 0;
             vector <double> contentRow;
             while ( field_end < tmp_line.size() ){
-                field_end = min ( tmp_line.find(',',field_start), tmp_line.find('\n', field_start) );
+                field_end = min ( min ( tmp_line.find(',',field_start),
+                                        tmp_line.find('\t',field_start) ),
+                                  tmp_line.find('\n', field_start) );
+
                 string tmp_str = tmp_line.substr( field_start, field_end - field_start );
 
                 if ( field_index > 1 ){

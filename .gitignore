@@ -56,15 +56,10 @@ unit_tests.trs
 # doxygen
 html/
 
-tmp.hap
-tmp.llk
-tmp.prop
-
 src/haplotype-sampling.cpp
 src/haplotype-sampling.r
-src/jacob
 tests/recomb.prob
 pfDeconv_prof
-tmp
+tmp*
 labStrains/PG0*
 pf3k-pfDeconv.*

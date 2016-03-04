@@ -25,18 +25,6 @@
 #include <math.h>
 
 
-
-
-//void Panel::print(){
-    //for ( size_t i = 0; i < this->content_.size(); i++){
-        //for (size_t j = 0; j < this->content_[i].size(); j++){
-            //cout <<this->content_[i][j]<<" ";
-        //}
-        //cout<<endl;
-    //}
-//}
-
-
 void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne){
     assert(pRec_.size() == 0 );
     assert(pRecEachHap_.size() == 0 );

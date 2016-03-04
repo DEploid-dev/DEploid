@@ -19,11 +19,14 @@ class TestIO : public CppUnit::TestCase {
 
   public:
     void setUp() {
-        this->input_ = new PfDeconvIO( "labStrains/labStrains_first100_PLAF.txt",
-                                       "labStrains/PG0390_first100ref.txt",
-                                       "labStrains/PG0390_first100alt.txt",
-                                       (size_t)5);
-        }
+       char *argv1[] = { "./pfDeconv",
+                 "-ref", "labStrains/PG0390_first100ref.txt",
+                 "-alt", "labStrains/PG0390_first100alt.txt",
+                 "-plaf", "labStrains/labStrains_first100_PLAF.txt",
+                 "-panel", "labStrains/lab_first100_Panel.txt",
+                 "-o", "tmp1" };
+        this->input_ = new PfDeconvIO (11, argv1);
+    }
 
     void tearDown() {
         delete input_;

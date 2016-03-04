@@ -38,6 +38,7 @@ class AtMarker{
  friend class UpdatePairHap;
  friend class UpdateHap;
  friend class Panel;
+ friend class PfDeconvIO;
   private:
     // Members
     vector <string> chrom_;
