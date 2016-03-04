@@ -42,12 +42,8 @@ class PfDeconvIO{
  friend class McmcMachinery;
  friend class TestIO;
   public:
-    PfDeconvIO( const char plafFileName[],
-                const char refFileName[],
-                const char altFileName[],
-                size_t kStrain );
-    ~PfDeconvIO ();
     PfDeconvIO(int argc, char *argv[]);
+    ~PfDeconvIO ();
 
     void init();
     void printHelp();
@@ -75,6 +71,9 @@ class PfDeconvIO{
     size_t nMcmcSample_;
     size_t mcmcMachineryRate_;
 
+    vector <string> chrom_;
+    vector < size_t > indexOfChromStarts_;
+    vector < vector < double> > position_;
     vector <double> plaf_;
     vector <double> refCount_;
     vector <double> altCount_;
@@ -110,7 +109,6 @@ class PfDeconvIO{
     void finalize();
 
     void readNextStringto( string &readto );
-    void readFileLines(const char inchar[], vector <double> & out_vec);
 
     template<class T>
     T readNextInput() {

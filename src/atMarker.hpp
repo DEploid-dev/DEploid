@@ -21,41 +21,48 @@
 
 */
 
-#ifndef PANEL
-#define PANEL
 
-#include "atMarker.hpp"
+#ifndef ATMARKER
+#define ATMARKER
 
-class Panel: public AtMarker{
+#include <vector>
+#include <string>
+#include <cassert>
+
+
+using namespace std;
+
+class AtMarker{
  friend class TestPanel;
  friend class UpdateSingleHap;
  friend class UpdatePairHap;
  friend class UpdateHap;
-
+ friend class Panel;
+ friend class PfDeconvIO;
   private:
     // Members
-    vector < double > pRec_;
-    // Used in update single haplotype
-    vector < double > pRecEachHap_; // = pRec / nPanel_;
-    vector < double > pNoRec_; // = 1.0 - pRec;
-    // Used in update pair of haplotypes
-    vector < double > pRecRec_; // pRecEachHap * pRecEachHap;
-    vector < double > pRecNoRec_; // pRecEachHap * pNoRec;
-    vector < double > pNoRecNoRec_; // pNoRec * pNoRec;
+    vector <string> chrom_;
+    vector < vector < double> > position_;
+    // content is a matrix of n.loci by n.strains, i.e. content length is n.loci
+    vector < vector < double > > content_;
+    // info_ only refers to the first column of the content
+    vector <double> info_;
 
-    size_t nPanel_;
+    size_t nLoci_;
+    size_t nInfoLines_;
 
-    void computeRecombProbs( double averageCentimorganDistance = 15000.0, double Ne = 10.0 );
-
-  public:
-    Panel(const char inchar[]):AtMarker(inchar){
-        this->nPanel_ = this->nInfoLines_;
-        this->computeRecombProbs();
-    };
-    ~Panel(){};
+    int tmpChromInex_;
+    vector < double > tmpPosition_;
 
     // Methods
-    void print();
+    void extractChrom( string & tmp_str );
+    void extractPOS ( string & tmp_str );
+    void reshapeContentToInfo();
+
+  public:
+    AtMarker(const char inchar[]);
+    virtual ~AtMarker(){};
 };
+
 
 #endif

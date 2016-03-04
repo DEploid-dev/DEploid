@@ -758,14 +758,14 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = src/export.hpp src/export.cpp \
+INPUT                  = src/atMarker.hpp src/atMarker.cpp \
                          src/mcmc.hpp src/mcmc.cpp   \
                          src/panel.hpp src/panel.cpp \
-                         src/pfDeconv.cpp \
+                         src/pfDeconv.cpp src/exceptions.hpp \
                          src/random_generator.hpp src/random_generator.cpp \
                          src/fastfunc.hpp src/fastfunc.cpp \
                          src/mersenne_twister.hpp src/mersenne_twister.cpp \
-                         src/param.hpp src/param.cpp \
+                         src/pfDeconvIO.hpp src/pfDeconvIO.cpp \
                          src/updateHap.hpp src/updateHap.cpp \
                          src/utility.hpp src/utility.cpp
 
