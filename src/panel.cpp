@@ -21,96 +21,20 @@
 
 */
 
-#include <fstream>
-#include <iostream>
-#include <cassert>
-#include <math.h>
 #include "panel.hpp"
-#include "exceptions.hpp"
-
-Panel::Panel(const char inchar[]){
-    chromInex_ = -1;
-
-    //cout << "Build Panel" << endl;
-    ifstream in_file( inchar );
-    string tmp_line;
-    if ( in_file.good() ){
-        getline ( in_file, tmp_line ); // skip the first line, which is the header
-        getline ( in_file, tmp_line );
-        while ( tmp_line.size() > 0 ){
-            size_t field_start = 0;
-            size_t field_end = 0;
-            size_t field_index = 0;
-            vector <double> contentRow;
-            while ( field_end < tmp_line.size() ){
-                field_end = min ( tmp_line.find(',',field_start), tmp_line.find('\n', field_start) );
-                string tmp_str = tmp_line.substr( field_start, field_end - field_start );
-
-                if ( field_index > 1 ){
-                    contentRow.push_back( strtod(tmp_str.c_str(), NULL) );
-                } else if ( field_index == 0 ){
-                    this->extractChrom( tmp_str );
-                } else if ( field_index == 1 ){
-                    this->extractPOS ( tmp_str );
-                }
-
-                field_start = field_end+1;
-                field_index++;
-            }
-            this->content_.push_back(contentRow);
-            getline ( in_file, tmp_line );
-        }
-    } else {
-        throw InvalidInputFile( string (inchar) );
-
-    }
-    in_file.close();
-
-    this->position_.push_back( this->tmpPosition_ );
-
-    this->nLoci_ = this->content_.size();
-    this->nPanel_ = this->content_.back().size();
-    //pRec_ = vector <double> (this->nLoci_, 0.0);
-    //pRec_ = vector <double> (this->nLoci_, 0.01); // use constant recombination probability
-    this->computeRecombProbs();
-
-    assert ( chromInex_ > -1 );
-}
+#include <math.h>
 
 
-void Panel::extractChrom( string & tmp_str ){
-    if ( chromInex_ >= 0 ){
-        if ( tmp_str != this->chrom_.back() ){
-            chromInex_++;
-            // save current positions
-            this->position_.push_back(this->tmpPosition_);
-
-            // start new chrom
-            this->tmpPosition_.clear();
-            this->chrom_.push_back(tmp_str);
-        }
-    } else {
-        chromInex_++;
-        assert (this->chrom_.size() == 0);
-        this->chrom_.push_back( tmp_str );
-        assert ( this->tmpPosition_.size() == 0 );
-        assert ( this->position_.size() == 0);
-    }
-}
-
-void Panel::extractPOS( string & tmp_str ){
-    this->tmpPosition_.push_back(strtod(tmp_str.c_str(), NULL));
-}
 
 
-void Panel::print(){
-    for ( size_t i = 0; i < this->content_.size(); i++){
-        for (size_t j = 0; j < this->content_[i].size(); j++){
-            cout <<this->content_[i][j]<<" ";
-        }
-        cout<<endl;
-    }
-}
+//void Panel::print(){
+    //for ( size_t i = 0; i < this->content_.size(); i++){
+        //for (size_t j = 0; j < this->content_[i].size(); j++){
+            //cout <<this->content_[i][j]<<" ";
+        //}
+        //cout<<endl;
+    //}
+//}
 
 
 void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne){

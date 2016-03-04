@@ -19,7 +19,8 @@ common_src = src/fastfunc.cpp \
 			 src/pfDeconvIO.cpp \
 			 src/pfDeconvIOExport.cpp \
 			 src/utility.cpp \
-			 src/updateHap.cpp
+			 src/updateHap.cpp \
+			 src/atMarker.cpp
 
 pfDeconv_SOURCES = src/pfDeconv.cpp $(common_src)
 pfDeconv_dbg_SOURCES = $(pfDeconv_SOURCES)
