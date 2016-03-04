@@ -43,7 +43,11 @@ class UpdateHap{
                vector <double> &altCount,
                vector <double> &expectedWsaf,
                vector <double> &proportion,
-               vector < vector <double> > &haplotypes, MersenneTwister* rg, Panel* panel);
+               vector < vector <double> > &haplotypes,
+               MersenneTwister* rg,
+               size_t segmentStartIndex,
+               size_t nLoci,
+               Panel* panel);
     virtual ~UpdateHap(){}
 
     Panel* panel_;
@@ -51,9 +55,11 @@ class UpdateHap{
     MersenneTwister* rg_;
     size_t strainIndex_;
     size_t kStrain_;
-    size_t nLoci_;
     size_t nPanel_;
     vector <double> newLLK;
+
+    size_t segmentStartIndex_;
+    size_t nLoci_;
 
     vector < vector <double> > emission_;
 
@@ -81,7 +87,11 @@ class UpdateSingleHap : public UpdateHap{
                       vector <double> &altCount,
                       vector <double> &expectedWsaf,
                       vector <double> &proportion,
-                      vector < vector <double> > &haplotypes, MersenneTwister* rg, Panel* panel);
+                      vector < vector <double> > &haplotypes,
+                      MersenneTwister* rg,
+                      size_t segmentStartIndex,
+                      size_t nLoci,
+                      Panel* panel);
     ~UpdateSingleHap(){}
   private:
     vector < vector <double> > fwdProbs_;
@@ -117,7 +127,11 @@ class UpdatePairHap : public UpdateHap{
                       vector <double> &altCount,
                       vector <double> &expectedWsaf,
                       vector <double> &proportion,
-                      vector < vector <double> > &haplotypes, MersenneTwister* rg, Panel* panel);
+                      vector < vector <double> > &haplotypes,
+                      MersenneTwister* rg,
+                      size_t segmentStartIndex,
+                      size_t nLoci,
+                      Panel* panel);
     ~UpdatePairHap(){}
   private:
     vector< vector < vector <double> > > fwdProbs_;

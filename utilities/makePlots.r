@@ -1,5 +1,6 @@
-for (i in 1:30){
+#for (i in 1:30){
 prefix = paste("PD0577_seed", i, sep="")
+prefix = "PG0394_ind_seed1"
 png(paste( prefix, ".prop.png", sep= ""))
 tmpProp = read.table(paste(prefix,".prop",sep=""), header=F)
 rainbowColorBin = 12
@@ -54,4 +55,3 @@ points(index[updateSingleAt], llk[updateSingleAt], cex = 0.6, col="red")
 points(index[updateBothAt], llk[updateBothAt], cex = 0.6, col="blue")
 points(index[updatePropAt], llk[updatePropAt], cex = 0.6, col="green")
 dev.off()
-}

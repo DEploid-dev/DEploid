@@ -30,7 +30,11 @@ UpdateHap::UpdateHap( vector <double> &refCount,
                       vector <double> &altCount,
                       vector <double> &expectedWsaf,
                       vector <double> &proportion,
-                      vector < vector <double> > &haplotypes, MersenneTwister* rg, Panel* panel){
+                      vector < vector <double> > &haplotypes,
+                      MersenneTwister* rg,
+                      size_t segmentStartIndex,
+                      size_t nLoci,
+                      Panel* panel){
     this->panel_ = panel;
 
     if ( this->panel_ != NULL ){
@@ -41,9 +45,12 @@ UpdateHap::UpdateHap( vector <double> &refCount,
 
     this->missCopyProb = 0.01;
     this->kStrain_ = proportion.size();
-    this->nLoci_ = expectedWsaf.size();
-    assert( this->nLoci_ == refCount.size() );
+
     this->rg_ = rg;
+
+    this->segmentStartIndex_ = segmentStartIndex;
+    this->nLoci_ = nLoci;
+
 }
 
 
@@ -86,8 +93,12 @@ UpdateSingleHap::UpdateSingleHap( vector <double> &refCount,
                                   vector <double> &altCount,
                                   vector <double> &expectedWsaf,
                                   vector <double> &proportion,
-                                  vector < vector <double> > &haplotypes, MersenneTwister* rg, Panel* panel):
-                UpdateHap(refCount, altCount, expectedWsaf, proportion, haplotypes, rg, panel){
+                                  vector < vector <double> > &haplotypes,
+                                  MersenneTwister* rg,
+                                  size_t segmentStartIndex,
+                                  size_t nLoci,
+                                  Panel* panel):
+                UpdateHap(refCount, altCount, expectedWsaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel){
     this->findUpdatingStrain( proportion );
     this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
     this->calcHapLLKs(refCount, altCount);
@@ -111,7 +122,7 @@ void UpdateSingleHap::findUpdatingStrain( vector <double> proportion ){
 
 void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes ){
     //expected.WSAF.0 <- bundle$expected.WSAF - (bundle$prop[ws] * bundle$h[,ws]);
-    this->expectedWsaf0_ = expectedWsaf;
+    this->expectedWsaf0_ = vector <double> (expectedWsaf.begin()+this->segmentStartIndex_, expectedWsaf.begin()+(this->segmentStartIndex_+this->nLoci_));
     for ( size_t i = 0; i < expectedWsaf0_.size(); i++ ){
         expectedWsaf0_[i] -= proportion[strainIndex_] * haplotypes[i][strainIndex_];
         //dout << expectedWsaf[i] << " " << expectedWsaf0_[i] << endl;
@@ -124,7 +135,6 @@ void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <
     for ( size_t i = 0; i < expectedWsaf1_.size(); i++ ){
         expectedWsaf1_[i] += proportion[strainIndex_] ;
     }
-    //cout << "expectedWsaf[0] = "<<expectedWsaf[0]<< " expectedWsaf0_[0] = "<<expectedWsaf0_[0]<<" expectedWsaf1_[0] = "<<expectedWsaf1_[0]<<endl;
 }
 
 
@@ -175,8 +185,8 @@ void UpdateSingleHap::calcFwdProbs(){
 
 void UpdateSingleHap::calcHapLLKs( vector <double> &refCount,
                                    vector <double> &altCount){
-    this->llk0_ = calcLLKs( refCount, altCount, expectedWsaf0_ );
-    this->llk1_ = calcLLKs( refCount, altCount, expectedWsaf1_ );
+    this->llk0_ = calcLLKs( refCount, altCount, expectedWsaf0_, this->segmentStartIndex_, this->nLoci_ );
+    this->llk1_ = calcLLKs( refCount, altCount, expectedWsaf1_, this->segmentStartIndex_, this->nLoci_ );
 }
 
 
@@ -254,8 +264,12 @@ UpdatePairHap::UpdatePairHap( vector <double> &refCount,
                               vector <double> &altCount,
                               vector <double> &expectedWsaf,
                               vector <double> &proportion,
-                              vector < vector <double> > &haplotypes, MersenneTwister* rg, Panel* panel):
-                UpdateHap(refCount, altCount, expectedWsaf, proportion, haplotypes, rg, panel){
+                              vector < vector <double> > &haplotypes,
+                              MersenneTwister* rg,
+                              size_t segmentStartIndex,
+                              size_t nLoci,
+                              Panel* panel ):
+                UpdateHap(refCount, altCount, expectedWsaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel){
     this->findUpdatingStrain( proportion );
     this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
     this->calcHapLLKs(refCount, altCount);
@@ -287,7 +301,7 @@ void UpdatePairHap:: calcExpectedWsaf( vector <double> & expectedWsaf, vector <d
   //expected.WSAF.10 <- expected.WSAF.00 + prop[ws[1]];
   //expected.WSAF.01 <- expected.WSAF.00 + prop[ws[2]];
   //expected.WSAF.11 <- expected.WSAF.00 + prop[ws[1]] + prop[ws[2]];    //expected.WSAF.0 <- bundle$expected.WSAF - (bundle$prop[ws] * bundle$h[,ws]);
-    this->expectedWsaf00_ = expectedWsaf;
+    this->expectedWsaf00_ = vector <double> (expectedWsaf.begin()+this->segmentStartIndex_, expectedWsaf.begin()+(this->segmentStartIndex_+this->nLoci_));
     for ( size_t i = 0; i < expectedWsaf00_.size(); i++ ){
         expectedWsaf00_[i] -= (proportion[strainIndex1_] * haplotypes[i][strainIndex1_] + proportion[strainIndex2_] * haplotypes[i][strainIndex2_]);
         //dout << expectedWsaf[i] << " " << expectedWsaf00_[i] << endl;
@@ -313,10 +327,10 @@ void UpdatePairHap:: calcExpectedWsaf( vector <double> & expectedWsaf, vector <d
 
 
 void UpdatePairHap:: calcHapLLKs( vector <double> &refCount, vector <double> &altCount){
-    this->llk00_ = calcLLKs( refCount, altCount, expectedWsaf00_ );
-    this->llk10_ = calcLLKs( refCount, altCount, expectedWsaf10_ );
-    this->llk01_ = calcLLKs( refCount, altCount, expectedWsaf01_ );
-    this->llk11_ = calcLLKs( refCount, altCount, expectedWsaf11_ );
+    this->llk00_ = calcLLKs( refCount, altCount, expectedWsaf00_, this->segmentStartIndex_, this->nLoci_ );
+    this->llk10_ = calcLLKs( refCount, altCount, expectedWsaf10_, this->segmentStartIndex_, this->nLoci_ );
+    this->llk01_ = calcLLKs( refCount, altCount, expectedWsaf01_, this->segmentStartIndex_, this->nLoci_ );
+    this->llk11_ = calcLLKs( refCount, altCount, expectedWsaf11_, this->segmentStartIndex_, this->nLoci_ );
 }
 
 

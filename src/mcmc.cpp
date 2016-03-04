@@ -83,7 +83,7 @@ void McmcMachinery::initializeMcmcChain( ){
     this->initializeHap();
     this->initializeProp();
     this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
-    this->currentLLks_ = calcLLKs( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->currentExpectedWsaf_ );
+    this->currentLLks_ = calcLLKs( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->currentExpectedWsaf_ , 0, this->currentExpectedWsaf_.size());
 
     assert (doutProp());
     assert (doutLLK());
@@ -263,7 +263,7 @@ void McmcMachinery::updateProportion(){
     }
 
     vector <double> tmpExpecedWsaf = calcExpectedWsaf(tmpProp);
-    vector <double> tmpLLKs = calcLLKs (this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, tmpExpecedWsaf);
+    vector <double> tmpLLKs = calcLLKs (this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, tmpExpecedWsaf, 0, tmpExpecedWsaf.size());
     double diffLLKs = this->deltaLLKs(tmpLLKs);
     double tmpLogPriorTitre = calcLogPriorTitre( tmpTitre );
     double priorPropRatio = exp(tmpLogPriorTitre - this->currentLogPriorTitre_ );
@@ -314,7 +314,9 @@ void McmcMachinery::updateSingleHap(){
     UpdateSingleHap updating( this->pfDeconvIO_->refCount_,
                               this->pfDeconvIO_->altCount_,
                               this->currentExpectedWsaf_,
-                              this->currentProp_, this->currentHap_, this->rg_, this->panel_);
+                              this->currentProp_, this->currentHap_, this->rg_,
+                              0, this->nLoci_,
+                              this->panel_);
 
     for ( size_t i = 0 ; i < this->nLoci_; i++ ){
         this->currentHap_[i][updating.strainIndex_] = updating.hap_[i];
@@ -330,7 +332,9 @@ void McmcMachinery::updatePairHaps(){
     UpdatePairHap updating( this->pfDeconvIO_->refCount_,
                             this->pfDeconvIO_->altCount_,
                             this->currentExpectedWsaf_,
-                            this->currentProp_, this->currentHap_, this->rg_, this->panel_);
+                            this->currentProp_, this->currentHap_, this->rg_,
+                            0, this->nLoci_,
+                            this->panel_);
 
     for ( size_t i = 0 ; i < this->nLoci_; i++ ){
         this->currentHap_[i][updating.strainIndex1_] = updating.hap1_[i];
