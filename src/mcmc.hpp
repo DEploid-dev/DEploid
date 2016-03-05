@@ -81,6 +81,10 @@ class McmcMachinery {
     size_t McmcMachineryRate_;
     int eventInt_;
 
+    size_t strainIndex_;
+    size_t strainIndex1_;
+    size_t strainIndex2_;
+
     size_t seed_;
     MersenneTwister* rg_;
     std::default_random_engine* std_generator_;// (this->seed_);
@@ -132,7 +136,11 @@ class McmcMachinery {
      double deltaLLKs ( vector <double> &newLLKs );
 
     void updateSingleHap();
+     void findUpdatingStrainSingle( );
+
     void updatePairHaps();
+     //vector <size_t> sampleNoReplace(MersenneTwister* rg, vector <double> & proportion, size_t nSample );
+     void findUpdatingStrainPair( );
 
   /* Debug */
     bool doutProp();

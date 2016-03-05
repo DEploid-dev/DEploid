@@ -102,7 +102,13 @@ double sumOfVec( vector <double>& array );
 double sumOfMat( vector <vector <double> > & matrix );
 void normalizeBySum ( vector <double> & array );
 void normalizeBySumMat ( vector <vector <double> > & matrix );
-vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf );
+vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf, size_t firstIndex, size_t length );
 double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01, double fac=100 ) ;
+
+size_t sampleIndexGivenProp ( MersenneTwister* rg, vector <double> proportion );
+
+vector <size_t> sampleNoReplace( MersenneTwister* rg, vector <double> &proportion, size_t nSample = 1);
+    vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );
+
 
 #endif

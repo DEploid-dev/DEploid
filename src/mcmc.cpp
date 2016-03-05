@@ -53,10 +53,6 @@ McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *
     this->nLoci_ = this->pfDeconvIO_->plaf_.size();
     this->initializeMcmcChain( );
 
-    //this->normalizeBySum(this->pfDeconvIO_->refCount );
-    //for (auto const& value: this->pfDeconvIO_->refCount){
-        //cout << value << endl;
-    //}
 }
 
 
@@ -87,7 +83,7 @@ void McmcMachinery::initializeMcmcChain( ){
     this->initializeHap();
     this->initializeProp();
     this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
-    this->currentLLks_ = calcLLKs( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->currentExpectedWsaf_ );
+    this->currentLLks_ = calcLLKs( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->currentExpectedWsaf_ , 0, this->currentExpectedWsaf_.size());
 
     assert (doutProp());
     assert (doutLLK());
@@ -261,14 +257,13 @@ void McmcMachinery::updateProportion(){
     vector <double> tmpTitre = calcTmpTitre();
     vector <double> tmpProp = titre2prop(tmpTitre);
 
-    //(void)normalizeBySum(tmpProp);
     if ( minOfVec(tmpProp) < 0 || maxOfVec(tmpProp) > 1 ) {
         dout << "(failed)" << endl;
         return;
     }
 
     vector <double> tmpExpecedWsaf = calcExpectedWsaf(tmpProp);
-    vector <double> tmpLLKs = calcLLKs (this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, tmpExpecedWsaf);
+    vector <double> tmpLLKs = calcLLKs (this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, tmpExpecedWsaf, 0, tmpExpecedWsaf.size());
     double diffLLKs = this->deltaLLKs(tmpLLKs);
     double tmpLogPriorTitre = calcLogPriorTitre( tmpTitre );
     double priorPropRatio = exp(tmpLogPriorTitre - this->currentLogPriorTitre_ );
@@ -302,6 +297,7 @@ double McmcMachinery::deltaLLKs ( vector <double> &newLLKs ){
     return sumOfVec(tmpdiff);
 }
 
+
 vector <double> McmcMachinery::calcTmpTitre(){
     vector <double> tmpTitre;
     for ( size_t k = 0; k < this->kStrain_; k++){
@@ -314,35 +310,75 @@ vector <double> McmcMachinery::calcTmpTitre(){
 
 void McmcMachinery::updateSingleHap(){
     dout << " Update Single Hap "<<endl;
+    this->findUpdatingStrainSingle();
 
-    UpdateSingleHap updating( this->pfDeconvIO_->refCount_,
-                              this->pfDeconvIO_->altCount_,
-                              this->currentExpectedWsaf_,
-                              this->currentProp_, this->currentHap_, this->rg_, this->panel_);
-
-    for ( size_t i = 0 ; i < this->nLoci_; i++ ){
-        this->currentHap_[i][updating.strainIndex_] = updating.hap_[i];
+    for ( size_t chromi = 0 ; chromi < this->pfDeconvIO_->indexOfChromStarts_.size(); chromi++ ){
+        size_t start = this->pfDeconvIO_->indexOfChromStarts_[chromi];
+        size_t length = this->pfDeconvIO_->position_[chromi].size();
+        dout << "   Update Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
+        UpdateSingleHap updating( this->pfDeconvIO_->refCount_,
+                                  this->pfDeconvIO_->altCount_,
+                                  this->currentExpectedWsaf_,
+                                  this->currentProp_, this->currentHap_, this->rg_,
+                                  start, length,
+                                  this->panel_,
+                                  this->strainIndex_);
+        size_t updateIndex = 0;
+        for ( size_t ii = start ; ii < (start+length); ii++ ){
+            this->currentHap_[ii][this->strainIndex_] = updating.hap_[updateIndex];
+            this->currentLLks_[ii] = updating.newLLK[updateIndex];
+            updateIndex++;
+        }
     }
-    this->currentLLks_ = updating.newLLK;
+
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
 
 void McmcMachinery::updatePairHaps(){
     dout << " Update Pair Hap "<<endl;
+    this->findUpdatingStrainPair();
 
-    UpdatePairHap updating( this->pfDeconvIO_->refCount_,
-                            this->pfDeconvIO_->altCount_,
-                            this->currentExpectedWsaf_,
-                            this->currentProp_, this->currentHap_, this->rg_, this->panel_);
+    for ( size_t chromi = 0 ; chromi < this->pfDeconvIO_->indexOfChromStarts_.size(); chromi++ ){
+        size_t start = this->pfDeconvIO_->indexOfChromStarts_[chromi];
+        size_t length = this->pfDeconvIO_->position_[chromi].size();
+        dout << "   Update Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
 
-    for ( size_t i = 0 ; i < this->nLoci_; i++ ){
-        this->currentHap_[i][updating.strainIndex1_] = updating.hap1_[i];
-        this->currentHap_[i][updating.strainIndex2_] = updating.hap2_[i];
+        UpdatePairHap updating( this->pfDeconvIO_->refCount_,
+                                this->pfDeconvIO_->altCount_,
+                                this->currentExpectedWsaf_,
+                                this->currentProp_, this->currentHap_, this->rg_,
+                                start, length,
+                                this->panel_,
+                                this->strainIndex1_,
+                                this->strainIndex2_);
+
+        size_t updateIndex = 0;
+        for ( size_t ii = start ; ii < (start+length); ii++ ){
+            this->currentHap_[ii][this->strainIndex1_] = updating.hap1_[updateIndex];
+            this->currentHap_[ii][this->strainIndex2_] = updating.hap2_[updateIndex];
+            this->currentLLks_[ii] = updating.newLLK[updateIndex];
+            updateIndex++;
+        }
     }
-    this->currentLLks_ = updating.newLLK;
+
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
+
+void McmcMachinery::findUpdatingStrainSingle( ){
+    this->strainIndex_ = sampleIndexGivenProp ( this->rg_, this->currentProp_ );
+    dout << "  Updating hap: "<< this->strainIndex_ <<endl;
+}
+
+
+void McmcMachinery::findUpdatingStrainPair( ){
+    vector <size_t> strainIndex = sampleNoReplace( this->rg_, this->currentProp_, 2);
+    assert( strainIndex.size() == 2);
+    this->strainIndex1_ = strainIndex[0];
+    this->strainIndex2_ = strainIndex[1];
+    assert( strainIndex1_ != strainIndex2_ );
+    dout << "  Updating hap: "<< this->strainIndex1_ << " and " << strainIndex2_ <<endl;
+}
 
 

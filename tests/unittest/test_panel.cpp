@@ -60,7 +60,7 @@ class TestPanel : public CppUnit::TestCase {
     }
 
     void checkChromIndex(){
-        CPPUNIT_ASSERT_EQUAL( (int)13, this->panel_->chromInex_ );
+        CPPUNIT_ASSERT_EQUAL( (int)13, this->panel_->tmpChromInex_ );
     }
 
     void checkChrom(){

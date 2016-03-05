@@ -21,26 +21,10 @@
 
 */
 
+#include "atMarker.hpp"
 #include "pfDeconvIO.hpp"
 #include <cassert>       // assert
 #include <iomanip>      // std::setw
-
-PfDeconvIO::PfDeconvIO( const char plafFileName[],
-              const char refFileName[],
-              const char altFileName[],
-              size_t kStrain ){
-    plafFileName_ = string(plafFileName);
-    altFileName_ = string(altFileName);
-    refFileName_ = string(refFileName);
-    (void)readFileLines( refFileName_.c_str(), this->refCount_);
-    (void)readFileLines( altFileName_.c_str(), this->altCount_);
-    (void)readFileLines( plafFileName_.c_str(), this->plaf_);
-    this->nLoci_ = refCount_.size();
-    assert( this->nLoci_ == this->plaf_.size() );
-    assert( this->altCount_.size() == this->nLoci_ );
-
-    this->kStrain_ = kStrain;
-}
 
 
 PfDeconvIO::~PfDeconvIO(){}
@@ -88,13 +72,31 @@ void PfDeconvIO::init() {
 
 
 void PfDeconvIO::finalize(){
-    (void)readFileLines( refFileName_.c_str(), this->refCount_);
-    (void)readFileLines( altFileName_.c_str(), this->altCount_);
-    (void)readFileLines( plafFileName_.c_str(), this->plaf_);
+    AtMarker ref (refFileName_.c_str());
+    this->refCount_ = ref.info_;
+
+    AtMarker alt (altFileName_.c_str());
+    this->altCount_ = alt.info_;
+
+    AtMarker plaf (plafFileName_.c_str());
+    this->plaf_ = plaf.info_;
+    this->chrom_ = plaf.chrom_;
+    this->position_ = plaf.position_;
+
+    assert( indexOfChromStarts_.size() == 0 );
+    indexOfChromStarts_.push_back( (size_t) 0);
+
+    size_t tmpChrom = 0;
+    for ( ; indexOfChromStarts_.size() < this->chrom_.size(); ){
+        //cout << "indexOfChromStarts_.size() = " << indexOfChromStarts_.size() << ", indexOfChromStarts_.back() = " << indexOfChromStarts_.back() << ", this->position_["<<tmpChrom<<"].size() = "<< this->position_[tmpChrom].size()<< endl;
+        indexOfChromStarts_.push_back(indexOfChromStarts_.back()+this->position_[tmpChrom].size());
+        tmpChrom++;
+    }
+    assert( indexOfChromStarts_.size() == this->chrom_.size() );
+
     this->nLoci_ = refCount_.size();
     assert( this->nLoci_ == this->plaf_.size() );
     assert( this->altCount_.size() == this->nLoci_ );
-
     (void)removeFilesWithSameName();
 }
 
@@ -174,37 +176,6 @@ void PfDeconvIO::readNextStringto( string &readto ){
 }
 
 
-void PfDeconvIO::readFileLines(const char inchar[], vector <double> & out_vec){
-    ifstream in_file( inchar );
-    string tmp_line;
-    if ( in_file.good() ){
-        getline ( in_file, tmp_line ); // skip the first line, which is the header
-        getline ( in_file, tmp_line );
-        while ( tmp_line.size() > 0 ){
-            size_t field_start = 0;
-            size_t field_end = 0;
-            size_t field_index = 0;
-
-            while ( field_end < tmp_line.size() ){
-                field_end = min ( tmp_line.find('\t',field_start), tmp_line.find('\n', field_start) );
-                string tmp_str = tmp_line.substr( field_start, field_end - field_start );
-
-                if ( field_index == 2 ){
-                    out_vec.push_back( strtod(tmp_str.c_str(), NULL) );
-                }
-                field_start = field_end+1;
-                field_index++;
-          }
-          getline ( in_file, tmp_line );
-      }
-    } else {
-        throw InvalidInputFile( string (inchar) );
-
-    }
-    in_file.close();
-}
-
-
 void PfDeconvIO::printHelp(){
     cout << endl
          << "pfDeconv " << VERSION
@@ -229,7 +200,5 @@ void PfDeconvIO::printHelp(){
     cout << "./pfDeconv -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -o tmp1" << endl;
     cout << "./pfDeconv -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
     cout << "./pfDeconv_dbg -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
+    cout << "./pfDeconv_dbg -ref labStrains/PG0390.C_ref.txt -alt labStrains/PG0390.C_alt.txt -plaf labStrains/labStrains_samples_PLAF.txt -panel labStrains/clonalPanel.csv -nSample 500 -rate 5" << endl;
 }
-
-
-
