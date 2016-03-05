@@ -64,7 +64,6 @@ class UpdateHap{
     vector < vector <double> > emission_;
 
     // Methods
-    virtual void findUpdatingStrain( vector <double> proportion ){};
     virtual void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes){};
     virtual void calcHapLLKs( vector <double> &refCount, vector <double> &altCount){};
     virtual void buildEmission(){};
@@ -74,8 +73,6 @@ class UpdateHap{
     virtual void updateLLK(){};
     virtual void sampleHapIndependently(){};
 
-    size_t sampleIndexGivenProp ( vector <double> proportion );
-    vector <size_t> sampleNoReplace( vector <double> proportion, size_t nSample = 1);
 
 };
 
@@ -91,7 +88,8 @@ class UpdateSingleHap : public UpdateHap{
                       MersenneTwister* rg,
                       size_t segmentStartIndex,
                       size_t nLoci,
-                      Panel* panel);
+                      Panel* panel,
+                      size_t strainIndex );
     ~UpdateSingleHap(){}
   private:
     vector < vector <double> > fwdProbs_;
@@ -106,7 +104,6 @@ class UpdateSingleHap : public UpdateHap{
     vector <double> hap_;
 
     // Methods
-    void findUpdatingStrain( vector <double> proportion );
     void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
     void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
     void buildEmission();
@@ -131,7 +128,9 @@ class UpdatePairHap : public UpdateHap{
                       MersenneTwister* rg,
                       size_t segmentStartIndex,
                       size_t nLoci,
-                      Panel* panel);
+                      Panel* panel,
+                      size_t strainIndex1,
+                      size_t strainIndex2 );
     ~UpdatePairHap(){}
   private:
     vector< vector < vector <double> > > fwdProbs_;
@@ -154,7 +153,6 @@ class UpdatePairHap : public UpdateHap{
     vector <double> hap2_;
 
     // Methods
-    void findUpdatingStrain( vector <double> proportion );
     void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
     void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
     void buildEmission();
@@ -168,7 +166,6 @@ class UpdatePairHap : public UpdateHap{
     vector <double> computeRowMarginalDist( vector < vector < double > > & probDist );
     vector <double> computeColMarginalDist( vector < vector < double > > & probDist );
 
-    vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );
     vector <size_t> sampleMatrixIndex( vector < vector < double > > &probDist );
 };
 

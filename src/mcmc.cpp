@@ -310,39 +310,76 @@ vector <double> McmcMachinery::calcTmpTitre(){
 
 void McmcMachinery::updateSingleHap(){
     dout << " Update Single Hap "<<endl;
+    this->findUpdatingStrainSingle();
 
     UpdateSingleHap updating( this->pfDeconvIO_->refCount_,
                               this->pfDeconvIO_->altCount_,
                               this->currentExpectedWsaf_,
                               this->currentProp_, this->currentHap_, this->rg_,
                               0, this->nLoci_,
-                              this->panel_);
+                              this->panel_,
+                              this->strainIndex_);
 
     for ( size_t i = 0 ; i < this->nLoci_; i++ ){
-        this->currentHap_[i][updating.strainIndex_] = updating.hap_[i];
+        this->currentHap_[i][this->strainIndex_] = updating.hap_[i];
     }
     this->currentLLks_ = updating.newLLK;
+    //for ( size_t i = 0 ; i < this->indexOfChromStarts_.size(); i++ ){
+        //size_t start = this->pfDeconvIO_->indexOfChromStarts_[i];
+        //size_t length = this->pfDeconvIO_->position_[i].size();
+        //dout << "  Update Chrom with index " << i << ", starts at "<< start << ", with" << length << "sites" << endl;
+        //UpdateSingleHap updating( this->pfDeconvIO_->refCount_,
+                                  //this->pfDeconvIO_->altCount_,
+                                  //this->currentExpectedWsaf_,
+                                  //this->currentProp_, this->currentHap_, this->rg_,
+                                  //start, length,
+                                  //this->panel_);
+
+        //for ( size_t ii = start ; ii < (start+length); ii++ ){
+            //this->currentHap_[ii][updating.strainIndex_] = updating.hap_[ii];
+        //}
+        //this->currentLLks_ = updating.newLLK;
+    //}
+
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
 
 void McmcMachinery::updatePairHaps(){
     dout << " Update Pair Hap "<<endl;
+    this->findUpdatingStrainPair();
 
     UpdatePairHap updating( this->pfDeconvIO_->refCount_,
                             this->pfDeconvIO_->altCount_,
                             this->currentExpectedWsaf_,
                             this->currentProp_, this->currentHap_, this->rg_,
                             0, this->nLoci_,
-                            this->panel_);
+                            this->panel_,
+                            this->strainIndex1_,
+                            this->strainIndex2_);
 
     for ( size_t i = 0 ; i < this->nLoci_; i++ ){
-        this->currentHap_[i][updating.strainIndex1_] = updating.hap1_[i];
-        this->currentHap_[i][updating.strainIndex2_] = updating.hap2_[i];
+        this->currentHap_[i][this->strainIndex1_] = updating.hap1_[i];
+        this->currentHap_[i][this->strainIndex2_] = updating.hap2_[i];
     }
     this->currentLLks_ = updating.newLLK;
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
+
+void McmcMachinery::findUpdatingStrainSingle( ){
+    this->strainIndex_ = sampleIndexGivenProp ( this->rg_, this->currentProp_ );
+    dout << "  Updating hap: "<< this->strainIndex_ <<endl;
+}
+
+
+void McmcMachinery::findUpdatingStrainPair( ){
+    vector <size_t> strainIndex = sampleNoReplace( this->rg_, this->currentProp_, 2);
+    assert( strainIndex.size() == 2);
+    this->strainIndex1_ = strainIndex[0];
+    this->strainIndex2_ = strainIndex[1];
+    assert( strainIndex1_ != strainIndex2_ );
+    dout << "  Updating hap: "<< this->strainIndex1_ << " and " << strainIndex2_ <<endl;
+}
 
 
