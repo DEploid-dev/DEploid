@@ -312,34 +312,24 @@ void McmcMachinery::updateSingleHap(){
     dout << " Update Single Hap "<<endl;
     this->findUpdatingStrainSingle();
 
-    UpdateSingleHap updating( this->pfDeconvIO_->refCount_,
-                              this->pfDeconvIO_->altCount_,
-                              this->currentExpectedWsaf_,
-                              this->currentProp_, this->currentHap_, this->rg_,
-                              0, this->nLoci_,
-                              this->panel_,
-                              this->strainIndex_);
-
-    for ( size_t i = 0 ; i < this->nLoci_; i++ ){
-        this->currentHap_[i][this->strainIndex_] = updating.hap_[i];
+    for ( size_t chromi = 0 ; chromi < this->pfDeconvIO_->indexOfChromStarts_.size(); chromi++ ){
+        size_t start = this->pfDeconvIO_->indexOfChromStarts_[chromi];
+        size_t length = this->pfDeconvIO_->position_[chromi].size();
+        dout << "   Update Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
+        UpdateSingleHap updating( this->pfDeconvIO_->refCount_,
+                                  this->pfDeconvIO_->altCount_,
+                                  this->currentExpectedWsaf_,
+                                  this->currentProp_, this->currentHap_, this->rg_,
+                                  start, length,
+                                  this->panel_,
+                                  this->strainIndex_);
+        size_t updateIndex = 0;
+        for ( size_t ii = start ; ii < (start+length); ii++ ){
+            this->currentHap_[ii][this->strainIndex_] = updating.hap_[updateIndex];
+            this->currentLLks_[ii] = updating.newLLK[updateIndex];
+            updateIndex++;
+        }
     }
-    this->currentLLks_ = updating.newLLK;
-    //for ( size_t i = 0 ; i < this->indexOfChromStarts_.size(); i++ ){
-        //size_t start = this->pfDeconvIO_->indexOfChromStarts_[i];
-        //size_t length = this->pfDeconvIO_->position_[i].size();
-        //dout << "  Update Chrom with index " << i << ", starts at "<< start << ", with" << length << "sites" << endl;
-        //UpdateSingleHap updating( this->pfDeconvIO_->refCount_,
-                                  //this->pfDeconvIO_->altCount_,
-                                  //this->currentExpectedWsaf_,
-                                  //this->currentProp_, this->currentHap_, this->rg_,
-                                  //start, length,
-                                  //this->panel_);
-
-        //for ( size_t ii = start ; ii < (start+length); ii++ ){
-            //this->currentHap_[ii][updating.strainIndex_] = updating.hap_[ii];
-        //}
-        //this->currentLLks_ = updating.newLLK;
-    //}
 
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
@@ -349,20 +339,29 @@ void McmcMachinery::updatePairHaps(){
     dout << " Update Pair Hap "<<endl;
     this->findUpdatingStrainPair();
 
-    UpdatePairHap updating( this->pfDeconvIO_->refCount_,
-                            this->pfDeconvIO_->altCount_,
-                            this->currentExpectedWsaf_,
-                            this->currentProp_, this->currentHap_, this->rg_,
-                            0, this->nLoci_,
-                            this->panel_,
-                            this->strainIndex1_,
-                            this->strainIndex2_);
+    for ( size_t chromi = 0 ; chromi < this->pfDeconvIO_->indexOfChromStarts_.size(); chromi++ ){
+        size_t start = this->pfDeconvIO_->indexOfChromStarts_[chromi];
+        size_t length = this->pfDeconvIO_->position_[chromi].size();
+        dout << "   Update Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
 
-    for ( size_t i = 0 ; i < this->nLoci_; i++ ){
-        this->currentHap_[i][this->strainIndex1_] = updating.hap1_[i];
-        this->currentHap_[i][this->strainIndex2_] = updating.hap2_[i];
+        UpdatePairHap updating( this->pfDeconvIO_->refCount_,
+                                this->pfDeconvIO_->altCount_,
+                                this->currentExpectedWsaf_,
+                                this->currentProp_, this->currentHap_, this->rg_,
+                                start, length,
+                                this->panel_,
+                                this->strainIndex1_,
+                                this->strainIndex2_);
+
+        size_t updateIndex = 0;
+        for ( size_t ii = start ; ii < (start+length); ii++ ){
+            this->currentHap_[ii][this->strainIndex1_] = updating.hap1_[updateIndex];
+            this->currentHap_[ii][this->strainIndex2_] = updating.hap2_[updateIndex];
+            this->currentLLks_[ii] = updating.newLLK[updateIndex];
+            updateIndex++;
+        }
     }
-    this->currentLLks_ = updating.newLLK;
+
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 

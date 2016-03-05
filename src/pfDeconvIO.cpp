@@ -86,8 +86,11 @@ void PfDeconvIO::finalize(){
     assert( indexOfChromStarts_.size() == 0 );
     indexOfChromStarts_.push_back( (size_t) 0);
 
+    size_t tmpChrom = 0;
     for ( ; indexOfChromStarts_.size() < this->chrom_.size(); ){
-        indexOfChromStarts_.push_back(indexOfChromStarts_.back()+this->position_[indexOfChromStarts_.size()].size());
+        //cout << "indexOfChromStarts_.size() = " << indexOfChromStarts_.size() << ", indexOfChromStarts_.back() = " << indexOfChromStarts_.back() << ", this->position_["<<tmpChrom<<"].size() = "<< this->position_[tmpChrom].size()<< endl;
+        indexOfChromStarts_.push_back(indexOfChromStarts_.back()+this->position_[tmpChrom].size());
+        tmpChrom++;
     }
     assert( indexOfChromStarts_.size() == this->chrom_.size() );
 
