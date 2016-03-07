@@ -190,7 +190,8 @@ void UpdateSingleHap::samplePaths(){
 void UpdateSingleHap::addMissCopying(){
     assert( this->hap_.size() == 0 );
     for ( size_t i = 0; i < this->nLoci_; i++){
-        vector <double> emissionTmp ({exp(this->llk0_[i]), exp(this->llk1_[i])});
+        double tmpMax = maxOfVec ( vector <double>({this->llk0_[i], this->llk1_[i]}));
+        vector <double> emissionTmp ({exp(this->llk0_[i]-tmpMax), exp(this->llk1_[i]-tmpMax)});
         vector <double> sameDiffDist ({emissionTmp[path_[i]]*(1.0 - this->missCopyProb), // probability of the same
                                        emissionTmp[(size_t)(1 -path_[i])] * this->missCopyProb }); // probability of differ
         (void)normalizeBySum(sameDiffDist);
@@ -530,7 +531,8 @@ void UpdatePairHap::addMissCopying(){
     assert( this->hap2_.size() == 0 );
 
     for ( size_t i = 0; i < this->nLoci_; i++){
-        vector <double> emissionTmp ({exp(this->llk00_[i]), exp(this->llk01_[i]), exp(this->llk10_[i]), exp(this->llk11_[i])});
+        double tmpMax = maxOfVec ( vector <double>({this->llk00_[i], this->llk01_[i], this->llk10_[i], this->llk11_[i]}));
+        vector <double> emissionTmp ({exp(this->llk00_[i]-tmpMax), exp(this->llk01_[i]-tmpMax), exp(this->llk10_[i]-tmpMax), exp(this->llk11_[i]-tmpMax)});
         vector <double> casesDist ( { emissionTmp[(size_t)(2*path1_[i]     +path2_[i])]     * (1.0 - this->missCopyProb) * (1.0 - this->missCopyProb), // probability of both same
                                       emissionTmp[(size_t)(2*path1_[i]     +(1-path2_[i]))] * (1.0 - this->missCopyProb) * this->missCopyProb,         // probability of same1diff2
                                       emissionTmp[(size_t)(2*(1 -path1_[i])+path2_[i])]     * this->missCopyProb * (1.0 - this->missCopyProb),         // probability of same2diff1
