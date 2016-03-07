@@ -37,6 +37,7 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne){
     double geneticDistance;
     double rho;
     double nPanelDouble = (double)this->nPanel_;
+    double nPanlelMinus1 = nPanelDouble - 1.0;
     for ( size_t i = 0; i < this->position_.size(); i++){
         for ( size_t j = 1; j < this->position_[i].size(); j++){
             geneticDistance = (this->position_[i][j] - this->position_[i][j-1])/averageMorganDistance ;
@@ -51,8 +52,10 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne){
             double pNoRecTmp = 1.0 - pRecTmp;
             this->pNoRec_.push_back( pNoRecTmp );
 
-            this->pRecRec_.push_back ( pRecEachHapTmp * pRecEachHapTmp );
-            this->pRecNoRec_.push_back ( pRecEachHapTmp * pNoRecTmp );
+            double secondPRecEachHapTmp = pRecTmp / nPanlelMinus1;
+
+            this->pRecRec_.push_back ( pRecEachHapTmp * secondPRecEachHapTmp );
+            this->pRecNoRec_.push_back ( secondPRecEachHapTmp * pNoRecTmp );
             this->pNoRecNoRec_.push_back ( pNoRecTmp * pNoRecTmp );
         }
         this->pRec_.push_back(1.0);

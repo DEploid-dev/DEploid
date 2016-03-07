@@ -368,7 +368,7 @@ void UpdatePairHap:: buildEmission(){
 }
 
 
-vector <double> UpdatePairHap::computeRowMarginalDist( vector < vector < double > > & probDist ){
+vector <double> UpdatePairHap::computeRowMarginalDist( vector < vector < double > > & probDist ){ // Sum of Rows
     vector <double> marginalDist (probDist.size(), 0.0);
     for ( size_t i = 0; i < probDist.size(); i++ ){
         marginalDist[i] = sumOfVec(probDist[i]);
@@ -378,7 +378,7 @@ vector <double> UpdatePairHap::computeRowMarginalDist( vector < vector < double 
 }
 
 
-vector <double> UpdatePairHap::computeColMarginalDist( vector < vector < double > > & probDist ){
+vector <double> UpdatePairHap::computeColMarginalDist( vector < vector < double > > & probDist ){ // Sum of Cols
     vector <double> marginalDist (probDist.size(), 0.0);
     for ( size_t coli = 0; coli < probDist[0].size(); coli++ ){
         for ( size_t rowi = 0; rowi < probDist.size(); rowi++ ){
@@ -430,7 +430,7 @@ void UpdatePairHap:: calcFwdProbs(){
                 size_t obs = rowObs*2 + colObs;
                 fwdTmpRow[ii] = this->emission_[j][obs] * (sumOfMat(this->fwdProbs_.back())*recRec +
                                                            fwdProbs_.back()[i][ii]*norecNorec+
-                                                           recNorec *marginalOfRows[ii]*marginalOfCols[i]);
+                                                           recNorec * ( marginalOfRows[ii]+marginalOfCols[i] ) );
             }
             fwdTmp.push_back(fwdTmpRow);
         }
@@ -467,12 +467,11 @@ void UpdatePairHap::samplePaths(){
         vector < vector < double > > previousDist = fwdProbs_[previous_site];
         double previousProbij =previousDist[rowI][colJ];
 
-        double tmpRowSum = sumOfVec(previousDist[rowI]) - previousProbij;
+        double tmpRowSum = sumOfVec(previousDist[rowI]);
         double tmpColSum = 0.0;
         for ( size_t i = 0; i < previousDist.size(); i++){
             tmpColSum += previousDist[i][colJ];
         }
-        tmpColSum -= previousProbij;
 
         vector <double> weightOfFourCases ({ recRec     * sumOfMat(previousDist),           // recombination happened on both strains
                                              recNorec   * tmpRowSum,  // first strain no recombine, second strain recombine
