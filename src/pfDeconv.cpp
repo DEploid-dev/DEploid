@@ -41,29 +41,10 @@ int main( int argc, char *argv[] ){
         Panel *panel = NULL;
 
         if ( pfDeconvIO.usePanel() ){
-            panel = new Panel(pfDeconvIO.panelFileName_.c_str());
+            panel = new Panel(pfDeconvIO.panelFileName_.c_str(), pfDeconvIO.nLoci());
         }
 
         McmcSample * mcmcSample = new McmcSample();
-
-        //bool repeat = true;
-        //size_t repeat_counter = 0;
-        //while ( repeat && repeat_counter < 100 ){
-            //mcmcSample->clear();
-            //cout << "repeat_counter = "<< repeat_counter<<endl;
-            //// Initilize mcmc
-            //McmcMachinery McmcMachinerys(&pfDeconvIO, &panel, mcmcSample, 1000, 5 );
-            //McmcMachinerys.runMcmcChain();
-
-            ////if ( mcmcSample->llkRange() < 1000.0 ){
-                //repeat = false;
-            ////}
-
-            //repeat_counter++;
-        //}
-        //// Export log
-        ////mcmcSample->output();
-
 
         McmcMachinery mcmcMachinery(&pfDeconvIO, panel, mcmcSample);
         mcmcMachinery.runMcmcChain();

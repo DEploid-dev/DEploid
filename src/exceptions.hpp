@@ -107,4 +107,14 @@ struct FlagsConflict : public InvalidInput{
   ~FlagsConflict(){}
 };
 
+
+struct LociNumberUnequal : public InvalidInput{
+  LociNumberUnequal( string str ):InvalidInput( str ){
+    this->reason = "Number of sites was wrong (compared to ref count) in: ";
+    throwMsg = this->reason + this->src ;
+  }
+  ~LociNumberUnequal(){}
+};
+
+
 #endif

@@ -95,8 +95,15 @@ void PfDeconvIO::finalize(){
     assert( indexOfChromStarts_.size() == this->chrom_.size() );
 
     this->nLoci_ = refCount_.size();
-    assert( this->nLoci_ == this->plaf_.size() );
-    assert( this->altCount_.size() == this->nLoci_ );
+
+    if ( this->nLoci_ != this->plaf_.size() ){
+        throw LociNumberUnequal( this->plafFileName_ );
+    }
+
+    if ( this->nLoci_ != this->altCount_.size() ){
+        throw LociNumberUnequal( this->altFileName_ );
+    }
+
     (void)removeFilesWithSameName();
 }
 

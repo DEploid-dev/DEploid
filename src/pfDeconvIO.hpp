@@ -58,6 +58,8 @@ class PfDeconvIO{
     void writeHap (McmcSample * mcmcSample);
     void writeLog (McmcSample * mcmcSample, ostream * writeTo );
 
+    size_t nLoci() const { return this->nLoci_; }
+
   private:
     // Read in input
     string plafFileName_;

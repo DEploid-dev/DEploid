@@ -13,6 +13,7 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST( testUnknowArg );
     CPPUNIT_TEST( testFlagsConflict );
     CPPUNIT_TEST( testExtractRefAltPlaf );
+    CPPUNIT_TEST( testLociNumberUnequal );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -223,6 +224,24 @@ class TestIO : public CppUnit::TestCase {
                          "-noPanel",
                          "-panel", "labStrains/lab_first100_Panel.txt"};
         CPPUNIT_ASSERT_THROW ( PfDeconvIO pars2(10, argv2), FlagsConflict );
+    }
+
+
+    void testLociNumberUnequal(){
+        char *argv1[] = { "./pfDeconv",
+                         "-ref", "labStrains/PG0390_first100ref.txt",
+                         "-alt", "labStrains/PG0390_first100alt.txt",
+                         "-plaf", "labStrains/labStrains_samples_PLAF.txt",
+                         "-panel", "labStrains/lab_first100_Panel.txt" };
+        CPPUNIT_ASSERT_THROW ( PfDeconvIO pars1(9, argv1), LociNumberUnequal );
+
+        char *argv2[] = { "./pfDeconv",
+                         "-ref", "labStrains/PG0390_first100ref.txt",
+                         "-alt", "labStrains/PG0390.C_alt.txt",
+                         "-plaf", "labStrains/labStrains_first100_PLAF.txt",
+                         "-panel", "labStrains/lab_first100_Panel.txt" };
+        CPPUNIT_ASSERT_THROW ( PfDeconvIO pars1(9, argv2), LociNumberUnequal );
+
     }
 
 
