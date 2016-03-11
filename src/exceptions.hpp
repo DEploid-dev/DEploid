@@ -99,4 +99,12 @@ struct UnknowArg : public InvalidInput{
 };
 
 
+struct FlagsConflict : public InvalidInput{
+  FlagsConflict( string str1, string str2 ):InvalidInput( str1 ){
+    this->reason = "Flag: ";
+    throwMsg = this->reason + this->src + string(" conflict with flag ") + str2;
+  }
+  ~FlagsConflict(){}
+};
+
 #endif
