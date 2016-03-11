@@ -11,6 +11,7 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST( testFileNameMissing );
     CPPUNIT_TEST( testInvalidInputFile );
     CPPUNIT_TEST( testUnknowArg );
+    CPPUNIT_TEST( testFlagsConflict );
     CPPUNIT_TEST( testExtractRefAltPlaf );
     CPPUNIT_TEST_SUITE_END();
 
@@ -203,6 +204,25 @@ class TestIO : public CppUnit::TestCase {
     void testUnknowArg(){
         char *argv[] = { "./pfDeconv", "-unknow"};
         CPPUNIT_ASSERT_THROW( PfDeconvIO pars(2, argv), UnknowArg );
+    }
+
+
+    void testFlagsConflict(){
+        char *argv1[] = { "./pfDeconv",
+                         "-ref", "labStrains/PG0390_first100ref.txt",
+                         "-alt", "labStrains/PG0390_first100alt.txt",
+                         "-plaf", "labStrains/labStrains_first100_PLAF.txt",
+                         "-panel", "labStrains/lab_first100_Panel.txt",
+                         "-noPanel" };
+        CPPUNIT_ASSERT_THROW ( PfDeconvIO pars1(10, argv1), FlagsConflict );
+
+        char *argv2[] = { "./pfDeconv",
+                         "-ref", "labStrains/PG0390_first100ref.txt",
+                         "-alt", "labStrains/PG0390_first100alt.txt",
+                         "-plaf", "labStrains/labStrains_first100_PLAF.txt",
+                         "-noPanel",
+                         "-panel", "labStrains/lab_first100_Panel.txt"};
+        CPPUNIT_ASSERT_THROW ( PfDeconvIO pars2(10, argv2), FlagsConflict );
     }
 
 

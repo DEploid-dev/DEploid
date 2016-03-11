@@ -125,12 +125,12 @@ void PfDeconvIO::parse (){
             this->readNextStringto ( this->plafFileName_ ) ;
         } else if (*argv_i == "-panel") {
             if ( this->usePanel() == false ){
-                throw ("use panel?");
+                throw ( FlagsConflict((*argv_i) , "-noPanel") );
             }
             this->readNextStringto ( this->panelFileName_ ) ;
         } else if (*argv_i == "-noPanel"){
             if ( usePanel() && this->panelFileName_.size() > 0 ){
-                throw ("use panel?");
+                throw ( FlagsConflict((*argv_i) , "-panel") );
             }
             this->set_panel(false);
         } else if (*argv_i == "-o") {
