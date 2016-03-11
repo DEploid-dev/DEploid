@@ -111,6 +111,6 @@ void PfDeconvIO::writeHap( McmcSample * mcmcSample ){
         }
     }
 
-    assert ( (siteIndex+1) == mcmcSample->hap.size());
+    assert ( siteIndex == mcmcSample->hap.size());
     ofstreamExportHap.close();
 }
