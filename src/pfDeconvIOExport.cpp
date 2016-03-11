@@ -83,20 +83,34 @@ void PfDeconvIO::writeProp( McmcSample * mcmcSample){
 void PfDeconvIO::writeLLK( McmcSample * mcmcSample){
     ofstreamExportLLK.open( strExportLLK.c_str(), ios::out | ios::app | ios::binary );
     for ( size_t i = 0; i < mcmcSample->sumLLKs.size(); i++){
-        //if ( this->moves[i] != 2)
         ofstreamExportLLK << mcmcSample->moves[i] << "\t" << mcmcSample->sumLLKs[i] << endl;
     }
     ofstreamExportLLK.close();
 }
 
 
-void PfDeconvIO::writeHap( McmcSample * mcmcSample){
+void PfDeconvIO::writeHap( McmcSample * mcmcSample ){
     ofstreamExportHap.open( strExportHap.c_str(), ios::out | ios::app | ios::binary );
-    for ( size_t i = 0; i < mcmcSample->hap.size(); i++ ){
-        for ( size_t ii = 0; ii < mcmcSample->hap[i].size(); ii++){
-            ofstreamExportHap << mcmcSample->hap[i][ii];
-            ofstreamExportHap << ((ii < (mcmcSample->hap[i].size()-1)) ? "\t" : "\n") ;
+
+    // HEADER
+    ofstreamExportHap << "CHROM" << "\t" << "POS" << "\t";;
+    for ( size_t ii = 0; ii < kStrain_; ii++){
+        ofstreamExportHap << "h" << (ii+1) ;
+        ofstreamExportHap << ((ii < (kStrain_-1)) ? "\t" : "\n") ;
+    }
+
+    size_t siteIndex = 0;
+    for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
+        for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
+            ofstreamExportHap << chrom_[chromI] << "\t" << position_[chromI][posI] << "\t";
+            for ( size_t ii = 0; ii < mcmcSample->hap[siteIndex].size(); ii++){
+                ofstreamExportHap << mcmcSample->hap[siteIndex][ii];
+                ofstreamExportHap << ((ii < (mcmcSample->hap[siteIndex].size()-1)) ? "\t" : "\n") ;
+            }
+            siteIndex++;
         }
     }
+
+    assert ( (siteIndex+1) == mcmcSample->hap.size());
     ofstreamExportHap.close();
 }
