@@ -27,7 +27,7 @@
 #include "atMarker.hpp"
 #include "exceptions.hpp"
 
-class Panel: public AtMarker{
+class Panel: public InputMarker{
  friend class TestPanel;
  friend class UpdateSingleHap;
  friend class UpdatePairHap;
@@ -49,10 +49,7 @@ class Panel: public AtMarker{
     void computeRecombProbs( double averageCentimorganDistance = 15000.0, double Ne = 10.0 );
 
   public:
-    Panel(const char inchar[], size_t nLociForChecking ):AtMarker(inchar){
-        if ( this->content_.size() != nLociForChecking ){
-            throw LociNumberUnequal( string(inchar) );
-        }
+    Panel(const char inchar[] ):InputMarker(inchar){
         this->nPanel_ = this->nInfoLines_;
         this->computeRecombProbs();
     };

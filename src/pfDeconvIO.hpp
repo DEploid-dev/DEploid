@@ -30,6 +30,7 @@
 #include <sstream>      // std::stringstream
 #include "global.h"
 #include "exceptions.hpp"
+#include "atMarker.hpp"
 
 #ifndef PARAM
 #define PARAM
@@ -60,11 +61,16 @@ class PfDeconvIO{
 
     size_t nLoci() const { return this->nLoci_; }
 
+    ExcludeMarker* excludedMarkers;
+    bool exclude_sites_;
+
   private:
+
     // Read in input
     string plafFileName_;
     string refFileName_;
     string altFileName_;
+    string excludeFileName_;
     string prefix_;
     size_t random_seed_;
     bool seed_set_;

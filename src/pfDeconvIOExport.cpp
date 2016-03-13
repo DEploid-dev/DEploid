@@ -49,6 +49,7 @@ void PfDeconvIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
     (*writeTo) << setw(12) << "PLAF: "      << plafFileName_   << "\n";
     (*writeTo) << setw(12) << "REF count: " << refFileName_    << "\n";
     (*writeTo) << setw(12) << "ALT count: " << altFileName_    << "\n";
+    if ( exclude_sites_ ){ (*writeTo) << setw(12) << "Exclude: " << excludeFileName_    << "\n"; }
     (*writeTo) << "\n";
     (*writeTo) << "Mcmc chain parameters:"<< "\n";
     (*writeTo) << "MCMC sample: " << nMcmcSample_ << ", sample rate: " << mcmcMachineryRate_ <<"\n";
@@ -111,6 +112,6 @@ void PfDeconvIO::writeHap( McmcSample * mcmcSample ){
         }
     }
 
-    assert ( (siteIndex+1) == mcmcSample->hap.size());
+    assert ( siteIndex == mcmcSample->hap.size());
     ofstreamExportHap.close();
 }

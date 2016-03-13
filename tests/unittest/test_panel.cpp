@@ -12,7 +12,7 @@ class TestPanel : public CppUnit::TestCase {
     CPPUNIT_TEST( checkPOS2 );
     CPPUNIT_TEST( checkRecombProb );
     CPPUNIT_TEST( checkRecombProbEach );
-    CPPUNIT_TEST( testLociNumberUnequal );
+    //CPPUNIT_TEST( testLociNumberUnequal );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -21,7 +21,7 @@ class TestPanel : public CppUnit::TestCase {
   public:
     void setUp() {
         // in R: panel = read.csv("clonalPanel.csv", header = T)
-        this->panel_ = new Panel("labStrains/clonalPanel.csv", 17115);
+        this->panel_ = new Panel("labStrains/clonalPanel.csv");
     }
 
     void tearDown() {
@@ -149,10 +149,10 @@ class TestPanel : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel_->pRecEachHap_[17114], 0.000000000001);
     }
 
-    void testLociNumberUnequal(){
-        CPPUNIT_ASSERT_THROW ( Panel("labStrains/clonalPanel.csv", 17114), LociNumberUnequal );
-        CPPUNIT_ASSERT_THROW ( Panel("labStrains/clonalPanel.csv", 100), LociNumberUnequal );
-    }
+    //void testLociNumberUnequal(){
+        //CPPUNIT_ASSERT_THROW ( Panel("labStrains/clonalPanel.csv", 17114), LociNumberUnequal );
+        //CPPUNIT_ASSERT_THROW ( Panel("labStrains/clonalPanel.csv", 100), LociNumberUnequal );
+    //}
 
 };
 
