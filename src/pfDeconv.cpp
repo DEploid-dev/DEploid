@@ -41,7 +41,13 @@ int main( int argc, char *argv[] ){
         Panel *panel = NULL;
 
         if ( pfDeconvIO.usePanel() ){
-            panel = new Panel(pfDeconvIO.panelFileName_.c_str(), pfDeconvIO.nLoci());
+            panel = new Panel(pfDeconvIO.panelFileName_.c_str());
+            if ( pfDeconvIO.exclude_sites_ ){
+                panel->removeMarkers( pfDeconvIO.excludedMarkers );
+            }
+            if ( panel->content_.size() != pfDeconvIO.nLoci() ){
+                throw LociNumberUnequal( pfDeconvIO.panelFileName_ );
+            }
         }
 
         McmcSample * mcmcSample = new McmcSample();

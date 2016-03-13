@@ -21,8 +21,11 @@
 
 */
 
+#include <algorithm> // find
 #include <fstream>
 #include <iostream>
+#include <iterator>     // std::distance
+
 #include "exceptions.hpp"
 #include "atMarker.hpp"
 
@@ -57,7 +60,6 @@ void AtMarker::extractPOS( string & tmp_str ){
 AtMarker::AtMarker(const char inchar[]){
     tmpChromInex_ = -1;
 
-    //cout << "Build Panel" << endl;
     ifstream in_file( inchar );
     string tmp_line;
     if ( in_file.good() ){
@@ -105,6 +107,7 @@ AtMarker::AtMarker(const char inchar[]){
 
     assert ( tmpChromInex_ > -1 );
     assert ( chrom_.size() == position_.size() );
+    this->getIndexOfChromStarts();
 }
 
 
@@ -113,4 +116,66 @@ void AtMarker::reshapeContentToInfo(){
     for ( size_t i = 0; i < this->nLoci_; i++){
         this->info_.push_back( this->content_[i][0] );
     }
+}
+
+void AtMarker::getIndexOfChromStarts(){
+    this->indexOfChromStarts_.clear();
+    assert( indexOfChromStarts_.size() == 0 );
+    indexOfChromStarts_.push_back( (size_t) 0);
+    for ( size_t tmpChrom = 0 ; indexOfChromStarts_.size() < this->chrom_.size(); tmpChrom++ ){
+        indexOfChromStarts_.push_back(indexOfChromStarts_.back()+this->position_[tmpChrom].size());
+    }
+    assert( indexOfChromStarts_.size() == this->chrom_.size() );
+}
+
+
+void InputMarker::removeMarkers( ExcludeMarker* excludedMarkers ){
+
+    vector < size_t > indexOfHapRemovals;
+    vector < vector < size_t > > indexOfPosRemovals;
+
+    for ( size_t chromI = 0; chromI < this->chrom_.size(); chromI++){
+        // detemine if something needs to be removed from the current chrom.
+        vector<string>::iterator chromIt;
+
+        chromIt = find ( excludedMarkers->chrom_.begin(),  excludedMarkers->chrom_.end(), this->chrom_[chromI]);
+        if ( chromIt == excludedMarkers->chrom_.end() ) {
+            continue;
+        }
+
+        size_t hapIndex = indexOfChromStarts_[ std::distance(excludedMarkers->chrom_.begin(), chromIt) ];
+
+        vector < size_t > tmpIndexOfPosRemovals;
+        for ( size_t posI = 0; posI < this->position_[chromI].size(); posI++){
+            if ( std::find(excludedMarkers->position_[chromI].begin(), excludedMarkers->position_[chromI].end(), this->position_[chromI][posI]) != excludedMarkers->position_[chromI].end() ){
+                indexOfHapRemovals.push_back(hapIndex);
+                tmpIndexOfPosRemovals.push_back(posI);
+            }
+            hapIndex++;
+        }
+        reverse( tmpIndexOfPosRemovals.begin(), tmpIndexOfPosRemovals.end() );
+        indexOfPosRemovals.push_back(tmpIndexOfPosRemovals);
+    }
+
+    reverse( indexOfHapRemovals.begin(), indexOfHapRemovals.end() );
+
+    for ( size_t chromI = 0; chromI < this->chrom_.size(); chromI++){
+        for ( auto const &value: indexOfPosRemovals[chromI]){// std::vector<size_t>::iterator it=indexOfHapRemovals.begin(); it!=indexOfHapRemovals.end(); it++ ){
+            this->position_[chromI].erase ( this->position_[chromI].begin() + value );
+        }
+    }
+
+    for ( auto const &value: indexOfHapRemovals){// std::vector<size_t>::iterator it=indexOfHapRemovals.begin(); it!=indexOfHapRemovals.end(); it++ ){
+        this->content_.erase(this->content_.begin() + value );
+    }
+
+    if ( this->nInfoLines_ == 1 ){
+        for ( auto const &value: indexOfHapRemovals){// std::vector<size_t>::iterator it=indexOfHapRemovals.begin(); it!=indexOfHapRemovals.end(); it++ ){
+            this->info_.erase(this->info_.begin() + value );
+        }
+    }
+
+
+    this->getIndexOfChromStarts();
+
 }

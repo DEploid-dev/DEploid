@@ -39,12 +39,12 @@ class AtMarker{
  friend class UpdateHap;
  friend class Panel;
  friend class PfDeconvIO;
+ friend class InputMarker;
   private:
     // Members
     vector <string> chrom_;
+    vector < size_t > indexOfChromStarts_;
     vector < vector < double> > position_;
-    // content is a matrix of n.loci by n.strains, i.e. content length is n.loci
-    vector < vector < double > > content_;
     // info_ only refers to the first column of the content
     vector <double> info_;
 
@@ -58,11 +58,32 @@ class AtMarker{
     void extractChrom( string & tmp_str );
     void extractPOS ( string & tmp_str );
     void reshapeContentToInfo();
+    void getIndexOfChromStarts();
 
   public:
+    // content is a matrix of n.loci by n.strains, i.e. content length is n.loci
+    vector < vector < double > > content_;
     AtMarker(const char inchar[]);
     virtual ~AtMarker(){};
 };
 
+
+class ExcludeMarker : public AtMarker {
+  // sorting
+  public:
+    ExcludeMarker(const char inchar[] ):AtMarker(inchar){};
+    ~ExcludeMarker(){};
+};
+
+
+class InputMarker : public AtMarker {
+ //friend class PfDeconvIO;
+  //private:
+
+  public:
+    InputMarker(const char inchar[] ):AtMarker(inchar){ };
+    void removeMarkers( ExcludeMarker* excludedMarkers );
+    virtual ~InputMarker(){};
+};
 
 #endif

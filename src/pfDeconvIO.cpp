@@ -21,13 +21,16 @@
 
 */
 
-#include "atMarker.hpp"
 #include "pfDeconvIO.hpp"
 #include <cassert>       // assert
 #include <iomanip>      // std::setw
 
 
-PfDeconvIO::~PfDeconvIO(){}
+PfDeconvIO::~PfDeconvIO(){
+    if ( this->excludedMarkers != NULL ){
+        delete this->excludedMarkers;
+    }
+}
 
 
 PfDeconvIO::PfDeconvIO(int argc, char *argv[]) {
@@ -48,6 +51,8 @@ PfDeconvIO::PfDeconvIO(int argc, char *argv[]) {
 
 void PfDeconvIO::init() {
     this->seed_set_ = false;
+    this->exclude_sites_ = false;
+    this->excludedMarkers = NULL;
     this->set_seed( 0 );
     this->set_help(false);
     this->set_panel(true);
@@ -72,27 +77,30 @@ void PfDeconvIO::init() {
 
 
 void PfDeconvIO::finalize(){
-    AtMarker ref (refFileName_.c_str());
+    if ( this->exclude_sites_ ){
+        excludedMarkers = new ExcludeMarker(excludeFileName_.c_str());
+    }
+
+    InputMarker ref (refFileName_.c_str());
+    if ( this->exclude_sites_ ){
+        ref.removeMarkers( excludedMarkers );
+    }
     this->refCount_ = ref.info_;
 
-    AtMarker alt (altFileName_.c_str());
+    InputMarker alt (altFileName_.c_str());
+    if ( this->exclude_sites_ ){
+        alt.removeMarkers( excludedMarkers );
+    }
     this->altCount_ = alt.info_;
 
-    AtMarker plaf (plafFileName_.c_str());
+    InputMarker plaf (plafFileName_.c_str());
+    if ( this->exclude_sites_ ){
+        plaf.removeMarkers( excludedMarkers );
+    }
     this->plaf_ = plaf.info_;
     this->chrom_ = plaf.chrom_;
     this->position_ = plaf.position_;
-
-    assert( indexOfChromStarts_.size() == 0 );
-    indexOfChromStarts_.push_back( (size_t) 0);
-
-    size_t tmpChrom = 0;
-    for ( ; indexOfChromStarts_.size() < this->chrom_.size(); ){
-        //cout << "indexOfChromStarts_.size() = " << indexOfChromStarts_.size() << ", indexOfChromStarts_.back() = " << indexOfChromStarts_.back() << ", this->position_["<<tmpChrom<<"].size() = "<< this->position_[tmpChrom].size()<< endl;
-        indexOfChromStarts_.push_back(indexOfChromStarts_.back()+this->position_[tmpChrom].size());
-        tmpChrom++;
-    }
-    assert( indexOfChromStarts_.size() == this->chrom_.size() );
+    this->indexOfChromStarts_ = plaf.indexOfChromStarts_;
 
     this->nLoci_ = refCount_.size();
 
@@ -140,6 +148,9 @@ void PfDeconvIO::parse (){
                 throw ( FlagsConflict((*argv_i) , "-panel") );
             }
             this->set_panel(false);
+        } else if (*argv_i == "-exclude"){
+            this->exclude_sites_ = true;
+            this->readNextStringto ( this->excludeFileName_ ) ;
         } else if (*argv_i == "-o") {
             this->readNextStringto ( this->prefix_ ) ;
         } else if ( *argv_i == "-p" ) {
@@ -171,6 +182,8 @@ void PfDeconvIO::checkInput(){
         throw FileNameMissing ( "PLAF" );
     if ( usePanel() && this->panelFileName_.size() == 0 )
         throw FileNameMissing ( "Reference panel" );
+    if ( exclude_sites_ && this->excludeFileName_.size() == 0 )
+        throw FileNameMissing ( "Exclude sites" );
 }
 
 
@@ -191,16 +204,18 @@ void PfDeconvIO::printHelp(){
     cout << "Usage:"
          << endl;
     cout << setw(20) << "-h or -help"         << "  --  " << "Help. List the following content."<<endl;
-    cout << setw(20) << "-ref STR"            << "  --  " << "Path of reference allele count file."<<endl;
-    cout << setw(20) << "-alt STR"            << "  --  " << "Path of alternative allele count file."<<endl;
-    cout << setw(20) << "-plaf STR"           << "  --  " << "Path of population level allele frequency file."<<endl;
-    cout << setw(20) << "-panel STR"          << "  --  " << "Path of reference panel."<<endl;
+    cout << setw(20) << "-ref STR"            << "  --  " << "File path of reference allele count."<<endl;
+    cout << setw(20) << "-alt STR"            << "  --  " << "File path of alternative allele count."<<endl;
+    cout << setw(20) << "-plaf STR"           << "  --  " << "File path of population level allele frequencies."<<endl;
+    cout << setw(20) << "-panel STR"          << "  --  " << "File path of the reference panel."<<endl;
+    cout << setw(20) << "-exclude STR"        << "  --  " << "File path of sites to be excluded."<<endl;
     cout << setw(20) << "-o STR"              << "  --  " << "Specify the file name prefix of the output."<<endl;
     cout << setw(20) << "-p INT"              << "  --  " << "Out put precision (default value 8)."<<endl;
     cout << setw(20) << "-k INT"              << "  --  " << "Number of strain (default value 5)."<<endl;
     cout << setw(20) << "-seed INT"           << "  --  " << "Random seed."<<endl;
     cout << setw(20) << "-nSample INT"        << "  --  " << "Number of MCMC samples."<<endl;
     cout << setw(20) << "-rate INT"           << "  --  " << "MCMC sample rate."<<endl;
+    cout << setw(20) << "-noPanel"            << "  --  " << "Use population level allele frequency as prior."<<endl;
     cout << endl;
     cout << "Examples:" << endl;
     cout << endl;
@@ -208,4 +223,5 @@ void PfDeconvIO::printHelp(){
     cout << "./pfDeconv -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
     cout << "./pfDeconv_dbg -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
     cout << "./pfDeconv_dbg -ref labStrains/PG0390.C_ref.txt -alt labStrains/PG0390.C_alt.txt -plaf labStrains/labStrains_samples_PLAF.txt -panel labStrains/clonalPanel.csv -nSample 500 -rate 5" << endl;
+    cout << "./pfDeconv -ref labStrains/PG0389.C_ref.txt -alt labStrains/PG0389.C_alt.txt -plaf labStrains/labStrains_samples_PLAF.txt -panel labStrains/clonalPanel.csv -exclude labStrains/PG0389.C.exclude.csv" << endl;
 }
