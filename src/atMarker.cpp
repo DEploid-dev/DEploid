@@ -135,17 +135,20 @@ void InputMarker::removeMarkers( ExcludeMarker* excludedMarkers ){
     vector < vector < size_t > > indexOfPosRemovals;
 
     for ( size_t chromI = 0; chromI < this->chrom_.size(); chromI++){
+        vector < size_t > tmpIndexOfPosRemovals;
+
         // detemine if something needs to be removed from the current chrom.
         vector<string>::iterator chromIt;
 
         chromIt = find ( excludedMarkers->chrom_.begin(),  excludedMarkers->chrom_.end(), this->chrom_[chromI]);
         if ( chromIt == excludedMarkers->chrom_.end() ) {
+            dout << " Remove markers skipping " << chrom_[chromI] << endl;
+            indexOfPosRemovals.push_back(tmpIndexOfPosRemovals);
             continue;
         }
 
         size_t hapIndex = indexOfChromStarts_[ std::distance(excludedMarkers->chrom_.begin(), chromIt) ];
 
-        vector < size_t > tmpIndexOfPosRemovals;
         for ( size_t posI = 0; posI < this->position_[chromI].size(); posI++){
             if ( std::find(excludedMarkers->position_[chromI].begin(), excludedMarkers->position_[chromI].end(), this->position_[chromI][posI]) != excludedMarkers->position_[chromI].end() ){
                 indexOfHapRemovals.push_back(hapIndex);

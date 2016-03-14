@@ -28,7 +28,7 @@
 #include <vector>
 #include <string>
 #include <cassert>
-
+#include "global.h"
 
 using namespace std;
 
