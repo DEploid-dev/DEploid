@@ -24,8 +24,19 @@
 #include "panel.hpp"
 #include <math.h>
 
+void Panel::checkForExceptions( size_t nLoci, string panelFileName ){
+    if ( this->content_.size() != nLoci ){
+        throw LociNumberUnequal( panelFileName );
+    }
 
-void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne){
+    if ( this->pRec_.size() != nLoci ){
+        throw LociNumberUnequal( panelFileName );
+    }
+
+}
+
+
+void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb ){
     assert(pRec_.size() == 0 );
     assert(pRecEachHap_.size() == 0 );
     assert(pNoRec_.size() == 0 );
@@ -43,7 +54,7 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne){
             geneticDistance = (this->position_[i][j] - this->position_[i][j-1])/averageMorganDistance ;
             rho = geneticDistance * 2 * Ne;
 
-            double pRecTmp = 1.0 - exp(-rho);
+            double pRecTmp = ( useConstRecomb ) ? constRecombProb : 1.0 - exp(-rho);
             this->pRec_.push_back( pRecTmp );
 
             double pRecEachHapTmp = pRecTmp / nPanelDouble;
@@ -52,7 +63,8 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne){
             double pNoRecTmp = 1.0 - pRecTmp;
             this->pNoRec_.push_back( pNoRecTmp );
 
-            double secondPRecEachHapTmp = pRecTmp / nPanlelMinus1;
+            double secondPRecEachHapTmp = pRecTmp / nPanlelMinus1; // Forbit to copy from the same
+            //double secondPRecEachHapTmp = pRecEachHapTmp; // allowing copy from the same
 
             this->pRecRec_.push_back ( pRecEachHapTmp * secondPRecEachHapTmp );
             this->pRecNoRec_.push_back ( secondPRecEachHapTmp * pNoRecTmp );
@@ -61,11 +73,11 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne){
         this->pRec_.push_back(1.0);
         this->pRecEachHap_.push_back( 1.0 / nPanelDouble );
         this->pNoRec_.push_back(0.0);
-        this->pRecRec_.push_back ( 1.0 / nPanelDouble / nPanelDouble );
+        this->pRecRec_.push_back ( 1.0 / nPanelDouble / nPanlelMinus1 );
         this->pRecNoRec_.push_back ( 0.0 );
         this->pNoRecNoRec_.push_back ( 0.0 );
-
     }
+
     assert(pRec_.size() == this->nLoci_ );
     assert(pRecEachHap_.size() == this->nLoci_ );
     assert(pNoRec_.size() == this->nLoci_ );

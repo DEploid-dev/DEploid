@@ -45,9 +45,9 @@ int main( int argc, char *argv[] ){
             if ( pfDeconvIO.exclude_sites_ ){
                 panel->removeMarkers( pfDeconvIO.excludedMarkers );
             }
-            if ( panel->content_.size() != pfDeconvIO.nLoci() ){
-                throw LociNumberUnequal( pfDeconvIO.panelFileName_ );
-            }
+
+            panel->computeRecombProbs( pfDeconvIO.averageCentimorganDistance(), pfDeconvIO.Ne(), pfDeconvIO.useConstRecomb(), pfDeconvIO.constRecombProb() );
+            panel->checkForExceptions( pfDeconvIO.nLoci(), pfDeconvIO.panelFileName_ );
         }
 
         McmcSample * mcmcSample = new McmcSample();
@@ -55,7 +55,7 @@ int main( int argc, char *argv[] ){
         McmcMachinery mcmcMachinery(&pfDeconvIO, panel, mcmcSample);
         mcmcMachinery.runMcmcChain();
 
-        pfDeconvIO.write(mcmcSample);
+        pfDeconvIO.write(mcmcSample, panel);
 
         if ( panel ){
             delete panel;

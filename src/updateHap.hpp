@@ -47,11 +47,11 @@ class UpdateHap{
                MersenneTwister* rg,
                size_t segmentStartIndex,
                size_t nLoci,
-               Panel* panel);
+               Panel* panel );
     virtual ~UpdateHap(){}
 
     Panel* panel_;
-    double missCopyProb;
+    double missCopyProb_;
     MersenneTwister* rg_;
     size_t strainIndex_;
     size_t kStrain_;
@@ -66,10 +66,10 @@ class UpdateHap{
     // Methods
     virtual void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes){};
     virtual void calcHapLLKs( vector <double> &refCount, vector <double> &altCount){};
-    virtual void buildEmission(){};
+    virtual void buildEmission( double missCopyProb ){};
     virtual void calcFwdProbs(){};
     virtual void samplePaths(){};
-    virtual void addMissCopying(){};
+    virtual void addMissCopying( double missCopyProb ){};
     virtual void updateLLK(){};
     virtual void sampleHapIndependently(){};
 
@@ -88,7 +88,7 @@ class UpdateSingleHap : public UpdateHap{
                       MersenneTwister* rg,
                       size_t segmentStartIndex,
                       size_t nLoci,
-                      Panel* panel,
+                      Panel* panel, double missCopyProb,
                       size_t strainIndex );
     ~UpdateSingleHap(){}
   private:
@@ -106,10 +106,10 @@ class UpdateSingleHap : public UpdateHap{
     // Methods
     void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
     void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
-    void buildEmission();
+    void buildEmission( double missCopyProb );
     void calcFwdProbs();
     void samplePaths();
-    void addMissCopying();
+    void addMissCopying( double missCopyProb );
     void sampleHapIndependently();
     void updateLLK();
 };
@@ -128,7 +128,7 @@ class UpdatePairHap : public UpdateHap{
                       MersenneTwister* rg,
                       size_t segmentStartIndex,
                       size_t nLoci,
-                      Panel* panel,
+                      Panel* panel, double missCopyProb,
                       size_t strainIndex1,
                       size_t strainIndex2 );
     ~UpdatePairHap(){}
@@ -155,10 +155,10 @@ class UpdatePairHap : public UpdateHap{
     // Methods
     void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
     void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
-    void buildEmission();
+    void buildEmission( double missCopyProb );
     void calcFwdProbs();
     void samplePaths();
-    void addMissCopying();
+    void addMissCopying( double missCopyProb );
     void sampleHapIndependently();
     void updateLLK();
 

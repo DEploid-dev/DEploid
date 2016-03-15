@@ -24,10 +24,11 @@
 #include "pfDeconvIO.hpp"
 #include "mcmc.hpp"
 
-void PfDeconvIO::write( McmcSample * mcmcSample ){
+void PfDeconvIO::write( McmcSample * mcmcSample, Panel * panel ){
     this->writeProp( mcmcSample );
     this->writeLLK( mcmcSample );
     this->writeHap( mcmcSample );
+    this->writeRecombProb( panel );
 
     this->writeLog ( mcmcSample, &std::cout );
 
@@ -35,6 +36,30 @@ void PfDeconvIO::write( McmcSample * mcmcSample ){
     this->writeLog ( mcmcSample, &ofstreamExportLog );
     ofstreamExportLog.close();
 }
+
+
+void PfDeconvIO::writeRecombProb ( Panel * panel ){
+
+    if ( panel != NULL ){
+        ofstreamExportRecombProb.open( strExporRecombProb.c_str(), ios::out | ios::app | ios::binary );
+        ofstreamExportRecombProb << "p.recomb"       << "\t"
+                                 << "p.each"         << "\t"
+                                 << "p.no.recomb"    << "\t"
+                                 << "p.rec.rec"      << "\t"
+                                 << "p.rec.norec"    << "\t"
+                                 << "p.norec.norec"  << "\n";
+        for ( size_t i = 0; i < panel->pRec_.size(); i++ ){
+            ofstreamExportRecombProb << panel->pRec_[i]           << "\t"
+                                     << panel->pRecEachHap_[i]    << "\t"
+                                     << panel->pNoRec_[i]         << "\t"
+                                     << panel->pRecRec_[i]        << "\t"
+                                     << panel->pRecNoRec_[i]      << "\t"
+                                     << panel->pNoRecNoRec_[i]    << "\n";
+        }
+        ofstreamExportProp.close();
+    }
+}
+
 
 
 void PfDeconvIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
@@ -51,9 +76,15 @@ void PfDeconvIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
     (*writeTo) << setw(12) << "ALT count: " << altFileName_    << "\n";
     if ( exclude_sites_ ){ (*writeTo) << setw(12) << "Exclude: " << excludeFileName_    << "\n"; }
     (*writeTo) << "\n";
-    (*writeTo) << "Mcmc chain parameters:"<< "\n";
-    (*writeTo) << "MCMC sample: " << nMcmcSample_ << ", sample rate: " << mcmcMachineryRate_ <<"\n";
-    if ( seed_set_ ) { (*writeTo) << "Random seed: "<< random_seed_ << "\n";}
+    (*writeTo) << "MCMC parameters: "<< "\n";
+    (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_ << "\n";
+    (*writeTo) << setw(19) << " MCMC sample rate: " << mcmcMachineryRate_ <<"\n";
+    (*writeTo) << setw(19) << " Random seed: " << this->random_seed_ << "\n";
+    (*writeTo) << "\n";
+    (*writeTo) << "Other parameters:"<< "\n";
+    (*writeTo) << setw(20) << " Miss copy prob: "   << this->missCopyProb_ << "\n";
+    (*writeTo) << setw(20) << " Avrg Cent Morgan: " << this->averageCentimorganDistance_ << "\n";
+    (*writeTo) << setw(20) << " Ne: "               << this->Ne_ << "\n";
     (*writeTo) << "\n";
     (*writeTo) << "Output saved to:\n";
     (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";

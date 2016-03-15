@@ -31,6 +31,7 @@
 #include "global.h"
 #include "exceptions.hpp"
 #include "atMarker.hpp"
+#include "panel.hpp"
 
 #ifndef PARAM
 #define PARAM
@@ -53,13 +54,18 @@ class PfDeconvIO{
     string panelFileName_;
 
     // log
-    void write (McmcSample * mcmcSample);
+    void write (McmcSample * mcmcSample, Panel * panel );
+    void writeRecombProb ( Panel * panel );
     void writeLLK (McmcSample * mcmcSample);
     void writeProp (McmcSample * mcmcSample);
     void writeHap (McmcSample * mcmcSample);
     void writeLog (McmcSample * mcmcSample, ostream * writeTo );
 
     size_t nLoci() const { return this->nLoci_; }
+    double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
+    double Ne() const { return this->Ne_; }
+    double constRecombProb() const { return this->constRecombProb_; }
+    bool useConstRecomb() const { return this->useConstRecomb_; }
 
     ExcludeMarker* excludedMarkers;
     bool exclude_sites_;
@@ -74,6 +80,7 @@ class PfDeconvIO{
     string prefix_;
     size_t random_seed_;
     bool seed_set_;
+    bool useConstRecomb_;
     size_t kStrain_;
     size_t precision_;
     size_t nMcmcSample_;
@@ -89,6 +96,12 @@ class PfDeconvIO{
     bool help_;
     bool usePanel_;
 
+    // Parameters
+    double missCopyProb_;
+    double averageCentimorganDistance_;// = 15000.0,
+    double Ne_;// = 10.0
+    double constRecombProb_;
+
     std::vector<std::string> argv_;
     std::vector<std::string>::iterator argv_i;
 
@@ -100,10 +113,13 @@ class PfDeconvIO{
     string strExportHap;
     string strExportProp;
     string strExportLog;
+    string strExporRecombProb;
+
     ofstream ofstreamExportLLK;
     ofstream ofstreamExportHap;
     ofstream ofstreamExportProp;
     ofstream ofstreamExportLog;
+    ofstream ofstreamExportRecombProb;
     void removeFilesWithSameName();
 
 
