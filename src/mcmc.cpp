@@ -35,10 +35,10 @@ McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *
     this->panel_ = panel;
     this->mcmcSample_ = mcmcSample;
 
-    this->seed_ = ( this->pfDeconvIO_->seed_set_ ) ? this->pfDeconvIO_->random_seed_: (unsigned)(time(0));
+    this->seed_ = this->pfDeconvIO_->random_seed_;
 
     this->rg_ = new MersenneTwister(this->seed_);
-    this->burnIn_ = 0.5;
+    this->burnIn_ = pdfDeconfIO->mcmcBurn_;
     this->calcMaxIteration( pfDeconvIO_->nMcmcSample_ , pfDeconvIO_->mcmcMachineryRate_ );
 
     this->MN_LOG_TITRE = 0.0;
@@ -321,7 +321,7 @@ void McmcMachinery::updateSingleHap(){
                                   this->currentExpectedWsaf_,
                                   this->currentProp_, this->currentHap_, this->rg_,
                                   start, length,
-                                  this->panel_,
+                                  this->panel_, this->pfDeconvIO_->missCopyProb_,
                                   this->strainIndex_);
         size_t updateIndex = 0;
         for ( size_t ii = start ; ii < (start+length); ii++ ){
@@ -349,7 +349,8 @@ void McmcMachinery::updatePairHaps(){
                                 this->currentExpectedWsaf_,
                                 this->currentProp_, this->currentHap_, this->rg_,
                                 start, length,
-                                this->panel_,
+                                this->panel_, this->pfDeconvIO_->missCopyProb_,
+                                //NULL, this->pfDeconvIO_->missCopyProb_,  // DEBUG
                                 this->strainIndex1_,
                                 this->strainIndex2_);
 

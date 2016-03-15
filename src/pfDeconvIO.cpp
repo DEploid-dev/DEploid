@@ -60,6 +60,7 @@ void PfDeconvIO::init() {
     this->prefix_ = "pf3k-pfDeconv";
     this->kStrain_ = 5;
     this->nMcmcSample_ = 1000;
+    this->mcmcBurn_ = 0.5;
     this->mcmcMachineryRate_ = 5;
     this->missCopyProb_ = 0.01;
     this->useConstRecomb_ = false;
@@ -130,13 +131,13 @@ void PfDeconvIO::removeFilesWithSameName(){
     strExportHap = this->prefix_ + ".hap";
     strExportProp = this->prefix_ + ".prop";
     strExportLog =  this->prefix_ + ".log";
-    strExporRecombProb = this->prefix_ + ".recomb";
+    strExportRecombProb = this->prefix_ + ".recomb";
 
     remove(strExportLLK.c_str());
     remove(strExportHap.c_str());
     remove(strExportProp.c_str());
     remove(strExportLog.c_str());
-    remove(strExporRecombProb.c_str());
+    remove(strExportRecombProb.c_str());
 }
 
 
@@ -170,6 +171,11 @@ void PfDeconvIO::parse (){
             this->kStrain_ = readNextInput<size_t>() ;
         } else if ( *argv_i == "-nSample" ) {
             this->nMcmcSample_ = readNextInput<size_t>() ;
+        } else if ( *argv_i == "-burn" ) {
+            this->mcmcBurn_ = readNextInput<double>() ;
+            if ( this->mcmcBurn_ < 0 || this->mcmcBurn_ > 1){
+                throw ("out of range");
+            }
         } else if ( *argv_i == "-miss" ) {
             this->missCopyProb_ = readNextInput<double>() ;
             if ( this->missCopyProb_ < 0 || this->missCopyProb_ > 1){

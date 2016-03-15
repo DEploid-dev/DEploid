@@ -22,6 +22,7 @@ class TestPanel : public CppUnit::TestCase {
     void setUp() {
         // in R: panel = read.csv("clonalPanel.csv", header = T)
         this->panel_ = new Panel("labStrains/clonalPanel.csv");
+        this->panel_->computeRecombProbs( 15000.0, 10.0, false, 0);
     }
 
     void tearDown() {

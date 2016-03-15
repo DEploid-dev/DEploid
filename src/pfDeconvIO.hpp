@@ -85,6 +85,7 @@ class PfDeconvIO{
     size_t precision_;
     size_t nMcmcSample_;
     size_t mcmcMachineryRate_;
+    double mcmcBurn_;
 
     vector <string> chrom_;
     vector < size_t > indexOfChromStarts_;
@@ -113,7 +114,7 @@ class PfDeconvIO{
     string strExportHap;
     string strExportProp;
     string strExportLog;
-    string strExporRecombProb;
+    string strExportRecombProb;
 
     ofstream ofstreamExportLLK;
     ofstream ofstreamExportHap;
