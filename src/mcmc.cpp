@@ -349,8 +349,8 @@ void McmcMachinery::updatePairHaps(){
                                 this->currentExpectedWsaf_,
                                 this->currentProp_, this->currentHap_, this->rg_,
                                 start, length,
-                                this->panel_, this->pfDeconvIO_->missCopyProb_,
-                                //NULL, this->pfDeconvIO_->missCopyProb_,  // DEBUG
+                                //this->panel_, this->pfDeconvIO_->missCopyProb_,
+                                NULL, this->pfDeconvIO_->missCopyProb_,  // DEBUG
                                 this->strainIndex1_,
                                 this->strainIndex2_);
 

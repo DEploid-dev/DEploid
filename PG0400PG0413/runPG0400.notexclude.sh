@@ -9,6 +9,7 @@
 
 sample="PG0400.C"
 root="/well/mcvean/joezhu/pf3k/pf3k_5_1/labStrains/"
+add="updatePairLSOff"
 
 ref=${root}${sample}_ref.txt
 alt=${root}${sample}_alt.txt
@@ -16,7 +17,7 @@ plaf=${root}Hb3_7g8_plaf.txt
 panel=${root}Hb3_7g8.csv
 seed=${SGE_TASK_ID}
 
-prefix=${root}${sample}/${sample}_panel_seed${seed}
+prefix=${root}${sample}/${sample}_panel_seed${seed}${add}
 
 time pfDeconv -ref ${ref} \
 -alt ${alt} \
@@ -28,7 +29,7 @@ time pfDeconv -ref ${ref} \
 
 R --slave "--args ${prefix} ${ref} ${alt} ${plaf}" < ../utilities/makePlots.r
 
-prefix=${root}${sample}/${sample}_panel_seed${seed}miss0
+prefix=${root}${sample}/${sample}_panel_seed${seed}miss0${add}
 
 time pfDeconv -ref ${ref} \
 -alt ${alt} \
@@ -41,7 +42,7 @@ time pfDeconv -ref ${ref} \
 
 R --slave "--args ${prefix} ${ref} ${alt} ${plaf}" < ../utilities/makePlots.r
 
-prefix=${root}${sample}/${sample}_panel_seed${seed}missSmall
+prefix=${root}${sample}/${sample}_panel_seed${seed}missSmall${add}
 
 time pfDeconv -ref ${ref} \
 -alt ${alt} \
@@ -55,7 +56,7 @@ time pfDeconv -ref ${ref} \
 R --slave "--args ${prefix} ${ref} ${alt} ${plaf}" < ../utilities/makePlots.r
 
 
-prefix=${root}${sample}/${sample}_panel_seed${seed}miss0recom1
+prefix=${root}${sample}/${sample}_panel_seed${seed}miss0recom1${add}
 
 time pfDeconv -ref ${ref} \
 -alt ${alt} \
@@ -70,7 +71,7 @@ time pfDeconv -ref ${ref} \
 R --slave "--args ${prefix} ${ref} ${alt} ${plaf}" < ../utilities/makePlots.r
 
 
-prefix=${root}${sample}/${sample}_noPanel_seed${seed}
+prefix=${root}${sample}/${sample}_noPanel_seed${seed}${add}
 
 time pfDeconv -ref ${ref} \
 -alt ${alt} \
