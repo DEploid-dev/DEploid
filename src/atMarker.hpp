@@ -45,6 +45,8 @@ class AtMarker{
     vector <string> chrom_;
     vector < size_t > indexOfChromStarts_;
     vector < vector < double> > position_;
+    // content is a matrix of n.loci by n.strains, i.e. content length is n.loci
+    vector < vector < double > > content_;
     // info_ only refers to the first column of the content
     vector <double> info_;
 
@@ -61,8 +63,6 @@ class AtMarker{
     void getIndexOfChromStarts();
 
   public:
-    // content is a matrix of n.loci by n.strains, i.e. content length is n.loci
-    vector < vector < double > > content_;
     AtMarker(const char inchar[]);
     virtual ~AtMarker(){};
 };
