@@ -178,7 +178,6 @@ void InputMarker::removeMarkers( ExcludeMarker* excludedMarkers ){
         }
     }
 
-
     this->getIndexOfChromStarts();
-
+    this->nLoci_ = this->content_.size();
 }

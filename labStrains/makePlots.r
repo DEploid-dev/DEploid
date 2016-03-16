@@ -19,14 +19,17 @@ fun.dic.by.theta = function ( tmpllk, thetallk ){
     return (  mean(-2*tmpllk) + (mean(-2*tmpllk) - DIC.WSAF.bar) ) # D_bar + pD, where pD = D_bar - D_theta, and D_bar = mean(D_theta)
 }
 
-for (i in 1:15){
-     dataDir = "../"
+for (i in 1:30){
+     dataDir = "./"
      currentDir = system("echo ${PWD##*/}", intern = T)
-
-     prefix = paste(currentDir,"_seed", i, sep="")
+#currentDir="PH0242.C"
+currentDir="PG0389.C"
+     prefix = paste(currentDir,"_seed", i, "k2n500panel", sep="")
+#     prefix = paste(currentDir,"_seed", i, sep="")
+#     prefix = paste("PG0393_seed3", sep="")
      #prefix = "PG0394_ind_seed1"
 
-     unlink ( paste( prefix, "*.png", sep= ""))
+#     unlink ( paste( prefix, "*.png", sep= ""))
      png(paste( prefix, ".png", sep= ""), width = 1000, height = 1000)
 
      par (mfrow = c(2,2))
@@ -38,7 +41,7 @@ for (i in 1:15){
      ref = read.table(paste(dataDir, currentDir,"_ref.txt",sep = ""), header = T)[,3]
      alt = read.table(paste(dataDir, currentDir,"_alt.txt",sep = ""), header = T)[,3]
      prop = as.numeric(tmpProp[dim(tmpProp)[1],])
-     hap = as.matrix(read.table(paste(prefix,".hap",sep=""), header=F))
+     hap = as.matrix(read.table(paste(prefix,".hap",sep=""), header=T)[,-c(1,2)] )
 
      obsWSAF = alt/(alt+ref+0.00000001)
      expWSAF = hap %*%prop
@@ -52,6 +55,7 @@ for (i in 1:15){
      abline(0,1,lty="dotted");
 
      plaf = read.table(paste(dataDir, "labStrains_samples_PLAF.txt",sep = ""), header = T)[,3]
+#     plaf = read.table(paste(dataDir, "asiaGroup1_samples_PLAF.txt",sep = ""), header = T)[,3]
      plot ( plaf, obsWSAF, col = "red")
      points ( plaf, expWSAF, col = "blue")
 #     dev.off()

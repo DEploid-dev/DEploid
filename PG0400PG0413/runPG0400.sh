@@ -75,3 +75,17 @@ time pfDeconv -ref ${ref} \
 
 R --slave "--args ${prefix} ${ref} ${alt} ${plaf} ${exclude}" < ../utilities/makePlots.r
 
+prefix=${root}${sample}/${sample}_exclude_panel_seed${seed}bothSmall
+
+time pfDeconv -ref ${ref} \
+-alt ${alt} \
+-plaf  ${plaf} \
+-panel ${panel} \
+-seed ${seed} \
+-exclude ${exclude} \
+-o ${prefix} \
+-burn 0 \
+-miss 0.001 \
+-recomb 0.001
+
+R --slave "--args ${prefix} ${ref} ${alt} ${plaf} ${exclude}" < ../utilities/makePlots.r
