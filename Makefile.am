@@ -35,7 +35,8 @@ unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_panel.cpp \
 					 tests/unittest/test_pfDeconvIO.cpp \
 					 tests/unittest/test_runner.cpp \
-					 tests/unittest/test_updatePairHap.cpp
+					 tests/unittest/test_updatePairHap.cpp \
+					 tests/unittest/test_updateSingleHap.cpp
 
 unit_tests_CXXFLAGS = $(pfDeconv_CXXFLAGS) -Wno-write-strings
 unit_tests_LDADD          = -lcppunit -ldl
