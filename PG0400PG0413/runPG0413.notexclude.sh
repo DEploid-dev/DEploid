@@ -9,7 +9,7 @@
 
 sample="PG0413.C"
 root="/well/mcvean/joezhu/pf3k/pf3k_5_1/labStrains/"
-add="updatePairLSOff"
+add=""
 
 ref=${root}${sample}_ref.txt
 alt=${root}${sample}_alt.txt
