@@ -502,7 +502,7 @@ void UpdatePairHap::samplePaths(){
             tmpPath = sampleMatrixIndex(previousDist);
             rowI = tmpPath[0];
             colJ = tmpPath[1];
-            assert (rowI != colJ);
+            //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
             //switch.two = switch.two + 1
             //switch.table = rbind(switch.table, c("twoSwitchTwo", j ))
         } else if ( tmpCase == (size_t)1 ){ // switching second strain
@@ -510,7 +510,7 @@ void UpdatePairHap::samplePaths(){
             vector <double> rowIdist = previousDist[rowI];
             (void)normalizeBySum(rowIdist);
             colJ = sampleIndexGivenProp( this->rg_, rowIdist );
-            assert (rowI != colJ);
+            //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
             //switch.one = switch.one + 1
             //switch.table = rbind(switch.table, c("twoSwitchOne", j ))
         } else if ( tmpCase == (size_t)2 ){ // switching first strain
@@ -522,13 +522,13 @@ void UpdatePairHap::samplePaths(){
             (void)normalizeBySum(colJdist);
             rowI = sampleIndexGivenProp( this->rg_, colJdist );
             colJ = colJ;
-            assert (rowI != colJ);
+            //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
             //switch.one = switch.one + 1
             //switch.table = rbind(switch.table, c("twoSwitchOne", j ))
         } else if ( tmpCase == (size_t)3 ) { // no switching
             rowI = rowI;
             colJ = colJ;
-            assert (rowI != colJ);
+            //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
         } else {
             throw ("Unknow case ... Should never reach here!");
         }
