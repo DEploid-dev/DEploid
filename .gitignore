@@ -61,7 +61,13 @@ src/haplotype-sampling.r
 tests/recomb.prob
 pfDeconv_prof
 tmp*
+
+
+# temporary prefix used in experimenting things...
 labStrains/PG0*
 pf3k-pfDeconv.*
 PG0400.C*
 PG0389.C*
+toy*
+PG400*
+PG0*

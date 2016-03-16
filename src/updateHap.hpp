@@ -38,6 +38,8 @@ class UpdateHap{
   friend class McmcMachinery;
   friend class UpdateSingleHap;
   friend class UpdatePairHap;
+  friend class TestUpdateSinglerHap;
+
     UpdateHap(){}
     UpdateHap( vector <double> &refCount,
                vector <double> &altCount,
@@ -67,7 +69,8 @@ class UpdateHap{
     virtual void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes){};
     virtual void calcHapLLKs( vector <double> &refCount, vector <double> &altCount){};
     virtual void buildEmission( double missCopyProb ){};
-    virtual void calcFwdProbs(){};
+    // calcFwdProbs() differ for class UpdateSingleHap and UpdatePairHap
+    //virtual void calcFwdProbs(){};
     virtual void samplePaths(){};
     virtual void addMissCopying( double missCopyProb ){};
     virtual void updateLLK(){};
@@ -79,7 +82,9 @@ class UpdateHap{
 
 class UpdateSingleHap : public UpdateHap{
  friend class McmcMachinery;
+ friend class TestUpdateSinglerHap;
   public:
+     UpdateSingleHap():UpdateHap(){}
      UpdateSingleHap( vector <double> &refCount,
                       vector <double> &altCount,
                       vector <double> &expectedWsaf,
@@ -107,6 +112,7 @@ class UpdateSingleHap : public UpdateHap{
     void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
     void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
     void buildEmission( double missCopyProb );
+    void buildEmissionBasicVersion( double missCopyProb );
     void calcFwdProbs();
     void samplePaths();
     void addMissCopying( double missCopyProb );
@@ -128,7 +134,7 @@ class UpdatePairHap : public UpdateHap{
                       MersenneTwister* rg,
                       size_t segmentStartIndex,
                       size_t nLoci,
-                      Panel* panel, double missCopyProb,
+                      Panel* panel, double missCopyProb, bool forbidCopyFromSame,
                       size_t strainIndex1,
                       size_t strainIndex2 );
     ~UpdatePairHap(){}
@@ -156,7 +162,7 @@ class UpdatePairHap : public UpdateHap{
     void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
     void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
     void buildEmission( double missCopyProb );
-    void calcFwdProbs();
+    void calcFwdProbs( bool forbidCopyFromSame );
     void samplePaths();
     void addMissCopying( double missCopyProb );
     void sampleHapIndependently();

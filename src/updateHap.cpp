@@ -24,7 +24,6 @@
 #include "updateHap.hpp"
 #include <algorithm>    // std::reverse
 #include <cstdlib> // div
-#include <valarray>
 
 UpdateHap::UpdateHap( vector <double> &refCount,
                       vector <double> &altCount,
@@ -109,8 +108,9 @@ void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <
 
 void UpdateSingleHap::buildEmission( double missCopyProb ){
     vector <double> noMissProb (this->nLoci_, log(1.0 - missCopyProb));
-    vector <double> t1omu = vecSum(llk0_, noMissProb);
-    vector <double> t2omu = vecSum(llk1_, noMissProb);
+    vector <double> t1omu = vecSum(llk0_, noMissProb); // t1 one minus u
+    vector <double> t2omu = vecSum(llk1_, noMissProb); // t2 one minus u
+
 
     vector <double> missProb (this->nLoci_, log(missCopyProb));
     vector <double> t1u = vecSum(llk0_, missProb);
@@ -120,10 +120,21 @@ void UpdateSingleHap::buildEmission( double missCopyProb ){
     for ( size_t i = 0; i < this->nLoci_; i++){
         vector <double> tmp ({t1omu[i], t2omu[i], t1u[i], t2u[i]});
         double tmaxTmp = maxOfVec(tmp);
-        vector <double> emissRow ({exp(t1omu[i] - tmaxTmp) + exp(t2u[i] - tmaxTmp),
-                                   exp(t2omu[i] - tmaxTmp) + exp(t1u[i] - tmaxTmp)});
+          vector <double> emissRow ({exp(t1omu[i] - tmaxTmp) + exp(t2u[i] - tmaxTmp),
+                                     exp(t2omu[i] - tmaxTmp) + exp(t1u[i] - tmaxTmp)});
 
-        (void)normalizeBySum(emissRow);
+        this->emission_.push_back(emissRow);
+    }
+
+}
+
+
+void UpdateSingleHap::buildEmissionBasicVersion( double missCopyProb ){
+    assert(emission_.size() == 0 );
+    for ( size_t i = 0; i < this->nLoci_; i++){
+        vector <double> emissRow ({exp(llk0_[i])*(1.0-missCopyProb) + exp(llk1_[i])*missCopyProb,
+                                   exp(llk1_[i])*(1.0-missCopyProb) + exp(llk0_[i])*missCopyProb});
+
         this->emission_.push_back(emissRow);
     }
 }
@@ -165,25 +176,30 @@ void UpdateSingleHap::calcHapLLKs( vector <double> &refCount,
 
 void UpdateSingleHap::samplePaths(){
     assert ( this->path_.size() == 0 );
-    size_t pathTmp = sampleIndexGivenProp ( this->rg_, fwdProbs_[nLoci_-1] );
+    // Sample path at the last position
+    size_t pathTmp = sampleIndexGivenProp ( this->rg_, fwdProbs_.back() );
     this->path_.push_back( this->panel_->content_.back()[pathTmp]);
+
     for ( size_t j = (this->nLoci_ - 1); j > 0; j--){
         size_t previous_site = j-1;
+
         double pRecEachHap = this->panel_->pRecEachHap_[previous_site];
         double pNoRec = this->panel_->pNoRec_[previous_site];
 
         vector <double> previousDist = fwdProbs_[previous_site];
+
         vector <double> weightOfNoRecAndRec ({ previousDist[pathTmp]*pNoRec,
                                                sumOfVec(previousDist)*pRecEachHap});
         (void)normalizeBySum(weightOfNoRecAndRec);
-        size_t tmpState = sampleIndexGivenProp(this->rg_, weightOfNoRecAndRec);
-        if ( tmpState == (size_t)1){
+        if ( sampleIndexGivenProp(this->rg_, weightOfNoRecAndRec) == (size_t)1 ){
             pathTmp = sampleIndexGivenProp( this->rg_, previousDist );
         }
 
-        this->path_.push_back(this->panel_->content_[j][pathTmp]);
+        this->path_.push_back(this->panel_->content_[previous_site][pathTmp]);
     }
+
     reverse(path_.begin(), path_.end());
+
     assert(path_.size() == nLoci_);
 }
 
@@ -195,6 +211,7 @@ void UpdateSingleHap::addMissCopying( double missCopyProb ){
         vector <double> emissionTmp ({exp(this->llk0_[i]-tmpMax), exp(this->llk1_[i]-tmpMax)});
         vector <double> sameDiffDist ({emissionTmp[path_[i]]*(1.0 - missCopyProb), // probability of the same
                                        emissionTmp[(size_t)(1 -path_[i])] * missCopyProb }); // probability of differ
+
         (void)normalizeBySum(sameDiffDist);
         if ( sampleIndexGivenProp( this->rg_, sameDiffDist) == 1 ){
             this->hap_.push_back( 1 - this->path_[i] ); // differ
@@ -209,8 +226,7 @@ void UpdateSingleHap::addMissCopying( double missCopyProb ){
 void UpdateSingleHap::sampleHapIndependently(){
     assert( this->hap_.size() == 0 );
     for ( size_t i = 0; i < this->nLoci_; i++){
-        valarray <double> llkArray( {llk0_[i], llk1_[i]} );
-        double tmpMax = llkArray.max();
+        double tmpMax = maxOfVec ( vector <double> ( {llk0_[i], llk1_[i]} ) ) ;
         vector <double> tmpDist ( {exp(llk0_[i] - tmpMax),
                                    exp(llk1_[i] - tmpMax)} );
         (void)normalizeBySum(tmpDist);
@@ -242,7 +258,7 @@ UpdatePairHap::UpdatePairHap( vector <double> &refCount,
                               MersenneTwister* rg,
                               size_t segmentStartIndex,
                               size_t nLoci,
-                              Panel* panel, double missCopyProb,
+                              Panel* panel, double missCopyProb, bool forbidCopyFromSame,
                               size_t strainIndex1,
                               size_t strainIndex2 ):
                 UpdateHap(refCount, altCount, expectedWsaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel){
@@ -254,7 +270,7 @@ UpdatePairHap::UpdatePairHap( vector <double> &refCount,
 
     if ( this->panel_ != NULL ){
         this->buildEmission(missCopyProb);
-        this->calcFwdProbs();
+        this->calcFwdProbs(forbidCopyFromSame);
         this->samplePaths();
         this->addMissCopying(missCopyProb);
     } else {
@@ -363,7 +379,7 @@ void UpdatePairHap:: buildEmission( double missCopyProb ){
                                    exp(tmp_01_1[i] - tmaxTmp) + exp(tmp_01_2[i] - tmaxTmp) + exp(tmp_01_3[i] - tmaxTmp) + exp(tmp_01_4[i] - tmaxTmp),
                                    exp(tmp_10_1[i] - tmaxTmp) + exp(tmp_10_2[i] - tmaxTmp) + exp(tmp_10_3[i] - tmaxTmp) + exp(tmp_10_4[i] - tmaxTmp),
                                    exp(tmp_11_1[i] - tmaxTmp) + exp(tmp_11_2[i] - tmaxTmp) + exp(tmp_11_3[i] - tmaxTmp) + exp(tmp_11_4[i] - tmaxTmp)});
-        (void)normalizeBySum(emissRow);
+        //(void)normalizeBySum(emissRow);
         this->emission_.push_back(emissRow);
     }
     assert(this->emission_.size() == this->nLoci_ );
@@ -393,7 +409,7 @@ vector <double> UpdatePairHap::computeColMarginalDist( vector < vector < double 
 }
 
 
-void UpdatePairHap:: calcFwdProbs(){
+void UpdatePairHap:: calcFwdProbs( bool forbidCopyFromSame ){
     assert ( this->fwdProbs_.size() == 0 );
     vector < vector < double > > fwd1st;
     for ( size_t i = 0 ; i < this->nPanel_; i++){ // Row of the matrix
@@ -401,7 +417,7 @@ void UpdatePairHap:: calcFwdProbs(){
         vector <double> fwd1stRow (this->nPanel_, 0.0);
 
         for ( size_t ii = 0 ; ii < this->nPanel_; ii++){ // Column of the matrix
-            if ( i == ii ) continue;
+            if ( forbidCopyFromSame && i == ii ) continue;
 
             size_t colObs = (size_t)this->panel_->content_[0][ii];
             size_t obs = rowObs*2 + colObs;
@@ -426,7 +442,7 @@ void UpdatePairHap:: calcFwdProbs(){
             size_t rowObs = (size_t)this->panel_->content_[j][i];
             vector <double> fwdTmpRow (this->nPanel_, 0.0);
             for ( size_t ii = 0 ; ii < this->nPanel_; ii++){
-                if ( i == ii ) continue;
+                if ( forbidCopyFromSame && i == ii ) continue;
 
                 size_t colObs = (size_t)this->panel_->content_[j][ii];
                 size_t obs = rowObs*2 + colObs;
@@ -516,8 +532,8 @@ void UpdatePairHap::samplePaths(){
         } else {
             throw ("Unknow case ... Should never reach here!");
         }
-        this->path1_.push_back(this->panel_->content_[j][rowI]);
-        this->path2_.push_back(this->panel_->content_[j][colJ]);
+        this->path1_.push_back(this->panel_->content_[previous_site][rowI]);
+        this->path2_.push_back(this->panel_->content_[previous_site][colJ]);
 
     }
     reverse(path1_.begin(), path1_.end());
@@ -568,8 +584,7 @@ void UpdatePairHap::sampleHapIndependently(){
     assert( this->hap2_.size() == 0 );
 
     for ( size_t i = 0; i < this->nLoci_; i++){
-        valarray <double> llkArray( {llk00_[i], llk01_[i], llk10_[i], llk11_[i]} );
-        double tmpMax = llkArray.max();
+        double tmpMax = maxOfVec ( vector <double> ( {llk00_[i], llk01_[i], llk10_[i], llk11_[i]} ) );
         vector <double> tmpDist ( {exp(llk00_[i] - tmpMax),
                                    exp(llk01_[i] - tmpMax),
                                    exp(llk10_[i] - tmpMax),
