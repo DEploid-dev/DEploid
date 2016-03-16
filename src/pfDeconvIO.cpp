@@ -64,6 +64,7 @@ void PfDeconvIO::init() {
     this->mcmcMachineryRate_ = 5;
     this->missCopyProb_ = 0.01;
     this->useConstRecomb_ = false;
+    this->forbidCopyFromSame_ = true;
     this->constRecombProb_ = 1.0;
     this->averageCentimorganDistance_ = 15000.0;
     this->Ne_ = 10.0;
@@ -182,11 +183,13 @@ void PfDeconvIO::parse (){
                 throw ("out of range");
             }
         } else if ( *argv_i == "-recomb" ) {
-            this->constRecombProb_ = readNextInput<double>() ;
+            this->constRecombProb_ = readNextInput<double>();
             this->useConstRecomb_ = true;
             if ( this->constRecombProb_ < 0 || this->constRecombProb_ > 1){
                 throw ("out of range");
             }
+        } else if ( *argv_i == "-fromSame" ) {
+            this->forbidCopyFromSame_ = false;
         } else if ( *argv_i == "-rate" ) {
             this->mcmcMachineryRate_ = readNextInput<size_t>() ;
         } else if (*argv_i == "-seed"){

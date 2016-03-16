@@ -70,6 +70,8 @@ class PfDeconvIO{
     ExcludeMarker* excludedMarkers;
     bool exclude_sites_;
 
+    bool forbidCopyFromSame() const { return this->forbidCopyFromSame_; }
+
   private:
 
     // Read in input
@@ -81,11 +83,13 @@ class PfDeconvIO{
     size_t random_seed_;
     bool seed_set_;
     bool useConstRecomb_;
+    bool forbidCopyFromSame_;
     size_t kStrain_;
     size_t precision_;
     size_t nMcmcSample_;
     size_t mcmcMachineryRate_;
     double mcmcBurn_;
+
 
     vector <string> chrom_;
     vector < size_t > indexOfChromStarts_;

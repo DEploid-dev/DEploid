@@ -46,7 +46,7 @@ int main( int argc, char *argv[] ){
                 panel->removeMarkers( pfDeconvIO.excludedMarkers );
             }
 
-            panel->computeRecombProbs( pfDeconvIO.averageCentimorganDistance(), pfDeconvIO.Ne(), pfDeconvIO.useConstRecomb(), pfDeconvIO.constRecombProb() );
+            panel->computeRecombProbs( pfDeconvIO.averageCentimorganDistance(), pfDeconvIO.Ne(), pfDeconvIO.useConstRecomb(), pfDeconvIO.constRecombProb(), pfDeconvIO.forbidCopyFromSame() );
             panel->checkForExceptions( pfDeconvIO.nLoci(), pfDeconvIO.panelFileName_ );
         }
 
