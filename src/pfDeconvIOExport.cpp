@@ -83,6 +83,7 @@ void PfDeconvIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
     (*writeTo) << setw(19) << " Random seed: " << this->random_seed_ << "\n";
     (*writeTo) << "\n";
     (*writeTo) << "Other parameters:"<< "\n";
+    if ( forbidCopyFromSame_ ){ (*writeTo) << " Update pair haplotypes move forbid copying from the same strain!!! \n"; }
     (*writeTo) << setw(20) << " Miss copy prob: "   << this->missCopyProb_ << "\n";
     (*writeTo) << setw(20) << " Avrg Cent Morgan: " << this->averageCentimorganDistance_ << "\n";
     (*writeTo) << setw(20) << " Ne: "               << this->Ne_ << "\n";
