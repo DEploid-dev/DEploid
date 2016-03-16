@@ -49,7 +49,7 @@ class Panel: public InputMarker{
 
 
   public:
-    void computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb );
+    void computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame );
     void checkForExceptions( size_t nLoci, string panelFileName );
     Panel(const char inchar[] ):InputMarker(inchar){
         this->nPanel_ = this->nInfoLines_;

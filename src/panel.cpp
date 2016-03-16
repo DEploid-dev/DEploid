@@ -36,7 +36,7 @@ void Panel::checkForExceptions( size_t nLoci, string panelFileName ){
 }
 
 
-void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb ){
+void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame ){
     assert(pRec_.size() == 0 );
     assert(pRecEachHap_.size() == 0 );
     assert(pNoRec_.size() == 0 );
@@ -63,8 +63,7 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bo
             double pNoRecTmp = 1.0 - pRecTmp;
             this->pNoRec_.push_back( pNoRecTmp );
 
-            double secondPRecEachHapTmp = pRecTmp / nPanlelMinus1; // Forbit to copy from the same
-            //double secondPRecEachHapTmp = pRecEachHapTmp; // allowing copy from the same
+            double secondPRecEachHapTmp = ( forbidCopyFromSame ) ? (pRecTmp / nPanlelMinus1) : pRecEachHapTmp; // allowing copy from the same
 
             this->pRecRec_.push_back ( pRecEachHapTmp * secondPRecEachHapTmp );
             this->pRecNoRec_.push_back ( secondPRecEachHapTmp * pNoRecTmp );
@@ -73,7 +72,7 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bo
         this->pRec_.push_back(1.0);
         this->pRecEachHap_.push_back( 1.0 / nPanelDouble );
         this->pNoRec_.push_back(0.0);
-        this->pRecRec_.push_back ( 1.0 / nPanelDouble / nPanlelMinus1 );
+        this->pRecRec_.push_back ( ( ( forbidCopyFromSame ) ? (1.0 / nPanelDouble / nPanlelMinus1) : (1.0 / nPanelDouble / nPanelDouble) ) );
         this->pRecNoRec_.push_back ( 0.0 );
         this->pNoRecNoRec_.push_back ( 0.0 );
     }
