@@ -34,6 +34,7 @@ using namespace std;
 
 class AtMarker{
  friend class TestPanel;
+ friend class TestAtMarker;
  friend class UpdateSingleHap;
  friend class UpdatePairHap;
  friend class UpdateHap;
