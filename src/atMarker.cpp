@@ -150,7 +150,8 @@ void InputMarker::removeMarkers( ExcludeMarker* excludedMarkers ){
         size_t hapIndex = indexOfChromStarts_[ std::distance(excludedMarkers->chrom_.begin(), chromIt) ];
 
         for ( size_t posI = 0; posI < this->position_[chromI].size(); posI++){
-            if ( std::find(excludedMarkers->position_[chromI].begin(), excludedMarkers->position_[chromI].end(), this->position_[chromI][posI]) != excludedMarkers->position_[chromI].end() ){
+            //double currentPos = this->position_[chromI][posI];
+            if ( std::find(excludedMarkers->position_[std::distance(excludedMarkers->chrom_.begin(), chromIt)].begin(), excludedMarkers->position_[std::distance(excludedMarkers->chrom_.begin(), chromIt)].end(), this->position_[chromI][posI]) != excludedMarkers->position_[chromI].end() ){
                 indexOfHapRemovals.push_back(hapIndex);
                 tmpIndexOfPosRemovals.push_back(posI);
             }
