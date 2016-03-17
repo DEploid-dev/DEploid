@@ -151,7 +151,7 @@ void InputMarker::removeMarkers( ExcludeMarker* excludedMarkers ){
 
         for ( size_t posI = 0; posI < this->position_[chromI].size(); posI++){
             //double currentPos = this->position_[chromI][posI];
-            if ( std::find(excludedMarkers->position_[std::distance(excludedMarkers->chrom_.begin(), chromIt)].begin(), excludedMarkers->position_[std::distance(excludedMarkers->chrom_.begin(), chromIt)].end(), this->position_[chromI][posI]) != excludedMarkers->position_[chromI].end() ){
+            if ( std::find(excludedMarkers->position_[std::distance(excludedMarkers->chrom_.begin(), chromIt)].begin(), excludedMarkers->position_[std::distance(excludedMarkers->chrom_.begin(), chromIt)].end(), this->position_[chromI][posI]) != excludedMarkers->position_[std::distance(excludedMarkers->chrom_.begin(), chromIt)].end() ){
                 indexOfHapRemovals.push_back(hapIndex);
                 tmpIndexOfPosRemovals.push_back(posI);
             }
@@ -178,7 +178,6 @@ void InputMarker::removeMarkers( ExcludeMarker* excludedMarkers ){
             this->info_.erase(this->info_.begin() + value );
         }
     }
-
     this->getIndexOfChromStarts();
     this->nLoci_ = this->content_.size();
 }
