@@ -23,7 +23,7 @@
 
 #include "panel.hpp"
 #include <math.h>
-
+#include <iostream>
 void Panel::checkForExceptions( size_t nLoci, string panelFileName ){
     if ( this->content_.size() != nLoci ){
         throw LociNumberUnequal( panelFileName );
@@ -76,7 +76,7 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bo
         this->pRecNoRec_.push_back ( 0.0 );
         this->pNoRecNoRec_.push_back ( 0.0 );
     }
-
+std::cout << pRec_.size() << " " << this->nLoci_ << std::endl;
     assert(pRec_.size() == this->nLoci_ );
     assert(pRecEachHap_.size() == this->nLoci_ );
     assert(pNoRec_.size() == this->nLoci_ );
