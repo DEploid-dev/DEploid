@@ -28,7 +28,7 @@ class TestPanel : public CppUnit::TestCase {
   public:
     void setUp() {
         // in R: panel = read.csv("clonalPanel.csv", header = T)
-        panelName_ = "labStrains/clonalPanel.csv";
+        panelName_ = "tests/testData/clonalPanel.csv";
         this->panel_ = new Panel( panelName_.c_str() );
         this->panel_->computeRecombProbs( 15000.0, 10.0, false, 0, false); // forbid copy from same = false by default!
     }
