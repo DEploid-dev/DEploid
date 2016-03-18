@@ -43,6 +43,7 @@ class UpdateHap{
     UpdateHap(){}
     UpdateHap( vector <double> &refCount,
                vector <double> &altCount,
+               vector <double> &plaf,
                vector <double> &expectedWsaf,
                vector <double> &proportion,
                vector < vector <double> > &haplotypes,
@@ -54,7 +55,10 @@ class UpdateHap{
 
     Panel* panel_;
     double missCopyProb_;
-    MersenneTwister* rg_;
+    MersenneTwister* recombRg_;
+    MersenneTwister* recombLevel2Rg_;
+    MersenneTwister* missCopyRg_;
+
     size_t strainIndex_;
     size_t kStrain_;
     size_t nPanel_;
@@ -74,7 +78,7 @@ class UpdateHap{
     virtual void samplePaths(){};
     virtual void addMissCopying( double missCopyProb ){};
     virtual void updateLLK(){};
-    virtual void sampleHapIndependently(){};
+    virtual void sampleHapIndependently(vector <double> &plaf){};
 
 
 };
@@ -87,6 +91,7 @@ class UpdateSingleHap : public UpdateHap{
      UpdateSingleHap():UpdateHap(){}
      UpdateSingleHap( vector <double> &refCount,
                       vector <double> &altCount,
+                      vector <double> &plaf,
                       vector <double> &expectedWsaf,
                       vector <double> &proportion,
                       vector < vector <double> > &haplotypes,
@@ -95,7 +100,11 @@ class UpdateSingleHap : public UpdateHap{
                       size_t nLoci,
                       Panel* panel, double missCopyProb,
                       size_t strainIndex );
-    ~UpdateSingleHap(){}
+    ~UpdateSingleHap(){
+        delete recombRg_;
+        delete recombLevel2Rg_;
+        delete missCopyRg_;
+    }
   private:
     vector < vector <double> > fwdProbs_;
 
@@ -116,7 +125,7 @@ class UpdateSingleHap : public UpdateHap{
     void calcFwdProbs();
     void samplePaths();
     void addMissCopying( double missCopyProb );
-    void sampleHapIndependently();
+    void sampleHapIndependently(vector <double> &plaf);
     void updateLLK();
 };
 
@@ -128,6 +137,7 @@ class UpdatePairHap : public UpdateHap{
      UpdatePairHap():UpdateHap(){}
      UpdatePairHap( vector <double> &refCount,
                       vector <double> &altCount,
+                      vector <double> &plaf,
                       vector <double> &expectedWsaf,
                       vector <double> &proportion,
                       vector < vector <double> > &haplotypes,
@@ -137,7 +147,11 @@ class UpdatePairHap : public UpdateHap{
                       Panel* panel, double missCopyProb, bool forbidCopyFromSame,
                       size_t strainIndex1,
                       size_t strainIndex2 );
-    ~UpdatePairHap(){}
+    ~UpdatePairHap(){
+        delete recombRg_;
+        delete recombLevel2Rg_;
+        delete missCopyRg_;
+    }
   private:
     vector< vector < vector <double> > > fwdProbs_;
 
@@ -165,7 +179,7 @@ class UpdatePairHap : public UpdateHap{
     void calcFwdProbs( bool forbidCopyFromSame );
     void samplePaths();
     void addMissCopying( double missCopyProb );
-    void sampleHapIndependently();
+    void sampleHapIndependently(vector <double> &plaf);
     void updateLLK();
 
     // Own methods
