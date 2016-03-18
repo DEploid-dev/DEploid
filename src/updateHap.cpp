@@ -204,7 +204,6 @@ void UpdateSingleHap::samplePaths(){
                                                sumOfVec(previousDist)*pRecEachHap});
         (void)normalizeBySum(weightOfNoRecAndRec);
 
-       //cout << "at si"weight of not rec "<<weightOfNoRecAndRec[0]<< " weight of rec "<< weightOfNoRecAndRec[1]<<endl;
         if ( sampleIndexGivenProp(this->recombRg_, weightOfNoRecAndRec) == (size_t)1 ){
             pathTmp = sampleIndexGivenProp( this->recombLevel2Rg_, previousDist );
         }
@@ -213,8 +212,6 @@ void UpdateSingleHap::samplePaths(){
     }
 
     reverse(path_.begin(), path_.end());
-    //cout <<"last path_ = "<<path_[nLoci_-1] <<endl;
-
     assert(path_.size() == nLoci_);
 }
 
@@ -524,10 +521,6 @@ void UpdatePairHap::samplePaths(){
                                              recNorec   * tmpColSum,  // first strain recombine, second strain no recombine
                                              norecNorec * previousProbij }); // no recombine on either strain
         (void)normalizeBySum(weightOfFourCases);
-        //cout << "weight of not recrec "<<weightOfFourCases[0] << " "
-                //"weight of recnorec "<< weightOfFourCases[1]  <<" "
-                //"weight of recnorec "<< weightOfFourCases[2]  <<" "
-                //"weight of norecnorec "<< weightOfFourCases[3]  <<endl;
 
         size_t tmpCase = sampleIndexGivenProp( this->recombRg_, weightOfFourCases );
 
@@ -544,10 +537,6 @@ void UpdatePairHap::samplePaths(){
             (void)normalizeBySum(rowIdist);
             colJ = sampleIndexGivenProp( this->recombLevel2Rg_, rowIdist );
 
-//vector <double> marginalOfRows = this->computeRowMarginalDist( previousDist );
-//colJ = sampleIndexGivenProp( this->recombLevel2Rg_, marginalOfRows );
-
-
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
             //switch.one = switch.one + 1
             //switch.table = rbind(switch.table, c("twoSwitchOne", j ))
@@ -555,9 +544,6 @@ void UpdatePairHap::samplePaths(){
 
             (void)normalizeBySum(colJdist);
             rowI = sampleIndexGivenProp( this->recombLevel2Rg_, colJdist );
-
-//vector <double> marginalOfCols = this->computeColMarginalDist( previousDist );
-//rowI = sampleIndexGivenProp( this->recombLevel2Rg_, marginalOfCols );
 
             colJ = colJ;
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain

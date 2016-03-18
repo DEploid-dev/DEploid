@@ -59,7 +59,7 @@ void PfDeconvIO::init() {
     this->precision_ = 8;
     this->prefix_ = "pf3k-pfDeconv";
     this->kStrain_ = 5;
-    this->nMcmcSample_ = 1000;
+    this->nMcmcSample_ = 800;
     this->mcmcBurn_ = 0.5;
     this->mcmcMachineryRate_ = 5;
     this->missCopyProb_ = 0.01;

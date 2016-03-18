@@ -83,9 +83,6 @@ vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, 
     vector <double> tmpLLKs (length, 0.0);
     size_t index = firstIndex;
     for ( size_t i = 0; i < length; i++ ){
-        //if ( expectedWsaf[i] < 0 || expectedWsaf[i] > 1){
-            //cout << "i = "<<i <<", "<< expectedWsaf[i] << endl;
-        //}
         assert (expectedWsaf[i] >= 0);
         //assert (expectedWsaf[i] <= 1);
         tmpLLKs[i] = calcLLK( refCount[index],
@@ -98,19 +95,8 @@ vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, 
 
 
 double calcLLK( double ref, double alt, double unadjustedWsaf, double err, double fac ) {
-    //cout << "unadjustedWsaf = " << unadjustedWsaf<<endl;
     double adjustedWsaf = unadjustedWsaf+err*(1-2*unadjustedWsaf);
-    //cout << "adjustedWsaf = " << adjustedWsaf<<endl;
-    //cout << "alt+adjustedWsaf*fac = "<< alt+adjustedWsaf*fac<<endl;
-    //cout << "ref+(1-adjustedWsaf)*fac = "<< ref+(1-adjustedWsaf)*fac<<endl;
-
-    //cout << "adjustedWsaf*fac = "<< adjustedWsaf*fac << endl;
-    //cout << "(1-adjustedWsaf)*fac = " << (1-adjustedWsaf)*fac << endl;
     double llk = Maths::Special::Gamma::logBeta(alt+adjustedWsaf*fac, ref+(1-adjustedWsaf)*fac) - Maths::Special::Gamma::logBeta(adjustedWsaf*fac,(1-adjustedWsaf)*fac);
-    //cout << "llk = "<<llk<<endl;
-    //double llk = log(boost::math::beta(alt+adjustedWsaf*fac, ref+(1-adjustedWsaf)*fac)) - log(boost::math::beta(adjustedWsaf*fac,(1-adjustedWsaf)*fac));
-//    llk<-lgamma(fac*f.samp+cov.alt)+lgamma(fac*(1-f.samp)+cov.ref)-lgamma(fac*f.samp)-lgamma(fac*(1-f.samp));
-    //double llk = lgamma(fac*adjustedWsaf+alt)+lgamma(fac*(1-adjustedWsaf)+ref)-lgamma(fac*adjustedWsaf)-lgamma(fac*(1-adjustedWsaf));
     return llk;
 }
 
