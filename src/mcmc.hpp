@@ -86,7 +86,11 @@ class McmcMachinery {
     size_t strainIndex2_;
 
     size_t seed_;
-    MersenneTwister* rg_;
+    MersenneTwister* hapRg_;
+    MersenneTwister* mcmcEventRg_;
+    MersenneTwister* propRg_;
+    MersenneTwister* initialHapRg_;
+
     std::default_random_engine* std_generator_;// (this->seed_);
     std::normal_distribution<double>* initialTitre_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);
     std::normal_distribution<double>* deltaX_normal_distribution_;// (0, 1/PROP_SCALE);
