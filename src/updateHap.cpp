@@ -46,9 +46,12 @@ UpdateHap::UpdateHap( vector <double> &refCount,
 
     this->kStrain_ = proportion.size();
 
-    this->recombRg_       = new MersenneTwister(rg->seed(), rg->ff());
-    this->recombLevel2Rg_ = new MersenneTwister(rg->seed(), rg->ff());
-    this->missCopyRg_     = new MersenneTwister(rg->seed(), rg->ff());
+    this->recombRg_ = rg;
+    this->recombLevel2Rg_ = rg;
+    this->missCopyRg_ = rg;
+    //this->recombRg_       = new MersenneTwister(rg->seed(), rg->ff());
+    //this->recombLevel2Rg_ = new MersenneTwister(rg->seed(), rg->ff());
+    //this->missCopyRg_     = new MersenneTwister(rg->seed(), rg->ff());
 
     this->segmentStartIndex_ = segmentStartIndex;
     this->nLoci_ = nLoci;

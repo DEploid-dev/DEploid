@@ -101,9 +101,9 @@ class UpdateSingleHap : public UpdateHap{
                       Panel* panel, double missCopyProb,
                       size_t strainIndex );
     ~UpdateSingleHap(){
-        delete recombRg_;
-        delete recombLevel2Rg_;
-        delete missCopyRg_;
+        //delete recombRg_;
+        //delete recombLevel2Rg_;
+        //delete missCopyRg_;
     }
   private:
     vector < vector <double> > fwdProbs_;
@@ -148,9 +148,9 @@ class UpdatePairHap : public UpdateHap{
                       size_t strainIndex1,
                       size_t strainIndex2 );
     ~UpdatePairHap(){
-        delete recombRg_;
-        delete recombLevel2Rg_;
-        delete missCopyRg_;
+        //delete recombRg_;
+        //delete recombLevel2Rg_;
+        //delete missCopyRg_;
     }
   private:
     vector< vector < vector <double> > > fwdProbs_;

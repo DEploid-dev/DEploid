@@ -38,9 +38,12 @@ McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *
     this->seed_ = this->pfDeconvIO_->random_seed_;
 
     this->hapRg_ = new MersenneTwister(this->seed_);
-    this->mcmcEventRg_ = new MersenneTwister(this->seed_);
-    this->propRg_  = new MersenneTwister(this->seed_);
-    this->initialHapRg_ = new MersenneTwister(this->seed_);
+    this->mcmcEventRg_ = this->hapRg_;
+    this->propRg_ = this->hapRg_;
+    this->initialHapRg_ = this->hapRg_;
+    //this->mcmcEventRg_ = new MersenneTwister(this->seed_);
+    //this->propRg_  = new MersenneTwister(this->seed_);
+    //this->initialHapRg_ = new MersenneTwister(this->seed_);
 
     this->burnIn_ = pdfDeconfIO->mcmcBurn_;
     this->calcMaxIteration( pfDeconvIO_->nMcmcSample_ , pfDeconvIO_->mcmcMachineryRate_ );
@@ -62,18 +65,18 @@ McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *
 
 McmcMachinery::~McmcMachinery(){
     this->hapRg_->clearFastFunc();
-    this->mcmcEventRg_->clearFastFunc();
-    this->propRg_->clearFastFunc();
-    this->initialHapRg_->clearFastFunc();
+    //this->mcmcEventRg_->clearFastFunc();
+    //this->propRg_->clearFastFunc();
+    //this->initialHapRg_->clearFastFunc();
 
     delete std_generator_;
     delete initialTitre_normal_distribution_;
     delete deltaX_normal_distribution_;
 
     delete hapRg_;
-    delete mcmcEventRg_;
-    delete propRg_;
-    delete initialHapRg_;
+    //delete mcmcEventRg_;
+    //delete propRg_;
+    //delete initialHapRg_;
 }
 
 
