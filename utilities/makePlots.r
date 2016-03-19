@@ -29,7 +29,7 @@ plot.prop <-function (propMat, title){
 }
 
 plot.altVsRef <- function ( ref, alt, title, exclude.ref = c(), exclude.alt = c() ){
-    tmp.range = 1.1*min(max(alt), max(ref))
+    tmp.range = 1.1*mean(max(alt), max(ref))
     plot ( ref, alt, xlim=c(0,tmp.range), ylim=c(0,tmp.range), cex = 0.5, xlab = "REF", ylab = "ALT", main = title)
     points (exclude.ref, exclude.alt, col = "red")
     abline(v =50, untf = FALSE, lty = 2)
