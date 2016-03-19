@@ -32,6 +32,7 @@ class Panel: public InputMarker{
  friend class UpdateSingleHap;
  friend class UpdatePairHap;
  friend class UpdateHap;
+ friend class PfDeconvIO;
 
   private:
     // Members
@@ -46,12 +47,12 @@ class Panel: public InputMarker{
 
     size_t nPanel_;
 
-    void computeRecombProbs( double averageCentimorganDistance = 15000.0, double Ne = 10.0 );
 
   public:
+    void computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame );
+    void checkForExceptions( size_t nLoci, string panelFileName );
     Panel(const char inchar[] ):InputMarker(inchar){
         this->nPanel_ = this->nInfoLines_;
-        this->computeRecombProbs();
     };
     ~Panel(){};
 

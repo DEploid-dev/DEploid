@@ -107,7 +107,7 @@ double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01
 
 size_t sampleIndexGivenProp ( MersenneTwister* rg, vector <double> proportion );
 
-vector <size_t> sampleNoReplace( MersenneTwister* rg, vector <double> &proportion, size_t nSample = 1);
+//vector <size_t> sampleNoReplace( MersenneTwister* rg, vector <double> &proportion, size_t nSample = 1);
     vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );
 
 

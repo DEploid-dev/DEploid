@@ -2,7 +2,7 @@
 
 function test_pfDeconv {
   echo -n " pfDeconv $@ "
-  for i in `seq 1 10`; do
+  for i in `seq 1 5`; do
     echo -n "."
 
     # Test using pfDeconv self-checks
@@ -44,6 +44,6 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Testing examples"
- test_pfDeconv -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3 || exit 1
- test_pfDeconv -ref "labStrains/PG0390_first100ref.txt" -alt "labStrains/PG0390_first100alt.txt" -plaf "labStrains/labStrains_first100_PLAF.txt" -panel "labStrains/lab_first100_Panel.txt" -o tmp1 || exit 1
+ test_pfDeconv -ref tests/testData/PG0390_first100ref.txt -alt tests/testData/PG0390_first100alt.txt -plaf tests/testData/labStrains_first100_PLAF.txt -panel tests/testData/lab_first100_Panel.txt -nSample 100 -rate 3 || exit 1
+ test_pfDeconv -ref "tests/testData/PG0390_first100ref.txt" -alt "tests/testData/PG0390_first100alt.txt" -plaf "tests/testData/labStrains_first100_PLAF.txt" -panel "tests/testData/lab_first100_Panel.txt" -o tmp1 || exit 1
 echo ""

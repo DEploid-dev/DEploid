@@ -35,10 +35,17 @@ McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *
     this->panel_ = panel;
     this->mcmcSample_ = mcmcSample;
 
-    this->seed_ = ( this->pfDeconvIO_->seed_set_ ) ? this->pfDeconvIO_->random_seed_: (unsigned)(time(0));
+    this->seed_ = this->pfDeconvIO_->random_seed_;
 
-    this->rg_ = new MersenneTwister(this->seed_);
-    this->burnIn_ = 0.5;
+    this->hapRg_ = new MersenneTwister(this->seed_);
+    this->mcmcEventRg_ = this->hapRg_;
+    this->propRg_ = this->hapRg_;
+    this->initialHapRg_ = this->hapRg_;
+    //this->mcmcEventRg_ = new MersenneTwister(this->seed_);
+    //this->propRg_  = new MersenneTwister(this->seed_);
+    //this->initialHapRg_ = new MersenneTwister(this->seed_);
+
+    this->burnIn_ = pdfDeconfIO->mcmcBurn_;
     this->calcMaxIteration( pfDeconvIO_->nMcmcSample_ , pfDeconvIO_->mcmcMachineryRate_ );
 
     this->MN_LOG_TITRE = 0.0;
@@ -57,11 +64,19 @@ McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *
 
 
 McmcMachinery::~McmcMachinery(){
-    this->rg_->clearFastFunc();
+    this->hapRg_->clearFastFunc();
+    //this->mcmcEventRg_->clearFastFunc();
+    //this->propRg_->clearFastFunc();
+    //this->initialHapRg_->clearFastFunc();
+
     delete std_generator_;
     delete initialTitre_normal_distribution_;
     delete deltaX_normal_distribution_;
-    delete rg_;
+
+    delete hapRg_;
+    //delete mcmcEventRg_;
+    //delete propRg_;
+    //delete initialHapRg_;
 }
 
 
@@ -107,7 +122,7 @@ void McmcMachinery::initializeHap(){
 
 
 double McmcMachinery::rBernoulli(double p){
-    double u = this->rg_->sample();
+    double u = this->initialHapRg_->sample();
     return ( u < p ) ? 1 : 0;
 }
 
@@ -202,7 +217,7 @@ void McmcMachinery::runMcmcChain( ){
 
 
 void McmcMachinery::sampleMcmcEvent( ){
-    this->eventInt_ = this->rg_->sampleInt(3);
+    this->eventInt_ = this->mcmcEventRg_->sampleInt(3);
     if ( this->eventInt_ == 0 ){
         this->updateProportion();
     } else if ( this->eventInt_ == 1 ){
@@ -270,7 +285,7 @@ void McmcMachinery::updateProportion(){
     double hastingsRatio = 1.0;
 
     //runif(1)<prior.prop.ratio*hastings.ratio*exp(del.llk))
-    if ( this->rg_->sample() > priorPropRatio*hastingsRatio*exp(diffLLKs) ) {
+    if ( this->propRg_->sample() > priorPropRatio*hastingsRatio*exp(diffLLKs) ) {
         dout << "(failed)" << endl;
         return;
     }
@@ -318,10 +333,11 @@ void McmcMachinery::updateSingleHap(){
         dout << "   Update Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
         UpdateSingleHap updating( this->pfDeconvIO_->refCount_,
                                   this->pfDeconvIO_->altCount_,
+                                  this->pfDeconvIO_->plaf_,
                                   this->currentExpectedWsaf_,
-                                  this->currentProp_, this->currentHap_, this->rg_,
+                                  this->currentProp_, this->currentHap_, this->hapRg_,
                                   start, length,
-                                  this->panel_,
+                                  this->panel_, this->pfDeconvIO_->missCopyProb_,
                                   this->strainIndex_);
         size_t updateIndex = 0;
         for ( size_t ii = start ; ii < (start+length); ii++ ){
@@ -346,15 +362,18 @@ void McmcMachinery::updatePairHaps(){
 
         UpdatePairHap updating( this->pfDeconvIO_->refCount_,
                                 this->pfDeconvIO_->altCount_,
+                                this->pfDeconvIO_->plaf_,
                                 this->currentExpectedWsaf_,
-                                this->currentProp_, this->currentHap_, this->rg_,
+                                this->currentProp_, this->currentHap_, this->hapRg_,
                                 start, length,
-                                this->panel_,
+                                this->panel_, this->pfDeconvIO_->missCopyProb_, this->pfDeconvIO_->forbidCopyFromSame(),
+                                //NULL, this->pfDeconvIO_->missCopyProb_,  // DEBUG
                                 this->strainIndex1_,
                                 this->strainIndex2_);
 
         size_t updateIndex = 0;
         for ( size_t ii = start ; ii < (start+length); ii++ ){
+
             this->currentHap_[ii][this->strainIndex1_] = updating.hap1_[updateIndex];
             this->currentHap_[ii][this->strainIndex2_] = updating.hap2_[updateIndex];
             this->currentLLks_[ii] = updating.newLLK[updateIndex];
@@ -367,14 +386,28 @@ void McmcMachinery::updatePairHaps(){
 
 
 void McmcMachinery::findUpdatingStrainSingle( ){
-    this->strainIndex_ = sampleIndexGivenProp ( this->rg_, this->currentProp_ );
+    vector <double> eventProb (this->kStrain_, 1);
+    (void)normalizeBySum(eventProb);
+    this->strainIndex_ = sampleIndexGivenProp ( this->mcmcEventRg_, eventProb );
     dout << "  Updating hap: "<< this->strainIndex_ <<endl;
 }
 
 
 void McmcMachinery::findUpdatingStrainPair( ){
-    vector <size_t> strainIndex = sampleNoReplace( this->rg_, this->currentProp_, 2);
-    assert( strainIndex.size() == 2);
+    vector <size_t> strainIndex (2, 0);
+    int t = 0; // total input records dealt with
+    int m = 0; // number of items selected so far
+    double u;
+
+    while (m < 2) {
+        u = this->mcmcEventRg_->sample(); // call a uniform(0,1) random number generator
+        if ( ( this->kStrain_ - t)*u < 2 - m ) {
+            strainIndex[m] = t;
+            m++;
+        }
+        t++;
+    }
+
     this->strainIndex1_ = strainIndex[0];
     this->strainIndex2_ = strainIndex[1];
     assert( strainIndex1_ != strainIndex2_ );

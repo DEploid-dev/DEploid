@@ -59,8 +59,15 @@ void PfDeconvIO::init() {
     this->precision_ = 8;
     this->prefix_ = "pf3k-pfDeconv";
     this->kStrain_ = 5;
-    this->nMcmcSample_ = 1000;
+    this->nMcmcSample_ = 800;
+    this->mcmcBurn_ = 0.5;
     this->mcmcMachineryRate_ = 5;
+    this->missCopyProb_ = 0.01;
+    this->useConstRecomb_ = false;
+    this->forbidCopyFromSame_ = false;
+    this->constRecombProb_ = 1.0;
+    this->averageCentimorganDistance_ = 15000.0;
+    this->Ne_ = 10.0;
 
     #ifdef COMPILEDATE
         compileTime_ = COMPILEDATE;
@@ -77,6 +84,10 @@ void PfDeconvIO::init() {
 
 
 void PfDeconvIO::finalize(){
+    if ( !this->seed_set_ ){
+        this->set_seed( (unsigned)(time(0)) );
+    }
+
     if ( this->exclude_sites_ ){
         excludedMarkers = new ExcludeMarker(excludeFileName_.c_str());
     }
@@ -121,11 +132,13 @@ void PfDeconvIO::removeFilesWithSameName(){
     strExportHap = this->prefix_ + ".hap";
     strExportProp = this->prefix_ + ".prop";
     strExportLog =  this->prefix_ + ".log";
+    strExportRecombProb = this->prefix_ + ".recomb";
 
     remove(strExportLLK.c_str());
     remove(strExportHap.c_str());
     remove(strExportProp.c_str());
     remove(strExportLog.c_str());
+    remove(strExportRecombProb.c_str());
 }
 
 
@@ -159,6 +172,24 @@ void PfDeconvIO::parse (){
             this->kStrain_ = readNextInput<size_t>() ;
         } else if ( *argv_i == "-nSample" ) {
             this->nMcmcSample_ = readNextInput<size_t>() ;
+        } else if ( *argv_i == "-burn" ) {
+            this->mcmcBurn_ = readNextInput<double>() ;
+            if ( this->mcmcBurn_ < 0 || this->mcmcBurn_ > 1){
+                throw ("out of range");
+            }
+        } else if ( *argv_i == "-miss" ) {
+            this->missCopyProb_ = readNextInput<double>() ;
+            if ( this->missCopyProb_ < 0 || this->missCopyProb_ > 1){
+                throw ("out of range");
+            }
+        } else if ( *argv_i == "-recomb" ) {
+            this->constRecombProb_ = readNextInput<double>();
+            this->useConstRecomb_ = true;
+            if ( this->constRecombProb_ < 0 || this->constRecombProb_ > 1){
+                throw ("out of range");
+            }
+        } else if ( *argv_i == "-forbidSame" ) {
+            this->forbidCopyFromSame_ = true;
         } else if ( *argv_i == "-rate" ) {
             this->mcmcMachineryRate_ = readNextInput<size_t>() ;
         } else if (*argv_i == "-seed"){
