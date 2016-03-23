@@ -9,7 +9,7 @@ TESTS = unit_tests
 check_PROGRAMS = unit_tests pfDeconv_dbg pfDeconv_prof
 PROG = PFDECONV
 
-common_flags = -std=c++0x -Isrc/ -Isrc/codeCogs/ -DPFDECONVVERSION=\"${PFDECONVVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
+common_flags = -std=c++11 -Isrc/ -Isrc/codeCogs/ -DPFDECONVVERSION=\"${PFDECONVVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
 
 common_src = src/fastfunc.cpp \
 			 src/random_generator.cpp \

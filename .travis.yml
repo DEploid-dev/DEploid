@@ -15,7 +15,8 @@ before_script:
   - ./bootstrap
 
 script:
-  - ./configure --enable-gcov && make && make check
+  - make
+  - make check
   - ./tests/test_binary.sh
 
 after_success:
