@@ -59,7 +59,7 @@ struct NotEnoughArg : public InvalidInput{
     this->reason = "Not enough parameters when parsing option: ";
     throwMsg = this->reason + this->src;
   }
-  ~NotEnoughArg(){}
+  ~NotEnoughArg() throw() {}
 };
 
 
@@ -68,7 +68,7 @@ struct WrongType : public InvalidInput{
     this->reason = "Wrong type for parsing: ";
     throwMsg = this->reason + this->src;
   }
-  ~WrongType(){}
+  ~WrongType() throw() {}
 };
 
 
@@ -77,7 +77,7 @@ struct InvalidInputFile : public InvalidInput{
     this->reason = "Invalid input file: ";
     throwMsg = this->reason + this->src;
   }
-  ~InvalidInputFile(){}
+  ~InvalidInputFile() throw() {}
 };
 
 
@@ -86,7 +86,7 @@ struct FileNameMissing : public InvalidInput{
     this->reason = " file path missing!";
     throwMsg = this->src + this->reason ;
   }
-  ~FileNameMissing(){}
+  ~FileNameMissing() throw() {}
 };
 
 
@@ -95,7 +95,7 @@ struct UnknowArg : public InvalidInput{
     this->reason = "Unknow option: ";
     throwMsg = this->reason + this->src;
   }
-  ~UnknowArg(){}
+  ~UnknowArg() throw() {}
 };
 
 
@@ -104,7 +104,7 @@ struct FlagsConflict : public InvalidInput{
     this->reason = "Flag: ";
     throwMsg = this->reason + this->src + string(" conflict with flag ") + str2;
   }
-  ~FlagsConflict(){}
+  ~FlagsConflict() throw() {}
 };
 
 
@@ -113,7 +113,7 @@ struct LociNumberUnequal : public InvalidInput{
     this->reason = "Number of sites was wrong (compared to ref count) in: ";
     throwMsg = this->reason + this->src ;
   }
-  ~LociNumberUnequal(){}
+  ~LociNumberUnequal() throw() {}
 };
 
 
