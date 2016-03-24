@@ -39,6 +39,10 @@ unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_updateSingleHap.cpp \
 					 tests/unittest/test_atMarker.cpp
 
-unit_tests_CXXFLAGS = $(pfDeconv_CXXFLAGS) -Wno-write-strings
+unit_tests_CXXFLAGS = $(pfDeconv_CXXFLAGS) -Wno-write-strings -O0 --coverage
 unit_tests_LDADD          = -lcppunit -ldl
 
+clean-local: clean-local-check
+.PHONY: clean-local-check
+clean-local-check:
+	-rm -rf src/*.gc* tests/unittest/*.gc* src/*.gcov
