@@ -20,4 +20,4 @@ script:
   - ./tests/test_binary.sh
 
 after_success:
-  - coveralls --exclude lib --exclude tests --gcov-options '\-lp'
+  - coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --gcov-options '\-lp'

@@ -76,3 +76,5 @@ PG0*
 *.gcda
 *.gcno
 *.gcov
+libbash_test.info
+test_coverage/
