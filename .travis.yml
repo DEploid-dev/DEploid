@@ -9,7 +9,7 @@ compiler:
 before_install:
   - echo $LANG
   - echo $LC_ALL
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -qq; sudo apt-get install -qq libcppunit-dev valgrind r-base-core lcov python-pip; pip install --user cpp-coveralls fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -qq; sudo apt-get install -qq libcppunit-dev valgrind r-base-core lcov python-pip; pip install --user cpp-coveralls; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install llvm cppunit valgrind && brew link --force llvm; fi
 before_script:
   - ./bootstrap
