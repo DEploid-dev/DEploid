@@ -9,11 +9,11 @@ TESTS = unit_tests
 check_PROGRAMS = unit_tests pfDeconv_dbg pfDeconv_prof
 PROG = PFDECONV
 
-common_flags = -std=c++0x -Isrc/ -Isrc/codeCogs/ -DPFDECONVVERSION=\"${PFDECONVVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
+common_flags = -std=c++0x -Isrc/ -Isrc/codeCogs/ -Isrc/random/ -DPFDECONVVERSION=\"${PFDECONVVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
 
-common_src = src/fastfunc.cpp \
-			 src/random_generator.cpp \
-			 src/mersenne_twister.cpp \
+common_src = src/random/fastfunc.cpp \
+			 src/random/random_generator.cpp \
+			 src/random/mersenne_twister.cpp \
 			 src/mcmc.cpp \
 			 src/panel.cpp \
 			 src/pfDeconvIO.cpp \
@@ -39,6 +39,10 @@ unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_updateSingleHap.cpp \
 					 tests/unittest/test_atMarker.cpp
 
-unit_tests_CXXFLAGS = $(pfDeconv_CXXFLAGS) -Wno-write-strings
+unit_tests_CXXFLAGS = $(pfDeconv_CXXFLAGS) -Wno-write-strings -O0 --coverage
 unit_tests_LDADD          = -lcppunit -ldl
 
+clean-local: clean-local-check
+.PHONY: clean-local-check
+clean-local-check:
+	-rm -rf src/*.gc* tests/unittest/*.gc* src/*.gcov

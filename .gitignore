@@ -71,3 +71,10 @@ PG0389.C*
 toy*
 PG400*
 PG0*
+
+# coverage test
+*.gcda
+*.gcno
+*.gcov
+libbash_test.info
+test_coverage/
