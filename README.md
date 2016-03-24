@@ -3,6 +3,7 @@ PfDeconv
 
 [![Circle CI](https://circleci.com/gh/mcveanlab/PfDeconv.svg?style=svg)](https://circleci.com/gh/mcveanlab/PfDeconv)
 [![Build Status](https://travis-ci.org/mcveanlab/PfDeconv.svg?branch=master)](https://travis-ci.org/mcveanlab/PfDeconv)
+[![Coverage Status](https://coveralls.io/repos/github/mcveanlab/PfDeconv/badge.svg?branch=coverage)](https://coveralls.io/github/mcveanlab/PfDeconv?branch=coverage)
 
 _PfDeconv_ is developed as part of the [_Pf3k_](https://www.malariagen.net/projects/parasite/pf3k) project. The _Pf3k_ project is a global collaboration using the latest sequencing technologies to provide a high-resolution view of natural variation in the malaria parasite Plasmodium falciparum. Parasite DNA were extracted from patient blood sample, which often contains more than one parasite strain, with unknown proportions. _PfDeconv_ is used for deconvoluting mixed haplotypes, and reporting the mixture proportions from each sample.
 
