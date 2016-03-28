@@ -14,6 +14,9 @@ class TestUtility : public CppUnit::TestCase {
     CPPUNIT_TEST( testSumOfVec );
     CPPUNIT_TEST( testSumOfMat );
     CPPUNIT_TEST( testReshapeMatToVec );
+    CPPUNIT_TEST( testNormalizeBySumMat );
+    CPPUNIT_TEST( testCalcLLK );
+    CPPUNIT_TEST( testCalcLLKs );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -113,7 +116,17 @@ class TestUtility : public CppUnit::TestCase {
     }
 
     void testNormalizeBySumMat(){
-
+        vector < vector <double>> tmpMat1 = mat1;
+        (void)normalizeBySumMat (tmpMat1);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.02222222, tmpMat1[0][0], 0.00000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.04444444, tmpMat1[0][1], 0.00000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.06666667, tmpMat1[0][2], 0.00000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.08888889, tmpMat1[1][0], 0.00000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.11111111, tmpMat1[1][1], 0.00000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.13333333, tmpMat1[1][2], 0.00000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.15555556, tmpMat1[2][0], 0.00000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.17777778, tmpMat1[2][1], 0.00000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.20000000, tmpMat1[2][2], 0.00000001 );
     }
 
     void testReshapeMatToVec(){
@@ -127,8 +140,51 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 7.0, tmpvec1[6], 0.000000000001 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 8.0, tmpvec1[7], 0.000000000001 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 9.0, tmpvec1[8], 0.000000000001 );
-
     }
+
+    void testCalcLLK(){
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, calcLLK(0, 0, 0.0), 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, calcLLK(0, 0, 1.0), 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, calcLLK(0, 0, 0.5), 0.00000001) ;
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-0.09622803, calcLLK(10, 0, 0.0), 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-31.38367782, calcLLK(10, 0, 1.0), 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-6.520005876, calcLLK(10, 0, 0.5), 0.00000001) ;
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-92.39749823, calcLLK(0, 50, 0.0), 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-0.4088264558, calcLLK(0, 50, 1.0), 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-26.30680376, calcLLK(0, 50, 0.5), 0.00000001) ;
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-39.454802987, calcLLK(11, 13, 0.0), 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-82.7561739077, calcLLK(41, 2, 1.0), 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-71.6257227, calcLLK(23, 99, 0.5), 0.00000001) ;
+    }
+
+    void testCalcLLKs(){
+        vector <double> ref ({ 0, 0, 0, 10, 10, 10, 0, 0, 0, 11, 41, 23});
+        vector <double> alt ({ 0, 0, 0, 0, 0, 0, 50, 50, 50, 13, 2, 99});
+        vector <double> wsaf ({.0, 1.0, .5, .0, 1.0, .5, .0, 1.0, .5, .0, 1.0, .5 });
+
+        vector <double> llk1 = calcLLKs( ref, alt, wsaf, 0, 3 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, llk1[0], 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, llk1[0], 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, llk1[0], 0.00000001) ;
+
+        vector <double> llk2 = calcLLKs( ref, alt, wsaf, 6, 3 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-92.39749823, llk2[0], 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-0.4088264558, llk2[1], 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-26.30680376, llk2[2], 0.00000001) ;
+
+        vector <double> llk3 = calcLLKs( ref, alt, wsaf, 3, 7 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-0.09622803, llk3[0], 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-31.38367782, llk3[1], 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-6.520005876, llk3[2], 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-92.39749823, llk3[3], 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-0.4088264558, llk3[4], 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-26.30680376, llk3[5], 0.00000001) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-39.454802987, llk3[6], 0.00000001) ;
+    }
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestUtility );
