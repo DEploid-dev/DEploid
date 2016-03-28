@@ -127,7 +127,7 @@ void UpdateSingleHap::buildEmission( double missCopyProb ){
     assert(emission_.size() == 0 );
     for ( size_t i = 0; i < this->nLoci_; i++){
         vector <double> tmp ({t1omu[i], t2omu[i], t1u[i], t2u[i]});
-        double tmaxTmp = maxOfVec(tmp);
+        double tmaxTmp = max_value(tmp);
           vector <double> emissRow ({exp(t1omu[i] - tmaxTmp) + exp(t2u[i] - tmaxTmp),
                                      exp(t2omu[i] - tmaxTmp) + exp(t1u[i] - tmaxTmp)});
 
@@ -219,7 +219,7 @@ void UpdateSingleHap::samplePaths(){
 void UpdateSingleHap::addMissCopying( double missCopyProb ){
     assert( this->hap_.size() == 0 );
     for ( size_t i = 0; i < this->nLoci_; i++){
-        double tmpMax = maxOfVec ( vector <double>({this->llk0_[i], this->llk1_[i]}));
+        double tmpMax = max_value ( vector <double>({this->llk0_[i], this->llk1_[i]}));
         vector <double> emissionTmp ({exp(this->llk0_[i]-tmpMax), exp(this->llk1_[i]-tmpMax)});
         vector <double> sameDiffDist ({emissionTmp[path_[i]]*(1.0 - missCopyProb), // probability of the same
                                        emissionTmp[(size_t)(1 -path_[i])] * missCopyProb }); // probability of differ
@@ -239,7 +239,7 @@ void UpdateSingleHap::sampleHapIndependently( vector <double> &plaf ){
     assert( this->hap_.size() == 0 );
     size_t plafIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < this->nLoci_; i++){
-        double tmpMax = maxOfVec ( vector <double> ( {llk0_[i], llk1_[i]} ) ) ;
+        double tmpMax = max_value ( vector <double> ( {llk0_[i], llk1_[i]} ) ) ;
         vector <double> tmpDist ( {exp(llk0_[i] - tmpMax) * (1.0-plaf[plafIndex]),
                                    exp(llk1_[i] - tmpMax) * plaf[plafIndex] } );
         (void)normalizeBySum(tmpDist);
@@ -389,7 +389,7 @@ void UpdatePairHap:: buildEmission( double missCopyProb ){
                               tmp_01_1[i], tmp_01_2[i], tmp_01_3[i], tmp_01_4[i],
                               tmp_10_1[i], tmp_10_2[i], tmp_10_3[i], tmp_10_4[i],
                               tmp_11_1[i], tmp_11_2[i], tmp_11_3[i], tmp_11_4[i]});
-        double tmaxTmp = maxOfVec(tmp);
+        double tmaxTmp = max_value(tmp);
         vector <double> emissRow ({exp(tmp_00_1[i] - tmaxTmp) + exp(tmp_00_2[i] - tmaxTmp) + exp(tmp_00_3[i] - tmaxTmp) + exp(tmp_00_4[i] - tmaxTmp),
                                    exp(tmp_01_1[i] - tmaxTmp) + exp(tmp_01_2[i] - tmaxTmp) + exp(tmp_01_3[i] - tmaxTmp) + exp(tmp_01_4[i] - tmaxTmp),
                                    exp(tmp_10_1[i] - tmaxTmp) + exp(tmp_10_2[i] - tmaxTmp) + exp(tmp_10_3[i] - tmaxTmp) + exp(tmp_10_4[i] - tmaxTmp),
@@ -573,7 +573,7 @@ void UpdatePairHap::addMissCopying( double missCopyProb ){
     assert( this->hap2_.size() == 0 );
 
     for ( size_t i = 0; i < this->nLoci_; i++){
-        double tmpMax = maxOfVec ( vector <double>({this->llk00_[i], this->llk01_[i], this->llk10_[i], this->llk11_[i]}));
+        double tmpMax = max_value ( vector <double>({this->llk00_[i], this->llk01_[i], this->llk10_[i], this->llk11_[i]}));
         vector <double> emissionTmp ({exp(this->llk00_[i]-tmpMax), exp(this->llk01_[i]-tmpMax), exp(this->llk10_[i]-tmpMax), exp(this->llk11_[i]-tmpMax)});
         vector <double> casesDist ( { emissionTmp[(size_t)(2*path1_[i]     +path2_[i])]     * (1.0 - missCopyProb) * (1.0 - missCopyProb), // probability of both same
                                       emissionTmp[(size_t)(2*path1_[i]     +(1-path2_[i]))] * (1.0 - missCopyProb) * missCopyProb,         // probability of same1diff2
@@ -610,7 +610,7 @@ void UpdatePairHap::sampleHapIndependently(vector <double> &plaf){
 
     size_t plafIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < this->nLoci_; i++){
-        double tmpMax = maxOfVec ( vector <double> ( {llk00_[i], llk01_[i], llk10_[i], llk11_[i]} ) );
+        double tmpMax = max_value ( vector <double> ( {llk00_[i], llk01_[i], llk10_[i], llk11_[i]} ) );
         vector <double> tmpDist ( {exp(llk00_[i] - tmpMax) * (1.0-plaf[plafIndex]) * (1.0-plaf[plafIndex]),
                                    exp(llk01_[i] - tmpMax) * (1.0-plaf[plafIndex]) * plaf[plafIndex],
                                    exp(llk10_[i] - tmpMax) * (1.0-plaf[plafIndex]) * plaf[plafIndex],

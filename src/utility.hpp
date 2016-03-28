@@ -23,6 +23,8 @@
 
 #include <vector>
 #include <iostream>
+#include <algorithm>    /* min_element, max_element */
+
 #include "mersenne_twister.hpp"
 #include "global.h"
 
@@ -43,24 +45,18 @@ T normal_pdf(T x, T m, T s)
 
 
 template <typename T>
-T minOfVec( vector <T> x){
+T min_value( vector <T> x){
     assert( x.size() > 0 );
-    T tmpMin = x[0];
-    for ( auto const& value: x ){
-        tmpMin = ( value < tmpMin ) ? value : tmpMin;
-    }
-    return tmpMin;
+    auto tmpMaxIt = std::min_element(std::begin(x), std::end(x));
+    return *tmpMaxIt;
 }
 
 
 template <typename T>
-T maxOfVec( vector <T> x){
+T max_value( vector <T> x){
     assert( x.size() > 0 );
-    T tmpMax = x[0];
-    for ( auto const& value: x ){
-        tmpMax = ( value > tmpMax ) ? value : tmpMax;
-    }
-    return tmpMax;
+    auto tmpMaxIt = std::max_element(std::begin(x), std::end(x));
+    return *tmpMaxIt;
 }
 
 
@@ -104,11 +100,6 @@ void normalizeBySum ( vector <double> & array );
 void normalizeBySumMat ( vector <vector <double> > & matrix );
 vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf, size_t firstIndex, size_t length );
 double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01, double fac=100 ) ;
-
 size_t sampleIndexGivenProp ( MersenneTwister* rg, vector <double> proportion );
-
-//vector <size_t> sampleNoReplace( MersenneTwister* rg, vector <double> &proportion, size_t nSample = 1);
-    vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );
-
-
+vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );
 #endif

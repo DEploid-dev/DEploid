@@ -1,6 +1,6 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "../../src/atMarker.hpp"
+#include "atMarker.hpp"
 
 class TestAtMarker : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE( TestAtMarker );

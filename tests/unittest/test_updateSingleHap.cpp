@@ -1,6 +1,6 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "../../src/updateHap.hpp"
+#include "updateHap.hpp"
 
 class TestUpdateSinglerHap : public CppUnit::TestCase {
 

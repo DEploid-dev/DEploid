@@ -1,11 +1,12 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "../../src/pfDeconvIO.hpp"
+#include "pfDeconvIO.hpp"
 
 class TestIO : public CppUnit::TestCase {
 
     CPPUNIT_TEST_SUITE( TestIO );
     CPPUNIT_TEST( testMainConstructor );
+    CPPUNIT_TEST( testPrintHelp );
     CPPUNIT_TEST( testNotEnoughArg );
     CPPUNIT_TEST( testWrongType );
     CPPUNIT_TEST( testFileNameMissing );
@@ -47,6 +48,10 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "tests/testData/lab_first100_Panel.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_NO_THROW ( PfDeconvIO pars1(11, argv1) );
+    }
+
+    void testPrintHelp(){
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->printHelp() );
     }
 
     void testNotEnoughArg(){
@@ -167,6 +172,13 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "tests/testData/lab_first100_Panel.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_THROW ( PfDeconvIO pars(9, argv1), FileNameMissing );
+        CPPUNIT_ASSERT_THROW_MESSAGE( "Ref count file path missing!", PfDeconvIO pars(9, argv1), FileNameMissing );
+        try {
+            PfDeconvIO pars1(9, argv1);
+        }
+        catch (const exception &e) {
+            CPPUNIT_ASSERT_EQUAL( string("Ref count file path missing!"), string(e.what()) );
+        }
 
         char *argv2[] = { "./pfDeconv",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
@@ -174,6 +186,12 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "tests/testData/lab_first100_Panel.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_THROW ( PfDeconvIO pars(9, argv2), FileNameMissing );
+        try {
+            PfDeconvIO pars2(9, argv2);
+        }
+        catch (const exception &e) {
+            CPPUNIT_ASSERT_EQUAL( string("Alt count file path missing!"), string(e.what()) );
+        }
 
         char *argv3[] = { "./pfDeconv",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
@@ -199,6 +217,12 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "tests/testData/lab_first100_Panel.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_THROW( PfDeconvIO pars(11, argv), InvalidInputFile );
+        try {
+            PfDeconvIO pars(11, argv);
+        }
+        catch (const exception &e) {
+            CPPUNIT_ASSERT_EQUAL( string("Invalid input file: PG0390_first100ref.txt"), string(e.what()) );
+        }
     }
 
 

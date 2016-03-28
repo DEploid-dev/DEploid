@@ -35,7 +35,6 @@
 
 using namespace std;
 
-//enum EventType {PROPORTION, SINGLE, PAIR};
 
 class McmcSample {
   friend class McmcMachinery;
@@ -43,9 +42,6 @@ class McmcSample {
   public:
     McmcSample(){}
     ~McmcSample(){}
-    double llkRange(){
-        return (maxOfVec(this->sumLLKs) - minOfVec(this->sumLLKs) );
-    }
     void clear(){
         proportion.clear();
         sumLLKs.clear();

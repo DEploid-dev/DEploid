@@ -136,9 +136,6 @@ void McmcMachinery::initializeExpectedWsaf(){
 
 void McmcMachinery::initializellk(){
     assert( this->currentLLks_.size() == (size_t)0);
-    //for ( size_t i = 0; i < this->pfDeconvIO_->plaf.size(); i++ ){
-        //this->currentLLks_.push_back(0.0);
-    //}
     this->currentLLks_ = vector <double> (this->nLoci_, 0.0);
     assert( this->currentLLks_.size() == this->nLoci_);
 }
@@ -272,7 +269,7 @@ void McmcMachinery::updateProportion(){
     vector <double> tmpTitre = calcTmpTitre();
     vector <double> tmpProp = titre2prop(tmpTitre);
 
-    if ( minOfVec(tmpProp) < 0 || maxOfVec(tmpProp) > 1 ) {
+    if ( min_value(tmpProp) < 0 || max_value(tmpProp) > 1 ) {
         dout << "(failed)" << endl;
         return;
     }
@@ -303,11 +300,6 @@ void McmcMachinery::updateProportion(){
 
 
 double McmcMachinery::deltaLLKs ( vector <double> &newLLKs ){
-    //double tmp = 0.0;
-    //for ( size_t i = 0; i < newLLKs.size(); i++){
-        //tmp += ( newLLKs[i] - this->currentLLks_[i] );
-    //}
-    //return tmp;
     vector <double> tmpdiff = vecDiff ( newLLKs,  this->currentLLks_);
     return sumOfVec(tmpdiff);
 }
