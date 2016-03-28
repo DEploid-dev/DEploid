@@ -25,36 +25,8 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>     // std::distance
-
 #include "exceptions.hpp"
 #include "atMarker.hpp"
-
-
-void AtMarker::extractChrom( string & tmp_str ){
-    if ( tmpChromInex_ >= 0 ){
-        if ( tmp_str != this->chrom_.back() ){
-            tmpChromInex_++;
-            // save current positions
-            this->position_.push_back(this->tmpPosition_);
-
-            // start new chrom
-            this->tmpPosition_.clear();
-            this->chrom_.push_back(tmp_str);
-        }
-    } else {
-        tmpChromInex_++;
-        assert (this->chrom_.size() == 0);
-        this->chrom_.push_back( tmp_str );
-        assert ( this->tmpPosition_.size() == 0 );
-        assert ( this->position_.size() == 0);
-    }
-}
-
-
-void AtMarker::extractPOS( string & tmp_str ){
-    this->tmpPosition_.push_back(strtod(tmp_str.c_str(), NULL));
-}
-
 
 
 AtMarker::AtMarker(const char inchar[]){
@@ -111,12 +83,42 @@ AtMarker::AtMarker(const char inchar[]){
 }
 
 
+AtMarker::~AtMarker(){};
+
+
+void AtMarker::extractChrom( string & tmp_str ){
+    if ( tmpChromInex_ >= 0 ){
+        if ( tmp_str != this->chrom_.back() ){
+            tmpChromInex_++;
+            // save current positions
+            this->position_.push_back(this->tmpPosition_);
+
+            // start new chrom
+            this->tmpPosition_.clear();
+            this->chrom_.push_back(tmp_str);
+        }
+    } else {
+        tmpChromInex_++;
+        assert (this->chrom_.size() == 0);
+        this->chrom_.push_back( tmp_str );
+        assert ( this->tmpPosition_.size() == 0 );
+        assert ( this->position_.size() == 0);
+    }
+}
+
+
+void AtMarker::extractPOS( string & tmp_str ){
+    this->tmpPosition_.push_back(strtod(tmp_str.c_str(), NULL));
+}
+
+
 void AtMarker::reshapeContentToInfo(){
     assert ( this->info_.size() == 0 );
     for ( size_t i = 0; i < this->nLoci_; i++){
         this->info_.push_back( this->content_[i][0] );
     }
 }
+
 
 void AtMarker::getIndexOfChromStarts(){
     this->indexOfChromStarts_.clear();
@@ -127,6 +129,10 @@ void AtMarker::getIndexOfChromStarts(){
     }
     assert( indexOfChromStarts_.size() == this->chrom_.size() );
 }
+
+
+InputMarker::InputMarker(const char inchar[] ):AtMarker(inchar){ };
+InputMarker::~InputMarker(){};
 
 
 void InputMarker::removeMarkers( ExcludeMarker* excludedMarkers ){
@@ -183,3 +189,7 @@ void InputMarker::removeMarkers( ExcludeMarker* excludedMarkers ){
     this->getIndexOfChromStarts();
     this->nLoci_ = this->content_.size();
 }
+
+
+ExcludeMarker::ExcludeMarker(const char inchar[] ):AtMarker(inchar){};
+ExcludeMarker::~ExcludeMarker(){};

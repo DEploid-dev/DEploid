@@ -40,7 +40,7 @@ class UpdateHap{
   friend class UpdatePairHap;
   friend class TestUpdateSinglerHap;
 
-    UpdateHap(){}
+    UpdateHap();
     UpdateHap( vector <double> &refCount,
                vector <double> &altCount,
                vector <double> &plaf,
@@ -51,7 +51,7 @@ class UpdateHap{
                size_t segmentStartIndex,
                size_t nLoci,
                Panel* panel );
-    virtual ~UpdateHap(){}
+    virtual ~UpdateHap();
 
     Panel* panel_;
     double missCopyProb_;
@@ -70,17 +70,15 @@ class UpdateHap{
     vector < vector <double> > emission_;
 
     // Methods
-    virtual void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes){};
-    virtual void calcHapLLKs( vector <double> &refCount, vector <double> &altCount){};
-    virtual void buildEmission( double missCopyProb ){};
+    virtual void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
+    virtual void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
+    virtual void buildEmission( double missCopyProb );
     // calcFwdProbs() differ for class UpdateSingleHap and UpdatePairHap
-    //virtual void calcFwdProbs(){};
-    virtual void samplePaths(){};
-    virtual void addMissCopying( double missCopyProb ){};
-    virtual void updateLLK(){};
-    virtual void sampleHapIndependently(vector <double> &plaf){};
-
-
+    //virtual void calcFwdProbs();
+    virtual void samplePaths();
+    virtual void addMissCopying( double missCopyProb );
+    virtual void updateLLK();
+    virtual void sampleHapIndependently(vector <double> &plaf);
 };
 
 
@@ -88,8 +86,8 @@ class UpdateSingleHap : public UpdateHap{
  friend class McmcMachinery;
  friend class TestUpdateSinglerHap;
   public:
-     UpdateSingleHap():UpdateHap(){}
-     UpdateSingleHap( vector <double> &refCount,
+    UpdateSingleHap ();
+    UpdateSingleHap( vector <double> &refCount,
                       vector <double> &altCount,
                       vector <double> &plaf,
                       vector <double> &expectedWsaf,
@@ -100,11 +98,8 @@ class UpdateSingleHap : public UpdateHap{
                       size_t nLoci,
                       Panel* panel, double missCopyProb,
                       size_t strainIndex );
-    ~UpdateSingleHap(){
-        //delete recombRg_;
-        //delete recombLevel2Rg_;
-        //delete missCopyRg_;
-    }
+    ~UpdateSingleHap();
+
   private:
     vector < vector <double> > fwdProbs_;
 
@@ -134,7 +129,7 @@ class UpdatePairHap : public UpdateHap{
  friend class McmcMachinery;
  friend class TestUpdatePairHap;
   public:
-     UpdatePairHap():UpdateHap(){}
+     UpdatePairHap();
      UpdatePairHap( vector <double> &refCount,
                       vector <double> &altCount,
                       vector <double> &plaf,
@@ -147,11 +142,8 @@ class UpdatePairHap : public UpdateHap{
                       Panel* panel, double missCopyProb, bool forbidCopyFromSame,
                       size_t strainIndex1,
                       size_t strainIndex2 );
-    ~UpdatePairHap(){
-        //delete recombRg_;
-        //delete recombLevel2Rg_;
-        //delete missCopyRg_;
-    }
+    ~UpdatePairHap();
+
   private:
     vector< vector < vector <double> > > fwdProbs_;
 
@@ -166,7 +158,6 @@ class UpdatePairHap : public UpdateHap{
     vector <double> llk01_;
     vector <double> llk10_;
     vector <double> llk11_;
-
     vector <double> path1_;
     vector <double> path2_;
     vector <double> hap1_;
@@ -185,7 +176,6 @@ class UpdatePairHap : public UpdateHap{
     // Own methods
     vector <double> computeRowMarginalDist( vector < vector < double > > & probDist );
     vector <double> computeColMarginalDist( vector < vector < double > > & probDist );
-
     vector <size_t> sampleMatrixIndex( vector < vector < double > > &probDist );
 };
 

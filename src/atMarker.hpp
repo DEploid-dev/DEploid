@@ -65,26 +65,23 @@ class AtMarker{
 
   public:
     AtMarker(const char inchar[]);
-    virtual ~AtMarker(){};
+    virtual ~AtMarker();
 };
 
 
 class ExcludeMarker : public AtMarker {
   // sorting
   public:
-    ExcludeMarker(const char inchar[] ):AtMarker(inchar){};
-    ~ExcludeMarker(){};
+    ExcludeMarker( const char inchar[] );
+    ~ExcludeMarker();
 };
 
 
 class InputMarker : public AtMarker {
- //friend class PfDeconvIO;
-  //private:
-
   public:
-    InputMarker(const char inchar[] ):AtMarker(inchar){ };
+    InputMarker( const char inchar[] );
+    ~InputMarker();
     void removeMarkers( ExcludeMarker* excludedMarkers );
-    virtual ~InputMarker(){};
 };
 
 #endif

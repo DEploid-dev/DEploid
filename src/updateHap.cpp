@@ -25,6 +25,9 @@
 #include <algorithm>    // std::reverse
 #include <cstdlib> // div
 
+UpdateHap::UpdateHap(){}
+UpdateHap::~UpdateHap(){}
+
 UpdateHap::UpdateHap( vector <double> &refCount,
                       vector <double> &altCount,
                       vector <double> &plaf,
@@ -52,10 +55,25 @@ UpdateHap::UpdateHap( vector <double> &refCount,
     //this->recombRg_       = new MersenneTwister(rg->seed(), rg->ff());
     //this->recombLevel2Rg_ = new MersenneTwister(rg->seed(), rg->ff());
     //this->missCopyRg_     = new MersenneTwister(rg->seed(), rg->ff());
-
     this->segmentStartIndex_ = segmentStartIndex;
     this->nLoci_ = nLoci;
+}
 
+
+void UpdateHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes){};
+void UpdateHap::calcHapLLKs( vector <double> &refCount, vector <double> &altCount){};
+void UpdateHap::buildEmission( double missCopyProb ){};
+void UpdateHap::samplePaths(){};
+void UpdateHap::addMissCopying( double missCopyProb ){};
+void UpdateHap::updateLLK(){};
+void UpdateHap::sampleHapIndependently(vector <double> &plaf){};
+
+
+UpdateSingleHap::UpdateSingleHap():UpdateHap(){}
+UpdateSingleHap::~UpdateSingleHap(){
+    //delete recombRg_;
+    //delete recombLevel2Rg_;
+    //delete missCopyRg_;
 }
 
 
@@ -263,6 +281,13 @@ void UpdateSingleHap::updateLLK(){
     }
 }
 
+
+UpdatePairHap::UpdatePairHap():UpdateHap(){}
+UpdatePairHap::~UpdatePairHap(){
+    //delete recombRg_;
+    //delete recombLevel2Rg_;
+    //delete missCopyRg_;
+}
 
 UpdatePairHap::UpdatePairHap( vector <double> &refCount,
                               vector <double> &altCount,
