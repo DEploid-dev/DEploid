@@ -35,7 +35,8 @@ class TestUtility : public CppUnit::TestCase {
     }
 
     void testMinValue(){
-        CPPUNIT_ASSERT_EQUAL ( 1.0, min_value(vec1) );
+        double min1 =  min_value(vec1);
+        CPPUNIT_ASSERT_EQUAL ( 1.0, min1 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.1, min_value(vec2), 0.000000000001 );
     }
 

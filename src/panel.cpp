@@ -24,6 +24,13 @@
 #include "panel.hpp"
 #include <math.h>
 #include <iostream>
+
+Panel::Panel(const char inchar[] ):InputMarker(inchar){
+    this->nPanel_ = this->nInfoLines_;
+};
+
+Panel::~Panel(){};
+
 void Panel::checkForExceptions( size_t nLoci, string panelFileName ){
     if ( this->content_.size() != nLoci ){
         throw LociNumberUnequal( panelFileName );
@@ -34,7 +41,6 @@ void Panel::checkForExceptions( size_t nLoci, string panelFileName ){
     }
 
 }
-
 
 void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame ){
     assert(pRec_.size() == 0 );
@@ -83,5 +89,3 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bo
     assert(pRecNoRec_.size() == this->nLoci_ );
     assert(pNoRecNoRec_.size() == this->nLoci_ );
 }
-
-
