@@ -15,6 +15,7 @@ class TestUtility : public CppUnit::TestCase {
     CPPUNIT_TEST( testSumOfMat );
     CPPUNIT_TEST( testReshapeMatToVec );
     CPPUNIT_TEST( testNormalizeBySumMat );
+    CPPUNIT_TEST( testNormalPdf );
     CPPUNIT_TEST( testCalcLLK );
     CPPUNIT_TEST( testCalcLLKs );
     CPPUNIT_TEST_SUITE_END();
@@ -47,6 +48,11 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL ( 4.0, max_value(vec1) );
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.4, max_value(vec2), 0.000000000001 );
     }
+
+    void testNormalPdf(){
+//normal_pdf
+    }
+
 
     void testVecDiff(){
         vector <double> diff1 = vecDiff(vec1, vec2);

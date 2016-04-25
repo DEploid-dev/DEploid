@@ -17,10 +17,10 @@ common_src = src/random/fastfunc.cpp \
 			 src/mcmc.cpp \
 			 src/panel.cpp \
 			 src/pfDeconvIO.cpp \
-			 src/pfDeconvIOExport.cpp \
 			 src/utility.cpp \
 			 src/updateHap.cpp \
-			 src/atMarker.cpp
+			 src/atMarker.cpp \
+			 src/export/pfDeconvIOExport.cpp
 
 pfDeconv_SOURCES = src/pfDeconv.cpp $(common_src)
 pfDeconv_dbg_SOURCES = $(pfDeconv_SOURCES)

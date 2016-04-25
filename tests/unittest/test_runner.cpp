@@ -13,22 +13,22 @@
 using namespace CppUnit;
 
 int main(void) {
-	TestResult controller;
+    TestResult controller;
 
-	TestResultCollector result;
-	controller.addListener(&result);
+    TestResultCollector result;
+    controller.addListener(&result);
 
-	BriefTestProgressListener progress;
-	controller.addListener(&progress);
+    BriefTestProgressListener progress;
+    controller.addListener(&progress);
 
-	TestRunner runner;
-	runner.addTest( TestFactoryRegistry::getRegistry().makeTest() );
-	runner.run(controller);
+    TestRunner runner;
+    runner.addTest( TestFactoryRegistry::getRegistry().makeTest() );
+    runner.run(controller);
 
-	CompilerOutputter outputter(&result, std::cerr);
-	outputter.write();
+    CompilerOutputter outputter(&result, std::cerr);
+    outputter.write();
 
-	return result.wasSuccessful() ? 0 : 1;
+    return result.wasSuccessful() ? 0 : 1;
 }
 
 // EOF
