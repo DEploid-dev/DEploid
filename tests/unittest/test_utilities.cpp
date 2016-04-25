@@ -11,6 +11,7 @@ class TestUtility : public CppUnit::TestCase {
     CPPUNIT_TEST( testVecDiff );
     CPPUNIT_TEST( testVecSum );
     CPPUNIT_TEST( testComputeCdf );
+    CPPUNIT_TEST( testSampleIndexGivenProp );
     CPPUNIT_TEST( testSumOfVec );
     CPPUNIT_TEST( testSumOfMat );
     CPPUNIT_TEST( testReshapeMatToVec );
@@ -24,9 +25,11 @@ class TestUtility : public CppUnit::TestCase {
     vector <double> vec1;
     vector <double> vec2;
     vector < vector < double> > mat1;
+    MersenneTwister* rg;
 
   public:
     void setUp() {
+        rg = new MersenneTwister((size_t)1);
         vec1 = vector < double > ({4.0, 2.0, 3.0, 1.0});
         vec2 = vector < double > ({0.4, 0.3, 0.1, 0.2});
         mat1.push_back( vector <double> ({1.0, 2.0, 3.0}) );
@@ -35,8 +38,11 @@ class TestUtility : public CppUnit::TestCase {
 
     }
 
+
     void tearDown() {
+        delete rg;
     }
+
 
     void testMinValue(){
         double min1 =  min_value(vec1);
@@ -44,13 +50,35 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.1, min_value(vec2), 0.000000000001 );
     }
 
+
     void testMaxValue(){
         CPPUNIT_ASSERT_EQUAL ( 4.0, max_value(vec1) );
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.4, max_value(vec2), 0.000000000001 );
     }
 
+
     void testNormalPdf(){
-//normal_pdf
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.3989423, normal_pdf(0.0, 0.0, 1.0), 0.0000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.2419707, normal_pdf(-1.0, 0.0, 1.0), 0.0000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.2419707, normal_pdf(1.0, 0.0, 1.0), 0.0000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.0001338302, normal_pdf(4.0, 0.0, 1.0), 0.0000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.2419707, normal_pdf(0.0, 1.0, 1.0), 0.0000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.05399097, normal_pdf(-1.0, 1.0, 1.0), 0.0000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.3989423, normal_pdf(1.0, 1.0, 1.0), 0.0000001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.004431848, normal_pdf(4.0, 1.0, 1.0), 0.0000001 );
+    }
+
+
+    void testSampleIndexGivenProp(){
+        vector <double> proportion1 ({1.0, 0.0, 0.0});
+        CPPUNIT_ASSERT_EQUAL ( (size_t)0, sampleIndexGivenProp( this->rg, proportion1) );
+
+        vector <double> proportion2 ({0.0, 1.0, 0.0});
+        CPPUNIT_ASSERT_EQUAL ( (size_t)1, sampleIndexGivenProp( this->rg, proportion2) );
+
+        vector <double> proportion3 ({0.0, 0.0, 1.0});
+        CPPUNIT_ASSERT_EQUAL ( (size_t)2, sampleIndexGivenProp( this->rg, proportion3) );
+
     }
 
 
@@ -68,6 +96,7 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( -0.8, diff2[3], 0.000000000001 );
     }
 
+
     void testVecSum(){
         vector <double> sum1 = vecSum(vec1, vec2);
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 4.4, sum1[0], 0.000000000001 );
@@ -76,6 +105,7 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 1.2, sum1[3], 0.000000000001 );
     }
 
+
     void testVecProd(){
         vector <double> prod1 = vecProd(vec1, vec2);
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 1.6, prod1[0], 0.000000000001 );
@@ -83,6 +113,7 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.3, prod1[2], 0.000000000001 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.2, prod1[3], 0.000000000001 );
     }
+
 
     void testComputeCdf(){
         vector <double> prop1 (vec1);
@@ -112,14 +143,17 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 1.0, cdf2[3], 0.000000000001 );
     }
 
+
     void testSumOfMat(){
         CPPUNIT_ASSERT_DOUBLES_EQUAL(45.0, sumOfMat(mat1), 0.000000000001 );
     }
+
 
     void testSumOfVec(){
         CPPUNIT_ASSERT_DOUBLES_EQUAL(10.0, sumOfVec(vec1), 0.000000000001 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, sumOfVec(vec2), 0.000000000001 );
     }
+
 
     void testNormalizeBySumMat(){
         vector < vector <double>> tmpMat1 = mat1;
@@ -135,6 +169,7 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.20000000, tmpMat1[2][2], 0.00000001 );
     }
 
+
     void testReshapeMatToVec(){
         vector <double> tmpvec1 = reshapeMatToVec(mat1);
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 1.0, tmpvec1[0], 0.000000000001 );
@@ -147,6 +182,7 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 8.0, tmpvec1[7], 0.000000000001 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 9.0, tmpvec1[8], 0.000000000001 );
     }
+
 
     void testCalcLLK(){
         CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, calcLLK(0, 0, 0.0), 0.00000001) ;
@@ -165,6 +201,7 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL (-82.7561739077, calcLLK(41, 2, 1.0), 0.00000001) ;
         CPPUNIT_ASSERT_DOUBLES_EQUAL (-71.6257227, calcLLK(23, 99, 0.5), 0.00000001) ;
     }
+
 
     void testCalcLLKs(){
         vector <double> ref ({ 0, 0, 0, 10, 10, 10, 0, 0, 0, 11, 41, 23});

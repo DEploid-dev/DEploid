@@ -38,9 +38,10 @@ unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_updatePairHap.cpp \
 					 tests/unittest/test_updateSingleHap.cpp \
 					 tests/unittest/test_atMarker.cpp \
-					 tests/unittest/test_utilities.cpp
+					 tests/unittest/test_utilities.cpp \
+					 tests/unittest/test_mcmc.cpp
 
-unit_tests_CXXFLAGS = $(pfDeconv_CXXFLAGS) -Wno-write-strings -O0 --coverage
+unit_tests_CXXFLAGS = $(pfDeconv_CXXFLAGS) -Wno-write-strings --coverage
 unit_tests_LDADD          = -lcppunit -ldl
 
 clean-local: clean-local-check
