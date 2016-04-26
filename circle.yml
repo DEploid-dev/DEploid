@@ -9,6 +9,8 @@ dependencies:
   override:
     - sudo apt-get install libcppunit-dev
     - sudo apt-get install valgrind
+    - sudo apt-get install python-pip
+    - pip install --user cpp-coveralls
 
 test:
   override:
@@ -16,3 +18,4 @@ test:
     - make
     - make check
     - ./tests/test_binary.sh
+    - coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
