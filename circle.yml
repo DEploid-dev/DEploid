@@ -1,3 +1,5 @@
+COVERALLS_REPO_TOKEN=OSRXA5zUSDooXqXIkyXypIjvTg8Vn1w0Y
+
 ## Customize checkout
 checkout:
   post:
@@ -9,8 +11,8 @@ dependencies:
   override:
     - sudo apt-get install libcppunit-dev
     - sudo apt-get install valgrind
-    - sudo apt-get install python-pip
-    - pip install --user cpp-coveralls
+    #- sudo apt-get install python-pip
+    #- pip install --user cpp-coveralls
 
 test:
   override:
@@ -19,4 +21,4 @@ test:
     - make check
     - valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
     - ./tests/test_binary.sh
-    - coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
+    #- coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
