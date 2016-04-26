@@ -40,8 +40,8 @@ class McmcSample {
   friend class McmcMachinery;
   friend class PfDeconvIO;
   public:
-    McmcSample(){}
-    ~McmcSample(){}
+    McmcSample();
+    ~McmcSample();
     void clear(){
         proportion.clear();
         sumLLKs.clear();
@@ -58,8 +58,9 @@ class McmcSample {
 
 
 class McmcMachinery {
+  friend class TestMcmcMachinery;
   public:
-    McmcMachinery();
+    //McmcMachinery();
     McmcMachinery( PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample );
     ~McmcMachinery();
     void runMcmcChain( );

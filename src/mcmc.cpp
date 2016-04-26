@@ -28,6 +28,10 @@
 #include "updateHap.hpp"
 #include <stdio.h>
 
+McmcSample::McmcSample(){};
+McmcSample::~McmcSample(){};
+
+//McmcMachinery::McmcMachinery();
 
 McmcMachinery::McmcMachinery(PfDeconvIO* pfDeconfIO, Panel *panel, McmcSample *mcmcSample ){ // initialiseMCMCmachinery
 
@@ -142,7 +146,7 @@ void McmcMachinery::initializeHap(){
 
 double McmcMachinery::rBernoulli(double p){
     double u = this->initialHapRg_->sample();
-    return ( u < p ) ? 1 : 0;
+    return ( u < p ) ? 1.0 : 0.0;
 }
 
 
@@ -204,22 +208,6 @@ vector <double> McmcMachinery::titre2prop(vector <double> & tmpTitre){
 }
 
 
-bool McmcMachinery::doutProp(){
-    dout << "  Update proportion to: ";
-
-    for ( auto const& value: this->currentProp_ ){
-        dout << value << " ";
-    }
-
-    dout<<endl;
-    return true;
-}
-
-
-bool McmcMachinery::doutLLK(){
-    dout << " Current log likelihood = " << sumOfVec( this->currentLLks_ ) << endl;
-    return true;
-}
 
 
 void McmcMachinery::runMcmcChain( ){

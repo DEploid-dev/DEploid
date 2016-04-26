@@ -43,6 +43,7 @@ class McmcSample;
 class PfDeconvIO{
  friend class McmcMachinery;
  friend class TestIO;
+ friend class TestMcmcMachinery;
   public:
     PfDeconvIO();
     PfDeconvIO(int argc, char *argv[]);

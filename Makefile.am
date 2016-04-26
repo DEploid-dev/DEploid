@@ -22,8 +22,10 @@ common_src = src/random/fastfunc.cpp \
 			 src/atMarker.cpp \
 			 src/export/pfDeconvIOExport.cpp
 
+debug_src = src/debug/mcmcDebug.cpp
+
 pfDeconv_SOURCES = src/pfDeconv.cpp $(common_src)
-pfDeconv_dbg_SOURCES = $(pfDeconv_SOURCES)
+pfDeconv_dbg_SOURCES =  $(debug_src) $(pfDeconv_SOURCES)
 pfDeconv_prof_SOURCES = $(pfDeconv_SOURCES)
 
 pfDeconv_CXXFLAGS = $(common_flags) -DNDEBUG -O3
