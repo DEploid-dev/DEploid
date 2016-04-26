@@ -36,6 +36,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     CPPUNIT_TEST( testFindUpdatingStrainSingle );
     CPPUNIT_TEST( testFindUpdatingStrainPair );
     CPPUNIT_TEST( testInitializeHap );
+    CPPUNIT_TEST( testInitializellk );
     CPPUNIT_TEST_SUITE_END();
 
 private:
@@ -140,6 +141,21 @@ public:
         for ( size_t i = 0; i < kStrain ; i++ ){
             CPPUNIT_ASSERT_DOUBLES_EQUAL ( constPlaf, sumOfVec(this->mcmcMachinery_->currentHap_[i])/(double)hapLength, 0.001 );
         }
+    }
+
+
+    void testInitializellk(){
+        this->mcmcMachinery_->nLoci_ = 1000;
+        this->mcmcMachinery_->initializellk();
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.0, sumOfVec(this->mcmcMachinery_->currentLLks_), 0.00001);
+        CPPUNIT_ASSERT_EQUAL ( (size_t)1000, this->mcmcMachinery_->currentLLks_.size() );
+    }
+
+
+    void testDeltaLLKs(){
+        this->mcmcMachinery_->currentLLks_ = vector < double > ( { 0.1, 0.3, 0.2, 0.4 } );
+        vector <double> newllks ({0.3,0.2, 0.5, 0.6});
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.6, this->mcmcMachinery_->deltaLLKs( newllks ) , 0.00001);
     }
 
 };
