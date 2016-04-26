@@ -64,6 +64,7 @@ class AtMarker{
     void getIndexOfChromStarts();
 
   public:
+    AtMarker ();
     AtMarker(const char inchar[]);
     virtual ~AtMarker();
 };
@@ -72,6 +73,7 @@ class AtMarker{
 class ExcludeMarker : public AtMarker {
   // sorting
   public:
+    ExcludeMarker();
     ExcludeMarker( const char inchar[] );
     ~ExcludeMarker();
 };
@@ -79,6 +81,7 @@ class ExcludeMarker : public AtMarker {
 
 class InputMarker : public AtMarker {
   public:
+    InputMarker ();
     InputMarker( const char inchar[] );
     ~InputMarker();
     void removeMarkers( ExcludeMarker* excludedMarkers );

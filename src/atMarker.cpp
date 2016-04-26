@@ -28,6 +28,7 @@
 #include "exceptions.hpp"
 #include "atMarker.hpp"
 
+AtMarker::AtMarker(){}
 
 AtMarker::AtMarker(const char inchar[]){
     tmpChromInex_ = -1;
@@ -130,7 +131,7 @@ void AtMarker::getIndexOfChromStarts(){
     assert( indexOfChromStarts_.size() == this->chrom_.size() );
 }
 
-
+InputMarker::InputMarker():AtMarker(){};
 InputMarker::InputMarker(const char inchar[] ):AtMarker(inchar){ };
 InputMarker::~InputMarker(){};
 
@@ -190,6 +191,6 @@ void InputMarker::removeMarkers( ExcludeMarker* excludedMarkers ){
     this->nLoci_ = this->content_.size();
 }
 
-
+ExcludeMarker::ExcludeMarker():AtMarker(){}
 ExcludeMarker::ExcludeMarker(const char inchar[] ):AtMarker(inchar){};
 ExcludeMarker::~ExcludeMarker(){};

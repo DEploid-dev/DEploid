@@ -25,7 +25,7 @@
 #include <cassert>       // assert
 #include <iomanip>      // std::setw
 
-
+PfDeconvIO::PfDeconvIO(){}
 PfDeconvIO::~PfDeconvIO(){
     if ( this->excludedMarkers != NULL ){
         delete this->excludedMarkers;

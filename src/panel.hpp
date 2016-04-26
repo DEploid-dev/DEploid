@@ -51,6 +51,7 @@ class Panel: public InputMarker{
   public:
     void computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame );
     void checkForExceptions( size_t nLoci, string panelFileName );
+    Panel();
     Panel(const char inchar[] );
     ~Panel();
 

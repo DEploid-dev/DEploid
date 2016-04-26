@@ -4,6 +4,7 @@
 
 class TestAtMarker : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE( TestAtMarker );
+    CPPUNIT_TEST( testMainConstructor );
     CPPUNIT_TEST( checkSizeBefore );
     CPPUNIT_TEST( checkInfo );
     CPPUNIT_TEST( checkRemoveMarkers );
@@ -23,6 +24,12 @@ class TestAtMarker : public CppUnit::TestCase {
     void tearDown() {
         delete altCount_;
         delete excludedMarkers_;
+    }
+
+    void testMainConstructor(){
+        AtMarker tmpAtMarker();
+        InputMarker tmpInputMarker();
+        ExcludeMarker tmpExcludeMarker();
     }
 
     void checkSizeBefore(){

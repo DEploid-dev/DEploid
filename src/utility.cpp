@@ -27,6 +27,28 @@
 #include <algorithm> // find
 
 
+double normal_pdf(double x, double m, double s) { // See http://stackoverflow.com/questions/10847007/using-the-gaussian-probability-density-function-in-c
+    static const double inv_sqrt_2pi = 0.3989422804014327;
+    double a = (x - m) / s;
+
+    return inv_sqrt_2pi / s * std::exp(-(0.5) * a * a);
+}
+
+
+double min_value( vector <double> x){
+    assert( x.size() > 0 );
+    auto tmpMaxIt = std::min_element(std::begin(x), std::end(x));
+    return *tmpMaxIt;
+}
+
+
+double max_value( vector <double> x){
+    assert( x.size() > 0 );
+    auto tmpMaxIt = std::max_element(std::begin(x), std::end(x));
+    return *tmpMaxIt;
+}
+
+
 vector <double> computeCdf ( vector <double> & dist ){
     vector <double> cdf;
     double cumsum = 0;

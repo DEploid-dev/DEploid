@@ -44,6 +44,7 @@ class PfDeconvIO{
  friend class McmcMachinery;
  friend class TestIO;
   public:
+    PfDeconvIO();
     PfDeconvIO(int argc, char *argv[]);
     ~PfDeconvIO ();
 

@@ -33,33 +33,6 @@
 
 using namespace std;
 
-
-template <typename T> // See http://stackoverflow.com/questions/10847007/using-the-gaussian-probability-density-function-in-c
-T normal_pdf(T x, T m, T s)
-{
-    static const T inv_sqrt_2pi = 0.3989422804014327;
-    T a = (x - m) / s;
-
-    return inv_sqrt_2pi / s * std::exp(-T(0.5) * a * a);
-}
-
-
-template <typename T>
-T min_value( vector <T> x){
-    assert( x.size() > 0 );
-    auto tmpMaxIt = std::min_element(std::begin(x), std::end(x));
-    return *tmpMaxIt;
-}
-
-
-template <typename T>
-T max_value( vector <T> x){
-    assert( x.size() > 0 );
-    auto tmpMaxIt = std::max_element(std::begin(x), std::end(x));
-    return *tmpMaxIt;
-}
-
-
 template <typename T>
 vector <T> vecDiff ( vector<T> &vecA, vector<T> &vecB ){
     assert(vecA.size() == vecB.size());
@@ -93,6 +66,9 @@ vector <T> vecProd ( vector<T> &vecA, vector<T> &vecB ){
 }
 
 
+double normal_pdf(double x, double m, double s);
+double min_value( vector <double> x);
+double max_value( vector <double> x);
 vector <double> computeCdf ( vector <double> & dist );
 double sumOfVec( vector <double>& array );
 double sumOfMat( vector <vector <double> > & matrix );
@@ -102,4 +78,6 @@ vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, 
 double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01, double fac=100 ) ;
 size_t sampleIndexGivenProp ( MersenneTwister* rg, vector <double> proportion );
 vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );
+
+
 #endif

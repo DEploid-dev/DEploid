@@ -25,6 +25,10 @@
 #include <math.h>
 #include <iostream>
 
+Panel::Panel():InputMarker(){
+    this->nPanel_ = this->nInfoLines_;
+};
+
 Panel::Panel(const char inchar[] ):InputMarker(inchar){
     this->nPanel_ = this->nInfoLines_;
 };
@@ -89,3 +93,10 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bo
     assert(pRecNoRec_.size() == this->nLoci_ );
     assert(pNoRecNoRec_.size() == this->nLoci_ );
 }
+
+
+//vector<vector<double>> outtrans(out[0].size(),
+                                    //vector<double>(out.size()));
+    //for (size_t i = 0; i < out.size(); ++i)
+        //for (size_t j = 0; j < out[0].size(); ++j)
+            //outtrans[j][i] = out[i][j];

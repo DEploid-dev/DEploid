@@ -10,6 +10,7 @@ class TestUtility : public CppUnit::TestCase {
     CPPUNIT_TEST( testMaxValue );
     CPPUNIT_TEST( testVecDiff );
     CPPUNIT_TEST( testVecSum );
+    CPPUNIT_TEST( testVecProd );
     CPPUNIT_TEST( testComputeCdf );
     CPPUNIT_TEST( testSampleIndexGivenProp );
     CPPUNIT_TEST( testSumOfVec );
@@ -26,6 +27,17 @@ class TestUtility : public CppUnit::TestCase {
     vector <double> vec2;
     vector < vector < double> > mat1;
     MersenneTwister* rg;
+
+    void testSampleIndexGivenPropCore( vector <double> prop ){
+        vector <int> counter ( prop.size(), 0 );
+        size_t nRepeat = 1000000;
+        for ( size_t i = 0; i < nRepeat; i++ ){
+            counter[sampleIndexGivenProp( this->rg, prop)]++;
+        }
+        for ( size_t i = 0; i < prop.size(); i++ ){
+            CPPUNIT_ASSERT_DOUBLES_EQUAL ( prop[i], counter[i]/(double)nRepeat, 0.001 );
+        }
+    }
 
   public:
     void setUp() {
@@ -70,15 +82,14 @@ class TestUtility : public CppUnit::TestCase {
 
 
     void testSampleIndexGivenProp(){
-        vector <double> proportion1 ({1.0, 0.0, 0.0});
-        CPPUNIT_ASSERT_EQUAL ( (size_t)0, sampleIndexGivenProp( this->rg, proportion1) );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)0, sampleIndexGivenProp( this->rg, vector <double> ({1.0, 0.0, 0.0})) );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)1, sampleIndexGivenProp( this->rg, vector <double> ({0.0, 1.0, 0.0})) );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)2, sampleIndexGivenProp( this->rg, vector <double> ({0.0, 0.0, 1.0})) );
 
-        vector <double> proportion2 ({0.0, 1.0, 0.0});
-        CPPUNIT_ASSERT_EQUAL ( (size_t)1, sampleIndexGivenProp( this->rg, proportion2) );
-
-        vector <double> proportion3 ({0.0, 0.0, 1.0});
-        CPPUNIT_ASSERT_EQUAL ( (size_t)2, sampleIndexGivenProp( this->rg, proportion3) );
-
+        this->testSampleIndexGivenPropCore( vector <double> ({0.9, 0.05, 0.05}) );
+        this->testSampleIndexGivenPropCore( vector <double> ({0.4, 0.6}) );
+        this->testSampleIndexGivenPropCore( vector <double> ({0.33, 0.33, 0.33}) );
+        this->testSampleIndexGivenPropCore( vector <double> ({0.1, 0.2, 0.3, 0.4}) );
     }
 
 

@@ -29,9 +29,9 @@
 #include <stdio.h>
 
 
-McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample ){ // initialiseMCMCmachinery
+McmcMachinery::McmcMachinery(PfDeconvIO* pfDeconfIO, Panel *panel, McmcSample *mcmcSample ){ // initialiseMCMCmachinery
 
-    this->pfDeconvIO_ = pdfDeconfIO;
+    this->pfDeconvIO_ = pfDeconfIO;
     this->panel_ = panel;
     this->mcmcSample_ = mcmcSample;
 
@@ -45,7 +45,7 @@ McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *
     //this->propRg_  = new MersenneTwister(this->seed_);
     //this->initialHapRg_ = new MersenneTwister(this->seed_);
 
-    this->burnIn_ = pdfDeconfIO->mcmcBurn_;
+    this->burnIn_ = pfDeconfIO->mcmcBurn_;
     this->calcMaxIteration( pfDeconvIO_->nMcmcSample_ , pfDeconvIO_->mcmcMachineryRate_ );
 
     this->MN_LOG_TITRE = 0.0;
