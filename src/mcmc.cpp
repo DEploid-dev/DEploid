@@ -69,20 +69,20 @@ McmcMachinery::~McmcMachinery(){
         delete hapRg_;
     }
 
-    if ( this->mcmcEventRg_ ){
-        this->mcmcEventRg_->clearFastFunc();
-        delete mcmcEventRg_;
-    }
+    //if ( this->mcmcEventRg_ ){
+        //this->mcmcEventRg_->clearFastFunc();
+        //delete mcmcEventRg_;
+    //}
 
-    if ( this->propRg_ ){
-        this->propRg_->clearFastFunc();
-        delete propRg_;
-    }
+    //if ( this->propRg_ ){
+        //this->propRg_->clearFastFunc();
+        //delete propRg_;
+    //}
 
-    if ( this->initialHapRg_ ){
-        this->initialHapRg_->clearFastFunc();
-        delete initialHapRg_;
-    }
+    //if ( this->initialHapRg_ ){
+        //this->initialHapRg_->clearFastFunc();
+        //delete initialHapRg_;
+    //}
 
     if ( this->std_generator_ ){
         delete std_generator_;
