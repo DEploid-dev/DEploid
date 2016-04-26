@@ -36,6 +36,8 @@ class TestIO : public CppUnit::TestCase {
     }
 
     void testMainConstructor() {
+        PfDeconvIO tmpPfDeconvIO();
+
         char *argv[] = { "./pfDeconv" };
         CPPUNIT_ASSERT_NO_THROW ( PfDeconvIO pars(1, argv) );
         PfDeconvIO pars(1, argv);

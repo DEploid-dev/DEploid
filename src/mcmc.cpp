@@ -64,19 +64,38 @@ McmcMachinery::McmcMachinery(PfDeconvIO* pfDeconfIO, Panel *panel, McmcSample *m
 
 
 McmcMachinery::~McmcMachinery(){
-    this->hapRg_->clearFastFunc();
-    //this->mcmcEventRg_->clearFastFunc();
-    //this->propRg_->clearFastFunc();
-    //this->initialHapRg_->clearFastFunc();
+    if ( this->hapRg_ ){
+        this->hapRg_->clearFastFunc();
+        delete hapRg_;
+    }
 
-    delete std_generator_;
-    delete initialTitre_normal_distribution_;
-    delete deltaX_normal_distribution_;
+    if ( this->mcmcEventRg_ ){
+        this->mcmcEventRg_->clearFastFunc();
+        delete mcmcEventRg_;
+    }
 
-    delete hapRg_;
-    //delete mcmcEventRg_;
-    //delete propRg_;
-    //delete initialHapRg_;
+    if ( this->propRg_ ){
+        this->propRg_->clearFastFunc();
+        delete propRg_;
+    }
+
+    if ( this->initialHapRg_ ){
+        this->initialHapRg_->clearFastFunc();
+        delete initialHapRg_;
+    }
+
+    if ( this->std_generator_ ){
+        delete std_generator_;
+    }
+
+    if ( this->initialTitre_normal_distribution_ ){
+        delete initialTitre_normal_distribution_;
+    }
+
+    if ( this->deltaX_normal_distribution_ ){
+        delete deltaX_normal_distribution_;
+    }
+
 }
 
 

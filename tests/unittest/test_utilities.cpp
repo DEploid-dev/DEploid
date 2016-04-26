@@ -35,7 +35,7 @@ class TestUtility : public CppUnit::TestCase {
             counter[sampleIndexGivenProp( this->rg, prop)]++;
         }
         for ( size_t i = 0; i < prop.size(); i++ ){
-            CPPUNIT_ASSERT_DOUBLES_EQUAL ( prop[i], counter[i]/(double)nRepeat, 0.001 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL ( prop[i], (double)counter[i]/(double)nRepeat, 0.001 );
         }
     }
 
@@ -52,6 +52,7 @@ class TestUtility : public CppUnit::TestCase {
 
 
     void tearDown() {
+        rg->clearFastFunc();
         delete rg;
     }
 
@@ -88,7 +89,7 @@ class TestUtility : public CppUnit::TestCase {
 
         this->testSampleIndexGivenPropCore( vector <double> ({0.9, 0.05, 0.05}) );
         this->testSampleIndexGivenPropCore( vector <double> ({0.4, 0.6}) );
-        this->testSampleIndexGivenPropCore( vector <double> ({0.33, 0.33, 0.33}) );
+        this->testSampleIndexGivenPropCore( vector <double> ({0.33, 0.33, 0.34}) );
         this->testSampleIndexGivenPropCore( vector <double> ({0.1, 0.2, 0.3, 0.4}) );
     }
 

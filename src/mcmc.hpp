@@ -59,6 +59,7 @@ class McmcSample {
 
 class McmcMachinery {
   public:
+    McmcMachinery();
     McmcMachinery( PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample );
     ~McmcMachinery();
     void runMcmcChain( );

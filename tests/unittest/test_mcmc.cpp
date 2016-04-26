@@ -54,7 +54,8 @@ public:
     }
 
     void testMainConstructor(){
-        McmcMachinery tmpMcmcMachinery(this->pfDeconvIO_, this->panel_, this->mcmcSample_ );
+        McmcMachinery tmpMcmcMachinery();
+        //McmcMachinery tmpMcmcMachinery(this->pfDeconvIO_, this->panel_, this->mcmcSample_ );
     }
 };
 
