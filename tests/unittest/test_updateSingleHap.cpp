@@ -2,9 +2,25 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "updateHap.hpp"
 
-class TestUpdateSinglerHap : public CppUnit::TestCase {
 
-    CPPUNIT_TEST_SUITE( TestUpdateSinglerHap );
+//class TestUpdateHap : public CppUnit::TestCase {
+    //CPPUNIT_TEST_SUITE( TestUpdateHap );
+    //CPPUNIT_TEST( testMainConstructor );
+    //CPPUNIT_TEST_SUITE_END();
+
+  //private:
+    //void testMainConstructor(){
+
+    //}
+
+//};
+
+//CPPUNIT_TEST_SUITE_REGISTRATION( TestUpdateHap );
+
+
+class TestUpdateSingleHap : public CppUnit::TestCase {
+
+    CPPUNIT_TEST_SUITE( TestUpdateSingleHap );
     CPPUNIT_TEST ( testEmissionProb0 );
     CPPUNIT_TEST ( testEmissionBasicVersion0 );
     CPPUNIT_TEST_SUITE_END();
@@ -36,6 +52,7 @@ class TestUpdateSinglerHap : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHap_->emission_[2][1], 0.000000000001);
     }
 
+
     void testEmissionBasicVersion0 (){
         this->updateSingleHap_->emission_.clear();
 
@@ -62,4 +79,4 @@ class TestUpdateSinglerHap : public CppUnit::TestCase {
 
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION( TestUpdateSinglerHap );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestUpdateSingleHap );

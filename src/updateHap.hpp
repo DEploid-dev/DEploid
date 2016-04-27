@@ -36,7 +36,7 @@ using namespace std;
 
 class UpdateHap{
 #ifdef UNITTEST
-  friend class TestUpdateSinglerHap;
+  friend class TestUpdateSingleHap;
 #endif
   friend class McmcMachinery;
   friend class UpdateSingleHap;
@@ -85,8 +85,10 @@ class UpdateHap{
 
 
 class UpdateSingleHap : public UpdateHap{
+#ifdef UNITTEST
+  friend class TestUpdateSingleHap;
+#endif
  friend class McmcMachinery;
- friend class TestUpdateSinglerHap;
   public:
     UpdateSingleHap ();
     UpdateSingleHap( vector <double> &refCount,
@@ -128,8 +130,10 @@ class UpdateSingleHap : public UpdateHap{
 
 
 class UpdatePairHap : public UpdateHap{
- friend class McmcMachinery;
+#ifdef UNITTEST
  friend class TestUpdatePairHap;
+#endif
+ friend class McmcMachinery;
   public:
      UpdatePairHap();
      UpdatePairHap( vector <double> &refCount,
