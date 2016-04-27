@@ -47,13 +47,15 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     Panel* panel_;
     McmcMachinery* mcmcMachinery_;
     size_t nRepeat;
+    double epsilon1;
+    double epsilon2;
 
     void testRBernoulliCore( double prop ){
         vector <double> rVariables( nRepeat, 0.0 );
         for( vector<double>::iterator it = rVariables.begin(); it != rVariables.end(); ++it) {
             *it = mcmcMachinery_->rBernoulli(prop);
         }
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( prop, sumOfVec(rVariables)/(double)nRepeat, 0.001 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( prop, sumOfVec(rVariables)/(double)nRepeat, epsilon2 );
     }
 
     void testFindUpdatingStrainSingleCore( size_t kStrain ){
@@ -64,7 +66,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
             counter[mcmcMachinery_->strainIndex_] += 1.0 ;
         }
         for ( size_t i = 0 ; i < kStrain; i++){
-            CPPUNIT_ASSERT_DOUBLES_EQUAL ( 1.0/(double)kStrain, counter[i]/(double)nRepeat, 0.01 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL ( 1.0/(double)kStrain, counter[i]/(double)nRepeat, epsilon1 );
         }
     }
 
@@ -78,7 +80,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
             CPPUNIT_ASSERT ( mcmcMachinery_->strainIndex1_ != mcmcMachinery_->strainIndex2_ );
         }
         for ( size_t i = 0 ; i < kStrain; i++){
-            CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.0/(double)kStrain, counter[i]/(double)nRepeat, 0.01 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.0/(double)kStrain, counter[i]/(double)nRepeat, epsilon1 );
         }
     }
 
@@ -90,6 +92,8 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         panel_ = new Panel();
         mcmcMachinery_ = new McmcMachinery(this->pfDeconvIO_, this->panel_, this->mcmcSample_ );
         nRepeat = 1000000;
+        epsilon1 = 0.01;
+        epsilon2 = 0.001;
     }
 
 
@@ -140,7 +144,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         this->pfDeconvIO_->plaf_ = vector <double> (hapLength, constPlaf);
         this->mcmcMachinery_->initializeHap();
         for ( size_t i = 0; i < kStrain ; i++ ){
-            CPPUNIT_ASSERT_DOUBLES_EQUAL ( constPlaf, sumOfVec(this->mcmcMachinery_->currentHap_[i])/(double)hapLength, 0.001 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL ( constPlaf, sumOfVec(this->mcmcMachinery_->currentHap_[i])/(double)hapLength, epsilon2 );
         }
     }
 
@@ -148,7 +152,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     void testInitializellk(){
         this->mcmcMachinery_->nLoci_ = 1000;
         this->mcmcMachinery_->initializellk();
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.0, sumOfVec(this->mcmcMachinery_->currentLLks_), 0.00001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.0, sumOfVec(this->mcmcMachinery_->currentLLks_), epsilon2);
         CPPUNIT_ASSERT_EQUAL ( (size_t)1000, this->mcmcMachinery_->currentLLks_.size() );
     }
 
@@ -171,7 +175,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     void testDeltaLLKs(){
         this->mcmcMachinery_->currentLLks_ = vector < double > ( { 0.1, 0.3, 0.2, 0.4 } );
         vector <double> newllks ({0.3,0.2, 0.5, 0.6});
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.6, this->mcmcMachinery_->deltaLLKs( newllks ) , 0.00001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.6, this->mcmcMachinery_->deltaLLKs( newllks ) , epsilon2);
     }
 
 
@@ -213,7 +217,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
             counter[this->mcmcMachinery_->mcmcSample_->moves[i]] += 1;
         }
         for ( size_t i = 0; i < 3; i++ ){
-            CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.333333, (double)counter[i]/(double)nRepeat , 0.001);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.333333, (double)counter[i]/(double)nRepeat , epsilon2);
         }
     }
 
