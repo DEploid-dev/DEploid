@@ -28,7 +28,9 @@
 #include "exceptions.hpp"
 
 class Panel: public InputMarker{
+#ifdef UNITTEST
  friend class TestPanel;
+#endif
  friend class UpdateSingleHap;
  friend class UpdatePairHap;
  friend class UpdateHap;

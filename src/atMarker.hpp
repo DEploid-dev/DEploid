@@ -33,8 +33,10 @@
 using namespace std;
 
 class AtMarker{
+#ifdef UNITTEST
  friend class TestPanel;
  friend class TestAtMarker;
+#endif
  friend class UpdateSingleHap;
  friend class UpdatePairHap;
  friend class UpdateHap;

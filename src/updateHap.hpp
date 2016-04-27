@@ -35,10 +35,12 @@ using namespace std;
 
 
 class UpdateHap{
+#ifdef UNITTEST
+  friend class TestUpdateSinglerHap;
+#endif
   friend class McmcMachinery;
   friend class UpdateSingleHap;
   friend class UpdatePairHap;
-  friend class TestUpdateSinglerHap;
 
     UpdateHap();
     UpdateHap( vector <double> &refCount,

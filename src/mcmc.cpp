@@ -31,8 +31,6 @@
 McmcSample::McmcSample(){};
 McmcSample::~McmcSample(){};
 
-//McmcMachinery::McmcMachinery();
-
 McmcMachinery::McmcMachinery(PfDeconvIO* pfDeconfIO, Panel *panel, McmcSample *mcmcSample ){ // initialiseMCMCmachinery
 
     this->pfDeconvIO_ = pfDeconfIO;
@@ -49,8 +47,7 @@ McmcMachinery::McmcMachinery(PfDeconvIO* pfDeconfIO, Panel *panel, McmcSample *m
     //this->propRg_  = new MersenneTwister(this->seed_);
     //this->initialHapRg_ = new MersenneTwister(this->seed_);
 
-    this->burnIn_ = pfDeconfIO->mcmcBurn_;
-    this->calcMaxIteration( pfDeconvIO_->nMcmcSample_ , pfDeconvIO_->mcmcMachineryRate_ );
+    this->calcMaxIteration( pfDeconvIO_->nMcmcSample_ , pfDeconvIO_->mcmcMachineryRate_, pfDeconfIO->mcmcBurn_ );
 
     this->MN_LOG_TITRE = 0.0;
     this->SD_LOG_TITRE = 3.0;
@@ -103,7 +100,8 @@ McmcMachinery::~McmcMachinery(){
 }
 
 
-void McmcMachinery::calcMaxIteration( size_t nSample, size_t McmcMachineryRate ){
+void McmcMachinery::calcMaxIteration( size_t nSample, size_t McmcMachineryRate, double burnIn ){
+    this->burnIn_ = burnIn;
     this->McmcMachineryRate_ = McmcMachineryRate;
     this->maxIteration_ = (size_t)ceil((double)nSample*(double)McmcMachineryRate/(1.0-this->burnIn_))+1;
     this->mcmcThresh_ = (size_t)ceil((double)nSample*(double)McmcMachineryRate*this->burnIn_/(1.0-this->burnIn_));

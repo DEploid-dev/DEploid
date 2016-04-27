@@ -41,9 +41,11 @@ using namespace std;
 class McmcSample;
 
 class PfDeconvIO{
- friend class McmcMachinery;
+#ifdef UNITTEST
  friend class TestIO;
  friend class TestMcmcMachinery;
+#endif
+ friend class McmcMachinery;
   public:
     PfDeconvIO();
     PfDeconvIO(int argc, char *argv[]);

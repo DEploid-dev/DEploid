@@ -37,6 +37,9 @@ using namespace std;
 
 
 class McmcSample {
+#ifdef UNITTEST
+  friend class TestMcmcMachinery;
+#endif
   friend class McmcMachinery;
   friend class PfDeconvIO;
   public:
@@ -58,7 +61,9 @@ class McmcSample {
 
 
 class McmcMachinery {
+#ifdef UNITTEST
   friend class TestMcmcMachinery;
+#endif
   public:
     //McmcMachinery();
     McmcMachinery( PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample );
@@ -105,7 +110,7 @@ class McmcMachinery {
     vector < double > currentExpectedWsaf_;
 
   /* Methods */
-    void calcMaxIteration( size_t nSample, size_t McmcMachineryRate );
+    void calcMaxIteration( size_t nSample, size_t McmcMachineryRate, double burnIn );
    /* Initialize */
     void initializeMcmcChain();
      void initializeProp();

@@ -32,11 +32,19 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestMcmcSample );
 class TestMcmcMachinery: public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE( TestMcmcMachinery );
     CPPUNIT_TEST( testMainConstructor );
+    // Testing for initialization
+    CPPUNIT_TEST( testInitializeHap );
+    CPPUNIT_TEST( testInitializellk );
+    CPPUNIT_TEST( testInitializeProp );
+    CPPUNIT_TEST( testInitializeTitre );
+    CPPUNIT_TEST( testInitializeExpectedWsaf );
+    CPPUNIT_TEST( testCalcMaxIteration );
+
     CPPUNIT_TEST( testRBernoulli );
     CPPUNIT_TEST( testFindUpdatingStrainSingle );
     CPPUNIT_TEST( testFindUpdatingStrainPair );
-    CPPUNIT_TEST( testInitializeHap );
-    CPPUNIT_TEST( testInitializellk );
+    CPPUNIT_TEST( testRunMcmcChain );
+
     CPPUNIT_TEST_SUITE_END();
 
 private:
@@ -44,9 +52,9 @@ private:
     PfDeconvIO* pfDeconvIO_;
     Panel* panel_;
     McmcMachinery* mcmcMachinery_;
+    size_t nRepeat;
 
     void testRBernoulliCore( double prop ){
-        size_t nRepeat = 1000000;
         vector <double> rVariables( nRepeat, 0.0 );
         for( vector<double>::iterator it = rVariables.begin(); it != rVariables.end(); ++it) {
             *it = mcmcMachinery_->rBernoulli(prop);
@@ -57,7 +65,6 @@ private:
     void testFindUpdatingStrainSingleCore( size_t kStrain ){
         mcmcMachinery_->kStrain_ = kStrain;
         vector <double> counter ( kStrain, 0.0 );
-        size_t nRepeat = 1000000;
         for ( size_t i = 0 ; i < nRepeat; i++ ){
             mcmcMachinery_->findUpdatingStrainSingle();
             counter[mcmcMachinery_->strainIndex_] += 1.0 ;
@@ -70,7 +77,6 @@ private:
     void testFindUpdatingStrainPairCore( size_t kStrain ){
         mcmcMachinery_->kStrain_ = kStrain;
         vector <double> counter ( kStrain, 0.0 );
-        size_t nRepeat = 1000000;
         for ( size_t i = 0 ; i < nRepeat; i++ ){
             mcmcMachinery_->findUpdatingStrainPair();
             counter[mcmcMachinery_->strainIndex1_] += 1.0 ;
@@ -89,6 +95,7 @@ public:
         pfDeconvIO_ = new PfDeconvIO();
         panel_ = new Panel();
         mcmcMachinery_ = new McmcMachinery(this->pfDeconvIO_, this->panel_, this->mcmcSample_ );
+        nRepeat = 1000000;
     }
 
 
@@ -152,10 +159,68 @@ public:
     }
 
 
+    void testInitializeProp(){
+        // TODO
+    }
+
+
+    void testInitializeTitre(){
+        // TODO
+    }
+
+
+    void testInitializeExpectedWsaf(){
+        // TODO
+    }
+
+
     void testDeltaLLKs(){
         this->mcmcMachinery_->currentLLks_ = vector < double > ( { 0.1, 0.3, 0.2, 0.4 } );
         vector <double> newllks ({0.3,0.2, 0.5, 0.6});
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.6, this->mcmcMachinery_->deltaLLKs( newllks ) , 0.00001);
+    }
+
+
+    void testCalcMaxIteration(){
+        CPPUNIT_ASSERT_EQUAL( 0.5, this->mcmcMachinery_->burnIn_ );
+        CPPUNIT_ASSERT_EQUAL( (size_t)5, this->mcmcMachinery_->McmcMachineryRate_ );
+        CPPUNIT_ASSERT_EQUAL( (size_t)8001, this->mcmcMachinery_->maxIteration_ );
+        CPPUNIT_ASSERT_EQUAL( (size_t)4000, this->mcmcMachinery_->mcmcThresh_ );
+
+        this->mcmcMachinery_->calcMaxIteration(1000, 5, 0.5);
+        CPPUNIT_ASSERT_EQUAL( 0.5, this->mcmcMachinery_->burnIn_ );
+        CPPUNIT_ASSERT_EQUAL( (size_t)5, this->mcmcMachinery_->McmcMachineryRate_ );
+        CPPUNIT_ASSERT_EQUAL( (size_t)10001, this->mcmcMachinery_->maxIteration_ );
+        CPPUNIT_ASSERT_EQUAL( (size_t)5000, this->mcmcMachinery_->mcmcThresh_ );
+
+        this->mcmcMachinery_->calcMaxIteration(10, 3, 0.3);
+        CPPUNIT_ASSERT_EQUAL( 0.3, this->mcmcMachinery_->burnIn_ );
+        CPPUNIT_ASSERT_EQUAL( (size_t)3, this->mcmcMachinery_->McmcMachineryRate_ );
+        CPPUNIT_ASSERT_EQUAL( (size_t)44, this->mcmcMachinery_->maxIteration_ );
+        CPPUNIT_ASSERT_EQUAL( (size_t)13, this->mcmcMachinery_->mcmcThresh_ );
+
+        this->mcmcMachinery_->calcMaxIteration(10, 7, 0.4);
+        CPPUNIT_ASSERT_EQUAL( 0.4, this->mcmcMachinery_->burnIn_ );
+        CPPUNIT_ASSERT_EQUAL( (size_t)7, this->mcmcMachinery_->McmcMachineryRate_ );
+        CPPUNIT_ASSERT_EQUAL( (size_t)118, this->mcmcMachinery_->maxIteration_ );
+        CPPUNIT_ASSERT_EQUAL( (size_t)47, this->mcmcMachinery_->mcmcThresh_ );
+    }
+
+
+    void testRunMcmcChain (){
+        this->mcmcMachinery_->calcMaxIteration(nRepeat, 1, 0.5);
+        this->mcmcMachinery_->runMcmcChain();
+
+        CPPUNIT_ASSERT_EQUAL( nRepeat, this->mcmcMachinery_->mcmcSample_->proportion.size() );
+        CPPUNIT_ASSERT_EQUAL( nRepeat, this->mcmcMachinery_->mcmcSample_->sumLLKs.size() );
+        CPPUNIT_ASSERT_EQUAL( nRepeat, this->mcmcMachinery_->mcmcSample_->moves.size() );
+        vector <size_t> counter (3, 0);
+        for ( size_t i = 0; i < nRepeat; i++){
+            counter[this->mcmcMachinery_->mcmcSample_->moves[i]] += 1;
+        }
+        for ( size_t i = 0; i < 3; i++ ){
+            CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.333333, (double)counter[i]/(double)nRepeat , 0.001);
+        }
     }
 
 };
