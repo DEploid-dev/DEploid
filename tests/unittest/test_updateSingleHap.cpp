@@ -3,19 +3,70 @@
 #include "updateHap.hpp"
 
 
-//class TestUpdateHap : public CppUnit::TestCase {
-    //CPPUNIT_TEST_SUITE( TestUpdateHap );
-    //CPPUNIT_TEST( testMainConstructor );
-    //CPPUNIT_TEST_SUITE_END();
+class TestUpdateHap : public CppUnit::TestCase {
+    CPPUNIT_TEST_SUITE( TestUpdateHap );
+    CPPUNIT_TEST( testMainConstructor );
+    CPPUNIT_TEST( testVirtualFunctions );
+    CPPUNIT_TEST_SUITE_END();
 
-  //private:
-    //void testMainConstructor(){
+  private:
+    UpdateHap * updateHap_;
+    Panel* panel_;
+    MersenneTwister* rg_;
+    vector <double> refCount;
+    vector <double> altCount;
+    vector <double> plaf;
+    vector <double> expectedWsaf;
+    vector <double> proportion;
+    vector < vector <double> > haplotypes;
+    size_t segmentStartIndex;
+    size_t nLoci;
 
-    //}
+  public:
+    void setUp(){
+        this->rg_ = new MersenneTwister((size_t)1);
+        this->panel_ = new Panel();
 
-//};
+        this->updateHap_ = new UpdateHap( refCount,
+                                          altCount,
+                                          plaf,
+                                          expectedWsaf,
+                                          proportion,
+                                          haplotypes,
+                                          rg_,
+                                          segmentStartIndex,
+                                          nLoci,
+                                          panel_ );
 
-//CPPUNIT_TEST_SUITE_REGISTRATION( TestUpdateHap );
+    }
+
+
+    void tearDown(){
+        delete updateHap_;
+        delete panel_;
+        this->rg_->clearFastFunc();
+        delete rg_;
+    }
+
+
+    void testMainConstructor(){
+        UpdateHap tmp();
+    }
+
+
+    void testVirtualFunctions(){
+        CPPUNIT_ASSERT_NO_THROW ( this->updateHap_->calcExpectedWsaf(expectedWsaf, proportion, haplotypes ) );
+        CPPUNIT_ASSERT_NO_THROW ( this->updateHap_->calcHapLLKs(refCount, altCount) );
+        CPPUNIT_ASSERT_NO_THROW ( this->updateHap_->buildEmission(0.1) );
+        CPPUNIT_ASSERT_NO_THROW ( this->updateHap_->samplePaths() );
+        CPPUNIT_ASSERT_NO_THROW ( this->updateHap_->addMissCopying(0.1) );
+        CPPUNIT_ASSERT_NO_THROW ( this->updateHap_->updateLLK() );
+        CPPUNIT_ASSERT_NO_THROW ( this->updateHap_->sampleHapIndependently(plaf) );
+    }
+
+};
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestUpdateHap );
 
 
 class TestUpdateSingleHap : public CppUnit::TestCase {
@@ -31,6 +82,10 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
   public:
     void setUp() {
         this->updateSingleHap_ = new UpdateSingleHap();
+    }
+
+    void tearDown() {
+        delete updateSingleHap_;
     }
 
     void testEmissionProb0 (){
@@ -71,11 +126,6 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_3), updateSingleHap_->emission_[2][0], 0.000000000001);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_3), updateSingleHap_->emission_[2][1], 0.000000000001);
     }
-
-    void tearDown() {
-        delete updateSingleHap_;
-    }
-
 
 };
 

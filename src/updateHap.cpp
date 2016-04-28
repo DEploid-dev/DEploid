@@ -554,26 +554,16 @@ void UpdatePairHap::samplePaths(){
             rowI = tmpPath[0];
             colJ = tmpPath[1];
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
-            //switch.two = switch.two + 1
-            //switch.table = rbind(switch.table, c("twoSwitchTwo", j ))
         } else if ( tmpCase == (size_t)1 ){ // switching second strain
             rowI = rowI;
-
             (void)normalizeBySum(rowIdist);
             colJ = sampleIndexGivenProp( this->recombLevel2Rg_, rowIdist );
-
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
-            //switch.one = switch.one + 1
-            //switch.table = rbind(switch.table, c("twoSwitchOne", j ))
         } else if ( tmpCase == (size_t)2 ){ // switching first strain
-
             (void)normalizeBySum(colJdist);
             rowI = sampleIndexGivenProp( this->recombLevel2Rg_, colJdist );
-
             colJ = colJ;
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
-            //switch.one = switch.one + 1
-            //switch.table = rbind(switch.table, c("twoSwitchOne", j ))
         } else if ( tmpCase == (size_t)3 ) { // no switching
             rowI = rowI;
             colJ = colJ;

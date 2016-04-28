@@ -33,6 +33,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     CPPUNIT_TEST( testInitializeTitre );
     CPPUNIT_TEST( testInitializeExpectedWsaf );
     CPPUNIT_TEST( testCalcMaxIteration );
+    CPPUNIT_TEST( testCalcExpectedWsaf );
 
     CPPUNIT_TEST( testRBernoulli );
     CPPUNIT_TEST( testFindUpdatingStrainSingle );
@@ -176,6 +177,11 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         this->mcmcMachinery_->currentLLks_ = vector < double > ( { 0.1, 0.3, 0.2, 0.4 } );
         vector <double> newllks ({0.3,0.2, 0.5, 0.6});
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.6, this->mcmcMachinery_->deltaLLKs( newllks ) , epsilon2);
+    }
+
+
+    void testCalcExpectedWsaf(){
+        // TODO
     }
 
 
