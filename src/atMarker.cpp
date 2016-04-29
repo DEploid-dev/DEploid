@@ -29,8 +29,9 @@
 #include "atMarker.hpp"
 
 AtMarker::AtMarker(){}
+AtMarker::~AtMarker(){};
 
-AtMarker::AtMarker(const char inchar[]){
+void AtMarker::readFromFileBase(const char inchar[]){
     tmpChromInex_ = -1;
 
     ifstream in_file( inchar );
@@ -84,9 +85,6 @@ AtMarker::AtMarker(const char inchar[]){
 }
 
 
-AtMarker::~AtMarker(){};
-
-
 void AtMarker::extractChrom( string & tmp_str ){
     if ( tmpChromInex_ >= 0 ){
         if ( tmp_str != this->chrom_.back() ){
@@ -131,8 +129,8 @@ void AtMarker::getIndexOfChromStarts(){
     assert( indexOfChromStarts_.size() == this->chrom_.size() );
 }
 
-InputMarker::InputMarker():AtMarker(){};
-InputMarker::InputMarker(const char inchar[] ):AtMarker(inchar){ };
+InputMarker::InputMarker():AtMarker(){ };
+//InputMarker::InputMarker(const char inchar[] ):AtMarker(){ this->parse(inchar) ;};
 InputMarker::~InputMarker(){};
 
 
@@ -192,5 +190,5 @@ void InputMarker::removeMarkers( ExcludeMarker* excludedMarkers ){
 }
 
 ExcludeMarker::ExcludeMarker():AtMarker(){}
-ExcludeMarker::ExcludeMarker(const char inchar[] ):AtMarker(inchar){};
+//ExcludeMarker::ExcludeMarker(const char inchar[] ):AtMarker(){ this->parse(inchar) ;};
 ExcludeMarker::~ExcludeMarker(){};

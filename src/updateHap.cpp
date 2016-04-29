@@ -25,7 +25,6 @@
 #include <algorithm>    // std::reverse
 #include <cstdlib> // div
 
-//UpdateHap::UpdateHap(){}
 UpdateHap::~UpdateHap(){}
 
 UpdateHap::UpdateHap( vector <double> &refCount,
@@ -37,17 +36,18 @@ UpdateHap::UpdateHap( vector <double> &refCount,
                       MersenneTwister* rg,
                       size_t segmentStartIndex,
                       size_t nLoci,
-                      Panel* panel){
+                      Panel* panel,
+                      double missCopyProb){
 
     this->panel_ = panel;
-    this->nPanel_ = 0;
+    this->nPanel_ = 0; // Initialize when panel is not given
 
     if ( this->panel_ != NULL ){
         this->nPanel_ = this->panel_->nPanel_;
     }
 
     this->kStrain_ = proportion.size();
-
+    this->missCopyProb_ = missCopyProb;
     this->recombRg_ = rg;
     this->recombLevel2Rg_ = rg;
     this->missCopyRg_ = rg;
@@ -58,7 +58,12 @@ UpdateHap::UpdateHap( vector <double> &refCount,
     this->nLoci_ = nLoci;
 }
 
-
+void UpdateHap::core(vector <double> &refCount,
+                           vector <double> &altCount,
+                           vector <double> &plaf,
+                           vector <double> &expectedWsaf,
+                           vector <double> &proportion,
+                           vector < vector <double> > &haplotypes ){};
 void UpdateHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes){};
 void UpdateHap::calcHapLLKs( vector <double> &refCount, vector <double> &altCount){};
 void UpdateHap::buildEmission( double missCopyProb ){};
@@ -87,22 +92,31 @@ UpdateSingleHap::UpdateSingleHap( vector <double> &refCount,
                                   size_t nLoci,
                                   Panel* panel, double missCopyProb,
                                   size_t strainIndex ):
-                UpdateHap(refCount, altCount, expectedWsaf, plaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel){
+                UpdateHap(refCount, altCount, expectedWsaf, plaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel, missCopyProb){
     this->strainIndex_ = strainIndex;
+}
 
-    //this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
-    //this->calcHapLLKs(refCount, altCount);
 
-    //if ( this->panel_ != NULL ){
-        //this->buildEmission( missCopyProb );
-        //this->calcFwdProbs();
-        //this->samplePaths();
-        //this->addMissCopying( missCopyProb );
-    //} else {
-        //this->sampleHapIndependently(plaf);
-    //}
+void UpdateSingleHap::core(vector <double> &refCount,
+                           vector <double> &altCount,
+                           vector <double> &plaf,
+                           vector <double> &expectedWsaf,
+                           vector <double> &proportion,
+                           vector < vector <double> > &haplotypes ){
 
-    //this->updateLLK();
+    this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
+    this->calcHapLLKs(refCount, altCount);
+
+    if ( this->panel_ != NULL ){
+        this->buildEmission( this->missCopyProb_ );
+        this->calcFwdProbs();
+        this->samplePaths();
+        this->addMissCopying( this->missCopyProb_ );
+    } else {
+        this->sampleHapIndependently(plaf);
+    }
+
+    this->updateLLK();
 }
 
 
@@ -300,7 +314,7 @@ UpdatePairHap::UpdatePairHap( vector <double> &refCount,
                               Panel* panel, double missCopyProb, bool forbidCopyFromSame,
                               size_t strainIndex1,
                               size_t strainIndex2 ):
-                UpdateHap(refCount, altCount, plaf, expectedWsaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel){
+                UpdateHap(refCount, altCount, plaf, expectedWsaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel, missCopyProb){
     this->strainIndex1_ = strainIndex1;
     this->strainIndex2_ = strainIndex2;
 

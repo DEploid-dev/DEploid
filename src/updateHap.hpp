@@ -53,7 +53,8 @@ class UpdateHap{
                MersenneTwister* rg,
                size_t segmentStartIndex,
                size_t nLoci,
-               Panel* panel );
+               Panel* panel,
+               double missCopyProb );
     virtual ~UpdateHap();
 
     Panel* panel_;
@@ -62,7 +63,6 @@ class UpdateHap{
     MersenneTwister* recombLevel2Rg_;
     MersenneTwister* missCopyRg_;
 
-    size_t strainIndex_;
     size_t kStrain_;
     size_t nPanel_;
     vector <double> newLLK;
@@ -73,6 +73,12 @@ class UpdateHap{
     vector < vector <double> > emission_;
 
     // Methods
+    virtual void core(vector <double> &refCount,
+                           vector <double> &altCount,
+                           vector <double> &plaf,
+                           vector <double> &expectedWsaf,
+                           vector <double> &proportion,
+                           vector < vector <double> > &haplotypes );
     virtual void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
     virtual void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
     virtual void buildEmission( double missCopyProb );
@@ -118,6 +124,12 @@ class UpdateSingleHap : public UpdateHap{
     vector <double> hap_;
 
     // Methods
+    void core(vector <double> &refCount,
+                           vector <double> &altCount,
+                           vector <double> &plaf,
+                           vector <double> &expectedWsaf,
+                           vector <double> &proportion,
+                           vector < vector <double> > &haplotypes );
     void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
     void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
     void buildEmission( double missCopyProb );

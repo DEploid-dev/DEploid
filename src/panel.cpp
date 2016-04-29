@@ -26,12 +26,17 @@
 #include <iostream>
 
 Panel::Panel():InputMarker(){
+    //this->nPanel_ = this->nInfoLines_;
+};
+
+void Panel::readFromFile( const char inchar[] ){
+    this->readFromFileBase( inchar );
     this->nPanel_ = this->nInfoLines_;
 };
 
-Panel::Panel(const char inchar[] ):InputMarker(inchar){
-    this->nPanel_ = this->nInfoLines_;
-};
+//Panel::Panel(const char inchar[] ):InputMarker(inchar){
+    //this->nPanel_ = this->nInfoLines_;
+//};
 
 Panel::~Panel(){};
 

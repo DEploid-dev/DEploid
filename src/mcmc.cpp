@@ -336,8 +336,12 @@ void McmcMachinery::updateSingleHap(){
                                   start, length,
                                   this->panel_, this->pfDeconvIO_->missCopyProb_,
                                   this->strainIndex_);
+        updating.core ( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->pfDeconvIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+
         size_t updateIndex = 0;
         for ( size_t ii = start ; ii < (start+length); ii++ ){
+            cout << "ii = "<<ii <<" updateIndex = "<<updateIndex<<endl;
+            cout <<"updating.hap_.size() = " << updating.hap_.size() <<endl;
             this->currentHap_[ii][this->strainIndex_] = updating.hap_[updateIndex];
             this->currentLLks_[ii] = updating.newLLK[updateIndex];
             updateIndex++;

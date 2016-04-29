@@ -43,6 +43,7 @@ class AtMarker{
  friend class Panel;
  friend class PfDeconvIO;
  friend class InputMarker;
+ friend class ExcludeMarker;
   private:
     // Members
     vector <string> chrom_;
@@ -67,7 +68,8 @@ class AtMarker{
 
   public:
     AtMarker ();
-    AtMarker(const char inchar[]);
+    virtual void readFromFile( const char inchar[] ){ this->readFromFileBase( inchar ); };
+    void readFromFileBase( const char inchar[] );
     virtual ~AtMarker();
 };
 
@@ -76,7 +78,7 @@ class ExcludeMarker : public AtMarker {
   // sorting
   public:
     ExcludeMarker();
-    ExcludeMarker( const char inchar[] );
+    //ExcludeMarker( const char inchar[] );
     ~ExcludeMarker();
 };
 
@@ -84,7 +86,7 @@ class ExcludeMarker : public AtMarker {
 class InputMarker : public AtMarker {
   public:
     InputMarker ();
-    InputMarker( const char inchar[] );
+    //InputMarker( const char inchar[] );
     ~InputMarker();
     void removeMarkers( ExcludeMarker* excludedMarkers );
 };

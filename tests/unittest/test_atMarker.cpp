@@ -12,25 +12,26 @@ class TestAtMarker : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE_END();
 
   private:
+    AtMarker * atMarker_;
     InputMarker * altCount_;
     ExcludeMarker* excludedMarkers_;
 
   public:
     void setUp() {
-        this->altCount_ = new InputMarker( "tests/testData/atMarkerForTesting.txt" );
-        this->excludedMarkers_ = new ExcludeMarker("tests/testData/excludeFortesting.txt" );
+        this->atMarker_ = new AtMarker();
+        this->altCount_ = new InputMarker();
+        this->excludedMarkers_ = new ExcludeMarker();
+        this->altCount_->readFromFile("tests/testData/atMarkerForTesting.txt" );
+        this->excludedMarkers_->readFromFile("tests/testData/excludeFortesting.txt" );
     }
 
     void tearDown() {
+        delete atMarker_;
         delete altCount_;
         delete excludedMarkers_;
     }
 
-    void testMainConstructor(){
-        AtMarker tmpAtMarker();
-        InputMarker tmpInputMarker();
-        ExcludeMarker tmpExcludeMarker();
-    }
+    void testMainConstructor(){ }
 
     void checkSizeBefore(){
         CPPUNIT_ASSERT_EQUAL ( (size_t)100, this->altCount_->info_.size() );

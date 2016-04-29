@@ -9,7 +9,21 @@ class TestUpdatePairHap : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE_END();
 
   private:
-    UpdatePairHap * updatePairHap_;
+    UpdatePairHap * updatePairHapPanel_;
+    UpdatePairHap * updatePairHapPlaf_;
+    vector <double> refCount_;
+    vector <double> altCount_;
+    vector <double> plaf_;
+    vector <double> expectedWsaf_;
+    vector <double> proportion_;
+    vector < vector <double> > haplotypes_;
+    MersenneTwister* rg_;
+    size_t segmentStartIndex_;
+    size_t nLoci_;
+    Panel* panel_;
+    double missCopyProb_;
+    size_t strainIndex_;
+
 
   public:
     void setUp() {
@@ -27,13 +41,13 @@ class TestUpdatePairHap : public CppUnit::TestCase {
         tmpMat.push_back( vector <double> ({4.0, 5.0, 6.0}) );
         tmpMat.push_back( vector <double> ({7.0, 8.0, 9.0}) );
 
-        vector <double> rowMarg = this->updatePairHap_->computeRowMarginalDist(tmpMat);
+        vector <double> rowMarg = this->updatePairHapPanel_->computeRowMarginalDist(tmpMat);
         CPPUNIT_ASSERT_EQUAL((size_t)3, rowMarg.size());
         CPPUNIT_ASSERT_EQUAL(6.0,  rowMarg[0]);
         CPPUNIT_ASSERT_EQUAL(15.0, rowMarg[1]);
         CPPUNIT_ASSERT_EQUAL(24.0, rowMarg[2]);
 
-        vector <double> colMarg = this->updatePairHap_->computeColMarginalDist(tmpMat);
+        vector <double> colMarg = this->updatePairHapPanel_->computeColMarginalDist(tmpMat);
         CPPUNIT_ASSERT_EQUAL((size_t)3, colMarg.size());
         CPPUNIT_ASSERT_EQUAL(12.0, colMarg[0]);
         CPPUNIT_ASSERT_EQUAL(15.0, colMarg[1]);

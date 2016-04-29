@@ -23,6 +23,7 @@ class TestUpdateHap : public CppUnit::TestCase {
     size_t segmentStartIndex_;
     size_t nLoci_;
     Panel* panel_;
+    double missCopyProb_;
 
   public:
     void setUp(){
@@ -38,7 +39,7 @@ class TestUpdateHap : public CppUnit::TestCase {
                                           rg_,
                                           segmentStartIndex_,
                                           nLoci_,
-                                          NULL );
+                                          NULL, missCopyProb_ );
 
         this->updateHapPanel_ = new UpdateHap( refCount_,
                                           altCount_,
@@ -49,7 +50,7 @@ class TestUpdateHap : public CppUnit::TestCase {
                                           rg_,
                                           segmentStartIndex_,
                                           nLoci_,
-                                          panel_ );
+                                          panel_, missCopyProb_ );
     }
 
 
@@ -66,6 +67,7 @@ class TestUpdateHap : public CppUnit::TestCase {
 
 
     void testVirtualFunctions(){
+        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPlaf_->core ( refCount_, altCount_, plaf_, expectedWsaf_, proportion_, haplotypes_) );
         CPPUNIT_ASSERT_NO_THROW ( this->updateHapPlaf_->calcExpectedWsaf(expectedWsaf_, proportion_, haplotypes_ ) );
         CPPUNIT_ASSERT_NO_THROW ( this->updateHapPlaf_->calcHapLLKs(refCount_, altCount_) );
         CPPUNIT_ASSERT_NO_THROW ( this->updateHapPlaf_->buildEmission(0.1) );
@@ -74,6 +76,7 @@ class TestUpdateHap : public CppUnit::TestCase {
         CPPUNIT_ASSERT_NO_THROW ( this->updateHapPlaf_->updateLLK() );
         CPPUNIT_ASSERT_NO_THROW ( this->updateHapPlaf_->sampleHapIndependently(plaf_) );
 
+        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPanel_->core ( refCount_, altCount_, plaf_, expectedWsaf_, proportion_, haplotypes_ ) );
         CPPUNIT_ASSERT_NO_THROW ( this->updateHapPanel_->calcExpectedWsaf(expectedWsaf_, proportion_, haplotypes_ ) );
         CPPUNIT_ASSERT_NO_THROW ( this->updateHapPanel_->calcHapLLKs(refCount_, altCount_) );
         CPPUNIT_ASSERT_NO_THROW ( this->updateHapPanel_->buildEmission(0.1) );

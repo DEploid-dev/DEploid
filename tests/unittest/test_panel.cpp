@@ -31,10 +31,12 @@ class TestPanel : public CppUnit::TestCase {
     void setUp() {
         this->panelName_ = "tests/testData/clonalPanel.csv";
         // in R: panel = read.csv("clonalPanel.csv", header = T)
-        this->panel_ = new Panel( panelName_.c_str() );
+        this->panel_ = new Panel();
+        this->panel_->readFromFile(panelName_.c_str() );
         this->panel_->computeRecombProbs( 15000.0, 10.0, false, 0, false); // forbid copy from same = false by default!
 
-        this->panel2_ = new Panel( panelName_.c_str() );
+        this->panel2_ = new Panel();
+        this->panel2_->readFromFile( panelName_.c_str() );
     }
 
 
@@ -44,9 +46,7 @@ class TestPanel : public CppUnit::TestCase {
     }
 
 
-    void testMainConstructor(){
-        Panel tmp( "tests/testData/clonalPanel.csv" );
-    }
+    void testMainConstructor(){ }
 
 
     void checkContent(){

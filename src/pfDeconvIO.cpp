@@ -104,22 +104,26 @@ void PfDeconvIO::finalize(){
     }
 
     if ( this->exclude_sites_ ){
-        excludedMarkers = new ExcludeMarker(excludeFileName_.c_str());
+        excludedMarkers = new ExcludeMarker();
+        excludedMarkers->readFromFile(excludeFileName_.c_str());
     }
 
-    InputMarker ref (refFileName_.c_str());
+    InputMarker ref;
+    ref.readFromFile(refFileName_.c_str());
     if ( this->exclude_sites_ ){
         ref.removeMarkers( excludedMarkers );
     }
     this->refCount_ = ref.info_;
 
-    InputMarker alt (altFileName_.c_str());
+    InputMarker alt;
+    alt.readFromFile(altFileName_.c_str());
     if ( this->exclude_sites_ ){
         alt.removeMarkers( excludedMarkers );
     }
     this->altCount_ = alt.info_;
 
-    InputMarker plaf (plafFileName_.c_str());
+    InputMarker plaf;
+    plaf.readFromFile(plafFileName_.c_str());
     if ( this->exclude_sites_ ){
         plaf.removeMarkers( excludedMarkers );
     }
