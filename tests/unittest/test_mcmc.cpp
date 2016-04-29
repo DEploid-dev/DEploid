@@ -6,16 +6,20 @@ class TestMcmcSample: public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE( TestMcmcSample );
     CPPUNIT_TEST( testMainConstructor );
     CPPUNIT_TEST_SUITE_END();
+  private:
+    McmcSample* mcmcSample_;
 
   public:
     void setUp() {
+        mcmcSample_ = new McmcSample();
     }
 
     void tearDown() {
+        delete mcmcSample_;
     }
 
     void testMainConstructor(){
-        McmcSample tmp();
+        CPPUNIT_ASSERT_NO_THROW (mcmcSample_->clear());
     }
 };
 

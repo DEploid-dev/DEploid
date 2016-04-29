@@ -25,7 +25,7 @@
 #include <algorithm>    // std::reverse
 #include <cstdlib> // div
 
-UpdateHap::UpdateHap(){}
+//UpdateHap::UpdateHap(){}
 UpdateHap::~UpdateHap(){}
 
 UpdateHap::UpdateHap( vector <double> &refCount,
@@ -40,11 +40,10 @@ UpdateHap::UpdateHap( vector <double> &refCount,
                       Panel* panel){
 
     this->panel_ = panel;
+    this->nPanel_ = 0;
 
     if ( this->panel_ != NULL ){
         this->nPanel_ = this->panel_->nPanel_;
-    } else {
-        this->nPanel_ = 0;
     }
 
     this->kStrain_ = proportion.size();
@@ -69,7 +68,7 @@ void UpdateHap::updateLLK(){};
 void UpdateHap::sampleHapIndependently(vector <double> &plaf){};
 
 
-UpdateSingleHap::UpdateSingleHap():UpdateHap(){}
+//UpdateSingleHap::UpdateSingleHap():UpdateHap(){}
 UpdateSingleHap::~UpdateSingleHap(){
     //delete recombRg_;
     //delete recombLevel2Rg_;
@@ -91,19 +90,19 @@ UpdateSingleHap::UpdateSingleHap( vector <double> &refCount,
                 UpdateHap(refCount, altCount, expectedWsaf, plaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel){
     this->strainIndex_ = strainIndex;
 
-    this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
-    this->calcHapLLKs(refCount, altCount);
+    //this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
+    //this->calcHapLLKs(refCount, altCount);
 
-    if ( this->panel_ != NULL ){
-        this->buildEmission( missCopyProb );
-        this->calcFwdProbs();
-        this->samplePaths();
-        this->addMissCopying( missCopyProb );
-    } else {
-        this->sampleHapIndependently(plaf);
-    }
+    //if ( this->panel_ != NULL ){
+        //this->buildEmission( missCopyProb );
+        //this->calcFwdProbs();
+        //this->samplePaths();
+        //this->addMissCopying( missCopyProb );
+    //} else {
+        //this->sampleHapIndependently(plaf);
+    //}
 
-    this->updateLLK();
+    //this->updateLLK();
 }
 
 
@@ -146,8 +145,8 @@ void UpdateSingleHap::buildEmission( double missCopyProb ){
     for ( size_t i = 0; i < this->nLoci_; i++){
         vector <double> tmp ({t1omu[i], t2omu[i], t1u[i], t2u[i]});
         double tmaxTmp = max_value(tmp);
-          vector <double> emissRow ({exp(t1omu[i] - tmaxTmp) + exp(t2u[i] - tmaxTmp),
-                                     exp(t2omu[i] - tmaxTmp) + exp(t1u[i] - tmaxTmp)});
+        vector <double> emissRow ({exp(t1omu[i] - tmaxTmp) + exp(t2u[i] - tmaxTmp),
+                                   exp(t2omu[i] - tmaxTmp) + exp(t1u[i] - tmaxTmp)});
 
         this->emission_.push_back(emissRow);
     }
@@ -282,7 +281,7 @@ void UpdateSingleHap::updateLLK(){
 }
 
 
-UpdatePairHap::UpdatePairHap():UpdateHap(){}
+//UpdatePairHap::UpdatePairHap():UpdateHap(){}
 UpdatePairHap::~UpdatePairHap(){
     //delete recombRg_;
     //delete recombLevel2Rg_;

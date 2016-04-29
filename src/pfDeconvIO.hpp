@@ -48,10 +48,9 @@ class PfDeconvIO{
  friend class McmcMachinery;
   public:
     PfDeconvIO();
-    PfDeconvIO(int argc, char *argv[]);
     ~PfDeconvIO ();
 
-    void init();
+    void core(int argc, char *argv[]);
     void printHelp();
     bool help() const { return help_; }
     bool usePanel() const { return usePanel_; }
@@ -133,15 +132,17 @@ class PfDeconvIO{
 
 
     // Methods
+    void init();
+    void reInit();
+    void parse ();
+    void checkInput();
+    void finalize();
+    void readNextStringto( string &readto );
+
     void set_panel(const bool usePanel) { this->usePanel_ = usePanel; }
     void set_help(const bool help) { this->help_ = help; }
     void set_seed(const size_t seed){ this->random_seed_ = seed; }
 
-    void parse ();
-    void checkInput();
-    void finalize();
-
-    void readNextStringto( string &readto );
 
     template<class T>
     T readNextInput() {

@@ -31,7 +31,8 @@ using namespace std;
 int main( int argc, char *argv[] ){
     try {
 
-        PfDeconvIO pfDeconvIO( argc, argv );
+        PfDeconvIO pfDeconvIO;
+        (void)pfDeconvIO.core( argc, argv );
 
         if ( pfDeconvIO.help() ){
             pfDeconvIO.printHelp();

@@ -5,7 +5,7 @@
 class TestUpdatePairHap : public CppUnit::TestCase {
 
     CPPUNIT_TEST_SUITE( TestUpdatePairHap );
-    CPPUNIT_TEST( testComputeMarginalDist );
+    //CPPUNIT_TEST( testComputeMarginalDist );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -13,11 +13,11 @@ class TestUpdatePairHap : public CppUnit::TestCase {
 
   public:
     void setUp() {
-        this->updatePairHap_ = new UpdatePairHap();
+        //this->updatePairHap_ = new UpdatePairHap();
     }
 
     void tearDown() {
-        delete updatePairHap_;
+        //delete updatePairHap_;
     }
 
 

@@ -37,17 +37,18 @@ PfDeconvIO::~PfDeconvIO(){
 }
 
 
-PfDeconvIO::PfDeconvIO(int argc, char *argv[]) {
+void PfDeconvIO::core(int argc, char *argv[]) {
     argv_ = std::vector<std::string>(argv + 1, argv + argc);
     this->argv_i = argv_.begin();
 
-    this->init();
     if ( argv_.size() == 0 ) {
         this->set_help(true);
         return;
     }
 
+    this->reInit(); // Reset to defalt values before parsing
     this->parse();
+
     this->checkInput();
     this->finalize();
 }
@@ -84,6 +85,16 @@ void PfDeconvIO::init() {
     #else
         pfDeconvVersion_ = "";
     #endif
+}
+
+
+void PfDeconvIO::reInit() {
+    this->init();
+    this->refFileName_.clear();
+    this->altFileName_.clear();
+    this->plafFileName_.clear();
+    this->panelFileName_.clear();
+    this->excludeFileName_.clear();
 }
 
 
@@ -147,7 +158,6 @@ void PfDeconvIO::removeFilesWithSameName(){
 
 
 void PfDeconvIO::parse (){
-
     do {
         if (*argv_i == "-ref") {
             this->readNextStringto ( this->refFileName_ ) ;
