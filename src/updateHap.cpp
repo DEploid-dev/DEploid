@@ -317,15 +317,25 @@ UpdatePairHap::UpdatePairHap( vector <double> &refCount,
                 UpdateHap(refCount, altCount, plaf, expectedWsaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel, missCopyProb){
     this->strainIndex1_ = strainIndex1;
     this->strainIndex2_ = strainIndex2;
+    this->forbidCopyFromSame_ = forbidCopyFromSame;
+}
+
+
+void UpdatePairHap::core(vector <double> &refCount,
+                           vector <double> &altCount,
+                           vector <double> &plaf,
+                           vector <double> &expectedWsaf,
+                           vector <double> &proportion,
+                           vector < vector <double> > &haplotypes){
 
     this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
     this->calcHapLLKs(refCount, altCount);
 
     if ( this->panel_ != NULL ){
-        this->buildEmission(missCopyProb);
-        this->calcFwdProbs(forbidCopyFromSame);
+        this->buildEmission(this->missCopyProb_);
+        this->calcFwdProbs(this->forbidCopyFromSame_);
         this->samplePaths();
-        this->addMissCopying(missCopyProb);
+        this->addMissCopying(this->missCopyProb_);
     } else {
         this->sampleHapIndependently( plaf );
     }

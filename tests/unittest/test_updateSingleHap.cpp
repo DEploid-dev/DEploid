@@ -118,7 +118,20 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
   public:
 
     void setUp(){
-        this->expectedWsaf_ = vector <double> ();
+        //this->refCount_ = vecotr <double> (  { 100, 10 , 50 , 30 , 100, 7, 50 } );
+        //this->altCount_ = vecotr <double> (  { 2,  100 , 50 , 30 , 5,  70, 30 } );
+
+        this->haplotypes_.push_back( vector <double> ({1.0,    1.0,    1.0,    1.0,    0.0}) );
+        this->haplotypes_.push_back( vector <double> ({0.0,    1.0,    0.0,    1.0,    0.0}) );
+        this->haplotypes_.push_back( vector <double> ({1.0,    0.0,    0.0,    1.0,    1.0}) );
+        this->haplotypes_.push_back( vector <double> ({1.0,    0.0,    0.0,    0.0,    1.0}) );
+        this->haplotypes_.push_back( vector <double> ({1.0,    0.0,    1.0,    0.0,    0.0}) );
+        this->haplotypes_.push_back( vector <double> ({0.0,    1.0,    1.0,    0.0,    1.0}) );
+        this->haplotypes_.push_back( vector <double> ({1.0,    0.0,    1.0,    0.0,    0.0}) );
+
+        this->proportion_ = vector <double> ({0.1, .2, .2, .15, .35} );
+        this->expectedWsaf_ = vector <double> ({.65, .35, .6, .45, .3, .75, .3});
+
         this->rg_ = new MersenneTwister((size_t)1);
         this->panel_ = new Panel();
         this->nLoci_ = 0;

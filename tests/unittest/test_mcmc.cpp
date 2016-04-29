@@ -54,6 +54,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     size_t nRepeat;
     double epsilon1;
     double epsilon2;
+    double epsilon3;
 
     void testRBernoulliCore( double prop ){
         vector <double> rVariables( nRepeat, 0.0 );
@@ -99,6 +100,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         nRepeat = 1000000;
         epsilon1 = 0.01;
         epsilon2 = 0.001;
+        epsilon3 = 0.00000000001;
     }
 
 
@@ -179,13 +181,34 @@ class TestMcmcMachinery: public CppUnit::TestCase {
 
     void testDeltaLLKs(){
         this->mcmcMachinery_->currentLLks_ = vector < double > ( { 0.1, 0.3, 0.2, 0.4 } );
-        vector <double> newllks ({0.3,0.2, 0.5, 0.6});
+        vector <double> newllks ({0.3, 0.2, 0.5, 0.6});
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.6, this->mcmcMachinery_->deltaLLKs( newllks ) , epsilon2);
     }
 
 
     void testCalcExpectedWsaf(){
-        // TODO
+        this->mcmcMachinery_->nLoci_ = 7;
+        vector < vector <double> > tmpHap;
+        tmpHap.push_back( vector <double> ({1.0,    1.0,    1.0,    1.0,    0.0}) );
+        tmpHap.push_back( vector <double> ({0.0,    1.0,    0.0,    1.0,    0.0}) );
+        tmpHap.push_back( vector <double> ({1.0,    0.0,    0.0,    1.0,    1.0}) );
+        tmpHap.push_back( vector <double> ({1.0,    0.0,    0.0,    0.0,    1.0}) );
+        tmpHap.push_back( vector <double> ({1.0,    0.0,    1.0,    0.0,    0.0}) );
+        tmpHap.push_back( vector <double> ({0.0,    1.0,    1.0,    0.0,    1.0}) );
+        tmpHap.push_back( vector <double> ({1.0,    0.0,    1.0,    0.0,    0.0}) );
+        this->mcmcMachinery_->currentHap_ = tmpHap;
+
+        vector <double> tmpProp ({0.1, .2, .2, .15, .35} );
+        vector <double> tmpWsaf = this->mcmcMachinery_->calcExpectedWsaf (tmpProp);
+        CPPUNIT_ASSERT_EQUAL ( (size_t)7, tmpWsaf.size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)5, this->mcmcMachinery_->kStrain_ );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.65, tmpWsaf[0] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.35, tmpWsaf[1] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.6, tmpWsaf[2] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.45, tmpWsaf[3] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.3, tmpWsaf[4] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.75, tmpWsaf[5] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.3, tmpWsaf[6] , epsilon3);
     }
 
 

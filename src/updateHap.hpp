@@ -168,6 +168,7 @@ class UpdatePairHap : public UpdateHap{
 
     size_t strainIndex1_;
     size_t strainIndex2_;
+    bool forbidCopyFromSame_;
 
     vector <double> expectedWsaf00_;
     vector <double> expectedWsaf01_;
@@ -183,6 +184,13 @@ class UpdatePairHap : public UpdateHap{
     vector <double> hap2_;
 
     // Methods
+    void core(vector <double> &refCount,
+                           vector <double> &altCount,
+                           vector <double> &plaf,
+                           vector <double> &expectedWsaf,
+                           vector <double> &proportion,
+                           vector < vector <double> > &haplotypes );
+
     void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
     void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
     void buildEmission( double missCopyProb );

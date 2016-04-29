@@ -5,7 +5,8 @@
 class TestUpdatePairHap : public CppUnit::TestCase {
 
     CPPUNIT_TEST_SUITE( TestUpdatePairHap );
-    //CPPUNIT_TEST( testComputeMarginalDist );
+    CPPUNIT_TEST( testMainConstructor );
+    CPPUNIT_TEST( testComputeMarginalDist );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -22,18 +23,56 @@ class TestUpdatePairHap : public CppUnit::TestCase {
     size_t nLoci_;
     Panel* panel_;
     double missCopyProb_;
-    size_t strainIndex_;
-
+    size_t strainIndex1_;
+    size_t strainIndex2_;
+    bool forbidCopyFromSame_ ;
 
   public:
-    void setUp() {
-        //this->updatePairHap_ = new UpdatePairHap();
+    void setUp(){
+        this->expectedWsaf_ = vector <double> ();
+        this->rg_ = new MersenneTwister((size_t)1);
+        this->panel_ = new Panel();
+        this->nLoci_ = 0;
+        this->forbidCopyFromSame_ = true;
+
+
+        this->updatePairHapPlaf_ = new UpdatePairHap( refCount_,
+                                          altCount_,
+                                          plaf_,
+                                          expectedWsaf_,
+                                          proportion_,
+                                          haplotypes_,
+                                          rg_,
+                                          segmentStartIndex_,
+                                          nLoci_,
+                                          NULL,
+                                          missCopyProb_, forbidCopyFromSame_,
+                                          strainIndex1_, strainIndex2_ );
+
+        this->updatePairHapPanel_ = new UpdatePairHap( refCount_,
+                                          altCount_,
+                                          plaf_,
+                                          expectedWsaf_,
+                                          proportion_,
+                                          haplotypes_,
+                                          rg_,
+                                          segmentStartIndex_,
+                                          nLoci_,
+                                          panel_,
+                                          missCopyProb_, forbidCopyFromSame_,
+                                          strainIndex1_, strainIndex2_ );
     }
 
-    void tearDown() {
-        //delete updatePairHap_;
+
+    void tearDown(){
+        delete updatePairHapPlaf_;
+        delete updatePairHapPanel_;
+        delete panel_;
+        this->rg_->clearFastFunc();
+        delete rg_;
     }
 
+    void testMainConstructor(){ }
 
     void testComputeMarginalDist(){
         vector < vector < double> > tmpMat;
