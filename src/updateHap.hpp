@@ -36,6 +36,7 @@ using namespace std;
 
 class UpdateHap{
 #ifdef UNITTEST
+  friend class TestUpdatePairHap;
   friend class TestUpdateSingleHap;
   friend class TestUpdateHap;
 #endif

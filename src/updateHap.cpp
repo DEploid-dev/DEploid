@@ -73,7 +73,6 @@ void UpdateHap::updateLLK(){};
 void UpdateHap::sampleHapIndependently(vector <double> &plaf){};
 
 
-//UpdateSingleHap::UpdateSingleHap():UpdateHap(){}
 UpdateSingleHap::~UpdateSingleHap(){
     //delete recombRg_;
     //delete recombLevel2Rg_;
@@ -295,7 +294,6 @@ void UpdateSingleHap::updateLLK(){
 }
 
 
-//UpdatePairHap::UpdatePairHap():UpdateHap(){}
 UpdatePairHap::~UpdatePairHap(){
     //delete recombRg_;
     //delete recombLevel2Rg_;
