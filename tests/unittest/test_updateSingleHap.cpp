@@ -100,6 +100,7 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
     CPPUNIT_TEST ( testUpdateLLK );
     CPPUNIT_TEST ( testExpectedWsaf );
     CPPUNIT_TEST ( testCalcHapLLKs );
+    CPPUNIT_TEST ( testSampleHapIndependently );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -186,15 +187,18 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
         this->updateSingleHapPanel_->llk0_ = vector <double> ({llk0_1, llk0_2, llk0_3});
         this->updateSingleHapPanel_->llk1_ = vector <double> ({llk1_1, llk1_2, llk1_3});
         this->updateSingleHapPanel_->nLoci_ = 3;
-        this->updateSingleHapPanel_->buildEmission ( 0.0 );
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.05/0.5, updateSingleHapPanel_->emission_[0][0], 0.000000000001);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel_->emission_[0][1], 0.000000000001);
+        CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPanel_->buildEmission ( 0.0 ) );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_1-llk1_1), updateSingleHapPanel_->emission_[0][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.05/0.5, updateSingleHapPanel_->emission_[0][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel_->emission_[0][1], epsilon3);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel_->emission_[1][0], 0.000000000001);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0003/0.03, updateSingleHapPanel_->emission_[1][1], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel_->emission_[1][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0003/0.03, updateSingleHapPanel_->emission_[1][1], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_2-llk0_2), updateSingleHapPanel_->emission_[1][1], epsilon3);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, updateSingleHapPanel_->emission_[2][0], 0.000000000001);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel_->emission_[2][1], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_3-llk1_3), updateSingleHapPanel_->emission_[2][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, updateSingleHapPanel_->emission_[2][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel_->emission_[2][1], epsilon3);
     }
 
 
@@ -204,15 +208,15 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
         this->updateSingleHapPanel_->llk0_ = vector <double> ({llk0_1, llk0_2, llk0_3});
         this->updateSingleHapPanel_->llk1_ = vector <double> ({llk1_1, llk1_2, llk1_3});
         this->updateSingleHapPanel_->nLoci_ = 3;
-        this->updateSingleHapPanel_->buildEmissionBasicVersion ( 0.0 );
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_1), updateSingleHapPanel_->emission_[0][0], 0.000000000001);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_1), updateSingleHapPanel_->emission_[0][1], 0.000000000001);
+        CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPanel_->buildEmissionBasicVersion ( 0.0 ) );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_1), updateSingleHapPanel_->emission_[0][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_1), updateSingleHapPanel_->emission_[0][1], epsilon3);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_2), updateSingleHapPanel_->emission_[1][0], 0.000000000001);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_2), updateSingleHapPanel_->emission_[1][1], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_2), updateSingleHapPanel_->emission_[1][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_2), updateSingleHapPanel_->emission_[1][1], epsilon3);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_3), updateSingleHapPanel_->emission_[2][0], 0.000000000001);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_3), updateSingleHapPanel_->emission_[2][1], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_3), updateSingleHapPanel_->emission_[2][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_3), updateSingleHapPanel_->emission_[2][1], epsilon3);
     }
 
 
@@ -295,6 +299,11 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
         this->updateSingleHapPlaf_->strainIndex_ = 1;
         CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPlaf_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
         CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPlaf_->calcHapLLKs (this->refCount_, this->altCount_) );
+    }
+
+
+    void testSampleHapIndependently(){
+        this->updateSingleHapPlaf_->sampleHapIndependently( this->plaf_ );
     }
 };
 

@@ -11,6 +11,7 @@ class TestUpdatePairHap : public CppUnit::TestCase {
     CPPUNIT_TEST ( testExpectedWsaf );
     CPPUNIT_TEST ( testUpdateLLK );
     CPPUNIT_TEST ( testEmissionProb0 );
+    CPPUNIT_TEST ( testSampleHapIndependently );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -117,12 +118,16 @@ class TestUpdatePairHap : public CppUnit::TestCase {
 
 
     void testEmissionProb0 (){
-        //double llk0_1 = log(0.05), llk0_2 = log(0.03), llk0_3 = log(0);
-        //double llk1_1 = log(0.5), llk1_2 = log(0.0003), llk1_3 = log(1);
-        //this->updateSingleHapPanel_->llk0_ = vector <double> ({llk0_1, llk0_2, llk0_3});
-        //this->updateSingleHapPanel_->llk1_ = vector <double> ({llk1_1, llk1_2, llk1_3});
-        //this->updateSingleHapPanel_->nLoci_ = 3;
-        //this->updateSingleHapPanel_->buildEmission ( 0.0 );
+        double llk00_1 = log(0.05), llk00_2 = log(0.03),   llk00_3 = log(0);
+        double llk01_1 = log(0.5),  llk01_2 = log(0.0003), llk01_3 = log(1);
+        double llk10_1 = log(0.35), llk10_2 = log(0.3),    llk10_3 = log(0.3);
+        double llk11_1 = log(0.65), llk11_2 = log(0.43),   llk11_3 = log(0.1);
+        this->updatePairHapPanel_->llk00_ = vector <double> ({llk00_1, llk00_2, llk00_3});
+        this->updatePairHapPanel_->llk01_ = vector <double> ({llk01_1, llk01_2, llk01_3});
+        this->updatePairHapPanel_->llk10_ = vector <double> ({llk10_1, llk10_2, llk10_3});
+        this->updatePairHapPanel_->llk11_ = vector <double> ({llk11_1, llk11_2, llk11_3});
+        this->updatePairHapPanel_->nLoci_ = 3;
+        CPPUNIT_ASSERT_NO_THROW ( this->updatePairHapPanel_->buildEmission ( 0.0 ) );
         //CPPUNIT_ASSERT_DOUBLES_EQUAL(0.05/0.5, updateSingleHapPanel_->emission_[0][0], 0.000000000001);
         //CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel_->emission_[0][1], 0.000000000001);
 
@@ -163,6 +168,11 @@ class TestUpdatePairHap : public CppUnit::TestCase {
         this->updatePairHapPlaf_->strainIndex2_ = 3;
         CPPUNIT_ASSERT_NO_THROW( this->updatePairHapPlaf_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
         CPPUNIT_ASSERT_NO_THROW( this->updatePairHapPlaf_->calcHapLLKs (this->refCount_, this->altCount_) );
+    }
+
+
+    void testSampleHapIndependently(){
+        this->updatePairHapPlaf_->sampleHapIndependently( this->plaf_ );
     }
 
 };
