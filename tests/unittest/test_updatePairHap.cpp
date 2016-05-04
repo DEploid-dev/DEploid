@@ -32,9 +32,13 @@ class TestUpdatePairHap : public CppUnit::TestCase {
     size_t strainIndex2_;
     bool forbidCopyFromSame_ ;
     double epsilon3;
+    double epsilon2;
+    size_t nRepeat;
 
   public:
     void setUp(){
+        nRepeat = 1000000;
+        epsilon2 = 0.001;
         epsilon3 = 0.00000000001;
 
         this->refCount_ = vector <double> (  { 100, 10 , 50 , 30 , 100, 7, 50 } );
@@ -128,14 +132,21 @@ class TestUpdatePairHap : public CppUnit::TestCase {
         this->updatePairHapPanel_->llk11_ = vector <double> ({llk11_1, llk11_2, llk11_3});
         this->updatePairHapPanel_->nLoci_ = 3;
         CPPUNIT_ASSERT_NO_THROW ( this->updatePairHapPanel_->buildEmission ( 0.0 ) );
-        //CPPUNIT_ASSERT_DOUBLES_EQUAL(0.05/0.5, updateSingleHapPanel_->emission_[0][0], 0.000000000001);
-        //CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel_->emission_[0][1], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk00_1-llk11_1), updatePairHapPanel_->emission_[0][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk01_1-llk11_1), updatePairHapPanel_->emission_[0][1], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk10_1-llk11_1), updatePairHapPanel_->emission_[0][2], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk11_1-llk11_1), updatePairHapPanel_->emission_[0][3], epsilon3);
 
-        //CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel_->emission_[1][0], 0.000000000001);
-        //CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0003/0.03, updateSingleHapPanel_->emission_[1][1], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk00_2-llk11_2), updatePairHapPanel_->emission_[1][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk01_2-llk11_2), updatePairHapPanel_->emission_[1][1], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk10_2-llk11_2), updatePairHapPanel_->emission_[1][2], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk11_2-llk11_2), updatePairHapPanel_->emission_[1][3], epsilon3);
 
-        //CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, updateSingleHapPanel_->emission_[2][0], 0.000000000001);
-        //CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel_->emission_[2][1], 0.000000000001);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk00_3-llk01_3), updatePairHapPanel_->emission_[2][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk01_3-llk01_3), updatePairHapPanel_->emission_[2][1], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk10_3-llk01_3), updatePairHapPanel_->emission_[2][2], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk11_3-llk01_3), updatePairHapPanel_->emission_[2][3], epsilon3);
+
     }
 
 
@@ -172,7 +183,93 @@ class TestUpdatePairHap : public CppUnit::TestCase {
 
 
     void testSampleHapIndependently(){
-        this->updatePairHapPlaf_->sampleHapIndependently( this->plaf_ );
+        this->updatePairHapPanel_->segmentStartIndex_ = 0;
+        this->updatePairHapPanel_->nLoci_ = 7;
+        this->updatePairHapPanel_->strainIndex1_ = 1;
+        this->updatePairHapPanel_->strainIndex2_ = 3;
+        CPPUNIT_ASSERT_NO_THROW( this->updatePairHapPanel_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
+        CPPUNIT_ASSERT_NO_THROW( this->updatePairHapPanel_->calcHapLLKs (this->refCount_, this->altCount_) );
+
+
+        //for ( size_t i = 0 ; i < 7;i++){
+                //double tmpMax = max_value ( vector <double> ( {this->updatePairHapPanel_->llk00_[i],
+                                                               //this->updatePairHapPanel_->llk01_[i],
+                                                               //this->updatePairHapPanel_->llk10_[i],
+                                                               //this->updatePairHapPanel_->llk11_[i]} ) );
+                //cout << exp(this->updatePairHapPanel_->llk00_[i]-tmpMax) <<" "
+                     //<< exp(this->updatePairHapPanel_->llk01_[i]-tmpMax) <<" "
+                     //<< exp(this->updatePairHapPanel_->llk10_[i]-tmpMax) <<" "
+                     //<< exp(this->updatePairHapPanel_->llk11_[i]-tmpMax) << endl;
+        //}
+
+//1 1.50559e-06 9.59254e-09 2.58807e-16
+//5.17896e-31 1.46301e-13 9.15637e-10 1
+//1 0.476256 0.134298 6.73633e-05
+//1 0.572198 0.219935 0.000642945
+//1 4.49961e-06 3.83615e-08 2.1567e-15
+//3.58261e-07 0.00196058 0.018196 1
+//0.992688 1 0.412035 0.00204737
+
+        this->plaf_ = vector < double > (this->updatePairHapPanel_->nLoci_, 0.5);
+        vector < vector <int> > counter;
+        for ( size_t i = 0; i < this->updatePairHapPanel_->nLoci_; i++ ){
+            counter.push_back ( vector <int> (4, 0) );
+        }
+
+        for ( size_t i = 0; i < nRepeat; i++ ){
+            this->updatePairHapPanel_->hap1_.clear();
+            this->updatePairHapPanel_->hap2_.clear();
+            CPPUNIT_ASSERT_NO_THROW ( this->updatePairHapPanel_->sampleHapIndependently( this->plaf_ ) );
+            for ( size_t j = 0; j < this->updatePairHapPanel_->nLoci_; j++ ){
+                counter[j][(size_t)(this->updatePairHapPanel_->hap1_[j]*2+this->updatePairHapPanel_->hap2_[j])] ++ ;
+            }
+        }
+
+
+
+        this->plaf_ = vector < double > (this->updatePairHapPanel_->nLoci_, 0.0);
+        counter.clear();
+        for ( size_t i = 0; i < this->updatePairHapPanel_->nLoci_; i++ ){
+            counter.push_back ( vector <int> (4, 0) );
+        }
+
+        for ( size_t i = 0; i < nRepeat; i++ ){
+            this->updatePairHapPanel_->hap1_.clear();
+            this->updatePairHapPanel_->hap2_.clear();
+            CPPUNIT_ASSERT_NO_THROW ( this->updatePairHapPanel_->sampleHapIndependently( this->plaf_ ) );
+            for ( size_t j = 0; j < this->updatePairHapPanel_->nLoci_; j++ ){
+                counter[j][(size_t)(this->updatePairHapPanel_->hap1_[j]*2+this->updatePairHapPanel_->hap2_[j])] ++ ;
+            }
+        }
+        for ( size_t j = 0; j < this->updatePairHapPanel_->nLoci_; j++ ){
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[j][0])/(double)nRepeat, epsilon2);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[j][1])/(double)nRepeat, epsilon2);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[j][2])/(double)nRepeat, epsilon2);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[j][3])/(double)nRepeat, epsilon2);
+        }
+
+        this->plaf_ = vector < double > (this->updatePairHapPanel_->nLoci_, 1.0);
+        counter.clear();
+        for ( size_t i = 0; i < this->updatePairHapPanel_->nLoci_; i++ ){
+            counter.push_back ( vector <int> (4, 0) );
+        }
+
+        for ( size_t i = 0; i < nRepeat; i++ ){
+            this->updatePairHapPanel_->hap1_.clear();
+            this->updatePairHapPanel_->hap2_.clear();
+            CPPUNIT_ASSERT_NO_THROW ( this->updatePairHapPanel_->sampleHapIndependently( this->plaf_ ) );
+            for ( size_t j = 0; j < this->updatePairHapPanel_->nLoci_; j++ ){
+                counter[j][(size_t)(this->updatePairHapPanel_->hap1_[j]*2+this->updatePairHapPanel_->hap2_[j])] ++ ;
+            }
+        }
+        for ( size_t j = 0; j < this->updatePairHapPanel_->nLoci_; j++ ){
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[j][0])/(double)nRepeat, epsilon2);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[j][1])/(double)nRepeat, epsilon2);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[j][2])/(double)nRepeat, epsilon2);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[j][3])/(double)nRepeat, epsilon2);
+        }
+
+
     }
 
 };

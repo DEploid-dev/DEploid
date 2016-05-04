@@ -119,10 +119,15 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
     double missCopyProb_;
     size_t strainIndex_;
     double epsilon3;
+    double epsilon2;
+    size_t nRepeat;
+
 
   public:
 
     void setUp(){
+        nRepeat = 1000000;
+        epsilon2 = 0.001;
         epsilon3 = 0.00000000001;
 
         this->refCount_ = vector <double> (  { 100, 10 , 50 , 30 , 100, 7, 50 } );
@@ -220,12 +225,6 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
     }
 
 
-    void testUpdateLLK(){
-        CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPanel_->updateLLK() );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPlaf_->updateLLK() );
-    }
-
-
     void testExpectedWsaf(){
         this->updateSingleHapPanel_->segmentStartIndex_ = 0;
         this->updateSingleHapPanel_->nLoci_ = 7;
@@ -303,8 +302,114 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
 
 
     void testSampleHapIndependently(){
-        this->updateSingleHapPlaf_->sampleHapIndependently( this->plaf_ );
+        this->updateSingleHapPlaf_->segmentStartIndex_ = 0;
+        this->updateSingleHapPlaf_->nLoci_ = 7;
+        this->updateSingleHapPlaf_->strainIndex_ = 1;
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPlaf_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPlaf_->calcHapLLKs (this->refCount_, this->altCount_) );
+        //for ( size_t i = 0 ; i < 7;i++){
+                //double tmpMax = max(this->updateSingleHapPlaf_->llk0_[i], this->updateSingleHapPlaf_->llk1_[i]);
+                //cout << exp(this->updateSingleHapPlaf_->llk0_[i]-tmpMax) <<" " << exp(this->updateSingleHapPlaf_->llk1_[i]-tmpMax) << endl;
+        //}
+//1 1.71897e-10
+//1.46301e-13 1
+//1 0.000141443
+//1 0.219935
+//1 3.83615e-08
+//1.9689e-05 1
+//1 0.41507
+
+        this->plaf_ = vector < double > (this->updateSingleHapPlaf_->nLoci_, 0.5);
+        vector < vector <int> > counter;
+        for ( size_t i = 0; i < this->updateSingleHapPlaf_->nLoci_; i++ ){
+            counter.push_back ( vector <int> (2, 0) );
+        }
+
+        for ( size_t i = 0; i < nRepeat; i++ ){
+            this->updateSingleHapPlaf_->hap_.clear();
+            CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPlaf_->sampleHapIndependently( this->plaf_ ) );
+            for ( size_t j = 0; j < this->updateSingleHapPlaf_->nLoci_; j++ ){
+                counter[j][(size_t)this->updateSingleHapPlaf_->hap_[j]] ++ ;
+            }
+        }
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[0][0])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[0][1])/(double)nRepeat, epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[1][0])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[1][1])/(double)nRepeat, epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.999, double(counter[2][0])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.001, double(counter[2][1])/(double)nRepeat, epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.82, double(counter[3][0])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.18, double(counter[3][1])/(double)nRepeat, epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[4][0])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[4][1])/(double)nRepeat, epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[5][0])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[5][1])/(double)nRepeat, epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.707, double(counter[6][0])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.293, double(counter[6][1])/(double)nRepeat, epsilon2);
+
+        this->plaf_ = vector < double > (this->updateSingleHapPlaf_->nLoci_, 0.0);
+        counter.clear();
+        for ( size_t i = 0; i < this->updateSingleHapPlaf_->nLoci_; i++ ){
+            counter.push_back ( vector <int> (2, 0) );
+        }
+
+        for ( size_t i = 0; i < nRepeat; i++ ){
+            this->updateSingleHapPlaf_->hap_.clear();
+            CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPlaf_->sampleHapIndependently( this->plaf_ ) );
+            for ( size_t j = 0; j < this->updateSingleHapPlaf_->nLoci_; j++ ){
+                counter[j][(size_t)this->updateSingleHapPlaf_->hap_[j]] ++ ;
+            }
+        }
+        for ( size_t j = 0; j < this->updateSingleHapPlaf_->nLoci_; j++ ){
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[j][0])/(double)nRepeat, epsilon2);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[j][1])/(double)nRepeat, epsilon2);
+        }
+
+
+        this->plaf_ = vector < double > (this->updateSingleHapPlaf_->nLoci_, 1.0);
+        counter.clear();
+        for ( size_t i = 0; i < this->updateSingleHapPlaf_->nLoci_; i++ ){
+            counter.push_back ( vector <int> (2, 0) );
+        }
+
+        for ( size_t i = 0; i < nRepeat; i++ ){
+            this->updateSingleHapPlaf_->hap_.clear();
+            CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPlaf_->sampleHapIndependently( this->plaf_ ) );
+            for ( size_t j = 0; j < this->updateSingleHapPlaf_->nLoci_; j++ ){
+                counter[j][(size_t)this->updateSingleHapPlaf_->hap_[j]] ++ ;
+            }
+        }
+        for ( size_t j = 0; j < this->updateSingleHapPlaf_->nLoci_; j++ ){
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[j][0])/(double)nRepeat, epsilon2);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[j][1])/(double)nRepeat, epsilon2);
+        }
+
     }
+
+
+
+
+    void testUpdateLLK(){
+        CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPanel_->updateLLK() );
+
+        this->updateSingleHapPlaf_->segmentStartIndex_ = 0;
+        this->updateSingleHapPlaf_->nLoci_ = 7;
+        this->updateSingleHapPlaf_->strainIndex_ = 1;
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPlaf_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPlaf_->calcHapLLKs (this->refCount_, this->altCount_) );
+        this->plaf_ = vector < double > (this->updateSingleHapPlaf_->nLoci_, 0.5);
+        CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPlaf_->sampleHapIndependently( this->plaf_ ) );
+        CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPlaf_->updateLLK() );
+    }
+
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestUpdateSingleHap );
