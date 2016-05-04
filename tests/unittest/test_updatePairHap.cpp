@@ -12,6 +12,8 @@ class TestUpdatePairHap : public CppUnit::TestCase {
     CPPUNIT_TEST ( testUpdateLLK );
     CPPUNIT_TEST ( testEmissionProb0 );
     CPPUNIT_TEST ( testSampleHapIndependently );
+    CPPUNIT_TEST ( testCore );
+
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -150,12 +152,6 @@ class TestUpdatePairHap : public CppUnit::TestCase {
     }
 
 
-    void testUpdateLLK(){
-        CPPUNIT_ASSERT_NO_THROW ( this->updatePairHapPanel_->updateLLK() );
-        CPPUNIT_ASSERT_NO_THROW ( this->updatePairHapPlaf_->updateLLK() );
-    }
-
-
     void testExpectedWsaf(){
         this->updatePairHapPanel_->segmentStartIndex_ = 0;
         this->updatePairHapPanel_->nLoci_ = 7;
@@ -225,6 +221,40 @@ class TestUpdatePairHap : public CppUnit::TestCase {
             }
         }
 
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[0][0])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[0][1])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[0][2])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[0][3])/(double)nRepeat, epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[1][0])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[1][1])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[1][2])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[1][3])/(double)nRepeat, epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.621, double(counter[2][0])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.296, double(counter[2][1])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.083, double(counter[2][2])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[2][3])/(double)nRepeat, epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.558, double(counter[3][0])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.319, double(counter[3][1])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.123, double(counter[3][2])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[3][3])/(double)nRepeat, epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[4][0])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[4][1])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[4][2])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[4][3])/(double)nRepeat, epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[5][0])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.002, double(counter[5][1])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.018, double(counter[5][2])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.98, double(counter[5][3])/(double)nRepeat, epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.412, double(counter[6][0])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.415, double(counter[6][1])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.171, double(counter[6][2])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.001, double(counter[6][3])/(double)nRepeat, epsilon2);
 
 
         this->plaf_ = vector < double > (this->updatePairHapPanel_->nLoci_, 0.0);
@@ -268,10 +298,33 @@ class TestUpdatePairHap : public CppUnit::TestCase {
             CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[j][2])/(double)nRepeat, epsilon2);
             CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[j][3])/(double)nRepeat, epsilon2);
         }
-
-
     }
 
+
+    void testUpdateLLK(){
+        CPPUNIT_ASSERT_NO_THROW ( this->updatePairHapPanel_->updateLLK() );
+
+        this->updatePairHapPlaf_->segmentStartIndex_ = 0;
+        this->updatePairHapPlaf_->nLoci_ = 7;
+        this->updatePairHapPanel_->strainIndex1_ = 1;
+        this->updatePairHapPanel_->strainIndex2_ = 3;
+        CPPUNIT_ASSERT_NO_THROW( this->updatePairHapPlaf_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
+        CPPUNIT_ASSERT_NO_THROW( this->updatePairHapPlaf_->calcHapLLKs (this->refCount_, this->altCount_) );
+        this->plaf_ = vector < double > (this->updatePairHapPlaf_->nLoci_, 0.5);
+        CPPUNIT_ASSERT_NO_THROW ( this->updatePairHapPlaf_->sampleHapIndependently( this->plaf_ ) );
+        CPPUNIT_ASSERT_NO_THROW ( this->updatePairHapPlaf_->updateLLK() );
+    }
+
+
+    void testCore(){
+        this->plaf_ = vector < double > (this->updatePairHapPlaf_->nLoci_, 0.5);
+        CPPUNIT_ASSERT_NO_THROW( this->updatePairHapPlaf_->core( this->refCount_,
+                                                                 this->altCount_,
+                                                                 this->plaf_,
+                                                                 this->expectedWsaf_,
+                                                                 this->proportion_,
+                                                                 this->haplotypes_ ) );
+    }
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestUpdatePairHap );

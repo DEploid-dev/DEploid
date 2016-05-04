@@ -101,6 +101,7 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
     CPPUNIT_TEST ( testExpectedWsaf );
     CPPUNIT_TEST ( testCalcHapLLKs );
     CPPUNIT_TEST ( testSampleHapIndependently );
+    CPPUNIT_TEST ( testCore );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -394,8 +395,6 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
     }
 
 
-
-
     void testUpdateLLK(){
         CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPanel_->updateLLK() );
 
@@ -409,6 +408,16 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
         CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPlaf_->updateLLK() );
     }
 
+
+    void testCore(){
+        this->plaf_ = vector < double > (this->updateSingleHapPlaf_->nLoci_, 0.5);
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPlaf_->core( this->refCount_,
+                                                                   this->altCount_,
+                                                                   this->plaf_,
+                                                                   this->expectedWsaf_,
+                                                                   this->proportion_,
+                                                                   this->haplotypes_ ) );
+    }
 
 };
 
