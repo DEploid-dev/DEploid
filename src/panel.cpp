@@ -48,7 +48,7 @@ void Panel::checkForExceptions( size_t nLoci, string panelFileName ){
     if ( this->pRec_.size() != nLoci ){
         throw LociNumberUnequal( panelFileName );
     }
-
+    return;
 }
 
 void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame ){
@@ -97,6 +97,38 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bo
     assert(pRecRec_.size() == this->nLoci_ );
     assert(pRecNoRec_.size() == this->nLoci_ );
     assert(pNoRecNoRec_.size() == this->nLoci_ );
+}
+
+
+void Panel::buildExamplePanel1(){
+    this->position_.push_back( vector <double> ({93157.0, 94422.0, 94459.0, 94487.0, 95518.0, 95632.0, 95641.0 }) );
+    this->chrom_ = vector <string> ({"Pf3D7_01_v3"});
+    this->indexOfChromStarts_ = vector <size_t> ({0});
+    this->buildExamplePanelContent();
+}
+
+
+void Panel::buildExamplePanel2(){
+    this->position_.push_back( vector <double> ({93157.0}) );
+    this->position_.push_back( vector <double> ({94422.0, 94459.0, 94487.0, 95518.0, 95632.0}) );
+    this->position_.push_back( vector <double> ({95641.0 }) );
+    this->chrom_ = vector <string> ({"Pf3D7_01_v3", "Pf3D7_02_v3", "Pf3D7_03_v3"});
+    this->indexOfChromStarts_ = vector <size_t> ({0, 1, 6});
+    this->buildExamplePanelContent();
+}
+
+
+void Panel::buildExamplePanelContent(){
+    this->content_.push_back( vector <double> ({0,0,0,1}) );
+    this->content_.push_back( vector <double> ({0,0,0,1}) );
+    this->content_.push_back( vector <double> ({0,0,0,1}) );
+    this->content_.push_back( vector <double> ({0,0,0,1}) );
+    this->content_.push_back( vector <double> ({0,1,1,0}) );
+    this->content_.push_back( vector <double> ({0,0,1,0}) );
+    this->content_.push_back( vector <double> ({0,0,1,0}) );
+    this->nLoci_ = this->content_.size();
+    this->nInfoLines_ = this->content_.back().size();
+    this->nPanel_ = this->nInfoLines_;
 }
 
 

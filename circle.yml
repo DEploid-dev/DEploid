@@ -17,6 +17,6 @@ test:
     - ./bootstrap
     - make
     - make check
-    - valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
+    #- valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
     - ./tests/test_binary.sh
     #- coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
