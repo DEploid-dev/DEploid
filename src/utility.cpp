@@ -27,6 +27,28 @@
 #include <algorithm> // find
 
 
+double normal_pdf(double x, double m, double s) { // See http://stackoverflow.com/questions/10847007/using-the-gaussian-probability-density-function-in-c
+    static const double inv_sqrt_2pi = 0.3989422804014327;
+    double a = (x - m) / s;
+
+    return inv_sqrt_2pi / s * std::exp(-(0.5) * a * a);
+}
+
+
+double min_value( vector <double> x){
+    assert( x.size() > 0 );
+    auto tmpMaxIt = std::min_element(std::begin(x), std::end(x));
+    return *tmpMaxIt;
+}
+
+
+double max_value( vector <double> x){
+    assert( x.size() > 0 );
+    auto tmpMaxIt = std::max_element(std::begin(x), std::end(x));
+    return *tmpMaxIt;
+}
+
+
 vector <double> computeCdf ( vector <double> & dist ){
     vector <double> cdf;
     double cumsum = 0;
@@ -101,39 +123,10 @@ double calcLLK( double ref, double alt, double unadjustedWsaf, double err, doubl
 }
 
 
-//vector <size_t> sampleNoReplace( MersenneTwister* rg, vector <double> & proportion, size_t nSample ){
-    //vector <size_t> indexReturn;
-    //assert( indexReturn.size() == 0 );
-    //vector <double> tmpDist(proportion) ;
-    //vector <size_t> tmpIndex;
-    //for ( size_t i = 0; i < proportion.size(); i++ ){
-        //tmpIndex.push_back(i);
-    //}
-    //for ( size_t nSampleRemaining = nSample; nSampleRemaining > 0; nSampleRemaining-- ){
-        //// Compute cdf of tmpDist
-        //vector <double> tmpCdf = computeCdf(tmpDist);
-        //double u = rg->sample();
-        //size_t i = 0;
-        //for ( ; i < tmpCdf.size() ; i++){
-            //if ( u < tmpCdf[i] ){
-                //indexReturn.push_back(tmpIndex[i]);
-                //break;
-            //}
-        //}
-        //// Reduce tmpDist and tmpIndex
-        //tmpDist.erase(tmpDist.begin()+i);
-        //(void)normalizeBySum(tmpDist);
-        //tmpIndex.erase(tmpIndex.begin()+i);
-    //}
-    //return indexReturn;
-//}
-
-
 size_t sampleIndexGivenProp ( MersenneTwister* rg, vector <double> proportion ){
     #ifndef NDEBUG
-        double tmpMax = maxOfVec(proportion);
-        vector<double>::iterator maxIt = std::find ( proportion.begin(),  proportion.end(), tmpMax);
-        return std::distance(proportion.begin(), maxIt);
+        auto biggest = std::max_element(std::begin(proportion), std::end(proportion));
+        return std::distance(proportion.begin(), biggest);
     #else
         vector <size_t> tmpIndex;
         for ( size_t i = 0; i < proportion.size(); i++ ){

@@ -28,10 +28,12 @@
 #include "updateHap.hpp"
 #include <stdio.h>
 
+McmcSample::McmcSample(){};
+McmcSample::~McmcSample(){};
 
-McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample ){ // initialiseMCMCmachinery
+McmcMachinery::McmcMachinery(PfDeconvIO* pfDeconfIO, Panel *panel, McmcSample *mcmcSample ){ // initialiseMCMCmachinery
 
-    this->pfDeconvIO_ = pdfDeconfIO;
+    this->pfDeconvIO_ = pfDeconfIO;
     this->panel_ = panel;
     this->mcmcSample_ = mcmcSample;
 
@@ -45,8 +47,7 @@ McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *
     //this->propRg_  = new MersenneTwister(this->seed_);
     //this->initialHapRg_ = new MersenneTwister(this->seed_);
 
-    this->burnIn_ = pdfDeconfIO->mcmcBurn_;
-    this->calcMaxIteration( pfDeconvIO_->nMcmcSample_ , pfDeconvIO_->mcmcMachineryRate_ );
+    this->calcMaxIteration( pfDeconvIO_->nMcmcSample_ , pfDeconvIO_->mcmcMachineryRate_, pfDeconfIO->mcmcBurn_ );
 
     this->MN_LOG_TITRE = 0.0;
     this->SD_LOG_TITRE = 3.0;
@@ -64,23 +65,43 @@ McmcMachinery::McmcMachinery(PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *
 
 
 McmcMachinery::~McmcMachinery(){
-    this->hapRg_->clearFastFunc();
-    //this->mcmcEventRg_->clearFastFunc();
-    //this->propRg_->clearFastFunc();
-    //this->initialHapRg_->clearFastFunc();
+    if ( this->hapRg_ ){
+        this->hapRg_->clearFastFunc();
+        delete hapRg_;
+    }
 
-    delete std_generator_;
-    delete initialTitre_normal_distribution_;
-    delete deltaX_normal_distribution_;
+    //if ( this->mcmcEventRg_ ){
+        //this->mcmcEventRg_->clearFastFunc();
+        //delete mcmcEventRg_;
+    //}
 
-    delete hapRg_;
-    //delete mcmcEventRg_;
-    //delete propRg_;
-    //delete initialHapRg_;
+    //if ( this->propRg_ ){
+        //this->propRg_->clearFastFunc();
+        //delete propRg_;
+    //}
+
+    //if ( this->initialHapRg_ ){
+        //this->initialHapRg_->clearFastFunc();
+        //delete initialHapRg_;
+    //}
+
+    if ( this->std_generator_ ){
+        delete std_generator_;
+    }
+
+    if ( this->initialTitre_normal_distribution_ ){
+        delete initialTitre_normal_distribution_;
+    }
+
+    if ( this->deltaX_normal_distribution_ ){
+        delete deltaX_normal_distribution_;
+    }
+
 }
 
 
-void McmcMachinery::calcMaxIteration( size_t nSample, size_t McmcMachineryRate ){
+void McmcMachinery::calcMaxIteration( size_t nSample, size_t McmcMachineryRate, double burnIn ){
+    this->burnIn_ = burnIn;
     this->McmcMachineryRate_ = McmcMachineryRate;
     this->maxIteration_ = (size_t)ceil((double)nSample*(double)McmcMachineryRate/(1.0-this->burnIn_))+1;
     this->mcmcThresh_ = (size_t)ceil((double)nSample*(double)McmcMachineryRate*this->burnIn_/(1.0-this->burnIn_));
@@ -123,7 +144,7 @@ void McmcMachinery::initializeHap(){
 
 double McmcMachinery::rBernoulli(double p){
     double u = this->initialHapRg_->sample();
-    return ( u < p ) ? 1 : 0;
+    return ( u < p ) ? 1.0 : 0.0;
 }
 
 
@@ -136,9 +157,6 @@ void McmcMachinery::initializeExpectedWsaf(){
 
 void McmcMachinery::initializellk(){
     assert( this->currentLLks_.size() == (size_t)0);
-    //for ( size_t i = 0; i < this->pfDeconvIO_->plaf.size(); i++ ){
-        //this->currentLLks_.push_back(0.0);
-    //}
     this->currentLLks_ = vector <double> (this->nLoci_, 0.0);
     assert( this->currentLLks_.size() == this->nLoci_);
 }
@@ -188,22 +206,6 @@ vector <double> McmcMachinery::titre2prop(vector <double> & tmpTitre){
 }
 
 
-bool McmcMachinery::doutProp(){
-    dout << "  Update proportion to: ";
-
-    for ( auto const& value: this->currentProp_ ){
-        dout << value << " ";
-    }
-
-    dout<<endl;
-    return true;
-}
-
-
-bool McmcMachinery::doutLLK(){
-    dout << " Current log likelihood = " << sumOfVec( this->currentLLks_ ) << endl;
-    return true;
-}
 
 
 void McmcMachinery::runMcmcChain( ){
@@ -272,7 +274,7 @@ void McmcMachinery::updateProportion(){
     vector <double> tmpTitre = calcTmpTitre();
     vector <double> tmpProp = titre2prop(tmpTitre);
 
-    if ( minOfVec(tmpProp) < 0 || maxOfVec(tmpProp) > 1 ) {
+    if ( min_value(tmpProp) < 0 || max_value(tmpProp) > 1 ) {
         dout << "(failed)" << endl;
         return;
     }
@@ -303,11 +305,6 @@ void McmcMachinery::updateProportion(){
 
 
 double McmcMachinery::deltaLLKs ( vector <double> &newLLKs ){
-    //double tmp = 0.0;
-    //for ( size_t i = 0; i < newLLKs.size(); i++){
-        //tmp += ( newLLKs[i] - this->currentLLks_[i] );
-    //}
-    //return tmp;
     vector <double> tmpdiff = vecDiff ( newLLKs,  this->currentLLks_);
     return sumOfVec(tmpdiff);
 }
@@ -339,6 +336,8 @@ void McmcMachinery::updateSingleHap(){
                                   start, length,
                                   this->panel_, this->pfDeconvIO_->missCopyProb_,
                                   this->strainIndex_);
+        updating.core ( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->pfDeconvIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+
         size_t updateIndex = 0;
         for ( size_t ii = start ; ii < (start+length); ii++ ){
             this->currentHap_[ii][this->strainIndex_] = updating.hap_[updateIndex];
@@ -367,9 +366,9 @@ void McmcMachinery::updatePairHaps(){
                                 this->currentProp_, this->currentHap_, this->hapRg_,
                                 start, length,
                                 this->panel_, this->pfDeconvIO_->missCopyProb_, this->pfDeconvIO_->forbidCopyFromSame(),
-                                //NULL, this->pfDeconvIO_->missCopyProb_,  // DEBUG
                                 this->strainIndex1_,
                                 this->strainIndex2_);
+        updating.core ( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->pfDeconvIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
 
         size_t updateIndex = 0;
         for ( size_t ii = start ; ii < (start+length); ii++ ){

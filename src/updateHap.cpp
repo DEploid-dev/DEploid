@@ -25,6 +25,8 @@
 #include <algorithm>    // std::reverse
 #include <cstdlib> // div
 
+UpdateHap::~UpdateHap(){}
+
 UpdateHap::UpdateHap( vector <double> &refCount,
                       vector <double> &altCount,
                       vector <double> &plaf,
@@ -34,28 +36,47 @@ UpdateHap::UpdateHap( vector <double> &refCount,
                       MersenneTwister* rg,
                       size_t segmentStartIndex,
                       size_t nLoci,
-                      Panel* panel){
+                      Panel* panel,
+                      double missCopyProb){
 
     this->panel_ = panel;
+    this->nPanel_ = 0; // Initialize when panel is not given
 
     if ( this->panel_ != NULL ){
         this->nPanel_ = this->panel_->nPanel_;
-    } else {
-        this->nPanel_ = 0;
     }
 
     this->kStrain_ = proportion.size();
-
+    this->missCopyProb_ = missCopyProb;
     this->recombRg_ = rg;
     this->recombLevel2Rg_ = rg;
     this->missCopyRg_ = rg;
     //this->recombRg_       = new MersenneTwister(rg->seed(), rg->ff());
     //this->recombLevel2Rg_ = new MersenneTwister(rg->seed(), rg->ff());
     //this->missCopyRg_     = new MersenneTwister(rg->seed(), rg->ff());
-
     this->segmentStartIndex_ = segmentStartIndex;
     this->nLoci_ = nLoci;
+}
 
+void UpdateHap::core(vector <double> &refCount,
+                           vector <double> &altCount,
+                           vector <double> &plaf,
+                           vector <double> &expectedWsaf,
+                           vector <double> &proportion,
+                           vector < vector <double> > &haplotypes ){};
+void UpdateHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes){};
+void UpdateHap::calcHapLLKs( vector <double> &refCount, vector <double> &altCount){};
+void UpdateHap::buildEmission( double missCopyProb ){};
+void UpdateHap::samplePaths(){};
+void UpdateHap::addMissCopying( double missCopyProb ){};
+void UpdateHap::updateLLK(){};
+void UpdateHap::sampleHapIndependently(vector <double> &plaf){};
+
+
+UpdateSingleHap::~UpdateSingleHap(){
+    //delete recombRg_;
+    //delete recombLevel2Rg_;
+    //delete missCopyRg_;
 }
 
 
@@ -70,17 +91,26 @@ UpdateSingleHap::UpdateSingleHap( vector <double> &refCount,
                                   size_t nLoci,
                                   Panel* panel, double missCopyProb,
                                   size_t strainIndex ):
-                UpdateHap(refCount, altCount, expectedWsaf, plaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel){
+                UpdateHap(refCount, altCount, expectedWsaf, plaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel, missCopyProb){
     this->strainIndex_ = strainIndex;
+}
+
+
+void UpdateSingleHap::core(vector <double> &refCount,
+                           vector <double> &altCount,
+                           vector <double> &plaf,
+                           vector <double> &expectedWsaf,
+                           vector <double> &proportion,
+                           vector < vector <double> > &haplotypes ){
 
     this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
     this->calcHapLLKs(refCount, altCount);
 
     if ( this->panel_ != NULL ){
-        this->buildEmission( missCopyProb );
+        this->buildEmission( this->missCopyProb_ );
         this->calcFwdProbs();
         this->samplePaths();
-        this->addMissCopying( missCopyProb );
+        this->addMissCopying( this->missCopyProb_ );
     } else {
         this->sampleHapIndependently(plaf);
     }
@@ -127,9 +157,9 @@ void UpdateSingleHap::buildEmission( double missCopyProb ){
     assert(emission_.size() == 0 );
     for ( size_t i = 0; i < this->nLoci_; i++){
         vector <double> tmp ({t1omu[i], t2omu[i], t1u[i], t2u[i]});
-        double tmaxTmp = maxOfVec(tmp);
-          vector <double> emissRow ({exp(t1omu[i] - tmaxTmp) + exp(t2u[i] - tmaxTmp),
-                                     exp(t2omu[i] - tmaxTmp) + exp(t1u[i] - tmaxTmp)});
+        double tmaxTmp = max_value(tmp);
+        vector <double> emissRow ({exp(t1omu[i] - tmaxTmp) + exp(t2u[i] - tmaxTmp),
+                                   exp(t2omu[i] - tmaxTmp) + exp(t1u[i] - tmaxTmp)});
 
         this->emission_.push_back(emissRow);
     }
@@ -219,7 +249,7 @@ void UpdateSingleHap::samplePaths(){
 void UpdateSingleHap::addMissCopying( double missCopyProb ){
     assert( this->hap_.size() == 0 );
     for ( size_t i = 0; i < this->nLoci_; i++){
-        double tmpMax = maxOfVec ( vector <double>({this->llk0_[i], this->llk1_[i]}));
+        double tmpMax = max_value ( vector <double>({this->llk0_[i], this->llk1_[i]}));
         vector <double> emissionTmp ({exp(this->llk0_[i]-tmpMax), exp(this->llk1_[i]-tmpMax)});
         vector <double> sameDiffDist ({emissionTmp[path_[i]]*(1.0 - missCopyProb), // probability of the same
                                        emissionTmp[(size_t)(1 -path_[i])] * missCopyProb }); // probability of differ
@@ -239,7 +269,7 @@ void UpdateSingleHap::sampleHapIndependently( vector <double> &plaf ){
     assert( this->hap_.size() == 0 );
     size_t plafIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < this->nLoci_; i++){
-        double tmpMax = maxOfVec ( vector <double> ( {llk0_[i], llk1_[i]} ) ) ;
+        double tmpMax = max_value ( vector <double> ( {llk0_[i], llk1_[i]} ) ) ;
         vector <double> tmpDist ( {exp(llk0_[i] - tmpMax) * (1.0-plaf[plafIndex]),
                                    exp(llk1_[i] - tmpMax) * plaf[plafIndex] } );
         (void)normalizeBySum(tmpDist);
@@ -264,6 +294,12 @@ void UpdateSingleHap::updateLLK(){
 }
 
 
+UpdatePairHap::~UpdatePairHap(){
+    //delete recombRg_;
+    //delete recombLevel2Rg_;
+    //delete missCopyRg_;
+}
+
 UpdatePairHap::UpdatePairHap( vector <double> &refCount,
                               vector <double> &altCount,
                               vector <double> &plaf,
@@ -276,18 +312,28 @@ UpdatePairHap::UpdatePairHap( vector <double> &refCount,
                               Panel* panel, double missCopyProb, bool forbidCopyFromSame,
                               size_t strainIndex1,
                               size_t strainIndex2 ):
-                UpdateHap(refCount, altCount, plaf, expectedWsaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel){
+                UpdateHap(refCount, altCount, plaf, expectedWsaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel, missCopyProb){
     this->strainIndex1_ = strainIndex1;
     this->strainIndex2_ = strainIndex2;
+    this->forbidCopyFromSame_ = forbidCopyFromSame;
+}
+
+
+void UpdatePairHap::core(vector <double> &refCount,
+                           vector <double> &altCount,
+                           vector <double> &plaf,
+                           vector <double> &expectedWsaf,
+                           vector <double> &proportion,
+                           vector < vector <double> > &haplotypes){
 
     this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
     this->calcHapLLKs(refCount, altCount);
 
     if ( this->panel_ != NULL ){
-        this->buildEmission(missCopyProb);
-        this->calcFwdProbs(forbidCopyFromSame);
+        this->buildEmission(this->missCopyProb_);
+        this->calcFwdProbs(this->forbidCopyFromSame_);
         this->samplePaths();
-        this->addMissCopying(missCopyProb);
+        this->addMissCopying(this->missCopyProb_);
     } else {
         this->sampleHapIndependently( plaf );
     }
@@ -389,7 +435,7 @@ void UpdatePairHap:: buildEmission( double missCopyProb ){
                               tmp_01_1[i], tmp_01_2[i], tmp_01_3[i], tmp_01_4[i],
                               tmp_10_1[i], tmp_10_2[i], tmp_10_3[i], tmp_10_4[i],
                               tmp_11_1[i], tmp_11_2[i], tmp_11_3[i], tmp_11_4[i]});
-        double tmaxTmp = maxOfVec(tmp);
+        double tmaxTmp = max_value(tmp);
         vector <double> emissRow ({exp(tmp_00_1[i] - tmaxTmp) + exp(tmp_00_2[i] - tmaxTmp) + exp(tmp_00_3[i] - tmaxTmp) + exp(tmp_00_4[i] - tmaxTmp),
                                    exp(tmp_01_1[i] - tmaxTmp) + exp(tmp_01_2[i] - tmaxTmp) + exp(tmp_01_3[i] - tmaxTmp) + exp(tmp_01_4[i] - tmaxTmp),
                                    exp(tmp_10_1[i] - tmaxTmp) + exp(tmp_10_2[i] - tmaxTmp) + exp(tmp_10_3[i] - tmaxTmp) + exp(tmp_10_4[i] - tmaxTmp),
@@ -529,26 +575,16 @@ void UpdatePairHap::samplePaths(){
             rowI = tmpPath[0];
             colJ = tmpPath[1];
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
-            //switch.two = switch.two + 1
-            //switch.table = rbind(switch.table, c("twoSwitchTwo", j ))
         } else if ( tmpCase == (size_t)1 ){ // switching second strain
             rowI = rowI;
-
             (void)normalizeBySum(rowIdist);
             colJ = sampleIndexGivenProp( this->recombLevel2Rg_, rowIdist );
-
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
-            //switch.one = switch.one + 1
-            //switch.table = rbind(switch.table, c("twoSwitchOne", j ))
         } else if ( tmpCase == (size_t)2 ){ // switching first strain
-
             (void)normalizeBySum(colJdist);
             rowI = sampleIndexGivenProp( this->recombLevel2Rg_, colJdist );
-
             colJ = colJ;
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
-            //switch.one = switch.one + 1
-            //switch.table = rbind(switch.table, c("twoSwitchOne", j ))
         } else if ( tmpCase == (size_t)3 ) { // no switching
             rowI = rowI;
             colJ = colJ;
@@ -573,7 +609,7 @@ void UpdatePairHap::addMissCopying( double missCopyProb ){
     assert( this->hap2_.size() == 0 );
 
     for ( size_t i = 0; i < this->nLoci_; i++){
-        double tmpMax = maxOfVec ( vector <double>({this->llk00_[i], this->llk01_[i], this->llk10_[i], this->llk11_[i]}));
+        double tmpMax = max_value ( vector <double>({this->llk00_[i], this->llk01_[i], this->llk10_[i], this->llk11_[i]}));
         vector <double> emissionTmp ({exp(this->llk00_[i]-tmpMax), exp(this->llk01_[i]-tmpMax), exp(this->llk10_[i]-tmpMax), exp(this->llk11_[i]-tmpMax)});
         vector <double> casesDist ( { emissionTmp[(size_t)(2*path1_[i]     +path2_[i])]     * (1.0 - missCopyProb) * (1.0 - missCopyProb), // probability of both same
                                       emissionTmp[(size_t)(2*path1_[i]     +(1-path2_[i]))] * (1.0 - missCopyProb) * missCopyProb,         // probability of same1diff2
@@ -610,7 +646,7 @@ void UpdatePairHap::sampleHapIndependently(vector <double> &plaf){
 
     size_t plafIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < this->nLoci_; i++){
-        double tmpMax = maxOfVec ( vector <double> ( {llk00_[i], llk01_[i], llk10_[i], llk11_[i]} ) );
+        double tmpMax = max_value ( vector <double> ( {llk00_[i], llk01_[i], llk10_[i], llk11_[i]} ) );
         vector <double> tmpDist ( {exp(llk00_[i] - tmpMax) * (1.0-plaf[plafIndex]) * (1.0-plaf[plafIndex]),
                                    exp(llk01_[i] - tmpMax) * (1.0-plaf[plafIndex]) * plaf[plafIndex],
                                    exp(llk10_[i] - tmpMax) * (1.0-plaf[plafIndex]) * plaf[plafIndex],

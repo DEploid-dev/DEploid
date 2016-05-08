@@ -35,17 +35,16 @@
 
 using namespace std;
 
-//enum EventType {PROPORTION, SINGLE, PAIR};
 
 class McmcSample {
+#ifdef UNITTEST
+  friend class TestMcmcMachinery;
+#endif
   friend class McmcMachinery;
   friend class PfDeconvIO;
   public:
-    McmcSample(){}
-    ~McmcSample(){}
-    double llkRange(){
-        return (maxOfVec(this->sumLLKs) - minOfVec(this->sumLLKs) );
-    }
+    McmcSample();
+    ~McmcSample();
     void clear(){
         proportion.clear();
         sumLLKs.clear();
@@ -62,7 +61,11 @@ class McmcSample {
 
 
 class McmcMachinery {
+#ifdef UNITTEST
+  friend class TestMcmcMachinery;
+#endif
   public:
+    //McmcMachinery();
     McmcMachinery( PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample );
     ~McmcMachinery();
     void runMcmcChain( );
@@ -107,7 +110,7 @@ class McmcMachinery {
     vector < double > currentExpectedWsaf_;
 
   /* Methods */
-    void calcMaxIteration( size_t nSample, size_t McmcMachineryRate );
+    void calcMaxIteration( size_t nSample, size_t McmcMachineryRate, double burnIn );
    /* Initialize */
     void initializeMcmcChain();
      void initializeProp();

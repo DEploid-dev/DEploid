@@ -17,13 +17,15 @@ common_src = src/random/fastfunc.cpp \
 			 src/mcmc.cpp \
 			 src/panel.cpp \
 			 src/pfDeconvIO.cpp \
-			 src/pfDeconvIOExport.cpp \
 			 src/utility.cpp \
 			 src/updateHap.cpp \
-			 src/atMarker.cpp
+			 src/atMarker.cpp \
+			 src/export/pfDeconvIOExport.cpp
+
+debug_src = src/debug/mcmcDebug.cpp
 
 pfDeconv_SOURCES = src/pfDeconv.cpp $(common_src)
-pfDeconv_dbg_SOURCES = $(pfDeconv_SOURCES)
+pfDeconv_dbg_SOURCES =  $(debug_src) $(pfDeconv_SOURCES)
 pfDeconv_prof_SOURCES = $(pfDeconv_SOURCES)
 
 pfDeconv_CXXFLAGS = $(common_flags) -DNDEBUG -O3
@@ -37,9 +39,11 @@ unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_runner.cpp \
 					 tests/unittest/test_updatePairHap.cpp \
 					 tests/unittest/test_updateSingleHap.cpp \
-					 tests/unittest/test_atMarker.cpp
+					 tests/unittest/test_atMarker.cpp \
+					 tests/unittest/test_utilities.cpp \
+					 tests/unittest/test_mcmc.cpp
 
-unit_tests_CXXFLAGS = $(pfDeconv_CXXFLAGS) -Wno-write-strings -O0 --coverage
+unit_tests_CXXFLAGS = $(pfDeconv_CXXFLAGS) -DUNITTEST -Wno-write-strings --coverage
 unit_tests_LDADD          = -lcppunit -ldl
 
 clean-local: clean-local-check

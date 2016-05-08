@@ -25,6 +25,10 @@
 #include <cassert>       // assert
 #include <iomanip>      // std::setw
 
+PfDeconvIO::PfDeconvIO(){
+    this->init();
+}
+
 
 PfDeconvIO::~PfDeconvIO(){
     if ( this->excludedMarkers != NULL ){
@@ -33,17 +37,18 @@ PfDeconvIO::~PfDeconvIO(){
 }
 
 
-PfDeconvIO::PfDeconvIO(int argc, char *argv[]) {
+void PfDeconvIO::core(int argc, char *argv[]) {
     argv_ = std::vector<std::string>(argv + 1, argv + argc);
     this->argv_i = argv_.begin();
 
-    this->init();
     if ( argv_.size() == 0 ) {
         this->set_help(true);
         return;
     }
 
+    this->reInit(); // Reset to defalt values before parsing
     this->parse();
+
     this->checkInput();
     this->finalize();
 }
@@ -83,28 +88,42 @@ void PfDeconvIO::init() {
 }
 
 
+void PfDeconvIO::reInit() {
+    this->init();
+    this->refFileName_.clear();
+    this->altFileName_.clear();
+    this->plafFileName_.clear();
+    this->panelFileName_.clear();
+    this->excludeFileName_.clear();
+}
+
+
 void PfDeconvIO::finalize(){
     if ( !this->seed_set_ ){
         this->set_seed( (unsigned)(time(0)) );
     }
 
     if ( this->exclude_sites_ ){
-        excludedMarkers = new ExcludeMarker(excludeFileName_.c_str());
+        excludedMarkers = new ExcludeMarker();
+        excludedMarkers->readFromFile(excludeFileName_.c_str());
     }
 
-    InputMarker ref (refFileName_.c_str());
+    InputMarker ref;
+    ref.readFromFile(refFileName_.c_str());
     if ( this->exclude_sites_ ){
         ref.removeMarkers( excludedMarkers );
     }
     this->refCount_ = ref.info_;
 
-    InputMarker alt (altFileName_.c_str());
+    InputMarker alt;
+    alt.readFromFile(altFileName_.c_str());
     if ( this->exclude_sites_ ){
         alt.removeMarkers( excludedMarkers );
     }
     this->altCount_ = alt.info_;
 
-    InputMarker plaf (plafFileName_.c_str());
+    InputMarker plaf;
+    plaf.readFromFile(plafFileName_.c_str());
     if ( this->exclude_sites_ ){
         plaf.removeMarkers( excludedMarkers );
     }
@@ -143,7 +162,6 @@ void PfDeconvIO::removeFilesWithSameName(){
 
 
 void PfDeconvIO::parse (){
-
     do {
         if (*argv_i == "-ref") {
             this->readNextStringto ( this->refFileName_ ) ;

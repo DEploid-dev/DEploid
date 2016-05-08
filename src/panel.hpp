@@ -28,7 +28,9 @@
 #include "exceptions.hpp"
 
 class Panel: public InputMarker{
+#ifdef UNITTEST
  friend class TestPanel;
+#endif
  friend class UpdateSingleHap;
  friend class UpdatePairHap;
  friend class UpdateHap;
@@ -49,15 +51,19 @@ class Panel: public InputMarker{
 
 
   public:
-    void computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame );
-    void checkForExceptions( size_t nLoci, string panelFileName );
-    Panel(const char inchar[] ):InputMarker(inchar){
-        this->nPanel_ = this->nInfoLines_;
-    };
-    ~Panel(){};
+    Panel();
+    //Panel(const char inchar[] );
+    ~Panel();
 
     // Methods
+    void readFromFile( const char inchar[] );
+    void computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame );
+    void checkForExceptions( size_t nLoci, string panelFileName );
+
     void print();
+    void buildExamplePanelContent();
+    void buildExamplePanel1();
+    void buildExamplePanel2();
 };
 
 #endif

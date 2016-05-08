@@ -29,10 +29,6 @@
 
 using namespace std;
 
-struct ooops : std::exception {
-  const char* what() const noexcept {return "Ooops!\n";}
-};
-
 struct InvalidInput : std::exception {
   string src;
   string reason;

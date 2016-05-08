@@ -23,6 +23,8 @@
 
 #include <vector>
 #include <iostream>
+#include <algorithm>    /* min_element, max_element */
+
 #include "mersenne_twister.hpp"
 #include "global.h"
 
@@ -30,39 +32,6 @@
 #define UTILITY
 
 using namespace std;
-
-
-template <typename T> // See http://stackoverflow.com/questions/10847007/using-the-gaussian-probability-density-function-in-c
-T normal_pdf(T x, T m, T s)
-{
-    static const T inv_sqrt_2pi = 0.3989422804014327;
-    T a = (x - m) / s;
-
-    return inv_sqrt_2pi / s * std::exp(-T(0.5) * a * a);
-}
-
-
-template <typename T>
-T minOfVec( vector <T> x){
-    assert( x.size() > 0 );
-    T tmpMin = x[0];
-    for ( auto const& value: x ){
-        tmpMin = ( value < tmpMin ) ? value : tmpMin;
-    }
-    return tmpMin;
-}
-
-
-template <typename T>
-T maxOfVec( vector <T> x){
-    assert( x.size() > 0 );
-    T tmpMax = x[0];
-    for ( auto const& value: x ){
-        tmpMax = ( value > tmpMax ) ? value : tmpMax;
-    }
-    return tmpMax;
-}
-
 
 template <typename T>
 vector <T> vecDiff ( vector<T> &vecA, vector<T> &vecB ){
@@ -97,6 +66,9 @@ vector <T> vecProd ( vector<T> &vecA, vector<T> &vecB ){
 }
 
 
+double normal_pdf(double x, double m, double s);
+double min_value( vector <double> x);
+double max_value( vector <double> x);
 vector <double> computeCdf ( vector <double> & dist );
 double sumOfVec( vector <double>& array );
 double sumOfMat( vector <vector <double> > & matrix );
@@ -104,11 +76,8 @@ void normalizeBySum ( vector <double> & array );
 void normalizeBySumMat ( vector <vector <double> > & matrix );
 vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf, size_t firstIndex, size_t length );
 double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01, double fac=100 ) ;
-
 size_t sampleIndexGivenProp ( MersenneTwister* rg, vector <double> proportion );
-
-//vector <size_t> sampleNoReplace( MersenneTwister* rg, vector <double> &proportion, size_t nSample = 1);
-    vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );
+vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );
 
 
 #endif

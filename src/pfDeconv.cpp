@@ -31,7 +31,8 @@ using namespace std;
 int main( int argc, char *argv[] ){
     try {
 
-        PfDeconvIO pfDeconvIO( argc, argv );
+        PfDeconvIO pfDeconvIO;
+        (void)pfDeconvIO.core( argc, argv );
 
         if ( pfDeconvIO.help() ){
             pfDeconvIO.printHelp();
@@ -41,7 +42,8 @@ int main( int argc, char *argv[] ){
         Panel *panel = NULL;
 
         if ( pfDeconvIO.usePanel() ){
-            panel = new Panel(pfDeconvIO.panelFileName_.c_str());
+            panel = new Panel();
+            panel->readFromFile(pfDeconvIO.panelFileName_.c_str());
             if ( pfDeconvIO.exclude_sites_ ){
                 panel->removeMarkers( pfDeconvIO.excludedMarkers );
             }

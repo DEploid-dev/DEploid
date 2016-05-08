@@ -33,14 +33,17 @@
 using namespace std;
 
 class AtMarker{
+#ifdef UNITTEST
  friend class TestPanel;
  friend class TestAtMarker;
+#endif
  friend class UpdateSingleHap;
  friend class UpdatePairHap;
  friend class UpdateHap;
  friend class Panel;
  friend class PfDeconvIO;
  friend class InputMarker;
+ friend class ExcludeMarker;
   private:
     // Members
     vector <string> chrom_;
@@ -64,27 +67,28 @@ class AtMarker{
     void getIndexOfChromStarts();
 
   public:
-    AtMarker(const char inchar[]);
-    virtual ~AtMarker(){};
+    AtMarker ();
+    virtual void readFromFile( const char inchar[] ){ this->readFromFileBase( inchar ); };
+    void readFromFileBase( const char inchar[] );
+    virtual ~AtMarker();
 };
 
 
 class ExcludeMarker : public AtMarker {
   // sorting
   public:
-    ExcludeMarker(const char inchar[] ):AtMarker(inchar){};
-    ~ExcludeMarker(){};
+    ExcludeMarker();
+    //ExcludeMarker( const char inchar[] );
+    ~ExcludeMarker();
 };
 
 
 class InputMarker : public AtMarker {
- //friend class PfDeconvIO;
-  //private:
-
   public:
-    InputMarker(const char inchar[] ):AtMarker(inchar){ };
+    InputMarker ();
+    //InputMarker( const char inchar[] );
+    ~InputMarker();
     void removeMarkers( ExcludeMarker* excludedMarkers );
-    virtual ~InputMarker(){};
 };
 
 #endif
