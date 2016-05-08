@@ -102,10 +102,12 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
     CPPUNIT_TEST ( testCalcHapLLKs );
     CPPUNIT_TEST ( testSampleHapIndependently );
     CPPUNIT_TEST ( testCore );
+    CPPUNIT_TEST ( testCalcFwdProbsNoRecomb );
     CPPUNIT_TEST_SUITE_END();
 
   private:
-    UpdateSingleHap * updateSingleHapPanel_;
+    UpdateSingleHap * updateSingleHapPanel1_;
+    UpdateSingleHap * updateSingleHapPanel2_;
     UpdateSingleHap * updateSingleHapPlaf_;
     vector <double> refCount_;
     vector <double> altCount_;
@@ -116,11 +118,13 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
     MersenneTwister* rg_;
     size_t segmentStartIndex_;
     size_t nLoci_;
-    Panel* panel_;
+    Panel* panel1_;
+    Panel* panel2_;
     double missCopyProb_;
     size_t strainIndex_;
-    double epsilon3;
+    double epsilon1;
     double epsilon2;
+    double epsilon3;
     size_t nRepeat;
 
 
@@ -128,7 +132,8 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
 
     void setUp(){
         nRepeat = 1000000;
-        epsilon2 = 0.001;
+        epsilon1 = 0.001;
+        epsilon2 = 0.000001;
         epsilon3 = 0.00000000001;
 
         this->refCount_ = vector <double> (  { 100, 10 , 50 , 30 , 100, 7, 50 } );
@@ -146,7 +151,12 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
         this->expectedWsaf_ = vector <double> ({.65, .35, .6, .45, .3, .75, .3});
 
         this->rg_ = new MersenneTwister((size_t)1);
-        this->panel_ = new Panel();
+        this->panel1_ = new Panel();
+        this->panel1_->buildExamplePanel1();
+
+        this->panel2_ = new Panel();
+        this->panel2_->buildExamplePanel2();
+
         this->nLoci_ = 0;
 
         this->updateSingleHapPlaf_ = new UpdateSingleHap( refCount_,
@@ -162,7 +172,7 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
                                           missCopyProb_,
                                           strainIndex_ );
 
-        this->updateSingleHapPanel_ = new UpdateSingleHap( refCount_,
+        this->updateSingleHapPanel1_ = new UpdateSingleHap( refCount_,
                                           altCount_,
                                           plaf_,
                                           expectedWsaf_,
@@ -171,7 +181,20 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
                                           rg_,
                                           segmentStartIndex_,
                                           nLoci_,
-                                          panel_,
+                                          panel1_,
+                                          missCopyProb_,
+                                          strainIndex_ );
+
+        this->updateSingleHapPanel2_ = new UpdateSingleHap( refCount_,
+                                          altCount_,
+                                          plaf_,
+                                          expectedWsaf_,
+                                          proportion_,
+                                          haplotypes_,
+                                          rg_,
+                                          segmentStartIndex_,
+                                          nLoci_,
+                                          panel2_,
                                           missCopyProb_,
                                           strainIndex_ );
 }
@@ -179,94 +202,102 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
 
     void tearDown(){
         delete updateSingleHapPlaf_;
-        delete updateSingleHapPanel_;
-        delete panel_;
+        delete updateSingleHapPanel1_;
+        delete updateSingleHapPanel2_;
+        delete panel1_;
+        delete panel2_;
         this->rg_->clearFastFunc();
         delete rg_;
     }
 
+
     void testMainConstructor(){ }
+
 
     void testEmissionProb0 (){
         double llk0_1 = log(0.05), llk0_2 = log(0.03), llk0_3 = log(0);
         double llk1_1 = log(0.5), llk1_2 = log(0.0003), llk1_3 = log(1);
-        this->updateSingleHapPanel_->llk0_ = vector <double> ({llk0_1, llk0_2, llk0_3});
-        this->updateSingleHapPanel_->llk1_ = vector <double> ({llk1_1, llk1_2, llk1_3});
-        this->updateSingleHapPanel_->nLoci_ = 3;
-        CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPanel_->buildEmission ( 0.0 ) );
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_1-llk1_1), updateSingleHapPanel_->emission_[0][0], epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.05/0.5, updateSingleHapPanel_->emission_[0][0], epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel_->emission_[0][1], epsilon3);
+        this->updateSingleHapPanel1_->llk0_ = vector <double> ({llk0_1, llk0_2, llk0_3});
+        this->updateSingleHapPanel1_->llk1_ = vector <double> ({llk1_1, llk1_2, llk1_3});
+        this->updateSingleHapPanel1_->nLoci_ = 3;
+        CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPanel1_->buildEmission ( 0.0 ) );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)2, this->updateSingleHapPanel1_->emission_[0].size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)2, this->updateSingleHapPanel1_->emission_[1].size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)2, this->updateSingleHapPanel1_->emission_[2].size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)2, this->updateSingleHapPanel1_->emission_.back().size() );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_1-llk1_1), updateSingleHapPanel1_->emission_[0][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.05/0.5, updateSingleHapPanel1_->emission_[0][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel1_->emission_[0][1], epsilon3);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel_->emission_[1][0], epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0003/0.03, updateSingleHapPanel_->emission_[1][1], epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_2-llk0_2), updateSingleHapPanel_->emission_[1][1], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel1_->emission_[1][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0003/0.03, updateSingleHapPanel1_->emission_[1][1], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_2-llk0_2), updateSingleHapPanel1_->emission_[1][1], epsilon3);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_3-llk1_3), updateSingleHapPanel_->emission_[2][0], epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, updateSingleHapPanel_->emission_[2][0], epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel_->emission_[2][1], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_3-llk1_3), updateSingleHapPanel1_->emission_[2][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, updateSingleHapPanel1_->emission_[2][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel1_->emission_[2][1], epsilon3);
     }
 
 
     void testEmissionBasicVersion0 (){
         double llk0_1 = log(0.05), llk0_2 = log(0.03), llk0_3 = log(0);
         double llk1_1 = log(0.5), llk1_2 = log(0.0003), llk1_3 = log(1);
-        this->updateSingleHapPanel_->llk0_ = vector <double> ({llk0_1, llk0_2, llk0_3});
-        this->updateSingleHapPanel_->llk1_ = vector <double> ({llk1_1, llk1_2, llk1_3});
-        this->updateSingleHapPanel_->nLoci_ = 3;
-        CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPanel_->buildEmissionBasicVersion ( 0.0 ) );
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_1), updateSingleHapPanel_->emission_[0][0], epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_1), updateSingleHapPanel_->emission_[0][1], epsilon3);
+        this->updateSingleHapPanel1_->llk0_ = vector <double> ({llk0_1, llk0_2, llk0_3});
+        this->updateSingleHapPanel1_->llk1_ = vector <double> ({llk1_1, llk1_2, llk1_3});
+        this->updateSingleHapPanel1_->nLoci_ = 3;
+        CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPanel1_->buildEmissionBasicVersion ( 0.0 ) );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_1), updateSingleHapPanel1_->emission_[0][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_1), updateSingleHapPanel1_->emission_[0][1], epsilon3);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_2), updateSingleHapPanel_->emission_[1][0], epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_2), updateSingleHapPanel_->emission_[1][1], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_2), updateSingleHapPanel1_->emission_[1][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_2), updateSingleHapPanel1_->emission_[1][1], epsilon3);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_3), updateSingleHapPanel_->emission_[2][0], epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_3), updateSingleHapPanel_->emission_[2][1], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_3), updateSingleHapPanel1_->emission_[2][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_3), updateSingleHapPanel1_->emission_[2][1], epsilon3);
     }
 
 
     void testExpectedWsaf(){
-        this->updateSingleHapPanel_->segmentStartIndex_ = 0;
-        this->updateSingleHapPanel_->nLoci_ = 7;
-        this->updateSingleHapPanel_->strainIndex_ = 1;
-        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.45, this->updateSingleHapPanel_->expectedWsaf0_[0] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.15, this->updateSingleHapPanel_->expectedWsaf0_[1] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.6, this->updateSingleHapPanel_->expectedWsaf0_[2] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.45, this->updateSingleHapPanel_->expectedWsaf0_[3] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.3, this->updateSingleHapPanel_->expectedWsaf0_[4] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.55, this->updateSingleHapPanel_->expectedWsaf0_[5] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.3, this->updateSingleHapPanel_->expectedWsaf0_[6] , epsilon3);
-        CPPUNIT_ASSERT_EQUAL ( this->updateSingleHapPanel_->nLoci_, this->updateSingleHapPanel_->expectedWsaf0_.size() );
+        this->updateSingleHapPanel1_->segmentStartIndex_ = 0;
+        this->updateSingleHapPanel1_->nLoci_ = 7;
+        this->updateSingleHapPanel1_->strainIndex_ = 1;
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.45, this->updateSingleHapPanel1_->expectedWsaf0_[0] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.15, this->updateSingleHapPanel1_->expectedWsaf0_[1] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.6, this->updateSingleHapPanel1_->expectedWsaf0_[2] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.45, this->updateSingleHapPanel1_->expectedWsaf0_[3] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.3, this->updateSingleHapPanel1_->expectedWsaf0_[4] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.55, this->updateSingleHapPanel1_->expectedWsaf0_[5] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.3, this->updateSingleHapPanel1_->expectedWsaf0_[6] , epsilon3);
+        CPPUNIT_ASSERT_EQUAL ( this->updateSingleHapPanel1_->nLoci_, this->updateSingleHapPanel1_->expectedWsaf0_.size() );
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.65, this->updateSingleHapPanel_->expectedWsaf1_[0] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.35, this->updateSingleHapPanel_->expectedWsaf1_[1] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.8, this->updateSingleHapPanel_->expectedWsaf1_[2] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.65, this->updateSingleHapPanel_->expectedWsaf1_[3] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.5, this->updateSingleHapPanel_->expectedWsaf1_[4] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.75, this->updateSingleHapPanel_->expectedWsaf1_[5] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.5, this->updateSingleHapPanel_->expectedWsaf1_[6] , epsilon3);
-        CPPUNIT_ASSERT_EQUAL ( this->updateSingleHapPanel_->nLoci_, this->updateSingleHapPanel_->expectedWsaf1_.size() );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.65, this->updateSingleHapPanel1_->expectedWsaf1_[0] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.35, this->updateSingleHapPanel1_->expectedWsaf1_[1] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.8, this->updateSingleHapPanel1_->expectedWsaf1_[2] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.65, this->updateSingleHapPanel1_->expectedWsaf1_[3] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.5, this->updateSingleHapPanel1_->expectedWsaf1_[4] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.75, this->updateSingleHapPanel1_->expectedWsaf1_[5] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.5, this->updateSingleHapPanel1_->expectedWsaf1_[6] , epsilon3);
+        CPPUNIT_ASSERT_EQUAL ( this->updateSingleHapPanel1_->nLoci_, this->updateSingleHapPanel1_->expectedWsaf1_.size() );
 
-        this->updateSingleHapPanel_->strainIndex_ = 3;
-        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.50, this->updateSingleHapPanel_->expectedWsaf0_[0] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.20, this->updateSingleHapPanel_->expectedWsaf0_[1] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.45, this->updateSingleHapPanel_->expectedWsaf0_[2] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.45, this->updateSingleHapPanel_->expectedWsaf0_[3] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.3, this->updateSingleHapPanel_->expectedWsaf0_[4] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.75, this->updateSingleHapPanel_->expectedWsaf0_[5] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.3, this->updateSingleHapPanel_->expectedWsaf0_[6] , epsilon3);
-        CPPUNIT_ASSERT_EQUAL ( this->updateSingleHapPanel_->nLoci_, this->updateSingleHapPanel_->expectedWsaf0_.size() );
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.65, this->updateSingleHapPanel_->expectedWsaf1_[0] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.35, this->updateSingleHapPanel_->expectedWsaf1_[1] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.60, this->updateSingleHapPanel_->expectedWsaf1_[2] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.60, this->updateSingleHapPanel_->expectedWsaf1_[3] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.45, this->updateSingleHapPanel_->expectedWsaf1_[4] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.90, this->updateSingleHapPanel_->expectedWsaf1_[5] , epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.45, this->updateSingleHapPanel_->expectedWsaf1_[6] , epsilon3);
-        CPPUNIT_ASSERT_EQUAL ( this->updateSingleHapPanel_->nLoci_, this->updateSingleHapPanel_->expectedWsaf1_.size() );
+        this->updateSingleHapPanel1_->strainIndex_ = 3;
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.50, this->updateSingleHapPanel1_->expectedWsaf0_[0] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.20, this->updateSingleHapPanel1_->expectedWsaf0_[1] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.45, this->updateSingleHapPanel1_->expectedWsaf0_[2] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.45, this->updateSingleHapPanel1_->expectedWsaf0_[3] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.3, this->updateSingleHapPanel1_->expectedWsaf0_[4] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.75, this->updateSingleHapPanel1_->expectedWsaf0_[5] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.3, this->updateSingleHapPanel1_->expectedWsaf0_[6] , epsilon3);
+        CPPUNIT_ASSERT_EQUAL ( this->updateSingleHapPanel1_->nLoci_, this->updateSingleHapPanel1_->expectedWsaf0_.size() );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.65, this->updateSingleHapPanel1_->expectedWsaf1_[0] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.35, this->updateSingleHapPanel1_->expectedWsaf1_[1] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.60, this->updateSingleHapPanel1_->expectedWsaf1_[2] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.60, this->updateSingleHapPanel1_->expectedWsaf1_[3] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.45, this->updateSingleHapPanel1_->expectedWsaf1_[4] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.90, this->updateSingleHapPanel1_->expectedWsaf1_[5] , epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.45, this->updateSingleHapPanel1_->expectedWsaf1_[6] , epsilon3);
+        CPPUNIT_ASSERT_EQUAL ( this->updateSingleHapPanel1_->nLoci_, this->updateSingleHapPanel1_->expectedWsaf1_.size() );
 
         this->updateSingleHapPlaf_->segmentStartIndex_ = 1;
         this->updateSingleHapPlaf_->nLoci_ = 5;
@@ -288,11 +319,11 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
 
 
     void testCalcHapLLKs(){
-        this->updateSingleHapPanel_->segmentStartIndex_ = 0;
-        this->updateSingleHapPanel_->nLoci_ = 7;
-        this->updateSingleHapPanel_->strainIndex_ = 1;
-        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
-        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel_->calcHapLLKs (this->refCount_, this->altCount_) );
+        this->updateSingleHapPanel1_->segmentStartIndex_ = 0;
+        this->updateSingleHapPanel1_->nLoci_ = 7;
+        this->updateSingleHapPanel1_->strainIndex_ = 1;
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->calcHapLLKs (this->refCount_, this->altCount_) );
 
         this->updateSingleHapPlaf_->segmentStartIndex_ = 0;
         this->updateSingleHapPlaf_->nLoci_ = 5;
@@ -334,26 +365,26 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
             }
         }
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[0][0])/(double)nRepeat, epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[0][1])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[0][0])/(double)nRepeat, epsilon1);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[0][1])/(double)nRepeat, epsilon1);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[1][0])/(double)nRepeat, epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[1][1])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[1][0])/(double)nRepeat, epsilon1);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[1][1])/(double)nRepeat, epsilon1);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.999, double(counter[2][0])/(double)nRepeat, epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.001, double(counter[2][1])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.999, double(counter[2][0])/(double)nRepeat, epsilon1);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.001, double(counter[2][1])/(double)nRepeat, epsilon1);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.82, double(counter[3][0])/(double)nRepeat, epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.18, double(counter[3][1])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.82, double(counter[3][0])/(double)nRepeat, epsilon1);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.18, double(counter[3][1])/(double)nRepeat, epsilon1);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[4][0])/(double)nRepeat, epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[4][1])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[4][0])/(double)nRepeat, epsilon1);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[4][1])/(double)nRepeat, epsilon1);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[5][0])/(double)nRepeat, epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[5][1])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[5][0])/(double)nRepeat, epsilon1);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[5][1])/(double)nRepeat, epsilon1);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.707, double(counter[6][0])/(double)nRepeat, epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.293, double(counter[6][1])/(double)nRepeat, epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.707, double(counter[6][0])/(double)nRepeat, epsilon1);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.293, double(counter[6][1])/(double)nRepeat, epsilon1);
 
         this->plaf_ = vector < double > (this->updateSingleHapPlaf_->nLoci_, 0.0);
         counter.clear();
@@ -369,8 +400,8 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
             }
         }
         for ( size_t j = 0; j < this->updateSingleHapPlaf_->nLoci_; j++ ){
-            CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[j][0])/(double)nRepeat, epsilon2);
-            CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[j][1])/(double)nRepeat, epsilon2);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[j][0])/(double)nRepeat, epsilon1);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[j][1])/(double)nRepeat, epsilon1);
         }
 
 
@@ -388,15 +419,15 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
             }
         }
         for ( size_t j = 0; j < this->updateSingleHapPlaf_->nLoci_; j++ ){
-            CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[j][0])/(double)nRepeat, epsilon2);
-            CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[j][1])/(double)nRepeat, epsilon2);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, double(counter[j][0])/(double)nRepeat, epsilon1);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, double(counter[j][1])/(double)nRepeat, epsilon1);
         }
 
     }
 
 
     void testUpdateLLK(){
-        CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPanel_->updateLLK() );
+        CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPanel1_->updateLLK() );
 
         this->updateSingleHapPlaf_->segmentStartIndex_ = 0;
         this->updateSingleHapPlaf_->nLoci_ = 7;
@@ -417,6 +448,95 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
                                                                    this->expectedWsaf_,
                                                                    this->proportion_,
                                                                    this->haplotypes_ ) );
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel1_->computeRecombProbs( 15000.0, 10.0, true, 0, false));
+        this->updateSingleHapPanel1_->segmentStartIndex_ = 0;
+        this->updateSingleHapPanel1_->nLoci_ = 7;
+        this->updateSingleHapPanel1_->strainIndex_ = 1;
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->core( this->refCount_,
+                                                                   this->altCount_,
+                                                                   this->plaf_,
+                                                                   this->expectedWsaf_,
+                                                                   this->proportion_,
+                                                                   this->haplotypes_ ) );
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel2_->computeRecombProbs( 15000.0, 10.0, true, 0, false));
+        this->updateSingleHapPanel2_->segmentStartIndex_ = 1;
+        this->updateSingleHapPanel2_->nLoci_ = 5;
+        this->updateSingleHapPanel2_->strainIndex_ = 1;
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel2_->core( this->refCount_,
+                                                                   this->altCount_,
+                                                                   this->plaf_,
+                                                                   this->expectedWsaf_,
+                                                                   this->proportion_,
+                                                                   this->haplotypes_ ) );
+    }
+
+
+    void testCalcFwdProbsNoRecomb(){
+        CPPUNIT_ASSERT_NO_THROW(this->panel1_->computeRecombProbs( 15000.0, 10.0, true, 0, false));
+
+        this->updateSingleHapPanel1_->segmentStartIndex_ = 0;
+        this->updateSingleHapPanel1_->nLoci_ = 7;
+        this->updateSingleHapPanel1_->strainIndex_ = 1;
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->calcHapLLKs (this->refCount_, this->altCount_) );
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->buildEmission ( 0.0 ) );
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->calcFwdProbs() );
+//StrainHap: 1,1,0,0,0,1,0
+//this->refCount_ = vector <double> (  { 100, 10 , 50 , 30 , 100, 7, 50 } );
+//this->altCount_ = vector <double> (  { 2,  100 , 50 , 30 , 5,  70, 30 } );
+    //this->content_.push_back( vector <double> ({0,0,0,1}) );
+    //this->content_.push_back( vector <double> ({0,0,0,1}) );
+    //this->content_.push_back( vector <double> ({0,0,0,1}) );
+    //this->content_.push_back( vector <double> ({0,0,0,1}) );
+    //this->content_.push_back( vector <double> ({0,1,1,0}) );
+    //this->content_.push_back( vector <double> ({0,0,1,0}) );
+    //this->content_.push_back( vector <double> ({0,0,1,0}) );
+        // At the first site, Ref count 100, greater larger than alt, emmision to 0 with prob 1, to 1 with prob 0, thus, first three panel hap are equally likely
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.3333333, this->updateSingleHapPanel1_->fwdProbs_[0][0], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, this->updateSingleHapPanel1_->fwdProbs_[0][3], epsilon2);
+
+        // At the second site, Ref count 10, far less than alt, emmision to 0 with prob 0, to 1 with prob 1
+        // loci at postion [0]-[3], first three haps should all have equal probabilities.
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel1_->fwdProbs_[0][0], this->updateSingleHapPanel1_->fwdProbs_[0][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel1_->fwdProbs_[0][2], this->updateSingleHapPanel1_->fwdProbs_[0][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel1_->fwdProbs_[1][0], this->updateSingleHapPanel1_->fwdProbs_[1][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel1_->fwdProbs_[1][2], this->updateSingleHapPanel1_->fwdProbs_[1][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel1_->fwdProbs_[2][0], this->updateSingleHapPanel1_->fwdProbs_[2][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel1_->fwdProbs_[2][2], this->updateSingleHapPanel1_->fwdProbs_[2][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel1_->fwdProbs_[3][0], this->updateSingleHapPanel1_->fwdProbs_[3][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel1_->fwdProbs_[3][2], this->updateSingleHapPanel1_->fwdProbs_[3][1], epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel1_->fwdProbs_[4][2], this->updateSingleHapPanel1_->fwdProbs_[4][1], epsilon2);
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel2_->computeRecombProbs( 15000.0, 10.0, true, 0, false));
+
+        this->updateSingleHapPanel2_->segmentStartIndex_ = 1;
+        this->updateSingleHapPanel2_->nLoci_ = 5;
+        this->updateSingleHapPanel2_->strainIndex_ = 1;
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel2_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel2_->calcHapLLKs (this->refCount_, this->altCount_) );
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel2_->buildEmission ( 0.0 ) );
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel2_->calcFwdProbs() );
+    //this->content_.push_back( vector <double> ({0,0,0,1}) );
+    //this->content_.push_back( vector <double> ({0,0,0,1}) );
+    //this->content_.push_back( vector <double> ({0,0,0,1}) );
+    //this->content_.push_back( vector <double> ({0,1,1,0}) );
+    //this->content_.push_back( vector <double> ({0,0,1,0}) );
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel2_->fwdProbs_[0][0], this->updateSingleHapPanel2_->fwdProbs_[0][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel2_->fwdProbs_[0][2], this->updateSingleHapPanel2_->fwdProbs_[0][1], epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, this->updateSingleHapPanel2_->fwdProbs_[0][3], epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel2_->fwdProbs_[1][0], this->updateSingleHapPanel2_->fwdProbs_[1][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel2_->fwdProbs_[1][2], this->updateSingleHapPanel2_->fwdProbs_[1][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel2_->fwdProbs_[2][0], this->updateSingleHapPanel2_->fwdProbs_[2][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel2_->fwdProbs_[2][2], this->updateSingleHapPanel2_->fwdProbs_[2][1], epsilon2);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (this->updateSingleHapPanel2_->fwdProbs_[3][2], this->updateSingleHapPanel2_->fwdProbs_[3][1], epsilon2);
+
     }
 
 };
