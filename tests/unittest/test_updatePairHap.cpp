@@ -11,7 +11,7 @@ class TestUpdatePairHap : public CppUnit::TestCase {
     CPPUNIT_TEST ( testExpectedWsaf );
     CPPUNIT_TEST ( testUpdateLLK );
     CPPUNIT_TEST ( testEmissionProb0 );
-    //CPPUNIT_TEST ( testSampleHapIndependently );
+    CPPUNIT_TEST ( testSampleHapIndependently );
     CPPUNIT_TEST ( testCalcFwdProbsNoRecomb );
     CPPUNIT_TEST ( testCore );
 
