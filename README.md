@@ -45,29 +45,29 @@ Tab-delimited plain text for input. First and second columns record chromosome a
 
 #### Text file with reference allele count
 ```
-"CHROM"	"POS"	"PG0390.C"
-"Pf3D7_01_v3"	93157	85
-"Pf3D7_01_v3"	94422	77
-"Pf3D7_01_v3"	94459	90
-"Pf3D7_01_v3"	94487	79
+CHROM	POS	PG0390.C
+Pf3D7_01_v3	93157	85
+Pf3D7_01_v3	94422	77
+Pf3D7_01_v3	94459	90
+Pf3D7_01_v3	94487	79
 ```
 
 #### Text file with alternative allele count
 ```
-"CHROM"	"POS"	"PG0390.C"
-"Pf3D7_01_v3"	93157	0
-"Pf3D7_01_v3"	94422	0
-"Pf3D7_01_v3"	94459	0
-"Pf3D7_01_v3"	94487	0
+CHROM	POS	PG0390.C
+Pf3D7_01_v3	93157	0
+Pf3D7_01_v3	94422	0
+Pf3D7_01_v3	94459	0
+Pf3D7_01_v3	94487	0
 ```
 
 #### Text file with population level alternative allele frequency
 ```
-"CHROM"	"POS"	"PLAF"
-"Pf3D7_01_v3"	93157	0.0190612159917058
-"Pf3D7_01_v3"	94422	0.135502358766423
-"Pf3D7_01_v3"	94459	0.156294363760064
-"Pf3D7_01_v3"	94487	0.143439298925837
+CHROM	POS	PLAF
+Pf3D7_01_v3	93157	0.0190612159917058
+Pf3D7_01_v3	94422	0.135502358766423
+Pf3D7_01_v3	94459	0.156294363760064
+Pf3D7_01_v3	94487	0.143439298925837
 ```
 
 #### Reference panel recorded in CSV format
