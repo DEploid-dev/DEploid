@@ -136,7 +136,7 @@ void PfDeconvIO::writeHap( McmcSample * mcmcSample ){
     size_t siteIndex = 0;
     for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
         for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
-            ofstreamExportHap << chrom_[chromI] << "\t" << position_[chromI][posI] << "\t";
+            ofstreamExportHap << chrom_[chromI] << "\t" << (int)position_[chromI][posI] << "\t";
             for ( size_t ii = 0; ii < mcmcSample->hap[siteIndex].size(); ii++){
                 ofstreamExportHap << mcmcSample->hap[siteIndex][ii];
                 ofstreamExportHap << ((ii < (mcmcSample->hap[siteIndex].size()-1)) ? "\t" : "\n") ;

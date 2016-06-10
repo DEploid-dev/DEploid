@@ -18,6 +18,7 @@ script:
   - make
   - make check
   - ./tests/test_binary.sh
+  - ./tests/testPOS.sh
 
 after_success:
   - coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
