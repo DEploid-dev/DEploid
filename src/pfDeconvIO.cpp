@@ -65,6 +65,9 @@ void PfDeconvIO::init() {
     this->prefix_ = "pf3k-pfDeconv";
     this->kStrain_ = 5;
     this->nMcmcSample_ = 800;
+    this->DoUpdateProp_ = true;
+    this->DoUpdatePair_ = true;
+    this->DoUpdateSingle_ = true;
     this->mcmcBurn_ = 0.5;
     this->mcmcMachineryRate_ = 5;
     this->missCopyProb_ = 0.01;
@@ -210,6 +213,12 @@ void PfDeconvIO::parse (){
             this->forbidCopyFromSame_ = true;
         } else if ( *argv_i == "-rate" ) {
             this->mcmcMachineryRate_ = readNextInput<size_t>() ;
+        } else if ( *argv_i == "-forbidUpdateProp" ) {
+            this->DoUpdateProp_ = false;
+        } else if ( *argv_i == "-forbidUpdateSingle" ) {
+            this->DoUpdateSingle_ = false;
+        } else if ( *argv_i == "-forbidUpdatePair" ) {
+            this->DoUpdatePair_ = false;
         } else if (*argv_i == "-seed"){
             this->random_seed_ = readNextInput<size_t>() ;
             this->seed_set_ = true;
