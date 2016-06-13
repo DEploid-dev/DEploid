@@ -182,9 +182,12 @@ void McmcMachinery::initializeTitre(){
     /*   titre<-rnorm(initial.k, MN_LOG_TITRE, SD_LOG_TITRE); */
     assert( currentTitre_.size() == 0);
     currentTitre_ = vector <double> (this->kStrain_, 0.0);
-    for ( size_t k = 0; k < this->kStrain_; k++){
-        double tmp = (*this->initialTitre_normal_distribution_)((*std_generator_));
-        this->currentTitre_[k] = tmp;
+
+    if ( this->pfDeconvIO_->DoUpdateProp() ){
+        for ( size_t k = 0; k < this->kStrain_; k++){
+            double tmp = (*this->initialTitre_normal_distribution_)((*std_generator_));
+            this->currentTitre_[k] = tmp;
+        }
     }
     assert( currentTitre_.size() == this->kStrain_);
 }
@@ -220,15 +223,12 @@ void McmcMachinery::runMcmcChain( ){
 
 void McmcMachinery::sampleMcmcEvent( ){
     this->eventInt_ = this->mcmcEventRg_->sampleInt(3);
-    if ( this->eventInt_ == 0 ){
+    if ( (this->eventInt_ == 0) && (this->pfDeconvIO_->DoUpdateProp() == true) ){
         this->updateProportion();
-    } else if ( this->eventInt_ == 1 ){
+    } else if ( (this->eventInt_ == 1) && (this->pfDeconvIO_->DoUpdateSingle() == true) ){
         this->updateSingleHap();
-    } else if ( this->eventInt_ == 2 ){
+    } else if ( (this->eventInt_ == 2) && (this->pfDeconvIO_->DoUpdatePair() == true) ){
         this->updatePairHaps();
-    } else {
-        dout << "eventInt = " << this->eventInt_ << endl;
-        throw(" should never reach here!!!");
     }
 
     assert(doutLLK());

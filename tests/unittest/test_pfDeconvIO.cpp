@@ -6,6 +6,7 @@ class TestIO : public CppUnit::TestCase {
 
     CPPUNIT_TEST_SUITE( TestIO );
     CPPUNIT_TEST( testMainConstructor );
+    CPPUNIT_TEST( testInitialization );
     CPPUNIT_TEST( testPrintHelp );
     CPPUNIT_TEST( testNotEnoughArg );
     CPPUNIT_TEST( testWrongType );
@@ -15,18 +16,45 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST( testFlagsConflict );
     CPPUNIT_TEST( testExtractRefAltPlaf );
     CPPUNIT_TEST( testLociNumberUnequal );
+    CPPUNIT_TEST( testForbidMoves );
     CPPUNIT_TEST_SUITE_END();
 
   private:
     PfDeconvIO* input_;
+    double epsilon3;
 
   public:
     void setUp() {
+        this->epsilon3 = 0.000000000001;
         this->input_ = new PfDeconvIO ();
     }
 
     void tearDown() {
         delete input_;
+    }
+
+    void testInitialization(){
+        CPPUNIT_ASSERT_EQUAL( this->input_->seed_set_, false );
+        CPPUNIT_ASSERT_EQUAL( this->input_->exclude_sites_ , false );
+        CPPUNIT_ASSERT( this->input_->excludedMarkers == NULL);
+        CPPUNIT_ASSERT_EQUAL( this->input_->random_seed_, (size_t)0 );
+        CPPUNIT_ASSERT_EQUAL( this->input_->help(), false);
+        CPPUNIT_ASSERT_EQUAL( this->input_->usePanel(), true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->precision_ , (size_t)8);
+        CPPUNIT_ASSERT( this->input_->prefix_ == "pf3k-pfDeconv");
+        CPPUNIT_ASSERT_EQUAL( this->input_->kStrain_ , (size_t)5);
+        CPPUNIT_ASSERT_EQUAL( this->input_->nMcmcSample_ , (size_t)800);
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateProp_ , true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdatePair_ , true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateSingle_ , true);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( this->input_->mcmcBurn_, 0.5, epsilon3);
+        CPPUNIT_ASSERT_EQUAL( this->input_->mcmcMachineryRate_ , (size_t)5);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( this->input_->missCopyProb_ , 0.01, epsilon3);
+        CPPUNIT_ASSERT_EQUAL( this->input_->useConstRecomb_ , false );
+        CPPUNIT_ASSERT_EQUAL( this->input_->forbidCopyFromSame_ , false );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( this->input_->constRecombProb_ , 1.0, epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( this->input_->averageCentimorganDistance_, 15000.0, epsilon3 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( this->input_->Ne_ , 10.0, epsilon3 );
     }
 
     void testMainConstructor() {
@@ -46,9 +74,11 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(11, argv1) );
     }
 
+
     void testPrintHelp(){
         CPPUNIT_ASSERT_NO_THROW ( this->input_->printHelp() );
     }
+
 
     void testNotEnoughArg(){
         char *argv1[] = { "./pfDeconv",
@@ -304,6 +334,36 @@ class TestIO : public CppUnit::TestCase {
         //"Pf3D7_01_v3"	180270	0
         CPPUNIT_ASSERT_EQUAL(0.0, this->input_->altCount_[99]);
     }
+
+
+    void testForbidMoves() {
+        char *argv1[] = { "./pfDeconv",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-o", "tmp1", "-forbidUpdateProp", "-forbidUpdateSingle", "-forbidUpdatePair" };
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(14, argv1) );
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateProp_ , false);
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateSingle_ , false);
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdatePair_ , false);
+
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(13, argv1) );
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateProp_ , false);
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateSingle_ , false);
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdatePair_ , true);
+
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(12, argv1) );
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateProp_ , false);
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateSingle_ , true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdatePair_ , true);
+
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(11, argv1) );
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateProp_ , true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateSingle_ , true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdatePair_ , true);
+    }
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestIO );

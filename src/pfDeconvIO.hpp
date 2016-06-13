@@ -69,6 +69,12 @@ class PfDeconvIO{
     double Ne() const { return this->Ne_; }
     double constRecombProb() const { return this->constRecombProb_; }
     bool useConstRecomb() const { return this->useConstRecomb_; }
+    bool DoUpdateProp() const { return this->DoUpdateProp_; }
+    void setDoUpdateProp ( const bool setTo ){ this->DoUpdateProp_ = setTo; }
+    void setDoUpdateSingle ( const bool setTo ){ this->DoUpdateSingle_ = setTo; }
+    void setDoUpdatePair ( const bool setTo ){ this->DoUpdatePair_ = setTo; }
+    bool DoUpdateSingle() const { return this->DoUpdateSingle_; }
+    bool DoUpdatePair() const { return this->DoUpdatePair_; }
 
     ExcludeMarker* excludedMarkers;
     bool exclude_sites_;
@@ -93,6 +99,9 @@ class PfDeconvIO{
     size_t mcmcMachineryRate_;
     double mcmcBurn_;
 
+    bool DoUpdateProp_;
+    bool DoUpdatePair_;
+    bool DoUpdateSingle_;
 
     vector <string> chrom_;
     vector < size_t > indexOfChromStarts_;
