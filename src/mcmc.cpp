@@ -230,11 +230,7 @@ void McmcMachinery::sampleMcmcEvent( ){
     } else if ( (this->eventInt_ == 2) && (this->pfDeconvIO_->DoUpdatePair() == true) ){
         this->updatePairHaps();
     }
-    //else {
-        //dout << "eventInt = " << this->eventInt_ << endl;
-        //throw(" should never reach here!!!");
-    //}
-//cout<<"reached Here"<<endl;
+
     assert(doutLLK());
 
     if ( currentMcmcIteration_ > this->mcmcThresh_ && currentMcmcIteration_ % this->McmcMachineryRate_ == 0){
