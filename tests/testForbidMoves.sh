@@ -113,3 +113,23 @@ testingStateMent="Update Single: NO"
 test_notFoundStatement
 testingStateMent="Update Pair: NO"
 test_foundStatement
+
+./pfDeconv_dbg -ref tests/testData/refCountForTesting.csv \
+-alt tests/testData/altCountForTesting.csv \
+-plaf tests/testData/plafForTesting.csv \
+-panel tests/testData/panelForTesting.csv \
+-o tmp -initialP 0.1 0.2 0.3 0.4 -k 4 -forbidUpdateProp > tmp.dbg
+
+testingStateMent="       0.1	       0.2	       0.3	       0.4"
+test_foundStatement
+testingStateMent="Initial prob: 0.1 0.2 0.3 0.4"
+test_foundStatement
+
+./pfDeconv_dbg -ref tests/testData/refCountForTesting.csv \
+-alt tests/testData/altCountForTesting.csv \
+-plaf tests/testData/plafForTesting.csv \
+-panel tests/testData/panelForTesting.csv \
+-o tmp -k 4 -forbidUpdateProp > tmp.dbg
+
+testingStateMent="      0.25	      0.25	      0.25	      0.25"
+test_foundStatement
