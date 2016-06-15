@@ -58,6 +58,7 @@ void PfDeconvIO::core(int argc, char *argv[]) {
 void PfDeconvIO::init() {
     this->randomSeedWasSet_ = false;
     this->initialPropWasGiven_ = false;
+    this->initialProp.clear();
     this->exclude_sites_ = false;
     this->excludedMarkers = NULL;
     this->set_seed( 0 );
@@ -247,8 +248,8 @@ void PfDeconvIO::checkInput(){
         throw FileNameMissing ( "Reference panel" );}
     if ( exclude_sites_ && this->excludeFileName_.size() == 0 ){
         throw FileNameMissing ( "Exclude sites" );}
-    if ( abs(sumOfVec(initialProp) - 1.0) > 0.000001 ){
-        throw SumOfPropNotOne ( "" );}
+    if ( this->initialPropWasGiven() && ( abs(sumOfVec(initialProp) - 1.0) > 0.000001 )){
+        throw SumOfPropNotOne ( to_string(sumOfVec(initialProp)) );}
     if ( this->initialPropWasGiven() && kStrain_ != initialProp.size() ){
         throw NumOfPropNotMatchNumStrain(""); }
 }

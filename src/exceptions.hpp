@@ -115,7 +115,7 @@ struct LociNumberUnequal : public InvalidInput{
 
 struct SumOfPropNotOne : public InvalidInput{
   SumOfPropNotOne( string str ):InvalidInput( str ){
-    this->reason = "Sum of initial proportion is not equal to 1! ";
+    this->reason = "Sum of initial proportion is not equal to 1, but equals ";
     throwMsg = this->reason + this->src ;
   }
   ~SumOfPropNotOne() throw() {}

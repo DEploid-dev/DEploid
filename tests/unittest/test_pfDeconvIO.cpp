@@ -17,6 +17,7 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST( testExtractRefAltPlaf );
     CPPUNIT_TEST( testLociNumberUnequal );
     CPPUNIT_TEST( testForbidMoves );
+    CPPUNIT_TEST( testInitialProp );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -73,6 +74,51 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "tests/testData/lab_first100_Panel.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(11, argv1) );
+    }
+
+
+    void testInitialProp() {
+
+        char *argv1[] = { "./pfDeconv",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-initialP", "0.1", "0.2", "0.3", "0.4", "-k", "4" };
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(16, argv1) );
+        CPPUNIT_ASSERT_THROW ( this->input_->core(14, argv1), NumOfPropNotMatchNumStrain );
+
+        char *argv2[] = { "./pfDeconv",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-initialP", "0.1", "0.2", "0.3", "0.3", "0.2"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(15, argv2), SumOfPropNotOne );
+
+        char *argv3[] = { "./pfDeconv",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-initialP", "0.1", "0.2", "0.3", "0.3", "0.02"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(15, argv3), SumOfPropNotOne );
+
+        char *argv4[] = { "./pfDeconv",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-initialP", "-o", "tmp"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(12, argv4), NotEnoughArg );
+
+        char *argv5[] = { "./pfDeconv",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-initialP"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv5), NotEnoughArg );
     }
 
 
