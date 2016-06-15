@@ -104,10 +104,6 @@ void PfDeconvIO::reInit() {
 
 
 void PfDeconvIO::finalize(){
-    if ( this->initialPropWasGiven() ){
-        kStrain_ = initialProp.size();
-    }
-
     if ( !this->randomSeedWasSet_ ){
         this->set_seed( (unsigned)(time(0)) );
     }
@@ -251,6 +247,10 @@ void PfDeconvIO::checkInput(){
         throw FileNameMissing ( "Reference panel" );}
     if ( exclude_sites_ && this->excludeFileName_.size() == 0 ){
         throw FileNameMissing ( "Exclude sites" );}
+    if ( abs(sumOfVec(initialProp) - 1.0) > 0.000001 ){
+        throw SumOfPropNotOne ( "" );}
+    if ( this->initialPropWasGiven() && kStrain_ != initialProp.size() ){
+        throw NumOfPropNotMatchNumStrain(""); }
 }
 
 
@@ -264,19 +264,14 @@ void PfDeconvIO::readInitialProportions(){
     do {
         try {
             double tmp = convert<double>(*argv_i);
-            //cout << "tmp = " << tmp <<endl;
             this->initialProp.push_back(tmp);
-            //cout << "initialProp.size() = "<< initialProp.size() << endl;
         } catch (WrongType e) {
-        //cout <<"reached here"<<endl;
             --argv_i;
             break;
         }
         ++argv_i;
     } while ( argv_i != argv_.end() && (*argv_i)[0] != '-' );
     --argv_i;
-
-    normalizeBySum(initialProp);
 
     return;
 }
