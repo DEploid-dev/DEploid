@@ -34,7 +34,8 @@ class TestIO : public CppUnit::TestCase {
     }
 
     void testInitialization(){
-        CPPUNIT_ASSERT_EQUAL( this->input_->seed_set_, false );
+        CPPUNIT_ASSERT_EQUAL( this->input_->randomSeedWasSet_, false );
+        CPPUNIT_ASSERT_EQUAL( this->input_->initialPropWasGiven_, false );
         CPPUNIT_ASSERT_EQUAL( this->input_->exclude_sites_ , false );
         CPPUNIT_ASSERT( this->input_->excludedMarkers == NULL);
         CPPUNIT_ASSERT_EQUAL( this->input_->random_seed_, (size_t)0 );

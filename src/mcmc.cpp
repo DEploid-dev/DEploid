@@ -164,7 +164,9 @@ void McmcMachinery::initializellk(){
 
 void McmcMachinery::initializeProp( ){
     assert( this->currentProp_.size() == (size_t)0 );
-    this->currentProp_ = this->titre2prop( this->currentTitre_ );
+    this->currentProp_ = ( this->pfDeconvIO_ -> initialPropWasGiven()) ?
+                          this->pfDeconvIO_ ->initialProp:
+                          this->titre2prop( this->currentTitre_ );
 }
 
 

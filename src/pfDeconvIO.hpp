@@ -54,6 +54,7 @@ class PfDeconvIO{
     void printHelp();
     bool help() const { return help_; }
     bool usePanel() const { return usePanel_; }
+    bool initialPropWasGiven() const { return initialPropWasGiven_; }
     string panelFileName_;
 
     // log
@@ -90,7 +91,8 @@ class PfDeconvIO{
     string excludeFileName_;
     string prefix_;
     size_t random_seed_;
-    bool seed_set_;
+    bool randomSeedWasSet_;
+    bool initialPropWasGiven_;
     bool useConstRecomb_;
     bool forbidCopyFromSame_;
     size_t kStrain_;
@@ -103,6 +105,7 @@ class PfDeconvIO{
     bool DoUpdatePair_;
     bool DoUpdateSingle_;
 
+    vector <double> initialProp;
     vector <string> chrom_;
     vector < size_t > indexOfChromStarts_;
     vector < vector < double> > position_;
@@ -147,6 +150,7 @@ class PfDeconvIO{
     void checkInput();
     void finalize();
     void readNextStringto( string &readto );
+    void readInitialProportions();
 
     void set_panel(const bool usePanel) { this->usePanel_ = usePanel; }
     void set_help(const bool help) { this->help_ = help; }
@@ -159,7 +163,6 @@ class PfDeconvIO{
         ++argv_i;
         if (argv_i == argv_.end() || (*argv_i)[0] == '-' ) {
             throw NotEnoughArg (tmpFlag);}
-
         return convert<T>(*argv_i);
     }
 
