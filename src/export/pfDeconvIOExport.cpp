@@ -90,6 +90,13 @@ void PfDeconvIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
     (*writeTo) << setw(20) << " Miss copy prob: "   << this->missCopyProb_ << "\n";
     (*writeTo) << setw(20) << " Avrg Cent Morgan: " << this->averageCentimorganDistance_ << "\n";
     (*writeTo) << setw(20) << " Ne: "               << this->Ne_ << "\n";
+    if ( this->initialPropWasGiven() ){
+        (*writeTo) << setw(20) << " Initial prob: " ;
+        for ( size_t i = 0; i < this->initialProp.size(); i++ ){
+            (*writeTo) << this->initialProp[i]
+                       << ( ( i != (this->kStrain_-1) ) ? " " : "\n" );
+        }
+    }
     (*writeTo) << "\n";
     (*writeTo) << "Output saved to:\n";
     (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";

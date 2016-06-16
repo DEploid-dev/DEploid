@@ -22,6 +22,7 @@
 */
 
 #include "pfDeconvIO.hpp"
+#include "utility.hpp"  // normailize by sum
 #include <cassert>       // assert
 #include <iomanip>      // std::setw
 
@@ -55,7 +56,9 @@ void PfDeconvIO::core(int argc, char *argv[]) {
 
 
 void PfDeconvIO::init() {
-    this->seed_set_ = false;
+    this->randomSeedWasSet_ = false;
+    this->initialPropWasGiven_ = false;
+    this->initialProp.clear();
     this->exclude_sites_ = false;
     this->excludedMarkers = NULL;
     this->set_seed( 0 );
@@ -102,7 +105,7 @@ void PfDeconvIO::reInit() {
 
 
 void PfDeconvIO::finalize(){
-    if ( !this->seed_set_ ){
+    if ( !this->randomSeedWasSet_ ){
         this->set_seed( (unsigned)(time(0)) );
     }
 
@@ -219,10 +222,13 @@ void PfDeconvIO::parse (){
             this->DoUpdateSingle_ = false;
         } else if ( *argv_i == "-forbidUpdatePair" ) {
             this->DoUpdatePair_ = false;
-        } else if (*argv_i == "-seed"){
+        } else if ( *argv_i == "-initialP" ){
+            this->readInitialProportions();
+            this->initialPropWasGiven_ = true;
+        } else if ( *argv_i == "-seed"){
             this->random_seed_ = readNextInput<size_t>() ;
-            this->seed_set_ = true;
-        } else if (*argv_i == "-h" || *argv_i == "-help"){
+            this->randomSeedWasSet_ = true;
+        } else if ( *argv_i == "-h" || *argv_i == "-help"){
             this->set_help(true);
         } else {
             throw ( UnknowArg((*argv_i)) );
@@ -232,24 +238,52 @@ void PfDeconvIO::parse (){
 
 
 void PfDeconvIO::checkInput(){
-    if ( this->refFileName_.size() == 0 )
-        throw FileNameMissing ( "Ref count" );
-    if ( this->altFileName_.size() == 0 )
-        throw FileNameMissing ( "Alt count" );
-    if ( this->plafFileName_.size() == 0 )
-        throw FileNameMissing ( "PLAF" );
-    if ( usePanel() && this->panelFileName_.size() == 0 )
-        throw FileNameMissing ( "Reference panel" );
-    if ( exclude_sites_ && this->excludeFileName_.size() == 0 )
-        throw FileNameMissing ( "Exclude sites" );
+    if ( this->refFileName_.size() == 0 ){
+        throw FileNameMissing ( "Ref count" );}
+    if ( this->altFileName_.size() == 0 ){
+        throw FileNameMissing ( "Alt count" );}
+    if ( this->plafFileName_.size() == 0 ){
+        throw FileNameMissing ( "PLAF" );}
+    if ( usePanel() && this->panelFileName_.size() == 0 ){
+        throw FileNameMissing ( "Reference panel" );}
+    if ( exclude_sites_ && this->excludeFileName_.size() == 0 ){
+        throw FileNameMissing ( "Exclude sites" );}
+    if ( this->initialPropWasGiven() && ( abs(sumOfVec(initialProp) - 1.0) > 0.000001 )){
+        throw SumOfPropNotOne ( to_string(sumOfVec(initialProp)) );}
+    if ( this->initialPropWasGiven() && kStrain_ != initialProp.size() ){
+        throw NumOfPropNotMatchNumStrain(""); }
+}
+
+
+void PfDeconvIO::readInitialProportions(){
+    string tmpFlag = *argv_i;
+    ++argv_i;
+    if (argv_i == argv_.end() || (*argv_i)[0] == '-' ) {
+            throw NotEnoughArg (tmpFlag);
+    }
+
+    do {
+        try {
+            double tmp = convert<double>(*argv_i);
+            this->initialProp.push_back(tmp);
+        } catch (WrongType e) {
+            --argv_i;
+            break;
+        }
+        ++argv_i;
+    } while ( argv_i != argv_.end() && (*argv_i)[0] != '-' );
+    --argv_i;
+
+    return;
 }
 
 
 void PfDeconvIO::readNextStringto( string &readto ){
     string tmpFlag = *argv_i;
     ++argv_i;
-    if (argv_i == argv_.end() || (*argv_i)[0] == '-' )
+    if (argv_i == argv_.end() || (*argv_i)[0] == '-' ){
         throw NotEnoughArg(tmpFlag);
+    }
     readto = *argv_i;
 }
 
@@ -274,6 +308,10 @@ void PfDeconvIO::printHelp(){
     cout << setw(20) << "-nSample INT"        << "  --  " << "Number of MCMC samples."<<endl;
     cout << setw(20) << "-rate INT"           << "  --  " << "MCMC sample rate."<<endl;
     cout << setw(20) << "-noPanel"            << "  --  " << "Use population level allele frequency as prior."<<endl;
+    cout << setw(20) << "-forbidUpdateProp"   << "  --  " << "Forbid MCMC moves to update proportions."<<endl;
+    cout << setw(20) << "-forbidUpdateSingle" << "  --  " << "Forbid MCMC moves to update single haplotype."<<endl;
+    cout << setw(20) << "-forbidUpdatePair"   << "  --  " << "Forbid MCMC moves to update pair haplotypes."<<endl;
+    cout << setw(20) << "-initialP FLT ..."   << "  --  " << "Initialize proportions."<<endl;
     cout << endl;
     cout << "Examples:" << endl;
     cout << endl;
