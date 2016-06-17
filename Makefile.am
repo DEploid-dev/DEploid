@@ -20,7 +20,8 @@ common_src = src/random/fastfunc.cpp \
 			 src/utility.cpp \
 			 src/updateHap.cpp \
 			 src/atMarker.cpp \
-			 src/export/pfDeconvIOExport.cpp
+			 src/export/pfDeconvIOExport.cpp \
+			 src/export/pfDeconvIOExportPosteriorProb.cpp
 
 debug_src = src/debug/mcmcDebug.cpp
 

@@ -185,7 +185,7 @@ void McmcMachinery::initializeTitre(){
     assert( currentTitre_.size() == 0);
     currentTitre_ = vector <double> (this->kStrain_, 0.0);
 
-    if ( this->pfDeconvIO_->DoUpdateProp() ){
+    if ( this->pfDeconvIO_->doUpdateProp() ){
         for ( size_t k = 0; k < this->kStrain_; k++){
             double tmp = (*this->initialTitre_normal_distribution_)((*std_generator_));
             this->currentTitre_[k] = tmp;
@@ -193,6 +193,7 @@ void McmcMachinery::initializeTitre(){
     }
     assert( currentTitre_.size() == this->kStrain_);
 }
+
 
 vector <double> McmcMachinery::titre2prop(vector <double> & tmpTitre){
     vector <double> tmpExpTitre;
@@ -211,8 +212,6 @@ vector <double> McmcMachinery::titre2prop(vector <double> & tmpTitre){
 }
 
 
-
-
 void McmcMachinery::runMcmcChain( ){
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++){
         dout << endl;
@@ -220,16 +219,18 @@ void McmcMachinery::runMcmcChain( ){
         this->sampleMcmcEvent();
     }
     this->mcmcSample_->hap = this->currentHap_;
+
+    this->writeLastFwdProb();
 }
 
 
 void McmcMachinery::sampleMcmcEvent( ){
     this->eventInt_ = this->mcmcEventRg_->sampleInt(3);
-    if ( (this->eventInt_ == 0) && (this->pfDeconvIO_->DoUpdateProp() == true) ){
+    if ( (this->eventInt_ == 0) && (this->pfDeconvIO_->doUpdateProp() == true) ){
         this->updateProportion();
-    } else if ( (this->eventInt_ == 1) && (this->pfDeconvIO_->DoUpdateSingle() == true) ){
+    } else if ( (this->eventInt_ == 1) && (this->pfDeconvIO_->doUpdateSingle() == true) ){
         this->updateSingleHap();
-    } else if ( (this->eventInt_ == 2) && (this->pfDeconvIO_->DoUpdatePair() == true) ){
+    } else if ( (this->eventInt_ == 2) && (this->pfDeconvIO_->doUpdatePair() == true) ){
         this->updatePairHaps();
     }
 

@@ -136,6 +136,7 @@ class McmcMachinery {
 
     void sampleMcmcEvent();
     void recordMcmcMachinery();
+    void writeLastFwdProb();
 
   /* Moves */
     void updateProportion();

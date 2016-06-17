@@ -18,6 +18,7 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST( testLociNumberUnequal );
     CPPUNIT_TEST( testForbidMoves );
     CPPUNIT_TEST( testInitialProp );
+    CPPUNIT_TEST( testExtractPostProbException );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -46,14 +47,15 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT( this->input_->prefix_ == "pf3k-pfDeconv");
         CPPUNIT_ASSERT_EQUAL( this->input_->kStrain_ , (size_t)5);
         CPPUNIT_ASSERT_EQUAL( this->input_->nMcmcSample_ , (size_t)800);
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateProp_ , true);
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdatePair_ , true);
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateSingle_ , true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateProp() , true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdatePair() , true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateSingle() , true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doExportPostProb() , false);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( this->input_->mcmcBurn_, 0.5, epsilon3);
         CPPUNIT_ASSERT_EQUAL( this->input_->mcmcMachineryRate_ , (size_t)5);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( this->input_->missCopyProb_ , 0.01, epsilon3);
-        CPPUNIT_ASSERT_EQUAL( this->input_->useConstRecomb_ , false );
-        CPPUNIT_ASSERT_EQUAL( this->input_->forbidCopyFromSame_ , false );
+        CPPUNIT_ASSERT_EQUAL( this->input_->useConstRecomb() , false );
+        CPPUNIT_ASSERT_EQUAL( this->input_->forbidCopyFromSame() , false );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( this->input_->constRecombProb_ , 1.0, epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( this->input_->averageCentimorganDistance_, 15000.0, epsilon3 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( this->input_->Ne_ , 10.0, epsilon3 );
@@ -391,24 +393,37 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "tests/testData/lab_first100_Panel.txt",
                          "-o", "tmp1", "-forbidUpdateProp", "-forbidUpdateSingle", "-forbidUpdatePair" };
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(14, argv1) );
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateProp_ , false);
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateSingle_ , false);
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdatePair_ , false);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateProp(), false);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateSingle(), false);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdatePair(), false);
 
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(13, argv1) );
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateProp_ , false);
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateSingle_ , false);
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdatePair_ , true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateProp(), false);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateSingle(), false);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdatePair(), true);
 
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(12, argv1) );
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateProp_ , false);
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateSingle_ , true);
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdatePair_ , true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateProp(), false);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateSingle(), true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdatePair(), true);
 
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(11, argv1) );
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateProp_ , true);
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdateSingle_ , true);
-        CPPUNIT_ASSERT_EQUAL( this->input_->DoUpdatePair_ , true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateProp() , true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateSingle() , true);
+        CPPUNIT_ASSERT_EQUAL( this->input_->doUpdatePair() , true);
+    }
+
+    void testExtractPostProbException(){
+        char *argv1[] = { "./pfDeconv",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-o", "tmp1", "-exportPostProb", "-k", "2" };
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(14, argv1) );
+        CPPUNIT_ASSERT_EQUAL( this->input_->doExportPostProb() , true);
+        CPPUNIT_ASSERT_THROW ( this->input_->core(12, argv1), onlyExportPostProbWhenTwoStrains );
+
     }
 
 };

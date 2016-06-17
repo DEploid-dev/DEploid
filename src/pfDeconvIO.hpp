@@ -39,6 +39,8 @@
 using namespace std;
 
 class McmcSample;
+class UpdateSingleHap;
+class UpdatePairHap;
 
 class PfDeconvIO{
 #ifdef UNITTEST
@@ -57,30 +59,19 @@ class PfDeconvIO{
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
     string panelFileName_;
 
-    // log
-    void write (McmcSample * mcmcSample, Panel * panel );
-    void writeRecombProb ( Panel * panel );
-    void writeLLK (McmcSample * mcmcSample);
-    void writeProp (McmcSample * mcmcSample);
-    void writeHap (McmcSample * mcmcSample);
-    void writeLog (McmcSample * mcmcSample, ostream * writeTo );
-
     size_t nLoci() const { return this->nLoci_; }
     double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
     double Ne() const { return this->Ne_; }
     double constRecombProb() const { return this->constRecombProb_; }
     bool useConstRecomb() const { return this->useConstRecomb_; }
-    bool DoUpdateProp() const { return this->DoUpdateProp_; }
-    void setDoUpdateProp ( const bool setTo ){ this->DoUpdateProp_ = setTo; }
-    void setDoUpdateSingle ( const bool setTo ){ this->DoUpdateSingle_ = setTo; }
-    void setDoUpdatePair ( const bool setTo ){ this->DoUpdatePair_ = setTo; }
-    bool DoUpdateSingle() const { return this->DoUpdateSingle_; }
-    bool DoUpdatePair() const { return this->DoUpdatePair_; }
 
     ExcludeMarker* excludedMarkers;
     bool exclude_sites_;
 
     bool forbidCopyFromSame() const { return this->forbidCopyFromSame_; }
+
+    // Log
+    void write (McmcSample * mcmcSample, Panel * panel );
 
   private:
 
@@ -101,9 +92,10 @@ class PfDeconvIO{
     size_t mcmcMachineryRate_;
     double mcmcBurn_;
 
-    bool DoUpdateProp_;
-    bool DoUpdatePair_;
-    bool DoUpdateSingle_;
+    bool doUpdateProp_;
+    bool doUpdatePair_;
+    bool doUpdateSingle_;
+    bool doExportPostProb_;
 
     vector <double> initialProp;
     vector <string> chrom_;
@@ -134,12 +126,16 @@ class PfDeconvIO{
     string strExportProp;
     string strExportLog;
     string strExportRecombProb;
+    string strExportSingleFwdProb0;
+    string strExportSingleFwdProb1;
+    string strExportPairFwdProb;
 
     ofstream ofstreamExportLLK;
     ofstream ofstreamExportHap;
     ofstream ofstreamExportProp;
     ofstream ofstreamExportLog;
     ofstream ofstreamExportRecombProb;
+    ofstream ofstreamExportFwdProb;
     void removeFilesWithSameName();
 
 
@@ -176,6 +172,28 @@ class PfDeconvIO{
         }
         return value;
     }
+
+    // Getters and Setters
+    void setDoUpdateProp ( const bool setTo ){ this->doUpdateProp_ = setTo; }
+    bool doUpdateProp() const { return this->doUpdateProp_; }
+
+    void setDoUpdateSingle ( const bool setTo ){ this->doUpdateSingle_ = setTo; }
+    bool doUpdateSingle() const { return this->doUpdateSingle_; }
+
+    void setDoUpdatePair ( const bool setTo ){ this->doUpdatePair_ = setTo; }
+    bool doUpdatePair() const { return this->doUpdatePair_; }
+
+    void setDoExportPostProb ( const bool setTo ){ this->doExportPostProb_ = setTo; }
+    bool doExportPostProb() const { return this->doExportPostProb_; }
+
+    // log
+    void writeRecombProb ( Panel * panel );
+    void writeLLK (McmcSample * mcmcSample);
+    void writeProp (McmcSample * mcmcSample);
+    void writeHap (McmcSample * mcmcSample);
+    void writeLog (McmcSample * mcmcSample, ostream * writeTo );
+    void writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t chromIndex, size_t strainIndex  );
+    void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
 
 };
 
