@@ -39,6 +39,7 @@
 using namespace std;
 
 class McmcSample;
+class UpdateHap;
 
 class PfDeconvIO{
 #ifdef UNITTEST
@@ -57,30 +58,19 @@ class PfDeconvIO{
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
     string panelFileName_;
 
-    // log
-    void write (McmcSample * mcmcSample, Panel * panel );
-    void writeRecombProb ( Panel * panel );
-    void writeLLK (McmcSample * mcmcSample);
-    void writeProp (McmcSample * mcmcSample);
-    void writeHap (McmcSample * mcmcSample);
-    void writeLog (McmcSample * mcmcSample, ostream * writeTo );
-
     size_t nLoci() const { return this->nLoci_; }
     double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
     double Ne() const { return this->Ne_; }
     double constRecombProb() const { return this->constRecombProb_; }
     bool useConstRecomb() const { return this->useConstRecomb_; }
-    bool DoUpdateProp() const { return this->DoUpdateProp_; }
-    void setDoUpdateProp ( const bool setTo ){ this->DoUpdateProp_ = setTo; }
-    void setDoUpdateSingle ( const bool setTo ){ this->DoUpdateSingle_ = setTo; }
-    void setDoUpdatePair ( const bool setTo ){ this->DoUpdatePair_ = setTo; }
-    bool DoUpdateSingle() const { return this->DoUpdateSingle_; }
-    bool DoUpdatePair() const { return this->DoUpdatePair_; }
 
     ExcludeMarker* excludedMarkers;
     bool exclude_sites_;
 
     bool forbidCopyFromSame() const { return this->forbidCopyFromSame_; }
+
+    // Log
+    void write (McmcSample * mcmcSample, Panel * panel );
 
   private:
 
@@ -134,12 +124,16 @@ class PfDeconvIO{
     string strExportProp;
     string strExportLog;
     string strExportRecombProb;
+    string strExportSingleFwdProb;
+    string strExportPairFwdProb;
 
     ofstream ofstreamExportLLK;
     ofstream ofstreamExportHap;
     ofstream ofstreamExportProp;
     ofstream ofstreamExportLog;
     ofstream ofstreamExportRecombProb;
+    ofstream ofstreamExportSingleFwdProb;
+    ofstream ofstreamExportPairFwdProb;
     void removeFilesWithSameName();
 
 
@@ -177,6 +171,21 @@ class PfDeconvIO{
         return value;
     }
 
+    // Getters and Setters
+    void setDoUpdateProp ( const bool setTo ){ this->DoUpdateProp_ = setTo; }
+    void setDoUpdateSingle ( const bool setTo ){ this->DoUpdateSingle_ = setTo; }
+    void setDoUpdatePair ( const bool setTo ){ this->DoUpdatePair_ = setTo; }
+    bool DoUpdateProp() const { return this->DoUpdateProp_; }
+    bool DoUpdateSingle() const { return this->DoUpdateSingle_; }
+    bool DoUpdatePair() const { return this->DoUpdatePair_; }
+
+    // log
+    void writeRecombProb ( Panel * panel );
+    void writeLLK (McmcSample * mcmcSample);
+    void writeProp (McmcSample * mcmcSample);
+    void writeHap (McmcSample * mcmcSample);
+    void writeLog (McmcSample * mcmcSample, ostream * writeTo );
+    void writeLastPairFwdProb( UpdateHap & updatePair );
 };
 
 #endif
