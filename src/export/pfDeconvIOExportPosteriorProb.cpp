@@ -23,60 +23,106 @@
 
 #include "pfDeconvIO.hpp"
 #include "updateHap.hpp"
+#include "mcmc.hpp"
+
+void McmcMachinery::writeLastFwdProb(){
+    if ( this->pfDeconvIO_ ->doExportPostProb() != true ){
+        return;
+    }
+
+    for ( size_t chromi = 0 ; chromi < this->pfDeconvIO_->indexOfChromStarts_.size(); chromi++ ){
+        size_t start = this->pfDeconvIO_->indexOfChromStarts_[chromi];
+        size_t length = this->pfDeconvIO_->position_[chromi].size();
+
+        UpdateSingleHap updating0( this->pfDeconvIO_->refCount_,
+                                  this->pfDeconvIO_->altCount_,
+                                  this->pfDeconvIO_->plaf_,
+                                  this->currentExpectedWsaf_,
+                                  this->currentProp_, this->currentHap_, this->hapRg_,
+                                  start, length,
+                                  this->panel_, this->pfDeconvIO_->missCopyProb_,
+                                  (size_t)0);
+        updating0.core ( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->pfDeconvIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+        this->pfDeconvIO_->writeLastSingleFwdProb( updating0, chromi, (size_t)0 );
+
+        UpdateSingleHap updating1( this->pfDeconvIO_->refCount_,
+                                  this->pfDeconvIO_->altCount_,
+                                  this->pfDeconvIO_->plaf_,
+                                  this->currentExpectedWsaf_,
+                                  this->currentProp_, this->currentHap_, this->hapRg_,
+                                  start, length,
+                                  this->panel_, this->pfDeconvIO_->missCopyProb_,
+                                  (size_t)1);
+        updating1.core ( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->pfDeconvIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+        this->pfDeconvIO_->writeLastSingleFwdProb( updating1, chromi, (size_t)1 );
+
+        UpdatePairHap updating( this->pfDeconvIO_->refCount_,
+                                this->pfDeconvIO_->altCount_,
+                                this->pfDeconvIO_->plaf_,
+                                this->currentExpectedWsaf_,
+                                this->currentProp_, this->currentHap_, this->hapRg_,
+                                start, length,
+                                this->panel_, this->pfDeconvIO_->missCopyProb_, this->pfDeconvIO_->forbidCopyFromSame(),
+                                (size_t)0,
+                                (size_t)1);
+        updating.core ( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->pfDeconvIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+        this->pfDeconvIO_->writeLastPairFwdProb( updating, chromi );
+    }
+}
 
 
-void PfDeconvIO::writeLastSingFwdProb( UpdateSingleHap & updateSingle, size_t strainIndex, size_t chromIndex ){
-    string strExportProp = (strainIndex == 0) ? strExportSingleFwdProb0 : strExportSingleFwdProb1;
-
-    cout << "starts printing writeLastSingFwdProb " << endl;
-    ofstreamExportProp.open( strExportProp.c_str(), ios::out | ios::app | ios::binary );
+void PfDeconvIO::writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t chromIndex, size_t strainIndex ){
+    string strExportFwdProb = (strainIndex == 0) ? strExportSingleFwdProb0 : strExportSingleFwdProb1;
+    ofstreamExportFwdProb.open( strExportFwdProb.c_str(), ios::out | ios::app | ios::binary );
 
     if ( chromIndex == 0 ){ // Print header
-        ofstreamExportProp << "CHROM" << "\t" << "POS" << "\t";;
+        ofstreamExportFwdProb << "CHROM" << "\t" << "POS" << "\t";;
         for ( size_t ii = 0; ii < updateSingle.fwdProbs_[0].size(); ii++){
-            ofstreamExportProp << (ii+1) ;
-            ofstreamExportProp << ((ii < (updateSingle.fwdProbs_[0].size()-1)) ? "\t" : "\n") ;
+            ofstreamExportFwdProb << (ii+1) ;
+            ofstreamExportFwdProb << ((ii < (updateSingle.fwdProbs_[0].size()-1)) ? "\t" : "\n") ;
         }
     }
 
     size_t siteIndex = 0;
     for ( size_t posI = 0; posI < position_[chromIndex].size(); posI++){
-        ofstreamExportProp << chrom_[chromIndex] << "\t" << (int)position_[chromIndex][posI] << "\t";
+        ofstreamExportFwdProb << chrom_[chromIndex] << "\t" << (int)position_[chromIndex][posI] << "\t";
         for ( size_t ii = 0; ii < updateSingle.fwdProbs_[siteIndex].size(); ii++){
-            ofstreamExportProp << updateSingle.fwdProbs_[siteIndex][ii];
-            ofstreamExportProp << ((ii < (updateSingle.fwdProbs_[siteIndex].size()-1)) ? "\t" : "\n") ;
+            ofstreamExportFwdProb << updateSingle.fwdProbs_[siteIndex][ii];
+            ofstreamExportFwdProb << ((ii < (updateSingle.fwdProbs_[siteIndex].size()-1)) ? "\t" : "\n") ;
         }
         siteIndex++;
     }
 
-    ofstreamExportProp.close();
+    ofstreamExportFwdProb.close();
 }
 
 
-void PfDeconvIO::writeLastPairFwdProb( UpdatePairHap & updatePair ){
+void PfDeconvIO::writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex ){
     cout << "starts printing writeLastPairFwdProb " << endl;
-    //ofstreamExportHap.open( strExportHap.c_str(), ios::out | ios::app | ios::binary );
+    ofstreamExportFwdProb.open( strExportPairFwdProb.c_str(), ios::out | ios::app | ios::binary );
+cout<<"prod = "<<updatePair.fwdProbs_[0].size()*updatePair.fwdProbs_[0][3].size()<<endl;
+    if ( chromIndex == 0 ){ // Print header
+        ofstreamExportFwdProb << "CHROM" << "\t" << "POS" << "\t";;
+        for ( size_t ii = 0; ii < updatePair.fwdProbs_[0].size(); ii++){
+            for ( size_t ij = 0; ij < updatePair.fwdProbs_[0][ii].size(); ij++){
+                ofstreamExportFwdProb << (ii+1) << "X" << (ij+1);
+                ofstreamExportFwdProb << ((((ii+1) * (ij+1)) < (updatePair.fwdProbs_[0].size()*updatePair.fwdProbs_[0][ii].size()))  ? "\t" : "\n") ;
+            }
+        }
+    }
 
-    //// HEADER
-    //ofstreamExportHap << "CHROM" << "\t" << "POS" << "\t";;
-    //for ( size_t ii = 0; ii < kStrain_; ii++){
-        //ofstreamExportHap << "h" << (ii+1) ;
-        //ofstreamExportHap << ((ii < (kStrain_-1)) ? "\t" : "\n") ;
-    //}
+    size_t siteIndex = 0;
+    for ( size_t posI = 0; posI < position_[chromIndex].size(); posI++){
+        ofstreamExportFwdProb << chrom_[chromIndex] << "\t" << (int)position_[chromIndex][posI] << "\t";
+        for ( size_t ii = 0; ii < updatePair.fwdProbs_[siteIndex].size(); ii++){
+            for ( size_t ij = 0; ij < updatePair.fwdProbs_[siteIndex][ii].size(); ij++){
+                ofstreamExportFwdProb << updatePair.fwdProbs_[siteIndex][ii][ij];
+                ofstreamExportFwdProb << ((((ii+1) * (ij+1)) < (updatePair.fwdProbs_[0].size()*updatePair.fwdProbs_[0][ii].size()))  ? "\t" : "\n") ;
+            }
+        }
+        siteIndex++;
+    }
 
-    //size_t siteIndex = 0;
-    //for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
-        //for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
-            //ofstreamExportHap << chrom_[chromI] << "\t" << (int)position_[chromI][posI] << "\t";
-            //for ( size_t ii = 0; ii < mcmcSample->hap[siteIndex].size(); ii++){
-                //ofstreamExportHap << mcmcSample->hap[siteIndex][ii];
-                //ofstreamExportHap << ((ii < (mcmcSample->hap[siteIndex].size()-1)) ? "\t" : "\n") ;
-            //}
-            //siteIndex++;
-        //}
-    //}
-
-    //assert ( siteIndex == mcmcSample->hap.size());
-    //ofstreamExportHap.close();
+    ofstreamExportFwdProb.close();
 }
 

@@ -135,8 +135,7 @@ class PfDeconvIO{
     ofstream ofstreamExportProp;
     ofstream ofstreamExportLog;
     ofstream ofstreamExportRecombProb;
-    ofstream ofstreamExportSingleFwdProb;
-    ofstream ofstreamExportPairFwdProb;
+    ofstream ofstreamExportFwdProb;
     void removeFilesWithSameName();
 
 
@@ -193,8 +192,8 @@ class PfDeconvIO{
     void writeProp (McmcSample * mcmcSample);
     void writeHap (McmcSample * mcmcSample);
     void writeLog (McmcSample * mcmcSample, ostream * writeTo );
-    void writeLastSingFwdProb( UpdateSingleHap & updateSingle, size_t strainIndex, size_t chromIndex  );
-    void writeLastPairFwdProb( UpdatePairHap & updatePair );
+    void writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t chromIndex, size_t strainIndex  );
+    void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
 
 };
 

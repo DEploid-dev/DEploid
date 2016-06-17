@@ -220,36 +220,7 @@ void McmcMachinery::runMcmcChain( ){
     }
     this->mcmcSample_->hap = this->currentHap_;
 
-    if ( this->pfDeconvIO_ ->doExportPostProb() ){
-        for ( size_t chromi = 0 ; chromi < this->pfDeconvIO_->indexOfChromStarts_.size(); chromi++ ){
-            size_t start = this->pfDeconvIO_->indexOfChromStarts_[chromi];
-            size_t length = this->pfDeconvIO_->position_[chromi].size();
-            dout << "   Update Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
-            UpdateSingleHap updating0( this->pfDeconvIO_->refCount_,
-                                      this->pfDeconvIO_->altCount_,
-                                      this->pfDeconvIO_->plaf_,
-                                      this->currentExpectedWsaf_,
-                                      this->currentProp_, this->currentHap_, this->hapRg_,
-                                      start, length,
-                                      this->panel_, this->pfDeconvIO_->missCopyProb_,
-                                      (size_t)0);
-            updating0.core ( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->pfDeconvIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
-            this->pfDeconvIO_->writeLastSingFwdProb( updating0, (size_t)0, chromi );
-
-            UpdateSingleHap updating1( this->pfDeconvIO_->refCount_,
-                                      this->pfDeconvIO_->altCount_,
-                                      this->pfDeconvIO_->plaf_,
-                                      this->currentExpectedWsaf_,
-                                      this->currentProp_, this->currentHap_, this->hapRg_,
-                                      start, length,
-                                      this->panel_, this->pfDeconvIO_->missCopyProb_,
-                                      (size_t)1);
-            updating1.core ( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->pfDeconvIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
-            this->pfDeconvIO_->writeLastSingFwdProb( updating1, (size_t)1, chromi );
-
-        }
-    }
-
+    this->writeLastFwdProb();
 }
 
 
