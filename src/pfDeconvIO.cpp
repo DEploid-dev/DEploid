@@ -159,8 +159,8 @@ void PfDeconvIO::removeFilesWithSameName(){
     strExportProp = this->prefix_ + ".prop";
     strExportLog =  this->prefix_ + ".log";
     strExportRecombProb = this->prefix_ + ".recomb";
-    strExportSingleFwdProb0 = this->prefix_ + ".single0";
-    strExportSingleFwdProb1 = this->prefix_ + ".single1";
+    strExportSingleFwdProb0 = this->prefix_ + ".single1";
+    strExportSingleFwdProb1 = this->prefix_ + ".single2";
     strExportPairFwdProb = this->prefix_ + ".pair";
 
     remove(strExportLLK.c_str());
