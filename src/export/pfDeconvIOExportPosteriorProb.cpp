@@ -98,9 +98,7 @@ void PfDeconvIO::writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t 
 
 
 void PfDeconvIO::writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex ){
-    cout << "starts printing writeLastPairFwdProb " << endl;
     ofstreamExportFwdProb.open( strExportPairFwdProb.c_str(), ios::out | ios::app | ios::binary );
-cout<<"prod = "<<updatePair.fwdProbs_[0].size()*updatePair.fwdProbs_[0][3].size()<<endl;
     if ( chromIndex == 0 ){ // Print header
         ofstreamExportFwdProb << "CHROM" << "\t" << "POS" << "\t";;
         for ( size_t ii = 0; ii < updatePair.fwdProbs_[0].size(); ii++){
