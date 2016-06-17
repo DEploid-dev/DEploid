@@ -25,12 +25,36 @@
 #include "updateHap.hpp"
 
 
-void PfDeconvIO::writeLastSingFwdProb( UpdateSingleHap & updateSingle ){
+void PfDeconvIO::writeLastSingFwdProb( UpdateSingleHap & updateSingle, size_t strainIndex, size_t chromIndex ){
+    string strExportProp = (strainIndex == 0) ? strExportSingleFwdProb0 : strExportSingleFwdProb1;
 
+    cout << "starts printing writeLastSingFwdProb " << endl;
+    ofstreamExportProp.open( strExportProp.c_str(), ios::out | ios::app | ios::binary );
+
+    if ( chromIndex == 0 ){ // Print header
+        ofstreamExportProp << "CHROM" << "\t" << "POS" << "\t";;
+        for ( size_t ii = 0; ii < updateSingle.fwdProbs_[0].size(); ii++){
+            ofstreamExportProp << (ii+1) ;
+            ofstreamExportProp << ((ii < (updateSingle.fwdProbs_[0].size()-1)) ? "\t" : "\n") ;
+        }
+    }
+
+    size_t siteIndex = 0;
+    for ( size_t posI = 0; posI < position_[chromIndex].size(); posI++){
+        ofstreamExportProp << chrom_[chromIndex] << "\t" << (int)position_[chromIndex][posI] << "\t";
+        for ( size_t ii = 0; ii < updateSingle.fwdProbs_[siteIndex].size(); ii++){
+            ofstreamExportProp << updateSingle.fwdProbs_[siteIndex][ii];
+            ofstreamExportProp << ((ii < (updateSingle.fwdProbs_[siteIndex].size()-1)) ? "\t" : "\n") ;
+        }
+        siteIndex++;
+    }
+
+    ofstreamExportProp.close();
 }
 
 
 void PfDeconvIO::writeLastPairFwdProb( UpdatePairHap & updatePair ){
+    cout << "starts printing writeLastPairFwdProb " << endl;
     //ofstreamExportHap.open( strExportHap.c_str(), ios::out | ios::app | ios::binary );
 
     //// HEADER

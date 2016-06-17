@@ -81,9 +81,9 @@ void PfDeconvIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
     (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_ << "\n";
     (*writeTo) << setw(19) << " MCMC sample rate: " << mcmcMachineryRate_ <<"\n";
     (*writeTo) << setw(19) << " Random seed: " << this->random_seed_ << "\n";
-    (*writeTo) << setw(19) << " Update Prop: "   << (this->DoUpdateProp()  ? "YES":"NO") << "\n";
-    (*writeTo) << setw(19) << " Update Single: " << (this->DoUpdateSingle()? "YES":"NO") << "\n";
-    (*writeTo) << setw(19) << " Update Pair: "   << (this->DoUpdatePair()  ? "YES":"NO") << "\n";
+    (*writeTo) << setw(19) << " Update Prop: "   << (this->doUpdateProp()  ? "YES":"NO") << "\n";
+    (*writeTo) << setw(19) << " Update Single: " << (this->doUpdateSingle()? "YES":"NO") << "\n";
+    (*writeTo) << setw(19) << " Update Pair: "   << (this->doUpdatePair()  ? "YES":"NO") << "\n";
     (*writeTo) << "\n";
     (*writeTo) << "Other parameters:"<< "\n";
     if ( forbidCopyFromSame_ ){ (*writeTo) << " Update pair haplotypes move forbid copying from the same strain!!! \n"; }

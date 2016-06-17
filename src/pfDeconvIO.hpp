@@ -39,7 +39,8 @@
 using namespace std;
 
 class McmcSample;
-class UpdateHap;
+class UpdateSingleHap;
+class UpdatePairHap;
 
 class PfDeconvIO{
 #ifdef UNITTEST
@@ -91,9 +92,10 @@ class PfDeconvIO{
     size_t mcmcMachineryRate_;
     double mcmcBurn_;
 
-    bool DoUpdateProp_;
-    bool DoUpdatePair_;
-    bool DoUpdateSingle_;
+    bool doUpdateProp_;
+    bool doUpdatePair_;
+    bool doUpdateSingle_;
+    bool doExportPostProb_;
 
     vector <double> initialProp;
     vector <string> chrom_;
@@ -124,7 +126,8 @@ class PfDeconvIO{
     string strExportProp;
     string strExportLog;
     string strExportRecombProb;
-    string strExportSingleFwdProb;
+    string strExportSingleFwdProb0;
+    string strExportSingleFwdProb1;
     string strExportPairFwdProb;
 
     ofstream ofstreamExportLLK;
@@ -172,12 +175,17 @@ class PfDeconvIO{
     }
 
     // Getters and Setters
-    void setDoUpdateProp ( const bool setTo ){ this->DoUpdateProp_ = setTo; }
-    void setDoUpdateSingle ( const bool setTo ){ this->DoUpdateSingle_ = setTo; }
-    void setDoUpdatePair ( const bool setTo ){ this->DoUpdatePair_ = setTo; }
-    bool DoUpdateProp() const { return this->DoUpdateProp_; }
-    bool DoUpdateSingle() const { return this->DoUpdateSingle_; }
-    bool DoUpdatePair() const { return this->DoUpdatePair_; }
+    void setDoUpdateProp ( const bool setTo ){ this->doUpdateProp_ = setTo; }
+    bool doUpdateProp() const { return this->doUpdateProp_; }
+
+    void setDoUpdateSingle ( const bool setTo ){ this->doUpdateSingle_ = setTo; }
+    bool doUpdateSingle() const { return this->doUpdateSingle_; }
+
+    void setDoUpdatePair ( const bool setTo ){ this->doUpdatePair_ = setTo; }
+    bool doUpdatePair() const { return this->doUpdatePair_; }
+
+    void setDoExportPostProb ( const bool setTo ){ this->doExportPostProb_ = setTo; }
+    bool doExportPostProb() const { return this->doExportPostProb_; }
 
     // log
     void writeRecombProb ( Panel * panel );
@@ -185,7 +193,9 @@ class PfDeconvIO{
     void writeProp (McmcSample * mcmcSample);
     void writeHap (McmcSample * mcmcSample);
     void writeLog (McmcSample * mcmcSample, ostream * writeTo );
-    void writeLastPairFwdProb( UpdateHap & updatePair );
+    void writeLastSingFwdProb( UpdateSingleHap & updateSingle, size_t strainIndex, size_t chromIndex  );
+    void writeLastPairFwdProb( UpdatePairHap & updatePair );
+
 };
 
 #endif

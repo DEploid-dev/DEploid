@@ -68,9 +68,10 @@ void PfDeconvIO::init() {
     this->prefix_ = "pf3k-pfDeconv";
     this->kStrain_ = 5;
     this->nMcmcSample_ = 800;
-    this->DoUpdateProp_ = true;
-    this->DoUpdatePair_ = true;
-    this->DoUpdateSingle_ = true;
+    this->setDoUpdateProp ( true );
+    this->setDoUpdatePair ( true );
+    this->setDoUpdateSingle ( true );
+    this->setDoExportPostProb( false );
     this->mcmcBurn_ = 0.5;
     this->mcmcMachineryRate_ = 5;
     this->missCopyProb_ = 0.01;
@@ -158,12 +159,18 @@ void PfDeconvIO::removeFilesWithSameName(){
     strExportProp = this->prefix_ + ".prop";
     strExportLog =  this->prefix_ + ".log";
     strExportRecombProb = this->prefix_ + ".recomb";
+    strExportSingleFwdProb0 = this->prefix_ + ".single0";
+    strExportSingleFwdProb1 = this->prefix_ + ".single1";
+    strExportPairFwdProb = this->prefix_ + ".pair";
 
     remove(strExportLLK.c_str());
     remove(strExportHap.c_str());
     remove(strExportProp.c_str());
     remove(strExportLog.c_str());
     remove(strExportRecombProb.c_str());
+    remove(strExportSingleFwdProb0.c_str());
+    remove(strExportSingleFwdProb1.c_str());
+    remove(strExportPairFwdProb.c_str());
 }
 
 
@@ -217,11 +224,13 @@ void PfDeconvIO::parse (){
         } else if ( *argv_i == "-rate" ) {
             this->mcmcMachineryRate_ = readNextInput<size_t>() ;
         } else if ( *argv_i == "-forbidUpdateProp" ) {
-            this->DoUpdateProp_ = false;
+            this->setDoUpdateProp( false );
         } else if ( *argv_i == "-forbidUpdateSingle" ) {
-            this->DoUpdateSingle_ = false;
+            this->setDoUpdateSingle( false );
         } else if ( *argv_i == "-forbidUpdatePair" ) {
-            this->DoUpdatePair_ = false;
+            this->setDoUpdatePair( false );
+        } else if ( *argv_i == "-exportPostProb" ) {
+            this->setDoExportPostProb( true );
         } else if ( *argv_i == "-initialP" ){
             this->readInitialProportions();
             this->initialPropWasGiven_ = true;
@@ -252,6 +261,8 @@ void PfDeconvIO::checkInput(){
         throw SumOfPropNotOne ( to_string(sumOfVec(initialProp)) );}
     if ( this->initialPropWasGiven() && kStrain_ != initialProp.size() ){
         throw NumOfPropNotMatchNumStrain(""); }
+    if ( kStrain_ != 2 && this->doExportPostProb() ){
+        throw onlyExportPostProbWhenTwoStrains( to_string (kStrain_ ));}
 }
 
 

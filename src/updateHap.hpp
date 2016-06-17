@@ -97,6 +97,7 @@ class UpdateSingleHap : public UpdateHap{
   friend class TestUpdateSingleHap;
 #endif
  friend class McmcMachinery;
+ friend class PfDeconvIO;
   public:
     UpdateSingleHap ();
     UpdateSingleHap( vector <double> &refCount,
