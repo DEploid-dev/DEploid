@@ -96,6 +96,7 @@ class PfDeconvIO{
     bool doUpdatePair_;
     bool doUpdateSingle_;
     bool doExportPostProb_;
+    bool doExportSwitchMissCopy_;
 
     vector <double> initialProp;
     vector <string> chrom_;
@@ -129,7 +130,14 @@ class PfDeconvIO{
     string strExportSingleFwdProb0;
     string strExportSingleFwdProb1;
     string strExportPairFwdProb;
+    string strExportOneSwitchOne;
+    string strExportOneMissCopyOne;
+    string strExportTwoSwitchOne;
+    string strExportTwoSwitchTwo;
+    string strExportTwoMissCopyOne;
+    string strExportTwoMissCopyTwo;
 
+    ofstream ofstreamExportTmp;
     ofstream ofstreamExportLLK;
     ofstream ofstreamExportHap;
     ofstream ofstreamExportProp;
@@ -185,6 +193,9 @@ class PfDeconvIO{
 
     void setDoExportPostProb ( const bool setTo ){ this->doExportPostProb_ = setTo; }
     bool doExportPostProb() const { return this->doExportPostProb_; }
+
+    void setDoExportSwitchMissCopy ( const bool setTo ){ this->doExportSwitchMissCopy_ = setTo; }
+    bool doExportSwitchMissCopy() const { return this->doExportSwitchMissCopy_; }
 
     // log
     void writeRecombProb ( Panel * panel );

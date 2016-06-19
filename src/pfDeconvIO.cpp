@@ -72,6 +72,7 @@ void PfDeconvIO::init() {
     this->setDoUpdatePair ( true );
     this->setDoUpdateSingle ( true );
     this->setDoExportPostProb( false );
+    this->setDoExportSwitchMissCopy ( true );
     this->mcmcBurn_ = 0.5;
     this->mcmcMachineryRate_ = 5;
     this->missCopyProb_ = 0.01;
@@ -163,6 +164,14 @@ void PfDeconvIO::removeFilesWithSameName(){
     strExportSingleFwdProb1 = this->prefix_ + ".single2";
     strExportPairFwdProb = this->prefix_ + ".pair";
 
+    strExportOneSwitchOne   = this->prefix_ + ".oneSwitchOne";
+    strExportOneMissCopyOne = this->prefix_ + ".oneMissCopyOne";
+    strExportTwoSwitchOne   = this->prefix_ + ".twoSwitchOne";
+    strExportTwoMissCopyOne = this->prefix_ + ".twoMissCopyOne";
+    strExportTwoSwitchTwo   = this->prefix_ + ".twoSwitchTwo";
+    strExportTwoMissCopyTwo = this->prefix_ + ".twoMissCopyTwo";
+
+
     remove(strExportLLK.c_str());
     remove(strExportHap.c_str());
     remove(strExportProp.c_str());
@@ -171,6 +180,13 @@ void PfDeconvIO::removeFilesWithSameName(){
     remove(strExportSingleFwdProb0.c_str());
     remove(strExportSingleFwdProb1.c_str());
     remove(strExportPairFwdProb.c_str());
+
+    remove(strExportOneSwitchOne.c_str());
+    remove(strExportOneMissCopyOne.c_str());
+    remove(strExportTwoSwitchOne.c_str());
+    remove(strExportTwoMissCopyOne.c_str());
+    remove(strExportTwoSwitchTwo.c_str());
+    remove(strExportTwoMissCopyTwo.c_str());
 }
 
 
