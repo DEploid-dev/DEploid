@@ -114,6 +114,8 @@ class UpdateSingleHap : public UpdateHap{
     ~UpdateSingleHap();
 
   private:
+    vector <size_t> siteOfOneSwitchOne;
+    vector <size_t> siteOfOneMissCopyOne;
     vector < vector <double> > fwdProbs_;
 
     size_t strainIndex_;
@@ -167,6 +169,10 @@ class UpdatePairHap : public UpdateHap{
     ~UpdatePairHap();
 
   private:
+    vector <size_t> siteOfTwoSwitchOne;
+    vector <size_t> siteOfTwoMissCopyOne;
+    vector <size_t> siteOfTwoSwitchTwo;
+    vector <size_t> siteOfTwoMissCopyTwo;
     vector< vector < vector <double> > > fwdProbs_;
 
     size_t strainIndex1_;

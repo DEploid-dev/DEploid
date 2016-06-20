@@ -136,6 +136,7 @@ class McmcMachinery {
 
     void sampleMcmcEvent();
     void recordMcmcMachinery();
+    bool recordingMcmcBool_;
     void writeLastFwdProb();
 
   /* Moves */
