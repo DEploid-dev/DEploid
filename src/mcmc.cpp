@@ -213,6 +213,11 @@ vector <double> McmcMachinery::titre2prop(vector <double> & tmpTitre){
 
 
 void McmcMachinery::runMcmcChain( ){
+    if ( this->pfDeconvIO_->doExportSwitchMissCopy() ){
+        this->pfDeconvIO_->ofstreamExportOneSwitchOne.open( this->pfDeconvIO_->strExportOneSwitchOne.c_str(), ios::out | ios::app | ios::binary );
+        this->pfDeconvIO_->ofstreamExportOneMissCopyOne.open( this->pfDeconvIO_->strExportOneMissCopyOne.c_str(), ios::out | ios::app | ios::binary );
+    }
+
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++){
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
@@ -221,10 +226,18 @@ void McmcMachinery::runMcmcChain( ){
     this->mcmcSample_->hap = this->currentHap_;
 
     this->writeLastFwdProb();
+
+    if ( this->pfDeconvIO_->doExportSwitchMissCopy() ){
+        this->pfDeconvIO_->ofstreamExportOneSwitchOne.close();
+        this->pfDeconvIO_->ofstreamExportOneMissCopyOne.close();
+    }
+
 }
 
 
 void McmcMachinery::sampleMcmcEvent( ){
+    this->recordingMcmcBool_ = ( currentMcmcIteration_ > this->mcmcThresh_ && currentMcmcIteration_ % this->McmcMachineryRate_ == 0 );
+
     this->eventInt_ = this->mcmcEventRg_->sampleInt(3);
     if ( (this->eventInt_ == 0) && (this->pfDeconvIO_->doUpdateProp() == true) ){
         this->updateProportion();
@@ -236,7 +249,7 @@ void McmcMachinery::sampleMcmcEvent( ){
 
     assert(doutLLK());
 
-    if ( currentMcmcIteration_ > this->mcmcThresh_ && currentMcmcIteration_ % this->McmcMachineryRate_ == 0){
+    if ( this->recordingMcmcBool_ ){
         this->recordMcmcMachinery();
     }
 }
@@ -349,17 +362,13 @@ void McmcMachinery::updateSingleHap(){
         }
 
         if ( this->pfDeconvIO_->doExportSwitchMissCopy() ){
-            this->pfDeconvIO_->ofstreamExportTmp.open( this->pfDeconvIO_->strExportOneSwitchOne.c_str(), ios::out | ios::app | ios::binary );
             for ( size_t i = 0; i < updating.siteOfOneSwitchOne.size(); i++ ){
-                this->pfDeconvIO_->ofstreamExportTmp << this->pfDeconvIO_->chrom_[chromi] << "\t" << this->pfDeconvIO_->position_[chromi][i] << endl;
+                this->pfDeconvIO_->ofstreamExportOneSwitchOne << this->pfDeconvIO_->chrom_[chromi] << "\t" << this->pfDeconvIO_->position_[chromi][updating.siteOfOneSwitchOne[i]] << endl;
             }
-            this->pfDeconvIO_->ofstreamExportTmp.close();
 
-            this->pfDeconvIO_->ofstreamExportTmp.open( this->pfDeconvIO_->strExportOneMissCopyOne.c_str(), ios::out | ios::app | ios::binary );
             for ( size_t i = 0; i < updating.siteOfOneMissCopyOne.size(); i++ ){
-                this->pfDeconvIO_->ofstreamExportTmp << this->pfDeconvIO_->chrom_[chromi] << "\t" << this->pfDeconvIO_->position_[chromi][i] << endl;
+                this->pfDeconvIO_->ofstreamExportOneMissCopyOne << this->pfDeconvIO_->chrom_[chromi] << "\t" << this->pfDeconvIO_->position_[chromi][updating.siteOfOneMissCopyOne[i]] << endl;
             }
-            this->pfDeconvIO_->ofstreamExportTmp.close();
         }
     }
 
@@ -398,25 +407,25 @@ void McmcMachinery::updatePairHaps(){
         if ( this->pfDeconvIO_->doExportSwitchMissCopy() ){
             this->pfDeconvIO_->ofstreamExportTmp.open( this->pfDeconvIO_->strExportTwoSwitchOne.c_str(), ios::out | ios::app | ios::binary );
             for ( size_t i = 0; i < updating.siteOfTwoSwitchOne.size(); i++ ){
-                this->pfDeconvIO_->ofstreamExportTmp << this->pfDeconvIO_->chrom_[chromi] << "\t" << this->pfDeconvIO_->position_[chromi][i] << endl;
+                this->pfDeconvIO_->ofstreamExportTmp << this->pfDeconvIO_->chrom_[chromi] << "\t" << this->pfDeconvIO_->position_[chromi][updating.siteOfTwoSwitchOne[i]] << endl;
             }
             this->pfDeconvIO_->ofstreamExportTmp.close();
 
             this->pfDeconvIO_->ofstreamExportTmp.open( this->pfDeconvIO_->strExportTwoMissCopyOne.c_str(), ios::out | ios::app | ios::binary );
             for ( size_t i = 0; i < updating.siteOfTwoMissCopyOne.size(); i++ ){
-                this->pfDeconvIO_->ofstreamExportTmp << this->pfDeconvIO_->chrom_[chromi] << "\t" << this->pfDeconvIO_->position_[chromi][i] << endl;
+                this->pfDeconvIO_->ofstreamExportTmp << this->pfDeconvIO_->chrom_[chromi] << "\t" << this->pfDeconvIO_->position_[chromi][updating.siteOfTwoMissCopyOne[i]] << endl;
             }
             this->pfDeconvIO_->ofstreamExportTmp.close();
 
             this->pfDeconvIO_->ofstreamExportTmp.open( this->pfDeconvIO_->strExportTwoSwitchTwo.c_str(), ios::out | ios::app | ios::binary );
             for ( size_t i = 0; i < updating.siteOfTwoSwitchTwo.size(); i++ ){
-                this->pfDeconvIO_->ofstreamExportTmp << this->pfDeconvIO_->chrom_[chromi] << "\t" << this->pfDeconvIO_->position_[chromi][i] << endl;
+                this->pfDeconvIO_->ofstreamExportTmp << this->pfDeconvIO_->chrom_[chromi] << "\t" << this->pfDeconvIO_->position_[chromi][updating.siteOfTwoSwitchTwo[i]] << endl;
             }
             this->pfDeconvIO_->ofstreamExportTmp.close();
 
             this->pfDeconvIO_->ofstreamExportTmp.open( this->pfDeconvIO_->strExportTwoMissCopyTwo.c_str(), ios::out | ios::app | ios::binary );
             for ( size_t i = 0; i < updating.siteOfTwoMissCopyTwo.size(); i++ ){
-                this->pfDeconvIO_->ofstreamExportTmp << this->pfDeconvIO_->chrom_[chromi] << "\t" << this->pfDeconvIO_->position_[chromi][i] << endl;
+                this->pfDeconvIO_->ofstreamExportTmp << this->pfDeconvIO_->chrom_[chromi] << "\t" << this->pfDeconvIO_->position_[chromi][updating.siteOfTwoMissCopyTwo[i]] << endl;
             }
             this->pfDeconvIO_->ofstreamExportTmp.close();
         }

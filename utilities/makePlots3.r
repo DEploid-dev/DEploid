@@ -7,12 +7,13 @@ plot.switchMissCopy.ofCase <- function ( case ) {
 
     par(mfrow = c(length(chromName)/2,2))
     for ( chromI in chromName ){
-        tmpTable = table(obj$V2[which( chromI == obj$V1)])/4800
+        tmpTable = table(obj$V2[which( chromI == obj$V1)])/1600
         index = as.numeric(names(tmpTable))
         myfreq = rep(0, length(which(CHROM == chromI)))
         tmpPOS = POS[which(CHROM == chromI)]
         myfreq[which(tmpPOS %in% index)] = tmpTable
-        barplot(myfreq, ylim=c(0,1))
+#        barplot(myfreq, ylim=c(0,1))
+    barplot(myfreq)
     }
     dev.off()
 }

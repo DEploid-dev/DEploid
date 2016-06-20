@@ -144,6 +144,10 @@ class PfDeconvIO{
     ofstream ofstreamExportLog;
     ofstream ofstreamExportRecombProb;
     ofstream ofstreamExportFwdProb;
+
+    ofstream ofstreamExportOneSwitchOne;
+    ofstream ofstreamExportOneMissCopyOne;
+
     void removeFilesWithSameName();
 
 
