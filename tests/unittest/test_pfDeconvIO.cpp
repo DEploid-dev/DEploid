@@ -18,7 +18,6 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST( testLociNumberUnequal );
     CPPUNIT_TEST( testForbidMoves );
     CPPUNIT_TEST( testInitialProp );
-    CPPUNIT_TEST( testExtractPostProbException );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -411,19 +410,6 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateProp() , true);
         CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateSingle() , true);
         CPPUNIT_ASSERT_EQUAL( this->input_->doUpdatePair() , true);
-    }
-
-    void testExtractPostProbException(){
-        char *argv1[] = { "./pfDeconv",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
-                         "-o", "tmp1", "-exportPostProb", "-k", "2" };
-        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(14, argv1) );
-        CPPUNIT_ASSERT_EQUAL( this->input_->doExportPostProb() , true);
-        CPPUNIT_ASSERT_THROW ( this->input_->core(12, argv1), onlyExportPostProbWhenTwoStrains );
-
     }
 
 };

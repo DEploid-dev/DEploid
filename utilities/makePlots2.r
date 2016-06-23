@@ -20,7 +20,8 @@ args=(commandArgs(TRUE))
 
 prefix = args[1]
 
+plot.postProb.ofCase("single0")
 plot.postProb.ofCase("single1")
 plot.postProb.ofCase("single2")
-plot.postProb.ofCase("pair")
+#plot.postProb.ofCase("pair")
 

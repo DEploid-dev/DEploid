@@ -7,14 +7,17 @@ burn = 2
 plot.switchMissCopy.ofCase <- function ( case ) {
     obj = read.table(paste(prefix, ".",case, sep=""), header=F)
     chromName = levels(obj$V1)
-    png(paste(prefix, ".", case, ".png", sep = ""), width = 3500, height = 2000)
+    png(paste(prefix, ".", case, "Index.png", sep = ""), width = 3500, height = 2000)
 
     par(mfrow = c(length(chromName)/2,2))
     for ( chromI in chromName ){
         tmpTable = table(obj$V2[which( chromI == obj$V1)])/(nMCMC*burn*sampleRate/3)
         index = as.numeric(names(tmpTable))
-        myfreq = rep(0, length(which(CHROM == chromI)))
+#        myfreq = rep(0, length(which(CHROM == chromI)))
+        myfreq = rep(0, 2300)
+
         tmpPOS = POS[which(CHROM == chromI)]
+
         sub.at = which(tmpPOS %in% index)
         assertthat::are_equal(length(sub.at), length(index))
 

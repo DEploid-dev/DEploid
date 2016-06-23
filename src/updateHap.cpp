@@ -189,10 +189,9 @@ void UpdateSingleHap::calcFwdProbs(){
     this->fwdProbs_.push_back(fwd1st);
 
     for ( size_t j = 1; j < this->nLoci_; j++ ){
+        double pRecEachHap = this->panel_->pRecEachHap_[hapIndex];
+        double pNoRec = this->panel_->pNoRec_[hapIndex];
         hapIndex++;
-        size_t previous_site = j-1;
-        double pRecEachHap = this->panel_->pRecEachHap_[previous_site];
-        double pNoRec = this->panel_->pNoRec_[previous_site];
 
         double massFromRec = sumOfVec(fwdProbs_.back()) * pRecEachHap;
         vector <double> fwdTmp (this->nPanel_, 0.0);
@@ -224,10 +223,10 @@ void UpdateSingleHap::samplePaths(){
 
     for ( size_t j = (this->nLoci_ - 1) ; j > 0; j-- ){
         contentIndex--;
-        size_t previous_site = j - 1;
-        double pRecEachHap = this->panel_->pRecEachHap_[previous_site];
-        double pNoRec = this->panel_->pNoRec_[previous_site];
+        double pRecEachHap = this->panel_->pRecEachHap_[contentIndex];
+        double pNoRec = this->panel_->pNoRec_[contentIndex];
 
+        size_t previous_site = j - 1;
         vector <double> previousDist = fwdProbs_[previous_site];
 
         vector <double> weightOfNoRecAndRec ({ previousDist[pathTmp]*pNoRec,
@@ -493,11 +492,10 @@ void UpdatePairHap:: calcFwdProbs( bool forbidCopyFromSame ){
     this->fwdProbs_.push_back(fwd1st);
 
     for ( size_t j = 1; j < this->nLoci_; j++ ){
+        double recRec = this->panel_->pRecRec_[hapIndex];
+        double recNorec = this->panel_->pRecNoRec_[hapIndex];
+        double norecNorec = this->panel_->pNoRecNoRec_[hapIndex];
         hapIndex++;
-        size_t previous_site = j-1;
-        double recRec = this->panel_->pRecRec_[previous_site];
-        double recNorec = this->panel_->pRecNoRec_[previous_site];
-        double norecNorec = this->panel_->pNoRecNoRec_[previous_site];
 
         vector <double> marginalOfRows = this->computeRowMarginalDist( this->fwdProbs_.back() );
         vector <double> marginalOfCols = this->computeColMarginalDist( this->fwdProbs_.back() );
@@ -545,12 +543,11 @@ void UpdatePairHap::samplePaths(){
 
     for ( size_t j = (this->nLoci_ - 1) ; j > 0; j-- ){
         contentIndex--;
+        double recRec = this->panel_->pRecRec_[contentIndex];
+        double recNorec = this->panel_->pRecNoRec_[contentIndex];
+        double norecNorec = this->panel_->pNoRecNoRec_[contentIndex];
+
         size_t previous_site = j - 1;
-
-        double recRec = this->panel_->pRecRec_[previous_site];
-        double recNorec = this->panel_->pRecNoRec_[previous_site];
-        double norecNorec = this->panel_->pNoRecNoRec_[previous_site];
-
         vector < vector < double > > previousDist = fwdProbs_[previous_site];
         double previousProbij =previousDist[rowI][colJ];
 

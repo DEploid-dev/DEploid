@@ -34,28 +34,18 @@ void McmcMachinery::writeLastFwdProb(){
         size_t start = this->pfDeconvIO_->indexOfChromStarts_[chromi];
         size_t length = this->pfDeconvIO_->position_[chromi].size();
 
-        UpdateSingleHap updating0( this->pfDeconvIO_->refCount_,
-                                  this->pfDeconvIO_->altCount_,
-                                  this->pfDeconvIO_->plaf_,
-                                  this->currentExpectedWsaf_,
-                                  this->currentProp_, this->currentHap_, this->hapRg_,
-                                  start, length,
-                                  this->panel_, this->pfDeconvIO_->missCopyProb_,
-                                  (size_t)0);
-        updating0.core ( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->pfDeconvIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
-        this->pfDeconvIO_->writeLastSingleFwdProb( updating0, chromi, (size_t)0 );
-
-        UpdateSingleHap updating1( this->pfDeconvIO_->refCount_,
-                                  this->pfDeconvIO_->altCount_,
-                                  this->pfDeconvIO_->plaf_,
-                                  this->currentExpectedWsaf_,
-                                  this->currentProp_, this->currentHap_, this->hapRg_,
-                                  start, length,
-                                  this->panel_, this->pfDeconvIO_->missCopyProb_,
-                                  (size_t)1);
-        updating1.core ( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->pfDeconvIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
-        this->pfDeconvIO_->writeLastSingleFwdProb( updating1, chromi, (size_t)1 );
-
+        for ( size_t tmpk = 0; tmpk < this->kStrain_; tmpk++ ){
+            UpdateSingleHap updatingSingle( this->pfDeconvIO_->refCount_,
+                                      this->pfDeconvIO_->altCount_,
+                                      this->pfDeconvIO_->plaf_,
+                                      this->currentExpectedWsaf_,
+                                      this->currentProp_, this->currentHap_, this->hapRg_,
+                                      start, length,
+                                      this->panel_, this->pfDeconvIO_->missCopyProb_,
+                                      tmpk);
+            updatingSingle.core ( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->pfDeconvIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+            this->pfDeconvIO_->writeLastSingleFwdProb( updatingSingle, chromi, tmpk );
+        }
         UpdatePairHap updating( this->pfDeconvIO_->refCount_,
                                 this->pfDeconvIO_->altCount_,
                                 this->pfDeconvIO_->plaf_,
@@ -72,7 +62,7 @@ void McmcMachinery::writeLastFwdProb(){
 
 
 void PfDeconvIO::writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t chromIndex, size_t strainIndex ){
-    string strExportFwdProb = (strainIndex == 0) ? strExportSingleFwdProb0 : strExportSingleFwdProb1;
+    string strExportFwdProb = strExportSingleFwdProbPrefix + to_string(strainIndex);
     ofstreamExportFwdProb.open( strExportFwdProb.c_str(), ios::out | ios::app | ios::binary );
 
     if ( chromIndex == 0 ){ // Print header
