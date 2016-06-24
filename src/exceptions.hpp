@@ -131,12 +131,4 @@ struct NumOfPropNotMatchNumStrain : public InvalidInput{
 };
 
 
-struct onlyExportPostProbWhenTwoStrains : public InvalidInput{
-  onlyExportPostProbWhenTwoStrains( string str ):InvalidInput( str ){
-    this->reason = "Only export posterior probabilities when there are two strains, currently: ";
-    throwMsg = this->reason + this->src ;
-  }
-  ~onlyExportPostProbWhenTwoStrains() throw() {}
-};
-
 #endif

@@ -127,9 +127,10 @@ class PfDeconvIO{
     string strExportProp;
     string strExportLog;
     string strExportRecombProb;
-    string strExportSingleFwdProb0;
-    string strExportSingleFwdProb1;
+
+    string strExportSingleFwdProbPrefix;
     string strExportPairFwdProb;
+
     string strExportOneSwitchOne;
     string strExportOneMissCopyOne;
     string strExportTwoSwitchOne;
@@ -144,9 +145,6 @@ class PfDeconvIO{
     ofstream ofstreamExportLog;
     ofstream ofstreamExportRecombProb;
     ofstream ofstreamExportFwdProb;
-
-    ofstream ofstreamExportOneSwitchOne;
-    ofstream ofstreamExportOneMissCopyOne;
 
     void removeFilesWithSameName();
 

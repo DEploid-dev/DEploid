@@ -39,17 +39,17 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-cut -f 1 tmp.single2 | tail -n+2 > tmpCHROM2
-cut -f 2 tmp.single2 | tail -n+2 > tmpPOS2
+cut -f 1 tmp.single0 | tail -n+2 > tmpCHROM0
+cut -f 2 tmp.single0 | tail -n+2 > tmpPOS0
 
-diff trueCHROM tmpCHROM2
+diff trueCHROM tmpCHROM0
 if [ $? -ne 0 ]; then
   echo ""
   echo "CHROM unequal"
   exit 1
 fi
 
-diff truePOS tmpPOS2
+diff truePOS tmpPOS0
 if [ $? -ne 0 ]; then
   echo ""
   echo "POS unequal"

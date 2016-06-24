@@ -160,9 +160,6 @@ void PfDeconvIO::removeFilesWithSameName(){
     strExportProp = this->prefix_ + ".prop";
     strExportLog =  this->prefix_ + ".log";
     strExportRecombProb = this->prefix_ + ".recomb";
-    strExportSingleFwdProb0 = this->prefix_ + ".single1";
-    strExportSingleFwdProb1 = this->prefix_ + ".single2";
-    strExportPairFwdProb = this->prefix_ + ".pair";
 
     strExportOneSwitchOne   = this->prefix_ + ".oneSwitchOne";
     strExportOneMissCopyOne = this->prefix_ + ".oneMissCopyOne";
@@ -177,9 +174,6 @@ void PfDeconvIO::removeFilesWithSameName(){
     remove(strExportProp.c_str());
     remove(strExportLog.c_str());
     remove(strExportRecombProb.c_str());
-    remove(strExportSingleFwdProb0.c_str());
-    remove(strExportSingleFwdProb1.c_str());
-    remove(strExportPairFwdProb.c_str());
 
     remove(strExportOneSwitchOne.c_str());
     remove(strExportOneMissCopyOne.c_str());
@@ -187,6 +181,16 @@ void PfDeconvIO::removeFilesWithSameName(){
     remove(strExportTwoMissCopyOne.c_str());
     remove(strExportTwoSwitchTwo.c_str());
     remove(strExportTwoMissCopyTwo.c_str());
+
+    strExportSingleFwdProbPrefix = this->prefix_ + ".single";
+    for ( size_t i = 0; i < this->kStrain_ ; i++ ){
+        string tmpStrExportSingleFwdProb = strExportSingleFwdProbPrefix + to_string(i);
+        remove(tmpStrExportSingleFwdProb.c_str());
+    }
+
+    strExportPairFwdProb = this->prefix_ + ".pair";
+    remove(strExportPairFwdProb.c_str());
+
 }
 
 
@@ -277,8 +281,6 @@ void PfDeconvIO::checkInput(){
         throw SumOfPropNotOne ( to_string(sumOfVec(initialProp)) );}
     if ( this->initialPropWasGiven() && kStrain_ != initialProp.size() ){
         throw NumOfPropNotMatchNumStrain(""); }
-    if ( kStrain_ != 2 && this->doExportPostProb() ){
-        throw onlyExportPostProbWhenTwoStrains( to_string (kStrain_ ));}
 }
 
 
