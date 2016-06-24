@@ -174,7 +174,7 @@ CHROMname = levels(ChromInclude)
 
 for ( chromI in CHROMname ){
     chromIndex = which (ChromInclude == chromI)
-    plot(obsWSAFInclude[chromIndex], col="red")
+    plot(obsWSAFInclude[chromIndex], col="red", ylim=c(0,1))
     points(expWSAFInclude, col="blue")
     print(chromI)
 }
