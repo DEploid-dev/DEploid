@@ -85,7 +85,15 @@ plot.wsaf <- function (obsWSAF, expWSAF, logFileName){
 }
 
 args=(commandArgs(TRUE))
+
+#ref=../PG0398-C_ref.txt
+#alt=../PG0398-C_alt.txt
+#plaf=../labStrains_PLAF.txt
+#panel=../labStrainsPanelFinal.csv
+#exludeAt=../labStrainsExclude.csv
+#args=c("PG0389-C_seed1", "../PG0398-C_ref.txt", "../PG0398-C_alt.txt", "../labStrains_PLAF.txt", "../labStrainsExclude.csv")
 print(args)
+
 
 prefix = args[1]
 refFile = args[2]
@@ -115,6 +123,7 @@ if ( length(args) == 5 ){
     exclude.alt = alt.full[excludeindex,3]
 
     plaf = read.table(plafFile, header = T)[includeindex,3]
+
 } else {
     ref = ref.full[,3]
     alt = alt.full[,3]
@@ -131,6 +140,7 @@ llkTable = read.table( llkFileName, header=F)
 
 # plotting
 unlink ( paste( prefix, "*.png", sep= ""))
+
 png(paste( prefix, ".png", sep= ""), width = 1500, height = 1000)
 par (mfrow = c(2,3))
 
@@ -147,3 +157,26 @@ plot.llk( llkTable, ref, alt, expWSAF, logFileName)
 
 dev.off()
 
+
+
+png(paste( prefix, ".wsaf.png", sep= ""), width = 3500, height = 2000)
+par (mfrow = c(7,2))
+
+obsWSAFInclude = obsWSAF
+
+if ( length(args) == 5 ){
+    ChromInclude = ref.full$CHROM[includeindex]
+    POSInclude = ref.full$POS[includeindex]
+    expWSAFInclude = expWSAF[]
+}
+
+CHROMname = levels(ChromInclude)
+
+for ( chromI in CHROMname ){
+    chromIndex = which (ChromInclude == chromI)
+    plot(obsWSAFInclude[chromIndex], col="red")
+    points(expWSAFInclude, col="blue")
+    print(chromI)
+}
+
+dev.off()
