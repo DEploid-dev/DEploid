@@ -72,7 +72,7 @@ void PfDeconvIO::init() {
     this->setDoUpdatePair ( true );
     this->setDoUpdateSingle ( true );
     this->setDoExportPostProb( false );
-    this->setDoExportSwitchMissCopy ( true );
+    this->setDoExportSwitchMissCopy ( false );
     this->mcmcBurn_ = 0.5;
     this->mcmcMachineryRate_ = 5;
     this->missCopyProb_ = 0.01;
