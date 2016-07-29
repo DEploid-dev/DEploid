@@ -1,10 +1,10 @@
 /*
- * pfDeconv is used for deconvoluting Plasmodium falciparum genome from
+ * dEploid is used for deconvoluting Plasmodium falciparum genome from
  * mix-infected patient sample.
  *
  * Copyright (C) 2016, Sha (Joe) Zhu, Jacob Almagro and Prof. Gil McVean
  *
- * This file is part of pfDeconv.
+ * This file is part of dEploid.
  *
  * scrm is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,10 +21,10 @@
 
 */
 
-#include "pfDeconvIO.hpp"
+#include "dEploidIO.hpp"
 #include "mcmc.hpp"
 
-void PfDeconvIO::write( McmcSample * mcmcSample, Panel * panel ){
+void DEploidIO::write( McmcSample * mcmcSample, Panel * panel ){
     this->writeProp( mcmcSample );
     this->writeLLK( mcmcSample );
     this->writeHap( mcmcSample );
@@ -38,7 +38,7 @@ void PfDeconvIO::write( McmcSample * mcmcSample, Panel * panel ){
 }
 
 
-void PfDeconvIO::writeRecombProb ( Panel * panel ){
+void DEploidIO::writeRecombProb ( Panel * panel ){
 
     if ( panel != NULL ){
         ofstreamExportRecombProb.open( strExportRecombProb.c_str(), ios::out | ios::app | ios::binary );
@@ -62,12 +62,12 @@ void PfDeconvIO::writeRecombProb ( Panel * panel ){
 
 
 
-void PfDeconvIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
+void DEploidIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
     (*writeTo) << "#########################################\n";
-    (*writeTo) << "#        pfDeconv "<< setw(10) << VERSION << " log        #\n";
+    (*writeTo) << "#        dEploid "<< setw(10) << VERSION << " log        #\n";
     (*writeTo) << "#########################################\n";
     (*writeTo) << "Program was compiled on: " << compileTime_ << endl;
-    (*writeTo) << "pfDeconv version: " << pfDeconvVersion_ << endl;
+    (*writeTo) << "dEploid version: " << dEploidVersion_ << endl;
     (*writeTo) << "\n";
     (*writeTo) << "Input data: \n";
     (*writeTo) << setw(12) << "Panel: "     << panelFileName_  << "\n";
@@ -112,7 +112,7 @@ void PfDeconvIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
 }
 
 
-void PfDeconvIO::writeProp( McmcSample * mcmcSample){
+void DEploidIO::writeProp( McmcSample * mcmcSample){
     ofstreamExportProp.open( strExportProp.c_str(), ios::out | ios::app | ios::binary );
     for ( size_t i = 0; i < mcmcSample->proportion.size(); i++){
         for ( size_t ii = 0; ii < mcmcSample->proportion[i].size(); ii++){
@@ -124,7 +124,7 @@ void PfDeconvIO::writeProp( McmcSample * mcmcSample){
 }
 
 
-void PfDeconvIO::writeLLK( McmcSample * mcmcSample){
+void DEploidIO::writeLLK( McmcSample * mcmcSample){
     ofstreamExportLLK.open( strExportLLK.c_str(), ios::out | ios::app | ios::binary );
     for ( size_t i = 0; i < mcmcSample->sumLLKs.size(); i++){
         ofstreamExportLLK << mcmcSample->moves[i] << "\t" << mcmcSample->sumLLKs[i] << endl;
@@ -133,7 +133,7 @@ void PfDeconvIO::writeLLK( McmcSample * mcmcSample){
 }
 
 
-void PfDeconvIO::writeHap( McmcSample * mcmcSample ){
+void DEploidIO::writeHap( McmcSample * mcmcSample ){
     ofstreamExportHap.open( strExportHap.c_str(), ios::out | ios::app | ios::binary );
 
     // HEADER

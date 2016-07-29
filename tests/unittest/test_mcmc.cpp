@@ -48,7 +48,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
 
   private:
     McmcSample* mcmcSample_;
-    PfDeconvIO* pfDeconvIO_;
+    DEploidIO* dEploidIO_;
     Panel* panel_;
     McmcMachinery* mcmcMachinery_;
     size_t nRepeat;
@@ -94,9 +94,9 @@ class TestMcmcMachinery: public CppUnit::TestCase {
   public:
     void setUp() {
         mcmcSample_ = new McmcSample();
-        pfDeconvIO_ = new PfDeconvIO();
+        dEploidIO_ = new DEploidIO();
         panel_ = new Panel();
-        mcmcMachinery_ = new McmcMachinery(this->pfDeconvIO_, this->panel_, this->mcmcSample_ );
+        mcmcMachinery_ = new McmcMachinery(this->dEploidIO_, this->panel_, this->mcmcSample_ );
         nRepeat = 1000000;
         epsilon1 = 0.01;
         epsilon2 = 0.001;
@@ -107,13 +107,13 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     void tearDown() {
         delete mcmcMachinery_;
         delete mcmcSample_;
-        delete pfDeconvIO_;
+        delete dEploidIO_;
         delete panel_;
     }
 
 
     void testMainConstructor(){
-        McmcMachinery tmpMcmcMachinery(this->pfDeconvIO_, this->panel_, this->mcmcSample_ );
+        McmcMachinery tmpMcmcMachinery(this->dEploidIO_, this->panel_, this->mcmcSample_ );
     }
 
 
@@ -148,7 +148,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         size_t kStrain = 5;
         size_t constPlaf = 0.3;
         this->mcmcMachinery_->kStrain_ = kStrain;
-        this->pfDeconvIO_->plaf_ = vector <double> (hapLength, constPlaf);
+        this->dEploidIO_->plaf_ = vector <double> (hapLength, constPlaf);
         this->mcmcMachinery_->initializeHap();
         for ( size_t i = 0; i < kStrain ; i++ ){
             CPPUNIT_ASSERT_DOUBLES_EQUAL ( constPlaf, sumOfVec(this->mcmcMachinery_->currentHap_[i])/(double)hapLength, epsilon2 );

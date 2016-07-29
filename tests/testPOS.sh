@@ -1,5 +1,5 @@
 #!/bin/bash
-./pfDeconv -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp -exportPostProb -k 2
+./dEploid -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp -exportPostProb -k 2
 cut -f 1 tmp.hap | tail -n+2 > tmpCHROM
 cut -f 2 tmp.hap | tail -n+2 > tmpPOS
 

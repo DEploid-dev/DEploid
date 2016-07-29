@@ -1,6 +1,6 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "pfDeconvIO.hpp"
+#include "dEploidIO.hpp"
 
 class TestIO : public CppUnit::TestCase {
 
@@ -21,13 +21,13 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE_END();
 
   private:
-    PfDeconvIO* input_;
+    DEploidIO* input_;
     double epsilon3;
 
   public:
     void setUp() {
         this->epsilon3 = 0.000000000001;
-        this->input_ = new PfDeconvIO ();
+        this->input_ = new DEploidIO ();
     }
 
     void tearDown() {
@@ -43,7 +43,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL( this->input_->help(), false);
         CPPUNIT_ASSERT_EQUAL( this->input_->usePanel(), true);
         CPPUNIT_ASSERT_EQUAL( this->input_->precision_ , (size_t)8);
-        CPPUNIT_ASSERT( this->input_->prefix_ == "pf3k-pfDeconv");
+        CPPUNIT_ASSERT( this->input_->prefix_ == "pf3k-dEploid");
         CPPUNIT_ASSERT_EQUAL( this->input_->kStrain_ , (size_t)5);
         CPPUNIT_ASSERT_EQUAL( this->input_->nMcmcSample_ , (size_t)800);
         CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateProp() , true);
@@ -62,13 +62,13 @@ class TestIO : public CppUnit::TestCase {
 
     void testMainConstructor() {
 
-        char *argv[] = { "./pfDeconv" };
+        char *argv[] = { "./dEploid" };
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(1, argv) );
 
         CPPUNIT_ASSERT_EQUAL((size_t)0, input_->argv_.size());
         CPPUNIT_ASSERT_EQUAL( true, input_->help());
 
-        char *argv1[] = { "./pfDeconv",
+        char *argv1[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -80,7 +80,7 @@ class TestIO : public CppUnit::TestCase {
 
     void testInitialProp() {
 
-        char *argv1[] = { "./pfDeconv",
+        char *argv1[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -89,7 +89,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(16, argv1) );
         CPPUNIT_ASSERT_THROW ( this->input_->core(14, argv1), NumOfPropNotMatchNumStrain );
 
-        char *argv2[] = { "./pfDeconv",
+        char *argv2[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -97,7 +97,7 @@ class TestIO : public CppUnit::TestCase {
                          "-initialP", "0.1", "0.2", "0.3", "0.3", "0.2"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(15, argv2), SumOfPropNotOne );
 
-        char *argv3[] = { "./pfDeconv",
+        char *argv3[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -105,7 +105,7 @@ class TestIO : public CppUnit::TestCase {
                          "-initialP", "0.1", "0.2", "0.3", "0.3", "0.02"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(15, argv3), SumOfPropNotOne );
 
-        char *argv4[] = { "./pfDeconv",
+        char *argv4[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -113,7 +113,7 @@ class TestIO : public CppUnit::TestCase {
                          "-initialP", "-o", "tmp"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(12, argv4), NotEnoughArg );
 
-        char *argv5[] = { "./pfDeconv",
+        char *argv5[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -129,7 +129,7 @@ class TestIO : public CppUnit::TestCase {
 
 
     void testNotEnoughArg(){
-        char *argv1[] = { "./pfDeconv",
+        char *argv1[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -137,7 +137,7 @@ class TestIO : public CppUnit::TestCase {
                          "-o" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv1), NotEnoughArg );
 
-        char *argv2[] = { "./pfDeconv",
+        char *argv2[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -145,7 +145,7 @@ class TestIO : public CppUnit::TestCase {
                          "-seed"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv2), NotEnoughArg );
 
-        char *argv3[] = { "./pfDeconv",
+        char *argv3[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -153,7 +153,7 @@ class TestIO : public CppUnit::TestCase {
                          "-p"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv3), NotEnoughArg );
 
-        char *argv4[] = { "./pfDeconv",
+        char *argv4[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -161,28 +161,28 @@ class TestIO : public CppUnit::TestCase {
                          "-k"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv4), NotEnoughArg );
 
-        char *argv5[] = { "./pfDeconv",
+        char *argv5[] = { "./dEploid",
                          "-ref",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
                          "-panel", "tests/testData/lab_first100_Panel.txt" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(8, argv5), NotEnoughArg );
 
-        char *argv6[] = { "./pfDeconv",
+        char *argv6[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
                          "-panel", "tests/testData/lab_first100_Panel.txt" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(8, argv6), NotEnoughArg );
 
-        char *argv7[] = { "./pfDeconv",
+        char *argv7[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf",
                          "-panel", "tests/testData/lab_first100_Panel.txt" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(8, argv7), NotEnoughArg );
 
-        char *argv8[] = { "./pfDeconv",
+        char *argv8[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -192,7 +192,7 @@ class TestIO : public CppUnit::TestCase {
 
 
     void testWrongType(){
-        char *argv2[] = { "./pfDeconv",
+        char *argv2[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -201,7 +201,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv2), NotEnoughArg );
         CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv2), WrongType );
 
-        char *argv3[] = { "./pfDeconv",
+        char *argv3[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -210,7 +210,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv3), NotEnoughArg );
         CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv3), WrongType );
 
-        char *argv4[] = { "./pfDeconv",
+        char *argv4[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -219,7 +219,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv4), NotEnoughArg );
         CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv4), WrongType );
 
-        char *argv5[] = { "./pfDeconv",
+        char *argv5[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -228,7 +228,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv5), NotEnoughArg );
         CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv5), WrongType );
 
-        char *argv6[] = { "./pfDeconv",
+        char *argv6[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -240,7 +240,7 @@ class TestIO : public CppUnit::TestCase {
 
 
     void testFileNameMissing(){
-        char *argv1[] = { "./pfDeconv",
+        char *argv1[] = { "./dEploid",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
                          "-panel", "tests/testData/lab_first100_Panel.txt",
@@ -254,7 +254,7 @@ class TestIO : public CppUnit::TestCase {
             CPPUNIT_ASSERT_EQUAL( string("Ref count file path missing!"), string(e.what()) );
         }
 
-        char *argv2[] = { "./pfDeconv",
+        char *argv2[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
                          "-panel", "tests/testData/lab_first100_Panel.txt",
@@ -268,14 +268,14 @@ class TestIO : public CppUnit::TestCase {
             CPPUNIT_ASSERT_EQUAL( string("Alt count file path missing!"), string(e.what()) );
         }
 
-        char *argv3[] = { "./pfDeconv",
+        char *argv3[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-panel", "tests/testData/lab_first100_Panel.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(9, argv3), FileNameMissing );
 
-        char *argv4[] = { "./pfDeconv",
+        char *argv4[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -285,7 +285,7 @@ class TestIO : public CppUnit::TestCase {
 
 
     void testInvalidInputFile(){
-        char *argv[] = { "./pfDeconv",
+        char *argv[] = { "./dEploid",
                          "-ref", "PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -302,13 +302,13 @@ class TestIO : public CppUnit::TestCase {
 
 
     void testUnknowArg(){
-        char *argv[] = { "./pfDeconv", "-unknow"};
+        char *argv[] = { "./dEploid", "-unknow"};
         CPPUNIT_ASSERT_THROW( this->input_->core(2, argv), UnknowArg );
     }
 
 
     void testFlagsConflict(){
-        char *argv1[] = { "./pfDeconv",
+        char *argv1[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -316,7 +316,7 @@ class TestIO : public CppUnit::TestCase {
                          "-noPanel" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv1), FlagsConflict );
 
-        char *argv2[] = { "./pfDeconv",
+        char *argv2[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -327,14 +327,14 @@ class TestIO : public CppUnit::TestCase {
 
 
     void testLociNumberUnequal(){
-        char *argv1[] = { "./pfDeconv",
+        char *argv1[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_samples_PLAF.txt",
                          "-panel", "tests/testData/lab_first100_Panel.txt" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(9, argv1), LociNumberUnequal );
 
-        char *argv2[] = { "./pfDeconv",
+        char *argv2[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390.C_alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -345,7 +345,7 @@ class TestIO : public CppUnit::TestCase {
 
 
     void testExtractRefAltPlaf(){
-        char *argv1[] = { "./pfDeconv",
+        char *argv1[] = { "./dEploid",
          "-ref", "tests/testData/PG0390_first100ref.txt",
          "-alt", "tests/testData/PG0390_first100alt.txt",
          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
@@ -385,7 +385,7 @@ class TestIO : public CppUnit::TestCase {
 
 
     void testForbidMoves() {
-        char *argv1[] = { "./pfDeconv",
+        char *argv1[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",

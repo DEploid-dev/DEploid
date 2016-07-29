@@ -1,10 +1,10 @@
 /*
- * pfDeconv is used for deconvoluting Plasmodium falciparum genome from
+ * dEploid is used for deconvoluting Plasmodium falciparum genome from
  * mix-infected patient sample.
  *
  * Copyright (C) 2016, Sha (Joe) Zhu, Jacob Almagro and Prof. Gil McVean
  *
- * This file is part of pfDeconv.
+ * This file is part of dEploid.
  *
  * scrm is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,15 +42,15 @@ class McmcSample;
 class UpdateSingleHap;
 class UpdatePairHap;
 
-class PfDeconvIO{
+class DEploidIO{
 #ifdef UNITTEST
  friend class TestIO;
  friend class TestMcmcMachinery;
 #endif
  friend class McmcMachinery;
   public:
-    PfDeconvIO();
-    ~PfDeconvIO ();
+    DEploidIO();
+    ~DEploidIO ();
 
     void core(int argc, char *argv[]);
     void printHelp();
@@ -120,7 +120,7 @@ class PfDeconvIO{
 
 
     // Output stream
-    string pfDeconvVersion_;
+    string dEploidVersion_;
     string compileTime_;
     string strExportLLK;
     string strExportHap;
