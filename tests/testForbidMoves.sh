@@ -19,7 +19,7 @@ function test_notFoundStatement {
 }
 
 # BaseLine
-./pfDeconv_dbg -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp > tmp.dbg
+./dEploid_dbg -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp > tmp.dbg
 
 testingStateMent="update proportion"
 test_foundStatement
@@ -43,7 +43,7 @@ testingStateMent="Update Pair: NO"
 test_notFoundStatement
 
 #Forbid prop
-./pfDeconv_dbg -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp -forbidUpdateProp > tmp.dbg
+./dEploid_dbg -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp -forbidUpdateProp > tmp.dbg
 
 testingStateMent="update proportion"
 test_notFoundStatement
@@ -67,7 +67,7 @@ testingStateMent="Update Pair: NO"
 test_notFoundStatement
 
 #Forbid Single
-./pfDeconv_dbg -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp -forbidUpdateSingle > tmp.dbg
+./dEploid_dbg -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp -forbidUpdateSingle > tmp.dbg
 
 testingStateMent="update proportion"
 test_foundStatement
@@ -91,7 +91,7 @@ testingStateMent="Update Pair: NO"
 test_notFoundStatement
 
 #Forbid Pair
-./pfDeconv_dbg -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp -forbidUpdatePair > tmp.dbg
+./dEploid_dbg -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp -forbidUpdatePair > tmp.dbg
 
 testingStateMent="update proportion"
 test_foundStatement
@@ -114,7 +114,7 @@ test_notFoundStatement
 testingStateMent="Update Pair: NO"
 test_foundStatement
 
-./pfDeconv_dbg -ref tests/testData/refCountForTesting.csv \
+./dEploid_dbg -ref tests/testData/refCountForTesting.csv \
 -alt tests/testData/altCountForTesting.csv \
 -plaf tests/testData/plafForTesting.csv \
 -panel tests/testData/panelForTesting.csv \
@@ -125,7 +125,7 @@ test_foundStatement
 testingStateMent="Initial prob: 0.1 0.2 0.3 0.4"
 test_foundStatement
 
-./pfDeconv_dbg -ref tests/testData/refCountForTesting.csv \
+./dEploid_dbg -ref tests/testData/refCountForTesting.csv \
 -alt tests/testData/altCountForTesting.csv \
 -plaf tests/testData/plafForTesting.csv \
 -panel tests/testData/panelForTesting.csv \
