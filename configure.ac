@@ -1,5 +1,4 @@
-AC_INIT([pfDeconv], esyscmd([sh -c "cat version | tr -d '\n'"]),[https://github.com/mcveanlab/PfDeconv/issues])
-#AC_INIT([hybrid-Lambda],esyscmd([sh -c "cat version | tr -d '\n'"]),[sha.joe.zhu@gmail.com])
+AC_INIT([dEploid], esyscmd([sh -c "cat version | tr -d '\n'"]),[https://github.com/mcveanlab/DEploid/issues])
 
 #AM_INIT_AUTOMAKE([subdir-objects -Wall foreign])
 AM_INIT_AUTOMAKE([1.9 tar-ustar subdir-objects -Wall foreign])

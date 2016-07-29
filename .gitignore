@@ -43,8 +43,8 @@ compile
 test-driver
 
 .dirstamp
-pfDeconv
-pfDeconv_dbg
+dEploid
+dEploid_dbg
 pfdeconv*.tar.gz
 
 # unittest
@@ -59,13 +59,13 @@ html/
 src/haplotype-sampling.cpp
 src/haplotype-sampling.r
 tests/recomb.prob
-pfDeconv_prof
+dEploid_prof
 tmp*
 
 
 # temporary prefix used in experimenting things...
 labStrains/PG0*
-pf3k-pfDeconv.*
+pf3k-dEploid.*
 PG0400.C*
 PG0389.C*
 toy*

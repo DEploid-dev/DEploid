@@ -1,10 +1,10 @@
 /*
- * pfDeconv is used for deconvoluting Plasmodium falciparum genome from
+ * dEploid is used for deconvoluting Plasmodium falciparum genome from
  * mix-infected patient sample.
  *
  * Copyright (C) 2016, Sha (Joe) Zhu, Jacob Almagro and Prof. Gil McVean
  *
- * This file is part of pfDeconv.
+ * This file is part of dEploid.
  *
  * scrm is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,40 +24,40 @@
 #include <iostream> // std::cout
 #include "mcmc.hpp"
 #include "panel.hpp"
-#include "pfDeconvIO.hpp"
+#include "dEploidIO.hpp"
 
 using namespace std;
 
 int main( int argc, char *argv[] ){
     try {
 
-        PfDeconvIO pfDeconvIO;
-        (void)pfDeconvIO.core( argc, argv );
+        PfDeconvIO dEploidIO;
+        (void)dEploidIO.core( argc, argv );
 
-        if ( pfDeconvIO.help() ){
-            pfDeconvIO.printHelp();
+        if ( dEploidIO.help() ){
+            dEploidIO.printHelp();
             return EXIT_SUCCESS;
         }
 
         Panel *panel = NULL;
 
-        if ( pfDeconvIO.usePanel() ){
+        if ( dEploidIO.usePanel() ){
             panel = new Panel();
-            panel->readFromFile(pfDeconvIO.panelFileName_.c_str());
-            if ( pfDeconvIO.exclude_sites_ ){
-                panel->removeMarkers( pfDeconvIO.excludedMarkers );
+            panel->readFromFile(dEploidIO.panelFileName_.c_str());
+            if ( dEploidIO.exclude_sites_ ){
+                panel->removeMarkers( dEploidIO.excludedMarkers );
             }
 
-            panel->computeRecombProbs( pfDeconvIO.averageCentimorganDistance(), pfDeconvIO.Ne(), pfDeconvIO.useConstRecomb(), pfDeconvIO.constRecombProb(), pfDeconvIO.forbidCopyFromSame() );
-            panel->checkForExceptions( pfDeconvIO.nLoci(), pfDeconvIO.panelFileName_ );
+            panel->computeRecombProbs( dEploidIO.averageCentimorganDistance(), dEploidIO.Ne(), dEploidIO.useConstRecomb(), dEploidIO.constRecombProb(), dEploidIO.forbidCopyFromSame() );
+            panel->checkForExceptions( dEploidIO.nLoci(), dEploidIO.panelFileName_ );
         }
 
         McmcSample * mcmcSample = new McmcSample();
 
-        McmcMachinery mcmcMachinery(&pfDeconvIO, panel, mcmcSample);
+        McmcMachinery mcmcMachinery(&dEploidIO, panel, mcmcSample);
         mcmcMachinery.runMcmcChain();
 
-        pfDeconvIO.write(mcmcSample, panel);
+        dEploidIO.write(mcmcSample, panel);
 
         if ( panel ){
             delete panel;

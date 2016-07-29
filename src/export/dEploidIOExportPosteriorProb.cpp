@@ -1,10 +1,10 @@
 /*
- * pfDeconv is used for deconvoluting Plasmodium falciparum genome from
+ * dEploid is used for deconvoluting Plasmodium falciparum genome from
  * mix-infected patient sample.
  *
  * Copyright (C) 2016, Sha (Joe) Zhu, Jacob Almagro and Prof. Gil McVean
  *
- * This file is part of pfDeconv.
+ * This file is part of dEploid.
  *
  * scrm is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,42 +21,42 @@
 
 */
 
-#include "pfDeconvIO.hpp"
+#include "dEploidIO.hpp"
 #include "updateHap.hpp"
 #include "mcmc.hpp"
 
 void McmcMachinery::writeLastFwdProb(){
-    if ( this->pfDeconvIO_ ->doExportPostProb() != true ){
+    if ( this->dEploidIO_ ->doExportPostProb() != true ){
         return;
     }
 
-    for ( size_t chromi = 0 ; chromi < this->pfDeconvIO_->indexOfChromStarts_.size(); chromi++ ){
-        size_t start = this->pfDeconvIO_->indexOfChromStarts_[chromi];
-        size_t length = this->pfDeconvIO_->position_[chromi].size();
+    for ( size_t chromi = 0 ; chromi < this->dEploidIO_->indexOfChromStarts_.size(); chromi++ ){
+        size_t start = this->dEploidIO_->indexOfChromStarts_[chromi];
+        size_t length = this->dEploidIO_->position_[chromi].size();
 
         for ( size_t tmpk = 0; tmpk < this->kStrain_; tmpk++ ){
-            UpdateSingleHap updatingSingle( this->pfDeconvIO_->refCount_,
-                                      this->pfDeconvIO_->altCount_,
-                                      this->pfDeconvIO_->plaf_,
+            UpdateSingleHap updatingSingle( this->dEploidIO_->refCount_,
+                                      this->dEploidIO_->altCount_,
+                                      this->dEploidIO_->plaf_,
                                       this->currentExpectedWsaf_,
                                       this->currentProp_, this->currentHap_, this->hapRg_,
                                       start, length,
-                                      this->panel_, this->pfDeconvIO_->missCopyProb_,
+                                      this->panel_, this->dEploidIO_->missCopyProb_,
                                       tmpk);
-            updatingSingle.core ( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->pfDeconvIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
-            this->pfDeconvIO_->writeLastSingleFwdProb( updatingSingle, chromi, tmpk );
+            updatingSingle.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+            this->dEploidIO_->writeLastSingleFwdProb( updatingSingle, chromi, tmpk );
         }
-        UpdatePairHap updating( this->pfDeconvIO_->refCount_,
-                                this->pfDeconvIO_->altCount_,
-                                this->pfDeconvIO_->plaf_,
+        UpdatePairHap updating( this->dEploidIO_->refCount_,
+                                this->dEploidIO_->altCount_,
+                                this->dEploidIO_->plaf_,
                                 this->currentExpectedWsaf_,
                                 this->currentProp_, this->currentHap_, this->hapRg_,
                                 start, length,
-                                this->panel_, this->pfDeconvIO_->missCopyProb_, this->pfDeconvIO_->forbidCopyFromSame(),
+                                this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->forbidCopyFromSame(),
                                 (size_t)0,
                                 (size_t)1);
-        updating.core ( this->pfDeconvIO_->refCount_, this->pfDeconvIO_->altCount_, this->pfDeconvIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
-        this->pfDeconvIO_->writeLastPairFwdProb( updating, chromi );
+        updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+        this->dEploidIO_->writeLastPairFwdProb( updating, chromi );
     }
 }
 

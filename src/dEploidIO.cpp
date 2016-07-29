@@ -1,10 +1,10 @@
 /*
- * pfDeconv is used for deconvoluting Plasmodium falciparum genome from
+ * dEploid is used for deconvoluting Plasmodium falciparum genome from
  * mix-infected patient sample.
  *
  * Copyright (C) 2016, Sha (Joe) Zhu, Jacob Almagro and Prof. Gil McVean
  *
- * This file is part of pfDeconv.
+ * This file is part of dEploid.
  *
  * scrm is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 */
 
-#include "pfDeconvIO.hpp"
+#include "dEploidIO.hpp"
 #include "utility.hpp"  // normailize by sum
 #include <cassert>       // assert
 #include <iomanip>      // std::setw
@@ -65,7 +65,7 @@ void PfDeconvIO::init() {
     this->set_help(false);
     this->set_panel(true);
     this->precision_ = 8;
-    this->prefix_ = "pf3k-pfDeconv";
+    this->prefix_ = "pf3k-dEploid";
     this->kStrain_ = 5;
     this->nMcmcSample_ = 800;
     this->setDoUpdateProp ( true );
@@ -89,9 +89,9 @@ void PfDeconvIO::init() {
     #endif
 
     #ifdef PFDECONVVERSION
-        pfDeconvVersion_ = PFDECONVVERSION;
+        dEploidVersion_ = PFDECONVVERSION;
     #else
-        pfDeconvVersion_ = "";
+        dEploidVersion_ = "";
     #endif
 }
 
@@ -319,7 +319,7 @@ void PfDeconvIO::readNextStringto( string &readto ){
 
 void PfDeconvIO::printHelp(){
     cout << endl
-         << "pfDeconv " << VERSION
+         << "dEploid " << VERSION
          << endl
          << endl;
     cout << "Usage:"
@@ -344,10 +344,10 @@ void PfDeconvIO::printHelp(){
     cout << endl;
     cout << "Examples:" << endl;
     cout << endl;
-    cout << "./pfDeconv -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -o tmp1" << endl;
-    cout << "./pfDeconv -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
-    cout << "./pfDeconv -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp"<< endl;
-    //cout << "./pfDeconv_dbg -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
-    //cout << "./pfDeconv_dbg -ref labStrains/PG0390.C_ref.txt -alt labStrains/PG0390.C_alt.txt -plaf labStrains/labStrains_samples_PLAF.txt -panel labStrains/clonalPanel.csv -nSample 500 -rate 5" << endl;
-    //cout << "./pfDeconv -ref labStrains/PG0389.C_ref.txt -alt labStrains/PG0389.C_alt.txt -plaf labStrains/labStrains_samples_PLAF.txt -panel labStrains/clonalPanel.csv -exclude labStrains/PG0389.C.exclude.csv" << endl;
+    cout << "./dEploid -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -o tmp1" << endl;
+    cout << "./dEploid -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
+    cout << "./dEploid -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp"<< endl;
+    //cout << "./dEploid_dbg -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
+    //cout << "./dEploid_dbg -ref labStrains/PG0390.C_ref.txt -alt labStrains/PG0390.C_alt.txt -plaf labStrains/labStrains_samples_PLAF.txt -panel labStrains/clonalPanel.csv -nSample 500 -rate 5" << endl;
+    //cout << "./dEploid -ref labStrains/PG0389.C_ref.txt -alt labStrains/PG0389.C_alt.txt -plaf labStrains/labStrains_samples_PLAF.txt -panel labStrains/clonalPanel.csv -exclude labStrains/PG0389.C.exclude.csv" << endl;
 }

@@ -1,10 +1,10 @@
 /*
- * pfDeconv is used for deconvoluting Plasmodium falciparum genome from
+ * dEploid is used for deconvoluting Plasmodium falciparum genome from
  * mix-infected patient sample.
  *
  * Copyright (C) 2016, Sha (Joe) Zhu, Jacob Almagro and Prof. Gil McVean
  *
- * This file is part of pfDeconv.
+ * This file is part of dEploid.
  *
  * scrm is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 */
 
-#include "pfDeconvIO.hpp"
+#include "dEploidIO.hpp"
 #include "mcmc.hpp"
 
 void PfDeconvIO::write( McmcSample * mcmcSample, Panel * panel ){
@@ -64,10 +64,10 @@ void PfDeconvIO::writeRecombProb ( Panel * panel ){
 
 void PfDeconvIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
     (*writeTo) << "#########################################\n";
-    (*writeTo) << "#        pfDeconv "<< setw(10) << VERSION << " log        #\n";
+    (*writeTo) << "#        dEploid "<< setw(10) << VERSION << " log        #\n";
     (*writeTo) << "#########################################\n";
     (*writeTo) << "Program was compiled on: " << compileTime_ << endl;
-    (*writeTo) << "pfDeconv version: " << pfDeconvVersion_ << endl;
+    (*writeTo) << "dEploid version: " << dEploidVersion_ << endl;
     (*writeTo) << "\n";
     (*writeTo) << "Input data: \n";
     (*writeTo) << setw(12) << "Panel: "     << panelFileName_  << "\n";
