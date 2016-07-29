@@ -26,19 +26,19 @@
 #include <cassert>       // assert
 #include <iomanip>      // std::setw
 
-PfDeconvIO::PfDeconvIO(){
+DEploidIO::DEploidIO(){
     this->init();
 }
 
 
-PfDeconvIO::~PfDeconvIO(){
+DEploidIO::~DEploidIO(){
     if ( this->excludedMarkers != NULL ){
         delete this->excludedMarkers;
     }
 }
 
 
-void PfDeconvIO::core(int argc, char *argv[]) {
+void DEploidIO::core(int argc, char *argv[]) {
     argv_ = std::vector<std::string>(argv + 1, argv + argc);
     this->argv_i = argv_.begin();
 
@@ -55,7 +55,7 @@ void PfDeconvIO::core(int argc, char *argv[]) {
 }
 
 
-void PfDeconvIO::init() {
+void DEploidIO::init() {
     this->randomSeedWasSet_ = false;
     this->initialPropWasGiven_ = false;
     this->initialProp.clear();
@@ -96,7 +96,7 @@ void PfDeconvIO::init() {
 }
 
 
-void PfDeconvIO::reInit() {
+void DEploidIO::reInit() {
     this->init();
     this->refFileName_.clear();
     this->altFileName_.clear();
@@ -106,7 +106,7 @@ void PfDeconvIO::reInit() {
 }
 
 
-void PfDeconvIO::finalize(){
+void DEploidIO::finalize(){
     if ( !this->randomSeedWasSet_ ){
         this->set_seed( (unsigned)(time(0)) );
     }
@@ -154,7 +154,7 @@ void PfDeconvIO::finalize(){
 }
 
 
-void PfDeconvIO::removeFilesWithSameName(){
+void DEploidIO::removeFilesWithSameName(){
     strExportLLK = this->prefix_ + ".llk";
     strExportHap = this->prefix_ + ".hap";
     strExportProp = this->prefix_ + ".prop";
@@ -194,7 +194,7 @@ void PfDeconvIO::removeFilesWithSameName(){
 }
 
 
-void PfDeconvIO::parse (){
+void DEploidIO::parse (){
     do {
         if (*argv_i == "-ref") {
             this->readNextStringto ( this->refFileName_ ) ;
@@ -266,7 +266,7 @@ void PfDeconvIO::parse (){
 }
 
 
-void PfDeconvIO::checkInput(){
+void DEploidIO::checkInput(){
     if ( this->refFileName_.size() == 0 ){
         throw FileNameMissing ( "Ref count" );}
     if ( this->altFileName_.size() == 0 ){
@@ -284,7 +284,7 @@ void PfDeconvIO::checkInput(){
 }
 
 
-void PfDeconvIO::readInitialProportions(){
+void DEploidIO::readInitialProportions(){
     string tmpFlag = *argv_i;
     ++argv_i;
     if (argv_i == argv_.end() || (*argv_i)[0] == '-' ) {
@@ -307,7 +307,7 @@ void PfDeconvIO::readInitialProportions(){
 }
 
 
-void PfDeconvIO::readNextStringto( string &readto ){
+void DEploidIO::readNextStringto( string &readto ){
     string tmpFlag = *argv_i;
     ++argv_i;
     if (argv_i == argv_.end() || (*argv_i)[0] == '-' ){
@@ -317,7 +317,7 @@ void PfDeconvIO::readNextStringto( string &readto ){
 }
 
 
-void PfDeconvIO::printHelp(){
+void DEploidIO::printHelp(){
     cout << endl
          << "dEploid " << VERSION
          << endl

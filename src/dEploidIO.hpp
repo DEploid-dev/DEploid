@@ -42,15 +42,15 @@ class McmcSample;
 class UpdateSingleHap;
 class UpdatePairHap;
 
-class PfDeconvIO{
+class DEploidIO{
 #ifdef UNITTEST
  friend class TestIO;
  friend class TestMcmcMachinery;
 #endif
  friend class McmcMachinery;
   public:
-    PfDeconvIO();
-    ~PfDeconvIO ();
+    DEploidIO();
+    ~DEploidIO ();
 
     void core(int argc, char *argv[]);
     void printHelp();

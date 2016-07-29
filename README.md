@@ -1,11 +1,11 @@
-PfDeconv
+DEploid
 ===========
 
-[![Circle CI](https://circleci.com/gh/mcveanlab/PfDeconv.svg?style=svg)](https://circleci.com/gh/mcveanlab/PfDeconv)
-[![Build Status](https://travis-ci.org/mcveanlab/PfDeconv.svg?branch=master)](https://travis-ci.org/mcveanlab/PfDeconv)
-[![Coverage Status](https://coveralls.io/repos/github/mcveanlab/PfDeconv/badge.svg)](https://coveralls.io/github/mcveanlab/PfDeconv)
+[![Circle CI](https://circleci.com/gh/mcveanlab/DEploid.svg?style=svg)](https://circleci.com/gh/mcveanlab/DEploid)
+[![Build Status](https://travis-ci.org/mcveanlab/DEploid.svg?branch=master)](https://travis-ci.org/mcveanlab/DEploid)
+[![Coverage Status](https://coveralls.io/repos/github/mcveanlab/DEploid/badge.svg)](https://coveralls.io/github/mcveanlab/DEploid)
 
-_PfDeconv_ is developed as part of the [_Pf3k_](https://www.malariagen.net/projects/parasite/pf3k) project. The _Pf3k_ project is a global collaboration using the latest sequencing technologies to provide a high-resolution view of natural variation in the malaria parasite Plasmodium falciparum. Parasite DNA were extracted from patient blood sample, which often contains more than one parasite strain, with unknown proportions. _PfDeconv_ is used for deconvoluting mixed haplotypes, and reporting the mixture proportions from each sample.
+_DEploid_ is developed as part of the [_Pf3k_](https://www.malariagen.net/projects/parasite/pf3k) project. The _Pf3k_ project is a global collaboration using the latest sequencing technologies to provide a high-resolution view of natural variation in the malaria parasite Plasmodium falciparum. Parasite DNA were extracted from patient blood sample, which often contains more than one parasite strain, with unknown proportions. _DEploid_ is used for deconvoluting mixed haplotypes, and reporting the mixture proportions from each sample.
 
 ##METHOD OVERVIEW
 <img src="figures/mixedInfection.png" width="1024">
@@ -82,17 +82,17 @@ Pf3D7_01_v3,94487,0,0,0,1
 
 ###Input examples :
 ```bash
-./pfDeconv -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -o tmp1
-./pfDeconv -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3
+./dEploid -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -o tmp1
+./dEploid -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3
 ```
 
 
 ###Output files:
-_PfDeconv_ outputs text files with user-specified prefix:
+_DEploid_ outputs text files with user-specified prefix:
 
 File Name            | Content |
 :-------------------:| ------------------------------- |
-prefix.log           | Log file records _PfDeconv_ version, input file paths, parameter used and proportion estimates at the final iteration.
+prefix.log           | Log file records _DEploid_ version, input file paths, parameter used and proportion estimates at the final iteration.
 prefix.llk           | Log likelihood of the MCMC chain.
 prefix.prop          | MCMC updates of the proportion estimates.
 prefix.hap           | Haplotypes at the final iteration.

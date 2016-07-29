@@ -41,7 +41,7 @@ class McmcSample {
   friend class TestMcmcMachinery;
 #endif
   friend class McmcMachinery;
-  friend class PfDeconvIO;
+  friend class DEploidIO;
   public:
     McmcSample();
     ~McmcSample();
@@ -66,14 +66,14 @@ class McmcMachinery {
 #endif
   public:
     //McmcMachinery();
-    McmcMachinery( PfDeconvIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample );
+    McmcMachinery( DEploidIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample );
     ~McmcMachinery();
     void runMcmcChain( );
 
   private:
     McmcSample* mcmcSample_;
   /* Variables */
-    PfDeconvIO* dEploidIO_;
+    DEploidIO* dEploidIO_;
     Panel* panel_;
     size_t kStrain_;
     size_t nLoci_;

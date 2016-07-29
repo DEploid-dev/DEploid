@@ -41,7 +41,7 @@ class AtMarker{
  friend class UpdatePairHap;
  friend class UpdateHap;
  friend class Panel;
- friend class PfDeconvIO;
+ friend class DEploidIO;
  friend class InputMarker;
  friend class ExcludeMarker;
   private:

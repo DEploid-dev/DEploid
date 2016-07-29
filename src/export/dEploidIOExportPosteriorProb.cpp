@@ -61,7 +61,7 @@ void McmcMachinery::writeLastFwdProb(){
 }
 
 
-void PfDeconvIO::writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t chromIndex, size_t strainIndex ){
+void DEploidIO::writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t chromIndex, size_t strainIndex ){
     string strExportFwdProb = strExportSingleFwdProbPrefix + to_string(strainIndex);
     ofstreamExportFwdProb.open( strExportFwdProb.c_str(), ios::out | ios::app | ios::binary );
 
@@ -87,7 +87,7 @@ void PfDeconvIO::writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t 
 }
 
 
-void PfDeconvIO::writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex ){
+void DEploidIO::writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex ){
     ofstreamExportFwdProb.open( strExportPairFwdProb.c_str(), ios::out | ios::app | ios::binary );
     if ( chromIndex == 0 ){ // Print header
         ofstreamExportFwdProb << "CHROM" << "\t" << "POS" << "\t";;

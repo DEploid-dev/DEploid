@@ -34,7 +34,7 @@ class Panel: public InputMarker{
  friend class UpdateSingleHap;
  friend class UpdatePairHap;
  friend class UpdateHap;
- friend class PfDeconvIO;
+ friend class DEploidIO;
 
   private:
     // Members

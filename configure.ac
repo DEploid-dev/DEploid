@@ -53,7 +53,7 @@ AX_CXXFLAGS_WARN_ALL
 #AX_CHECK_COMPILE_FLAG([-pedantic], [OPT_CXXFLAGS="$OPT_CXXFLAGS -pedantic"], [], [-Werror])
 
 m4_include([m4/ac_doxygen.m4])
-DX_INIT_DOXYGEN(PfDeconv, Doxyfile, html/)
+DX_INIT_DOXYGEN(DEploid, Doxyfile, html/)
 DX_HTML_FEATURE(ON)
 DX_CHM_FEATURE(OFF)
 DX_CHI_FEATURE(OFF)

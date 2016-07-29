@@ -31,7 +31,7 @@ using namespace std;
 int main( int argc, char *argv[] ){
     try {
 
-        PfDeconvIO dEploidIO;
+        DEploidIO dEploidIO;
         (void)dEploidIO.core( argc, argv );
 
         if ( dEploidIO.help() ){
