@@ -70,6 +70,8 @@ void VcfReader::readHeader(){
                     this->checkFeilds();
                     break; //end of the header
                 }
+            } else {
+                this->checkFeilds();
             }
         }
     }
@@ -104,7 +106,7 @@ void VcfReader::checkFeilds(){
         }
 
         if ( this->tmpStr_ != correctFieldValue && field_index < 9){
-            throw VcfInvalidFieldHeader( correctFieldValue, this->tmpStr_ );
+            throw VcfInvalidHeaderFieldNames( correctFieldValue, this->tmpStr_ );
         }
 
         if ( field_index == 9 ){
@@ -130,6 +132,7 @@ void VcfReader::readVariants(){
     getline( inFile, this->tmpLine_ );
     while ( inFile.good() && this->tmpLine_.size()>0 ){
         VariantLine newVariant ( this->tmpLine_ );
+        // check variantLine quality
         this->variants.push_back(newVariant);
         getline(inFile, this->tmpLine_);
     }
@@ -195,7 +198,7 @@ void VariantLine::extract_field_ALT ( ){
 }
 
 
-void VariantLine::extract_field_QUAL ( ){
+void VariantLine::extract_field_QUAL ( ){ // Check for PASS
     this->qualStr = this->tmpStr_;
 }
 
@@ -218,12 +221,15 @@ void VariantLine::extract_field_FORMAT ( ){
     while( field_end < this->formatStr.size() ) {
         field_end = min( this->formatStr.find(':',feild_start), this->formatStr.find('\n',feild_start) );
         if ( "AD" == this->formatStr.substr( feild_start, field_end-feild_start ) ){
+            adFieldIndex_ = field_index;
             break;
         }
         feild_start = field_end+1;
         field_index++;
     }
-    adFieldIndex_ = field_index;
+    if ( adFieldIndex_ == -1 ){
+        throw VcfCoverageFieldNotFound ( this->tmpStr_ );
+    }
     assert ( adFieldIndex_ > -1 );
     //cout << formatStr << "  " << adFieldIndex_ << endl;
 }

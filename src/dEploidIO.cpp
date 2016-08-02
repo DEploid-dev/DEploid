@@ -124,10 +124,8 @@ void DEploidIO::finalize(){
         excludedMarkers->readFromFile(excludeFileName_.c_str());
     }
 
-    if ( useVcf() ){
-        // read vcf files, and parse it to refCount and altCount
-        cout << "vcf file is "<< vcfFileName_ << endl;
-        this->vcfReaderPtr_ = new VcfReader (vcfFileName_);
+    if ( useVcf() ){ // read vcf files, and parse it to refCount and altCount
+        this->vcfReaderPtr_ = new VcfReader (vcfFileName_ );
         this->refCount_ = this->vcfReaderPtr_->refCount;
         this->altCount_ = this->vcfReaderPtr_->altCount;
     } else {

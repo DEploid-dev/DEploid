@@ -43,13 +43,35 @@ struct InvalidVcf : public InvalidInput{
 };
 
 
-struct VcfInvalidFieldHeader : public InvalidVcf{
-    VcfInvalidFieldHeader( string str1, string str2 ):InvalidVcf( str1 ){
-        this->reason = " VCF field header should be ";
+struct VcfInvalidHeaderFieldNames : public InvalidVcf{
+    VcfInvalidHeaderFieldNames( string str1, string str2 ):InvalidVcf( str1 ){
+        this->reason = " VCF field header expects: ";
         throwMsg = this->reason + this->src + ", " + str2 + " was found!" ;
     }
-    ~VcfInvalidFieldHeader() throw() {}
+    ~VcfInvalidHeaderFieldNames() throw() {}
 };
+
+
+struct VcfInvalidVariantEntry : public InvalidVcf{
+    VcfInvalidVariantEntry( string str ):InvalidVcf( str ){
+    }
+    virtual ~VcfInvalidVariantEntry() throw() {}
+    virtual const char* what () const noexcept {
+    return throwMsg.c_str();
+    }
+};
+
+
+struct VcfCoverageFieldNotFound : public VcfInvalidVariantEntry{
+    VcfCoverageFieldNotFound( string str ):VcfInvalidVariantEntry( str ){
+        this->reason = "Coverage field AD was not found in the FORMAT, found: ";
+        throwMsg = this->reason + this->src ;
+    }
+    ~VcfCoverageFieldNotFound() throw() {}
+};
+
+// This requires more thinking, check for data type?
+
 
 // More informative exceptions for vcf related errors
 
@@ -59,7 +81,6 @@ class VariantLine{
   public:
     VariantLine ( string tmpLine );
     ~VariantLine(){}
-
 
   private:
     string tmpLine_;
@@ -108,11 +129,10 @@ class VcfReader{
  friend class DEploidIO;
   public:
     // Constructors and Destructors
-    VcfReader(string fileName);
+    VcfReader(string fileName); // parse in exclude sites
     ~VcfReader(){};
 
   private:
-
     vector <VariantLine> variants;
     vector <double> refCount;
     vector <double> altCount;
