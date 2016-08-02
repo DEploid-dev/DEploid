@@ -22,6 +22,7 @@
 */
 
 
+#include <string>  /* string */
 #include <exception>
 
 #ifndef EXCEPTION

@@ -38,7 +38,7 @@ PROJECT_NAME           = "DEploid"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = v0.1-alpha
+PROJECT_NUMBER         = v0.2-beta
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -762,13 +762,16 @@ INPUT                  = src/atMarker.hpp src/atMarker.cpp \
                          src/mcmc.hpp src/mcmc.cpp   \
                          src/panel.hpp src/panel.cpp \
                          src/dEploid.cpp src/exceptions.hpp \
-                         src/random_generator.hpp src/random_generator.cpp \
+                         src/random/fastfunc.cpp src/random/fastfunc.hpp \
+                         src/random/mersenne_twister.hpp src/random/mersenne_twister.cpp \
+                         src/random/random_generator.hpp src/random/random_generator.cpp \
                          src/fastfunc.hpp src/fastfunc.cpp \
                          src/mersenne_twister.hpp src/mersenne_twister.cpp \
                          src/dEploidIO.hpp src/dEploidIO.cpp \
                          src/updateHap.hpp src/updateHap.cpp \
-                         src/utility.hpp src/utility.cpp
-
+                         src/utility.hpp src/utility.cpp \
+                         src/export/dEploidIOExport.cpp  src/export/dEploidIOExportPosteriorProb.cpp \
+                         src/vcfReader.hpp src/vcfReader.cpp
 
 
 # This tag can be used to specify the character encoding of the source files

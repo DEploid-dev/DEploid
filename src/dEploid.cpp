@@ -39,7 +39,7 @@ int main( int argc, char *argv[] ){
             return EXIT_SUCCESS;
         }
 
-        Panel *panel = NULL;
+        Panel *panel = NULL; // Move panel to dEploidIO
 
         if ( dEploidIO.usePanel() ){
             panel = new Panel();
