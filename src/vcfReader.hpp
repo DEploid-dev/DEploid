@@ -91,6 +91,7 @@ class VariantLine{
     string filterStr;
     string infoStr;
     string formatStr;
+    int adFieldIndex_;
 
     int ref;
     int alt;
