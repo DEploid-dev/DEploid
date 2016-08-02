@@ -128,6 +128,8 @@ void DEploidIO::finalize(){
         // read vcf files, and parse it to refCount and altCount
         cout << "vcf file is "<< vcfFileName_ << endl;
         this->vcfReaderPtr_ = new VcfReader (vcfFileName_);
+        this->refCount_ = this->vcfReaderPtr_->refCount;
+        this->altCount_ = this->vcfReaderPtr_->altCount;
     } else {
         InputMarker ref;
         ref.readFromFile(refFileName_.c_str());

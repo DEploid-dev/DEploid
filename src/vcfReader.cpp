@@ -23,7 +23,7 @@
 
 #include "global.h"
 #include <cassert>       // assert
-#include <iostream> // std::cout
+#include <iostream>      // std::cout
 #include "vcfReader.hpp"
 
 using namespace std;
@@ -50,6 +50,10 @@ void VcfReader::init( string fileName ){
 
 
 void VcfReader::finalize(){
+    for ( size_t i = 0; i < this->variants.size(); i++ ){
+        this->refCount.push_back( (double)this->variants[i].ref );
+        this->altCount.push_back( (double)this->variants[i].alt );
+    }
     this->inFile.close();
 }
 
@@ -73,8 +77,7 @@ void VcfReader::readHeader(){
         throw InvalidInputFile( this->fileName_ );
     }
 
-    //this->end_pos_ = this->header_end_pos_;
-    cout << " there are "<< this->headerLines.size() << " lines" <<endl;
+    dout << " there are "<< this->headerLines.size() << " lines" <<endl;
 }
 
 
@@ -127,14 +130,13 @@ void VcfReader::readVariants(){
     getline( inFile, this->tmpLine_ );
     while ( inFile.good() && this->tmpLine_.size()>0 ){
         VariantLine newVariant ( this->tmpLine_ );
+        this->variants.push_back(newVariant);
         getline(inFile, this->tmpLine_);
     }
 }
 
 
 VariantLine::VariantLine ( string tmpLine ){
-    cout << tmpLine << endl;
-
     this->init( tmpLine );
 
     while ( fieldEnd_ < this->tmpLine_.size() ){
@@ -223,7 +225,7 @@ void VariantLine::extract_field_FORMAT ( ){
     }
     adFieldIndex_ = field_index;
     assert ( adFieldIndex_ > -1 );
-    cout << formatStr << "  " << adFieldIndex_ << endl;
+    //cout << formatStr << "  " << adFieldIndex_ << endl;
 }
 
 
@@ -239,7 +241,6 @@ void VariantLine::extract_field_VARIANT ( ){
             size_t commaIndex = adStr.find(',',0);
             ref = stoi(adStr.substr(0, commaIndex) );
             alt = stoi(adStr.substr(commaIndex+1, adStr.size()) );
-    //cout << tmpStr_ << "  " << ref << " " << alt << endl;
             break;
         }
         feild_start = field_end+1;
@@ -247,6 +248,3 @@ void VariantLine::extract_field_VARIANT ( ){
     }
 
 }
-
-
-

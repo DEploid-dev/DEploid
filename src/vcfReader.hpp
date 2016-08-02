@@ -95,7 +95,6 @@ class VariantLine{
 
     int ref;
     int alt;
-
 };
 
 
@@ -106,103 +105,33 @@ class VcfReader{
 #ifdef UNITTEST
  friend class TestVCF;
 #endif
-
+ friend class DEploidIO;
   public:
     // Constructors and Destructors
     VcfReader(string fileName);
     ~VcfReader(){};
 
-    void init( string fileName );
-    ifstream inFile;
-
-    void finalize();
-
-    // Methods
-    //void read_new_line();
-    //void reset_data_to_first_entry();
-    //void force_to_end_data() { this->end_data_ = true; }
-
-    //// DEBUG
-    //void print_vcf_line();
-    //void print();
-
-    bool end_data() const { return this->end_data_; }
-    //INPUT_FILETYPE FileType;
-
   private:
 
     vector <VariantLine> variants;
-
+    vector <double> refCount;
+    vector <double> altCount;
     vector <string> headerLines ;
+    string fileName_;
+    ifstream inFile;
     string sampleName;
-    // Methods
-    //void empty_block();
-    void readVariants();
-
-    //  Setters and getters:
-    //size_t nfield() const { return this->nfield_; }
-
-    //bool eof() const { return this->eof_; }
-    //int even_interval() const { return this-> even_interval_; }
-    //void set_even_interval( int interval ) { this->even_interval_ = interval; }
-
-
     string tmpLine_;
     string tmpStr_;
+
+    // Methods
+    void init( string fileName );
+    void finalize();
+    void readVariants();
     void readHeader( );
     void checkFeilds( );
 
-    //void set_empty_line_entry();
-    void initialize_read_newLine();
-    void check_and_update_block();
-    void check_and_update_newLine();
-    void finalize_read_new_line();
-
-
-    string extract_field_ALT_str( size_t start, size_t end );
-
-
-
-
-    // Members
-
-    // Line related
-
-
-    // FILE related
-    bool eof_;
-    string fileName_;
-    size_t current_line_index_; // line counter in the entire vcf file
-    size_t file_length_;
-    bool end_data_;
-    size_t end_pos_;
-    int buffer_max_number_of_lines;
-
-    // Header related
-    size_t header_end_pos_;
-    //size_t nfield_;
-    size_t header_end_line;
-
-    // Block related
-    size_t current_block_line_;  // line counter in the current data block
-    size_t empty_file_line_counter_;
-
-    size_t ghost_num_mut;
-    int filter_window_;  // If two snps are too close, i.e. difference between the site is less than this window, should skip to the next read.
-    int missing_data_threshold_; // if two snps are too far away apart, treat as missing data
-    int even_interval_;
-
-    //size_t vcf_file_length;
-
-    vector <string> buffer_lines;
-
-    bool skip_tmpLine;
-
-
     // Debug tools
     bool printSampleName();
-
-
 };
 
 #endif
