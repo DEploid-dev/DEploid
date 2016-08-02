@@ -18,6 +18,7 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST( testLociNumberUnequal );
     CPPUNIT_TEST( testForbidMoves );
     CPPUNIT_TEST( testInitialProp );
+    CPPUNIT_TEST( testInvalidVcf );
     CPPUNIT_TEST( testVcfHeader );
     CPPUNIT_TEST( testVcfNoAD );
     CPPUNIT_TEST_SUITE_END();
@@ -412,6 +413,14 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateProp() , true);
         CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateSingle() , true);
         CPPUNIT_ASSERT_EQUAL( this->input_->doUpdatePair() , true);
+    }
+
+
+    void testInvalidVcf(){
+        char *argv1[] = { "./dEploid",
+                         "-vcf", "tests/testData/PG0389-C10.vcf",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv1), InvalidInputFile );
     }
 
 

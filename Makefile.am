@@ -44,7 +44,8 @@ unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_atMarker.cpp \
 					 tests/unittest/test_utilities.cpp \
 					 tests/unittest/test_mcmc.cpp \
-					 tests/unittest/test_atMarker.cpp
+					 tests/unittest/test_atMarker.cpp \
+					 tests/unittest/test_vcfReader.cpp
 
 unit_tests_CXXFLAGS = $(dEploid_CXXFLAGS) -DUNITTEST -Wno-write-strings --coverage
 unit_tests_LDADD          = -lcppunit -ldl
