@@ -72,8 +72,9 @@ void DEploidIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
     (*writeTo) << "Input data: \n";
     (*writeTo) << setw(12) << "Panel: "     << panelFileName_  << "\n";
     (*writeTo) << setw(12) << "PLAF: "      << plafFileName_   << "\n";
-    (*writeTo) << setw(12) << "REF count: " << refFileName_    << "\n";
-    (*writeTo) << setw(12) << "ALT count: " << altFileName_    << "\n";
+    if ( useVcf() ) (*writeTo) << setw(12) << "VCF: " << vcfFileName_    << "\n";
+    if ( refFileName_.size()>0) (*writeTo) << setw(12) << "REF count: " << refFileName_    << "\n";
+    if ( altFileName_.size()>0) (*writeTo) << setw(12) << "ALT count: " << altFileName_    << "\n";
     if ( excludeSites() ){ (*writeTo) << setw(12) << "Exclude: " << excludeFileName_    << "\n"; }
     (*writeTo) << "\n";
     (*writeTo) << "MCMC parameters: "<< "\n";

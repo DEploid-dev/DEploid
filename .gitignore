@@ -71,6 +71,8 @@ PG0389.C*
 toy*
 PG400*
 PG0*
+txt.*
+vcf.*
 
 # coverage test
 *.gcda
