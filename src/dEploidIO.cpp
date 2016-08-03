@@ -64,7 +64,7 @@ void DEploidIO::init() {
     this->randomSeedWasSet_ = false;
     this->initialPropWasGiven_ = false;
     this->initialProp.clear();
-    this->exclude_sites_ = false;
+    this->setExcludeSites( false );
     this->excludedMarkers = NULL;
     this->set_seed( 0 );
     this->set_help(false);
@@ -96,8 +96,8 @@ void DEploidIO::init() {
         compileTime_ = "";
     #endif
 
-    #ifdef PFDECONVVERSION
-        dEploidVersion_ = PFDECONVVERSION;
+    #ifdef DEPLOIDVERSION
+        dEploidVersion_ = DEPLOIDVERSION;
     #else
         dEploidVersion_ = "";
     #endif
@@ -119,33 +119,40 @@ void DEploidIO::finalize(){
         this->set_seed( (unsigned)(time(0)) );
     }
 
-    if ( this->exclude_sites_ ){
+    if ( this->excludeSites() ){
         excludedMarkers = new ExcludeMarker();
         excludedMarkers->readFromFile(excludeFileName_.c_str());
     }
 
     if ( useVcf() ){ // read vcf files, and parse it to refCount and altCount
-        this->vcfReaderPtr_ = new VcfReader (vcfFileName_ );
+        if ( this->excludeSites() ){
+            // todo!!! to be implemented with excludeMarkers
+            this->vcfReaderPtr_ = new VcfReader (vcfFileName_ );
+        } else {
+            this->vcfReaderPtr_ = new VcfReader (vcfFileName_ );
+
+        }
+
         this->refCount_ = this->vcfReaderPtr_->refCount;
         this->altCount_ = this->vcfReaderPtr_->altCount;
     } else {
         InputMarker ref;
         ref.readFromFile(refFileName_.c_str());
-        if ( this->exclude_sites_ ){
+        if ( this->excludeSites() ){
             ref.removeMarkers( excludedMarkers );
         }
         this->refCount_ = ref.info_;
 
         InputMarker alt;
         alt.readFromFile(altFileName_.c_str());
-        if ( this->exclude_sites_ ){
+        if ( this->excludeSites() ){
             alt.removeMarkers( excludedMarkers );
         }
         this->altCount_ = alt.info_;
     }
     InputMarker plaf;
     plaf.readFromFile(plafFileName_.c_str());
-    if ( this->exclude_sites_ ){
+    if ( this->excludeSites() ){
         plaf.removeMarkers( excludedMarkers );
     }
     this->plaf_ = plaf.info_;
@@ -238,7 +245,7 @@ void DEploidIO::parse (){
             }
             this->set_panel(false);
         } else if (*argv_i == "-exclude"){
-            this->exclude_sites_ = true;
+            this->setExcludeSites( true );
             this->readNextStringto ( this->excludeFileName_ ) ;
         } else if (*argv_i == "-o") {
             this->readNextStringto ( this->prefix_ ) ;
@@ -300,8 +307,6 @@ void DEploidIO::checkInput(){
         throw FileNameMissing ( "PLAF" );}
     if ( usePanel() && this->panelFileName_.size() == 0 ){
         throw FileNameMissing ( "Reference panel" );}
-    if ( exclude_sites_ && this->excludeFileName_.size() == 0 ){
-        throw FileNameMissing ( "Exclude sites" );}
     if ( this->initialPropWasGiven() && ( abs(sumOfVec(initialProp) - 1.0) > 0.000001 )){
         throw SumOfPropNotOne ( to_string(sumOfVec(initialProp)) );}
     if ( this->initialPropWasGiven() && kStrain_ != initialProp.size() ){

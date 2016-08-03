@@ -67,7 +67,9 @@ class DEploidIO{
     bool useConstRecomb() const { return this->useConstRecomb_; }
 
     ExcludeMarker* excludedMarkers;
-    bool exclude_sites_;
+    bool excludeSites_;
+    bool excludeSites() const {return this->excludeSites_; }
+    void setExcludeSites(const size_t exclude){ this->excludeSites_ = exclude; }
 
     bool forbidCopyFromSame() const { return this->forbidCopyFromSame_; }
 

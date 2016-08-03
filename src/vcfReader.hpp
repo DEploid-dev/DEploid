@@ -38,7 +38,7 @@ struct InvalidVcf : public InvalidInput{
     }
     virtual ~InvalidVcf() throw() {}
     virtual const char* what () const noexcept {
-    return throwMsg.c_str();
+        return throwMsg.c_str();
     }
 };
 
@@ -53,11 +53,10 @@ struct VcfInvalidHeaderFieldNames : public InvalidVcf{
 
 
 struct VcfInvalidVariantEntry : public InvalidVcf{
-    VcfInvalidVariantEntry( string str ):InvalidVcf( str ){
-    }
+    VcfInvalidVariantEntry( string str ):InvalidVcf( str ){}
     virtual ~VcfInvalidVariantEntry() throw() {}
     virtual const char* what () const noexcept {
-    return throwMsg.c_str();
+        return throwMsg.c_str();
     }
 };
 

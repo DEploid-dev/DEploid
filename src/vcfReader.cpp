@@ -122,12 +122,6 @@ void VcfReader::checkFeilds(){
 }
 
 
-bool VcfReader::printSampleName(){
-    dout << "Sample name is " << this->sampleName << endl;
-    return true;
-}
-
-
 void VcfReader::readVariants(){
     getline( inFile, this->tmpLine_ );
     while ( inFile.good() && this->tmpLine_.size()>0 ){

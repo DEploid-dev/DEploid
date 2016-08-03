@@ -24,7 +24,7 @@ common_src = src/random/fastfunc.cpp \
 			 src/export/dEploidIOExportPosteriorProb.cpp \
 			 src/vcfReader.cpp
 
-debug_src = src/debug/mcmcDebug.cpp
+debug_src = src/debug/mcmcDebug.cpp src/debug/vcfReaderDebug.cpp
 
 dEploid_SOURCES = src/dEploid.cpp $(common_src)
 dEploid_dbg_SOURCES =  $(debug_src) $(dEploid_SOURCES)
@@ -47,7 +47,7 @@ unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_atMarker.cpp \
 					 tests/unittest/test_vcfReader.cpp
 
-unit_tests_CXXFLAGS = $(dEploid_CXXFLAGS) -DUNITTEST -Wno-write-strings --coverage
+unit_tests_CXXFLAGS = $(common_flags) -DNDEBUG -DUNITTEST -Wno-write-strings --coverage
 unit_tests_LDADD          = -lcppunit -ldl
 
 clean-local: clean-local-check
