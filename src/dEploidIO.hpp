@@ -155,6 +155,10 @@ class DEploidIO{
     ofstream ofstreamExportRecombProb;
     ofstream ofstreamExportFwdProb;
 
+    string startingTime_;
+    string endTime_;
+    void getTime( bool isStartingTime );
+
     void removeFilesWithSameName();
 
 

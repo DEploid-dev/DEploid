@@ -30,6 +30,9 @@ void DEploidIO::write( McmcSample * mcmcSample, Panel * panel ){
     this->writeHap( mcmcSample );
     this->writeRecombProb( panel );
 
+    // Get End time before writing the log
+    this->getTime(false);
+
     this->writeLog ( mcmcSample, &std::cout );
 
     ofstreamExportLog.open( strExportLog.c_str(), ios::out | ios::app | ios::binary );
@@ -98,6 +101,10 @@ void DEploidIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
                        << ( ( i != (this->kStrain_-1) ) ? " " : "\n" );
         }
     }
+    (*writeTo) << "\n";
+    (*writeTo) << "Run time:\n";
+    (*writeTo) << setw(14) << "Start at: "  << startingTime_  ;
+    (*writeTo) << setw(14) << "End at: "    << endTime_  ;
     (*writeTo) << "\n";
     (*writeTo) << "Output saved to:\n";
     (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";

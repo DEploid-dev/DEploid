@@ -25,6 +25,8 @@
 #include "utility.hpp"  // normailize by sum
 #include <cassert>       // assert
 #include <iomanip>      // std::setw
+#include <ctime>
+
 
 DEploidIO::DEploidIO(){
     this->init();
@@ -104,6 +106,18 @@ void DEploidIO::init() {
 }
 
 
+void DEploidIO::getTime( bool isStartingTime ){
+    time_t now = time(0);
+    // convert now to string form
+    char* dt = ctime(&now);
+    if ( isStartingTime ){
+        startingTime_ = string(dt);
+    } else {
+        endTime_ = string(dt);
+    }
+}
+
+
 void DEploidIO::reInit() {
     this->init();
     this->refFileName_.clear();
@@ -111,6 +125,7 @@ void DEploidIO::reInit() {
     this->plafFileName_.clear();
     this->panelFileName_.clear();
     this->excludeFileName_.clear();
+    this->getTime(true);
 }
 
 
