@@ -9,6 +9,7 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST( testInitialization );
     CPPUNIT_TEST( testPrintHelp );
     CPPUNIT_TEST( testNotEnoughArg );
+    CPPUNIT_TEST( testOutOfRange );
     CPPUNIT_TEST( testWrongType );
     CPPUNIT_TEST( testFileNameMissing );
     CPPUNIT_TEST( testInvalidInputFile );
@@ -138,6 +139,33 @@ class TestIO : public CppUnit::TestCase {
 
     void testPrintHelp(){
         CPPUNIT_ASSERT_NO_THROW ( this->input_->printHelp() );
+    }
+
+
+    void testOutOfRange(){
+        char *argv1[] = { "./dEploid",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-burn", "1.1" };
+        CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv1), OutOfRange );
+
+        char *argv2[] = { "./dEploid",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-miss", "5.1"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv2), OutOfRange );
+
+        char *argv3[] = { "./dEploid",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-recomb", "2.1" };
+        CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv3), OutOfRange );
     }
 
 

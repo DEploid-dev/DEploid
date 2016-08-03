@@ -105,6 +105,15 @@ struct FlagsConflict : public InvalidInput{
 };
 
 
+struct OutOfRange : public InvalidInput{
+  OutOfRange( string str1, string str2 ):InvalidInput( str1 ){
+    this->reason = "Flag \"";
+    throwMsg = this->reason + this->src + string(" ") + str2 + string("\" out of range [0, 1].");
+  }
+  ~OutOfRange() throw() {}
+};
+
+
 struct LociNumberUnequal : public InvalidInput{
   LociNumberUnequal( string str ):InvalidInput( str ){
     this->reason = "Number of sites was wrong (compared to ref count) in: ";

@@ -258,18 +258,18 @@ void DEploidIO::parse (){
         } else if ( *argv_i == "-burn" ) {
             this->mcmcBurn_ = readNextInput<double>() ;
             if ( this->mcmcBurn_ < 0 || this->mcmcBurn_ > 1){
-                throw ("out of range");
+                throw ( OutOfRange ("-burn", *argv_i) );
             }
         } else if ( *argv_i == "-miss" ) {
             this->missCopyProb_ = readNextInput<double>() ;
             if ( this->missCopyProb_ < 0 || this->missCopyProb_ > 1){
-                throw ("out of range");
+                throw ( OutOfRange ("-miss", *argv_i) );
             }
         } else if ( *argv_i == "-recomb" ) {
             this->constRecombProb_ = readNextInput<double>();
             this->useConstRecomb_ = true;
             if ( this->constRecombProb_ < 0 || this->constRecombProb_ > 1){
-                throw ("out of range");
+                throw ( OutOfRange ("-recomb", *argv_i) );
             }
         } else if ( *argv_i == "-forbidSame" ) {
             this->forbidCopyFromSame_ = true;
