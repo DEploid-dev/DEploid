@@ -39,12 +39,12 @@ int main( int argc, char *argv[] ){
             return EXIT_SUCCESS;
         }
 
-        Panel *panel = NULL;
+        Panel *panel = NULL; // Move panel to dEploidIO
 
         if ( dEploidIO.usePanel() ){
             panel = new Panel();
             panel->readFromFile(dEploidIO.panelFileName_.c_str());
-            if ( dEploidIO.exclude_sites_ ){
+            if ( dEploidIO.excludeSites() ){
                 panel->removeMarkers( dEploidIO.excludedMarkers );
             }
 

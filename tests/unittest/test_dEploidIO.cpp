@@ -18,6 +18,9 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST( testLociNumberUnequal );
     CPPUNIT_TEST( testForbidMoves );
     CPPUNIT_TEST( testInitialProp );
+    CPPUNIT_TEST( testInvalidVcf );
+    CPPUNIT_TEST( testVcfHeader );
+    CPPUNIT_TEST( testVcfNoAD );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -37,7 +40,7 @@ class TestIO : public CppUnit::TestCase {
     void testInitialization(){
         CPPUNIT_ASSERT_EQUAL( this->input_->randomSeedWasSet_, false );
         CPPUNIT_ASSERT_EQUAL( this->input_->initialPropWasGiven(), false );
-        CPPUNIT_ASSERT_EQUAL( this->input_->exclude_sites_ , false );
+        CPPUNIT_ASSERT_EQUAL( this->input_->excludeSites() , false );
         CPPUNIT_ASSERT( this->input_->excludedMarkers == NULL);
         CPPUNIT_ASSERT_EQUAL( this->input_->random_seed_, (size_t)0 );
         CPPUNIT_ASSERT_EQUAL( this->input_->help(), false);
@@ -73,13 +76,23 @@ class TestIO : public CppUnit::TestCase {
                          "-alt", "tests/testData/PG0390_first100alt.txt",
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
                          "-panel", "tests/testData/lab_first100_Panel.txt",
-                         "-o", "tmp1" };
+                         "-o", "tmp1",
+                         "-exclude", "tests/testData/PG0389.C.exclude.csv"};
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(11, argv1) );
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(13, argv1) );
+
+        char *argv2[] = { "./dEploid",
+                         "-vcf", "tests/testData/PG0389-C100.vcf",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-o", "tmp1",
+                         "-exclude", "tests/testData/PG0389.C.exclude.csv"};
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(9, argv2) );
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(11, argv2) );
     }
 
 
     void testInitialProp() {
-
         char *argv1[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
@@ -188,6 +201,15 @@ class TestIO : public CppUnit::TestCase {
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
                          "-panel" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(8, argv8), NotEnoughArg );
+
+        char *argv9[] = { "./dEploid",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-exclude" };
+        CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv9), NotEnoughArg );
+
     }
 
 
@@ -268,6 +290,7 @@ class TestIO : public CppUnit::TestCase {
             CPPUNIT_ASSERT_EQUAL( string("Alt count file path missing!"), string(e.what()) );
         }
 
+        // plaf missing
         char *argv3[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
@@ -275,6 +298,7 @@ class TestIO : public CppUnit::TestCase {
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(9, argv3), FileNameMissing );
 
+        // panel missing
         char *argv4[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
@@ -308,6 +332,7 @@ class TestIO : public CppUnit::TestCase {
 
 
     void testFlagsConflict(){
+        // panel conflict with noPanel
         char *argv1[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
@@ -323,6 +348,36 @@ class TestIO : public CppUnit::TestCase {
                          "-noPanel",
                          "-panel", "tests/testData/lab_first100_Panel.txt"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv2), FlagsConflict );
+
+        // ref, alt conflict with vcf
+        char *argv3[] = { "./dEploid",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-o", "tmp1",
+                         "-vcf", "tests/testData/PG0389-C100.vcf"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(13, argv3), FlagsConflict );
+
+        // vcf conflict with ref
+        char *argv4[] = { "./dEploid",
+                         "-vcf", "tests/testData/PG0389-C100.vcf",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-o", "tmp1" };
+        CPPUNIT_ASSERT_THROW ( this->input_->core(13, argv4), FlagsConflict );
+
+        // vcf conflict with alt
+        char *argv5[] = { "./dEploid",
+                         "-vcf", "tests/testData/PG0389-C100.vcf",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-o", "tmp1" };
+        CPPUNIT_ASSERT_THROW ( this->input_->core(13, argv5), FlagsConflict );
     }
 
 
@@ -412,6 +467,73 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL( this->input_->doUpdatePair() , true);
     }
 
+
+    void testInvalidVcf(){
+        char *argv1[] = { "./dEploid",
+                         "-vcf", "tests/testData/PG0389-C10.vcf",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv1), InvalidInputFile );
+    }
+
+
+    void testVcfHeader(){
+        char *argv1[] = { "./dEploid",
+                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.alt.vcf",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv1), VcfInvalidHeaderFieldNames );
+
+        char *argv2[] = { "./dEploid",
+                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.chrom2.vcf",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv2), VcfInvalidHeaderFieldNames );
+
+        char *argv3[] = { "./dEploid",
+                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.chrom.vcf",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv3), VcfInvalidHeaderFieldNames );
+
+        char *argv4[] = { "./dEploid",
+                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.filter.vcf",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv4), VcfInvalidHeaderFieldNames );
+
+        char *argv5[] = { "./dEploid",
+                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.format.vcf",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv5), VcfInvalidHeaderFieldNames );
+
+        char *argv6[] = { "./dEploid",
+                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.id.vcf",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv6), VcfInvalidHeaderFieldNames );
+
+        char *argv7[] = { "./dEploid",
+                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.info.vcf",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv7), VcfInvalidHeaderFieldNames );
+
+        char *argv8[] = { "./dEploid",
+                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.pos.vcf",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv8), VcfInvalidHeaderFieldNames );
+
+        char *argv9[] = { "./dEploid",
+                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.qual.vcf",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv9), VcfInvalidHeaderFieldNames );
+
+        char *argv10[] = { "./dEploid",
+                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.ref.vcf",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv10), VcfInvalidHeaderFieldNames );
+    }
+
+    void testVcfNoAD(){
+        char *argv1[] = { "./dEploid",
+                         "-vcf", "tests/testData/crappyVcf/badVariant.noAD.vcf",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv1), VcfCoverageFieldNotFound );
+    }
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestIO );

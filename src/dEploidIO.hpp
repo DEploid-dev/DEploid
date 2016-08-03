@@ -21,7 +21,6 @@
 
 */
 
-#include <sstream>      // std::stringstream
 #include <stdlib.h>     /* strtol, strtod */
 #include <fstream>
 #include <stdexcept> // std::invalid_argument
@@ -32,6 +31,8 @@
 #include "exceptions.hpp"
 #include "atMarker.hpp"
 #include "panel.hpp"
+#include "vcfReader.hpp"
+
 
 #ifndef PARAM
 #define PARAM
@@ -66,7 +67,9 @@ class DEploidIO{
     bool useConstRecomb() const { return this->useConstRecomb_; }
 
     ExcludeMarker* excludedMarkers;
-    bool exclude_sites_;
+    bool excludeSites_;
+    bool excludeSites() const {return this->excludeSites_; }
+    void setExcludeSites(const size_t exclude){ this->excludeSites_ = exclude; }
 
     bool forbidCopyFromSame() const { return this->forbidCopyFromSame_; }
 
@@ -79,6 +82,7 @@ class DEploidIO{
     string plafFileName_;
     string refFileName_;
     string altFileName_;
+    string vcfFileName_;
     string excludeFileName_;
     string prefix_;
     size_t random_seed_;
@@ -108,6 +112,11 @@ class DEploidIO{
     size_t nLoci_;
     bool help_;
     bool usePanel_;
+    bool useVcf_;
+    void setUseVcf(const bool useVcf){ this->useVcf_ = useVcf; }
+    bool useVcf() const {return this->useVcf_; }
+
+    VcfReader * vcfReaderPtr_;
 
     // Parameters
     double missCopyProb_;

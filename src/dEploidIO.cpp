@@ -35,6 +35,11 @@ DEploidIO::~DEploidIO(){
     if ( this->excludedMarkers != NULL ){
         delete this->excludedMarkers;
     }
+
+    if ( this->vcfReaderPtr_ != NULL ){
+        delete this->vcfReaderPtr_;
+    }
+
 }
 
 
@@ -59,7 +64,7 @@ void DEploidIO::init() {
     this->randomSeedWasSet_ = false;
     this->initialPropWasGiven_ = false;
     this->initialProp.clear();
-    this->exclude_sites_ = false;
+    this->setExcludeSites( false );
     this->excludedMarkers = NULL;
     this->set_seed( 0 );
     this->set_help(false);
@@ -82,14 +87,17 @@ void DEploidIO::init() {
     this->averageCentimorganDistance_ = 15000.0;
     this->Ne_ = 10.0;
 
+    this->setUseVcf(false);
+    this->vcfReaderPtr_ = NULL;
+
     #ifdef COMPILEDATE
         compileTime_ = COMPILEDATE;
     #else
         compileTime_ = "";
     #endif
 
-    #ifdef PFDECONVVERSION
-        dEploidVersion_ = PFDECONVVERSION;
+    #ifdef DEPLOIDVERSION
+        dEploidVersion_ = DEPLOIDVERSION;
     #else
         dEploidVersion_ = "";
     #endif
@@ -111,28 +119,40 @@ void DEploidIO::finalize(){
         this->set_seed( (unsigned)(time(0)) );
     }
 
-    if ( this->exclude_sites_ ){
+    if ( this->excludeSites() ){
         excludedMarkers = new ExcludeMarker();
         excludedMarkers->readFromFile(excludeFileName_.c_str());
     }
 
-    InputMarker ref;
-    ref.readFromFile(refFileName_.c_str());
-    if ( this->exclude_sites_ ){
-        ref.removeMarkers( excludedMarkers );
-    }
-    this->refCount_ = ref.info_;
+    if ( useVcf() ){ // read vcf files, and parse it to refCount and altCount
+        if ( this->excludeSites() ){
+            // todo!!! to be implemented with excludeMarkers
+            this->vcfReaderPtr_ = new VcfReader (vcfFileName_ );
+        } else {
+            this->vcfReaderPtr_ = new VcfReader (vcfFileName_ );
 
-    InputMarker alt;
-    alt.readFromFile(altFileName_.c_str());
-    if ( this->exclude_sites_ ){
-        alt.removeMarkers( excludedMarkers );
-    }
-    this->altCount_ = alt.info_;
+        }
 
+        this->refCount_ = this->vcfReaderPtr_->refCount;
+        this->altCount_ = this->vcfReaderPtr_->altCount;
+    } else {
+        InputMarker ref;
+        ref.readFromFile(refFileName_.c_str());
+        if ( this->excludeSites() ){
+            ref.removeMarkers( excludedMarkers );
+        }
+        this->refCount_ = ref.info_;
+
+        InputMarker alt;
+        alt.readFromFile(altFileName_.c_str());
+        if ( this->excludeSites() ){
+            alt.removeMarkers( excludedMarkers );
+        }
+        this->altCount_ = alt.info_;
+    }
     InputMarker plaf;
     plaf.readFromFile(plafFileName_.c_str());
-    if ( this->exclude_sites_ ){
+    if ( this->excludeSites() ){
         plaf.removeMarkers( excludedMarkers );
     }
     this->plaf_ = plaf.info_;
@@ -197,9 +217,21 @@ void DEploidIO::removeFilesWithSameName(){
 void DEploidIO::parse (){
     do {
         if (*argv_i == "-ref") {
+            if ( this->useVcf() ){
+                throw ( FlagsConflict((*argv_i) , "-vcf") );
+            }
             this->readNextStringto ( this->refFileName_ ) ;
         } else if (*argv_i == "-alt") {
+            if ( this->useVcf() ){
+                throw ( FlagsConflict((*argv_i) , "-vcf") );
+            }
             this->readNextStringto ( this->altFileName_ ) ;
+        } else if (*argv_i == "-vcf") {
+            if ( this->refFileName_.size() > 0 || this->altFileName_.size() > 0 ){
+                throw ( FlagsConflict((*argv_i) , "-ref or -alt") );
+            }
+            this->setUseVcf(true);
+            this->readNextStringto ( this->vcfFileName_ ) ;
         } else if (*argv_i == "-plaf") {
             this->readNextStringto ( this->plafFileName_ ) ;
         } else if (*argv_i == "-panel") {
@@ -213,7 +245,7 @@ void DEploidIO::parse (){
             }
             this->set_panel(false);
         } else if (*argv_i == "-exclude"){
-            this->exclude_sites_ = true;
+            this->setExcludeSites( true );
             this->readNextStringto ( this->excludeFileName_ ) ;
         } else if (*argv_i == "-o") {
             this->readNextStringto ( this->prefix_ ) ;
@@ -267,16 +299,14 @@ void DEploidIO::parse (){
 
 
 void DEploidIO::checkInput(){
-    if ( this->refFileName_.size() == 0 ){
+    if ( this->refFileName_.size() == 0 && this->useVcf() == false ){
         throw FileNameMissing ( "Ref count" );}
-    if ( this->altFileName_.size() == 0 ){
+    if ( this->altFileName_.size() == 0 && this->useVcf() == false ){
         throw FileNameMissing ( "Alt count" );}
     if ( this->plafFileName_.size() == 0 ){
         throw FileNameMissing ( "PLAF" );}
     if ( usePanel() && this->panelFileName_.size() == 0 ){
         throw FileNameMissing ( "Reference panel" );}
-    if ( exclude_sites_ && this->excludeFileName_.size() == 0 ){
-        throw FileNameMissing ( "Exclude sites" );}
     if ( this->initialPropWasGiven() && ( abs(sumOfVec(initialProp) - 1.0) > 0.000001 )){
         throw SumOfPropNotOne ( to_string(sumOfVec(initialProp)) );}
     if ( this->initialPropWasGiven() && kStrain_ != initialProp.size() ){
@@ -345,8 +375,10 @@ void DEploidIO::printHelp(){
     cout << "Examples:" << endl;
     cout << endl;
     cout << "./dEploid -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -o tmp1" << endl;
-    cout << "./dEploid -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
+    cout << "./dEploid -ref labStrains/PG0390_first100ref.txt -alt   labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
     cout << "./dEploid -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp"<< endl;
+    //cout << "./dEploid -vcf tests/testData/PG0389-C100.vcf  -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp"<< endl;
+    //cout << "./dEploid -ref tests/testData/PG0389.C_ref100.txt -alt tests/testData/PG0389.C_alt100.txt -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp"<< endl;
     //cout << "./dEploid_dbg -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
     //cout << "./dEploid_dbg -ref labStrains/PG0390.C_ref.txt -alt labStrains/PG0390.C_alt.txt -plaf labStrains/labStrains_samples_PLAF.txt -panel labStrains/clonalPanel.csv -nSample 500 -rate 5" << endl;
     //cout << "./dEploid -ref labStrains/PG0389.C_ref.txt -alt labStrains/PG0389.C_alt.txt -plaf labStrains/labStrains_samples_PLAF.txt -panel labStrains/clonalPanel.csv -exclude labStrains/PG0389.C.exclude.csv" << endl;

@@ -20,4 +20,5 @@ test:
     #- valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
     - ./tests/test_binary.sh
     - ./tests/testPOS.sh
+    - ./tests/test_binaryVcfVsTxt.sh
     #- coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
