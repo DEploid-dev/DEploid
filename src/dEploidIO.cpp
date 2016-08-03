@@ -63,7 +63,7 @@ void DEploidIO::core(int argc, char *argv[]) {
 
 
 void DEploidIO::init() {
-    this->randomSeedWasSet_ = false;
+    this->setRandomSeedWasSet( false );
     this->initialPropWasGiven_ = false;
     this->initialProp.clear();
     this->setExcludeSites( false );
@@ -84,7 +84,7 @@ void DEploidIO::init() {
     this->mcmcMachineryRate_ = 5;
     this->missCopyProb_ = 0.01;
     this->useConstRecomb_ = false;
-    this->forbidCopyFromSame_ = false;
+    this->setForbidCopyFromSame( false );
     this->constRecombProb_ = 1.0;
     this->averageCentimorganDistance_ = 15000.0;
     this->Ne_ = 10.0;
@@ -258,7 +258,11 @@ void DEploidIO::parse (){
             if ( usePanel() && this->panelFileName_.size() > 0 ){
                 throw ( FlagsConflict((*argv_i) , "-panel") );
             }
+            if ( doExportPostProb() ){
+                throw ( FlagsConflict((*argv_i) , "-exportPostProb") );
+            }
             this->set_panel(false);
+            this->setDoExportSwitchMissCopy ( false );
         } else if (*argv_i == "-exclude"){
             this->setExcludeSites( true );
             this->readNextStringto ( this->excludeFileName_ ) ;
@@ -287,7 +291,7 @@ void DEploidIO::parse (){
                 throw ( OutOfRange ("-recomb", *argv_i) );
             }
         } else if ( *argv_i == "-forbidSame" ) {
-            this->forbidCopyFromSame_ = true;
+            this->setForbidCopyFromSame( true );
         } else if ( *argv_i == "-rate" ) {
             this->mcmcMachineryRate_ = readNextInput<size_t>() ;
         } else if ( *argv_i == "-forbidUpdateProp" ) {
@@ -297,13 +301,16 @@ void DEploidIO::parse (){
         } else if ( *argv_i == "-forbidUpdatePair" ) {
             this->setDoUpdatePair( false );
         } else if ( *argv_i == "-exportPostProb" ) {
+            if ( this->usePanel() == false ){
+                throw ( FlagsConflict((*argv_i) , "-noPanel") );
+            }
             this->setDoExportPostProb( true );
         } else if ( *argv_i == "-initialP" ){
             this->readInitialProportions();
             this->initialPropWasGiven_ = true;
         } else if ( *argv_i == "-seed"){
             this->random_seed_ = readNextInput<size_t>() ;
-            this->randomSeedWasSet_ = true;
+            this->setRandomSeedWasSet( true );
         } else if ( *argv_i == "-h" || *argv_i == "-help"){
             this->set_help(true);
         } else {

@@ -72,6 +72,7 @@ class DEploidIO{
     void setExcludeSites(const size_t exclude){ this->excludeSites_ = exclude; }
 
     bool forbidCopyFromSame() const { return this->forbidCopyFromSame_; }
+    void setForbidCopyFromSame(const bool forbid){ this->forbidCopyFromSame_ = forbid; }
 
     // Log
     void write (McmcSample * mcmcSample, Panel * panel );
@@ -87,6 +88,10 @@ class DEploidIO{
     string prefix_;
     size_t random_seed_;
     bool randomSeedWasSet_;
+    void setRandomSeedWasSet(const bool random){ this->randomSeedWasSet_ = random; }
+    bool randomSeedWasSet() const {return this->randomSeedWasSet_; }
+
+
     bool initialPropWasGiven_;
     bool useConstRecomb_;
     bool forbidCopyFromSame_;

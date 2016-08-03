@@ -39,7 +39,7 @@ class TestIO : public CppUnit::TestCase {
     }
 
     void testInitialization(){
-        CPPUNIT_ASSERT_EQUAL( this->input_->randomSeedWasSet_, false );
+        CPPUNIT_ASSERT_EQUAL( this->input_->randomSeedWasSet(), false );
         CPPUNIT_ASSERT_EQUAL( this->input_->initialPropWasGiven(), false );
         CPPUNIT_ASSERT_EQUAL( this->input_->excludeSites() , false );
         CPPUNIT_ASSERT( this->input_->excludedMarkers == NULL);
@@ -369,6 +369,7 @@ class TestIO : public CppUnit::TestCase {
                          "-noPanel" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv1), FlagsConflict );
 
+        // noPanel conflict with panel
         char *argv2[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
                          "-alt", "tests/testData/PG0390_first100alt.txt",
@@ -406,6 +407,22 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "tests/testData/lab_first100_Panel.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(13, argv5), FlagsConflict );
+
+        // exportPostProb conflict with noPanel
+        char *argv6[] = { "./dEploid",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-noPanel", "-exportPostProb" };
+        CPPUNIT_ASSERT_THROW ( this->input_->core(9, argv6), FlagsConflict );
+
+        // noPanel conflict with exportPostProb
+        char *argv7[] = { "./dEploid",
+                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-exportPostProb", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(9, argv7), FlagsConflict );
     }
 
 
