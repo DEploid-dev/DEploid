@@ -28,7 +28,8 @@ void DEploidIO::write( McmcSample * mcmcSample, Panel * panel ){
     this->writeProp( mcmcSample );
     this->writeLLK( mcmcSample );
     this->writeHap( mcmcSample );
-    this->writeRecombProb( panel );
+    this->writeVcf( mcmcSample );
+    this->writeRecombProb( panel ); // issue $98
 
     // Get End time before writing the log
     this->getTime(false);
@@ -41,7 +42,7 @@ void DEploidIO::write( McmcSample * mcmcSample, Panel * panel ){
 }
 
 
-void DEploidIO::writeRecombProb ( Panel * panel ){
+void DEploidIO::writeRecombProb ( Panel * panel ){  // issue $98
 
     if ( panel != NULL ){
         ofstreamExportRecombProb.open( strExportRecombProb.c_str(), ios::out | ios::app | ios::binary );
@@ -84,7 +85,7 @@ void DEploidIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
     (*writeTo) << setw(19) << " MCMC burn: " << mcmcBurn_ << "\n";
     (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_ << "\n";
     (*writeTo) << setw(19) << " MCMC sample rate: " << mcmcMachineryRate_ <<"\n";
-    (*writeTo) << setw(19) << " Random seed: " << this->random_seed_ << "\n";
+    (*writeTo) << setw(19) << " Random seed: " << this->randomSeed() << "\n";
     (*writeTo) << setw(19) << " Update Prop: "   << (this->doUpdateProp()  ? "YES":"NO") << "\n";
     (*writeTo) << setw(19) << " Update Single: " << (this->doUpdateSingle()? "YES":"NO") << "\n";
     (*writeTo) << setw(19) << " Update Pair: "   << (this->doUpdatePair()  ? "YES":"NO") << "\n";
@@ -110,6 +111,7 @@ void DEploidIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
     (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
     (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
     (*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
+    if ( doExportVcf() ) { (*writeTo) << setw(14) << "Vcf: "  << strExportVcf  << "\n"; }
     (*writeTo) << "\n";
     (*writeTo) << "Proportions at the last iteration:\n";
     for ( size_t ii = 0; ii < mcmcSample->proportion.back().size(); ii++){
@@ -165,4 +167,77 @@ void DEploidIO::writeHap( McmcSample * mcmcSample ){
 
     assert ( siteIndex == mcmcSample->hap.size());
     ofstreamExportHap.close();
+}
+
+
+void DEploidIO::writeVcf( McmcSample * mcmcSample ){
+
+    ofstreamExportTmp.open( strExportVcf.c_str(), ios::out | ios::app | ios::binary );
+    // VCF HEADER
+    if ( this->useVcf() ){
+        for ( auto const& headerLine: this->vcfReaderPtr_->headerLines){
+            ofstreamExportTmp << headerLine << endl;
+        }
+    } else {
+        ofstreamExportTmp << "##fileformat=VCFv4.2" << endl;
+    }
+    // Include proportions
+    for ( size_t ii = 0; ii < kStrain_; ii++){
+        ofstreamExportTmp << "##Proportion of strain "
+                          << ( this->useVcf() ? this->vcfReaderPtr_->sampleName : "h" )
+                          << "." << (ii+1)
+                          << "=" << mcmcSample->proportion.back()[ii] << endl;
+    }
+
+    // HEADER
+    ofstreamExportTmp << "#CHROM" << "\t"
+                      << "POS"    << "\t"
+                      << "ID"     << "\t"
+                      << "REF"    << "\t"
+                      << "ALT"    << "\t"
+                      << "QUAL"   << "\t"
+                      << "FILTER" << "\t"
+                      << "INFO"   << "\t"
+                      << "FORMAT" << "\t";
+    for ( size_t ii = 0; ii < kStrain_; ii++){
+        ofstreamExportTmp << ( this->useVcf() ? this->vcfReaderPtr_->sampleName : "h" )
+                          << "." << (ii+1) ;
+        ofstreamExportTmp << ((ii < (kStrain_-1)) ? "\t" : "\n") ;
+    }
+
+    size_t siteIndex = 0;
+    for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
+        for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
+            if ( useVcf() ) {
+                ofstreamExportTmp << this->vcfReaderPtr_->variants[siteIndex].chromStr  << "\t"
+                                  << this->vcfReaderPtr_->variants[siteIndex].posStr    << "\t"
+                                  << this->vcfReaderPtr_->variants[siteIndex].idStr     << "\t"
+                                  << this->vcfReaderPtr_->variants[siteIndex].refStr    << "\t"
+                                  << this->vcfReaderPtr_->variants[siteIndex].altStr    << "\t"
+                                  << this->vcfReaderPtr_->variants[siteIndex].qualStr   << "\t"
+                                  << this->vcfReaderPtr_->variants[siteIndex].filterStr << "\t"
+                                  << this->vcfReaderPtr_->variants[siteIndex].infoStr   << "\t"
+                                  << "GT"                                      << "\t";
+            } else {
+                ofstreamExportTmp << chrom_[chromI]               << "\t"
+                                  << (int)position_[chromI][posI] << "\t"
+                                  << "."                          << "\t"
+                                  << "."                          << "\t"
+                                  << "."                          << "\t"
+                                  << "."                          << "\t"
+                                  << "."                          << "\t"
+                                  << "."                          << "\t"
+                                  << "GT"                         << "\t";
+            }
+
+            for ( size_t ii = 0; ii < mcmcSample->hap[siteIndex].size(); ii++){
+                ofstreamExportTmp << mcmcSample->hap[siteIndex][ii];
+                ofstreamExportTmp << ((ii < (mcmcSample->hap[siteIndex].size()-1)) ? "\t" : "\n") ;
+            }
+            siteIndex++;
+        }
+    }
+
+    assert ( siteIndex == mcmcSample->hap.size());
+    ofstreamExportTmp.close();
 }

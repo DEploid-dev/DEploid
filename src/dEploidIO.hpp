@@ -56,8 +56,10 @@ class DEploidIO{
     void core(int argc, char *argv[]);
     void printHelp();
     bool help() const { return help_; }
-    bool usePanel() const { return usePanel_; }
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
+
+    // Panel related
+    bool usePanel() const { return usePanel_; }
     string panelFileName_;
 
     size_t nLoci() const { return this->nLoci_; }
@@ -86,7 +88,8 @@ class DEploidIO{
     string vcfFileName_;
     string excludeFileName_;
     string prefix_;
-    size_t random_seed_;
+    size_t randomSeed_;
+    size_t randomSeed() const { return randomSeed_;}
     bool randomSeedWasSet_;
     void setRandomSeedWasSet(const bool random){ this->randomSeedWasSet_ = random; }
     bool randomSeedWasSet() const {return this->randomSeedWasSet_; }
@@ -115,13 +118,25 @@ class DEploidIO{
     vector <double> refCount_;
     vector <double> altCount_;
     size_t nLoci_;
+
+    // Help related
     bool help_;
+    void set_help(const bool help) { this->help_ = help; }
+
+    // Panel related
     bool usePanel_;
+    void set_panel(const bool usePanel) { this->usePanel_ = usePanel; }
+
+    // Vcf Related
+    VcfReader * vcfReaderPtr_;
+
     bool useVcf_;
     void setUseVcf(const bool useVcf){ this->useVcf_ = useVcf; }
     bool useVcf() const {return this->useVcf_; }
 
-    VcfReader * vcfReaderPtr_;
+    bool doExportVcf_;
+    void setDoExportVcf( const bool exportVcf ){ this->doExportVcf_ = exportVcf; }
+    bool doExportVcf() const { return this->doExportVcf_; }
 
     // Parameters
     double missCopyProb_;
@@ -138,6 +153,7 @@ class DEploidIO{
     string compileTime_;
     string strExportLLK;
     string strExportHap;
+    string strExportVcf;
     string strExportProp;
     string strExportLog;
     string strExportRecombProb;
@@ -164,7 +180,6 @@ class DEploidIO{
     string endTime_;
     void getTime( bool isStartingTime );
 
-    void removeFilesWithSameName();
 
 
     // Methods
@@ -176,9 +191,8 @@ class DEploidIO{
     void readNextStringto( string &readto );
     void readInitialProportions();
 
-    void set_panel(const bool usePanel) { this->usePanel_ = usePanel; }
-    void set_help(const bool help) { this->help_ = help; }
-    void set_seed(const size_t seed){ this->random_seed_ = seed; }
+    void set_seed(const size_t seed){ this->randomSeed_ = seed; }
+    void removeFilesWithSameName();
 
 
     template<class T>
@@ -217,15 +231,15 @@ class DEploidIO{
     void setDoExportSwitchMissCopy ( const bool setTo ){ this->doExportSwitchMissCopy_ = setTo; }
     bool doExportSwitchMissCopy() const { return this->doExportSwitchMissCopy_; }
 
-    // log
+    // log and export resutls
     void writeRecombProb ( Panel * panel );
     void writeLLK (McmcSample * mcmcSample);
     void writeProp (McmcSample * mcmcSample);
     void writeHap (McmcSample * mcmcSample);
+    void writeVcf (McmcSample * mcmcSample);
     void writeLog (McmcSample * mcmcSample, ostream * writeTo );
     void writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t chromIndex, size_t strainIndex  );
     void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
-
 };
 
 #endif

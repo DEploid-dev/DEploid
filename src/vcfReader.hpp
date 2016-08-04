@@ -77,6 +77,7 @@ struct VcfCoverageFieldNotFound : public VcfInvalidVariantEntry{
 
 class VariantLine{
  friend class VcfReader;
+ friend class DEploidIO;
   public:
     VariantLine ( string tmpLine );
     ~VariantLine(){}
