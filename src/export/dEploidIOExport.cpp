@@ -29,7 +29,7 @@ void DEploidIO::write( McmcSample * mcmcSample, Panel * panel ){
     this->writeLLK( mcmcSample );
     this->writeHap( mcmcSample );
     this->writeVcf( mcmcSample );
-    this->writeRecombProb( panel ); // issue $98
+    this->writeRecombProb( panel );
 
     // Get End time before writing the log
     this->getTime(false);
@@ -42,7 +42,8 @@ void DEploidIO::write( McmcSample * mcmcSample, Panel * panel ){
 }
 
 
-void DEploidIO::writeRecombProb ( Panel * panel ){  // issue $98
+void DEploidIO::writeRecombProb ( Panel * panel ){
+    if ( !doExportRecombProb() ) return;
 
     if ( panel != NULL ){
         ofstreamExportRecombProb.open( strExportRecombProb.c_str(), ios::out | ios::app | ios::binary );
@@ -171,6 +172,7 @@ void DEploidIO::writeHap( McmcSample * mcmcSample ){
 
 
 void DEploidIO::writeVcf( McmcSample * mcmcSample ){
+    if ( !doExportVcf() ) return;
 
     ofstreamExportTmp.open( strExportVcf.c_str(), ios::out | ios::app | ios::binary );
     // VCF HEADER
