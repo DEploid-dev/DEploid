@@ -68,7 +68,7 @@ void DEploidIO::init() {
     this->initialProp.clear();
     this->setExcludeSites( false );
     this->excludedMarkers = NULL;
-    this->set_seed( 0 );
+    this->set_seed( (unsigned)0 );
     this->set_help(false);
     this->set_panel(true);
     this->precision_ = 8;
@@ -91,6 +91,7 @@ void DEploidIO::init() {
 
     this->setUseVcf(false);
     this->vcfReaderPtr_ = NULL;
+    this->setDoExportVcf(false);
 
     #ifdef COMPILEDATE
         compileTime_ = COMPILEDATE;
@@ -192,6 +193,7 @@ void DEploidIO::finalize(){
 void DEploidIO::removeFilesWithSameName(){
     strExportLLK = this->prefix_ + ".llk";
     strExportHap = this->prefix_ + ".hap";
+    strExportVcf = this->prefix_ + ".vcf";
     strExportProp = this->prefix_ + ".prop";
     strExportLog =  this->prefix_ + ".log";
     strExportRecombProb = this->prefix_ + ".recomb";
@@ -206,6 +208,7 @@ void DEploidIO::removeFilesWithSameName(){
 
     remove(strExportLLK.c_str());
     remove(strExportHap.c_str());
+    remove(strExportVcf.c_str());
     remove(strExportProp.c_str());
     remove(strExportLog.c_str());
     remove(strExportRecombProb.c_str());
@@ -247,6 +250,8 @@ void DEploidIO::parse (){
             }
             this->setUseVcf(true);
             this->readNextStringto ( this->vcfFileName_ ) ;
+        } else if (*argv_i == "-vcfOut"){
+            this->setDoExportVcf (true);
         } else if (*argv_i == "-plaf") {
             this->readNextStringto ( this->plafFileName_ ) ;
         } else if (*argv_i == "-panel") {
@@ -309,7 +314,7 @@ void DEploidIO::parse (){
             this->readInitialProportions();
             this->initialPropWasGiven_ = true;
         } else if ( *argv_i == "-seed"){
-            this->random_seed_ = readNextInput<size_t>() ;
+            this->set_seed( readNextInput<size_t>() );
             this->setRandomSeedWasSet( true );
         } else if ( *argv_i == "-h" || *argv_i == "-help"){
             this->set_help(true);

@@ -37,7 +37,7 @@ McmcMachinery::McmcMachinery(DEploidIO* pfDeconfIO, Panel *panel, McmcSample *mc
     this->panel_ = panel;
     this->mcmcSample_ = mcmcSample;
 
-    this->seed_ = this->dEploidIO_->random_seed_;
+    this->seed_ = this->dEploidIO_->randomSeed();
 
     this->hapRg_ = new MersenneTwister(this->seed_);
     this->mcmcEventRg_ = this->hapRg_;

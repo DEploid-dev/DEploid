@@ -43,7 +43,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL( this->input_->initialPropWasGiven(), false );
         CPPUNIT_ASSERT_EQUAL( this->input_->excludeSites() , false );
         CPPUNIT_ASSERT( this->input_->excludedMarkers == NULL);
-        CPPUNIT_ASSERT_EQUAL( this->input_->random_seed_, (size_t)0 );
+        CPPUNIT_ASSERT_EQUAL( this->input_->randomSeed(), (size_t)0 );
         CPPUNIT_ASSERT_EQUAL( this->input_->help(), false);
         CPPUNIT_ASSERT_EQUAL( this->input_->usePanel(), true);
         CPPUNIT_ASSERT_EQUAL( this->input_->precision_ , (size_t)8);
@@ -62,6 +62,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL( this->input_->constRecombProb_ , 1.0, epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( this->input_->averageCentimorganDistance_, 15000.0, epsilon3 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( this->input_->Ne_ , 10.0, epsilon3 );
+        CPPUNIT_ASSERT_EQUAL( this->input_->doExportVcf(), false );
     }
 
     void testMainConstructor() {
@@ -78,9 +79,10 @@ class TestIO : public CppUnit::TestCase {
                          "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
                          "-panel", "tests/testData/lab_first100_Panel.txt",
                          "-o", "tmp1",
-                         "-exclude", "tests/testData/PG0389.C.exclude.csv"};
+                         "-exclude", "tests/testData/PG0389.C.exclude.csv", "-vcfOut"};
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(11, argv1) );
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(13, argv1) );
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(14, argv1) );
 
         char *argv2[] = { "./dEploid",
                          "-vcf", "tests/testData/PG0389-C100.vcf",
