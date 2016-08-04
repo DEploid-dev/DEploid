@@ -40,6 +40,7 @@ class TestIO : public CppUnit::TestCase {
 
     void testInitialization(){
         CPPUNIT_ASSERT_EQUAL( this->input_->randomSeedWasSet(), false );
+        CPPUNIT_ASSERT_EQUAL( this->input_->doExportRecombProb(), false );
         CPPUNIT_ASSERT_EQUAL( this->input_->initialPropWasGiven(), false );
         CPPUNIT_ASSERT_EQUAL( this->input_->excludeSites() , false );
         CPPUNIT_ASSERT( this->input_->excludedMarkers == NULL);

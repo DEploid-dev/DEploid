@@ -138,6 +138,10 @@ class DEploidIO{
     void setDoExportVcf( const bool exportVcf ){ this->doExportVcf_ = exportVcf; }
     bool doExportVcf() const { return this->doExportVcf_; }
 
+    bool doExportRecombProb_;
+    void setDoExportRecombProb( const bool exportRecombProb ){ this->doExportRecombProb_ = exportRecombProb; }
+    bool doExportRecombProb() const { return this->doExportRecombProb_; }
+
     // Parameters
     double missCopyProb_;
     double averageCentimorganDistance_;// = 15000.0,

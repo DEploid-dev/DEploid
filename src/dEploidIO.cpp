@@ -63,6 +63,7 @@ void DEploidIO::core(int argc, char *argv[]) {
 
 
 void DEploidIO::init() {
+    this->setDoExportRecombProb ( false );
     this->setRandomSeedWasSet( false );
     this->initialPropWasGiven_ = false;
     this->initialProp.clear();
@@ -295,6 +296,8 @@ void DEploidIO::parse (){
             if ( this->constRecombProb_ < 0 || this->constRecombProb_ > 1){
                 throw ( OutOfRange ("-recomb", *argv_i) );
             }
+        } else if ( *argv_i == "-printRecomb" ) {
+            this->setDoExportRecombProb( true );
         } else if ( *argv_i == "-forbidSame" ) {
             this->setForbidCopyFromSame( true );
         } else if ( *argv_i == "-rate" ) {
