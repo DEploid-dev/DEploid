@@ -24,7 +24,7 @@ if [ $? -ne 0 ]; then
 fi
 
 grep "##" tests/testData/PG0389-C100.vcf > originalHeader
-head -$(wc -l < originalHeader) vcf.vcf > newHeader
+head -165 vcf.vcf > newHeader
 diff originalHeader newHeader
 if [ $? -ne 0 ]; then
   echo ""
