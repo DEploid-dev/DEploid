@@ -34,6 +34,11 @@ int main( int argc, char *argv[] ){
         DEploidIO dEploidIO;
         (void)dEploidIO.core( argc, argv );
 
+        if ( dEploidIO.version() ){
+            dEploidIO.printVersion();
+            return EXIT_SUCCESS;
+        }
+
         if ( dEploidIO.help() ){
             dEploidIO.printHelp();
             return EXIT_SUCCESS;

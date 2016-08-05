@@ -57,6 +57,10 @@ void DEploidIO::core(int argc, char *argv[]) {
     this->reInit(); // Reset to defalt values before parsing
     this->parse();
 
+    if ( this->help() || version() ){
+        return;
+    }
+
     this->checkInput();
     this->finalize();
 }
@@ -71,6 +75,7 @@ void DEploidIO::init() {
     this->excludedMarkers = NULL;
     this->set_seed( (unsigned)0 );
     this->set_help(false);
+    this->setVersion(false);
     this->set_panel(true);
     this->precision_ = 8;
     this->prefix_ = "pf3k-dEploid";
@@ -101,9 +106,9 @@ void DEploidIO::init() {
     #endif
 
     #ifdef DEPLOIDVERSION
-        dEploidVersion_ = DEPLOIDVERSION;
+        dEploidGitVersion_ = DEPLOIDVERSION;
     #else
-        dEploidVersion_ = "";
+        dEploidGitVersion_ = "";
     #endif
 }
 
@@ -321,6 +326,8 @@ void DEploidIO::parse (){
             this->setRandomSeedWasSet( true );
         } else if ( *argv_i == "-h" || *argv_i == "-help"){
             this->set_help(true);
+        } else if ( *argv_i == "-v" || *argv_i == "-version"){
+            this->setVersion(true);
         } else {
             throw ( UnknowArg((*argv_i)) );
         }
@@ -329,6 +336,7 @@ void DEploidIO::parse (){
 
 
 void DEploidIO::checkInput(){
+
     if ( this->refFileName_.size() == 0 && this->useVcf() == false ){
         throw FileNameMissing ( "Ref count" );}
     if ( this->altFileName_.size() == 0 && this->useVcf() == false ){
@@ -377,6 +385,13 @@ void DEploidIO::readNextStringto( string &readto ){
 }
 
 
+void DEploidIO::printVersion(){
+    cout << endl
+         << "dEploid " << VERSION
+         << endl
+         << "Git commit: " << dEploidGitVersion_ << endl;
+}
+
 void DEploidIO::printHelp(){
     cout << endl
          << "dEploid " << VERSION
@@ -385,6 +400,7 @@ void DEploidIO::printHelp(){
     cout << "Usage:"
          << endl;
     cout << setw(20) << "-h or -help"         << "  --  " << "Help. List the following content."<<endl;
+    cout << setw(20) << "-v or -version"      << "  --  " << "DEploid version."<<endl;
     cout << setw(20) << "-ref STR"            << "  --  " << "File path of reference allele count."<<endl;
     cout << setw(20) << "-alt STR"            << "  --  " << "File path of alternative allele count."<<endl;
     cout << setw(20) << "-plaf STR"           << "  --  " << "File path of population level allele frequencies."<<endl;
