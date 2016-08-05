@@ -72,7 +72,7 @@ void DEploidIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
     (*writeTo) << "#        dEploid "<< setw(10) << VERSION << " log        #\n";
     (*writeTo) << "#########################################\n";
     (*writeTo) << "Program was compiled on: " << compileTime_ << endl;
-    (*writeTo) << "dEploid version: " << dEploidVersion_ << endl;
+    (*writeTo) << "dEploid version: " << dEploidGitVersion_ << endl;
     (*writeTo) << "\n";
     (*writeTo) << "Input data: \n";
     (*writeTo) << setw(12) << "Panel: "     << panelFileName_  << "\n";

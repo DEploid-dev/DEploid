@@ -56,6 +56,9 @@ class DEploidIO{
     void core(int argc, char *argv[]);
     void printHelp();
     bool help() const { return help_; }
+    void printVersion();
+    bool version() const { return version_; }
+
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
 
     // Panel related
@@ -122,6 +125,8 @@ class DEploidIO{
     // Help related
     bool help_;
     void set_help(const bool help) { this->help_ = help; }
+    bool version_;
+    void setVersion(const bool version) { this->version_ = version; }
 
     // Panel related
     bool usePanel_;
@@ -153,7 +158,7 @@ class DEploidIO{
 
 
     // Output stream
-    string dEploidVersion_;
+    string dEploidGitVersion_;
     string compileTime_;
     string strExportLLK;
     string strExportHap;

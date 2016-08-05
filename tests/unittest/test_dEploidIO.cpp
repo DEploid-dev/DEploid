@@ -8,6 +8,7 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST( testMainConstructor );
     CPPUNIT_TEST( testInitialization );
     CPPUNIT_TEST( testPrintHelp );
+    CPPUNIT_TEST( testPrintVersion );
     CPPUNIT_TEST( testNotEnoughArg );
     CPPUNIT_TEST( testOutOfRange );
     CPPUNIT_TEST( testWrongType );
@@ -67,12 +68,6 @@ class TestIO : public CppUnit::TestCase {
     }
 
     void testMainConstructor() {
-
-        char *argv[] = { "./dEploid" };
-        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(1, argv) );
-
-        CPPUNIT_ASSERT_EQUAL((size_t)0, input_->argv_.size());
-        CPPUNIT_ASSERT_EQUAL( true, input_->help());
 
         char *argv1[] = { "./dEploid",
                          "-ref", "tests/testData/PG0390_first100ref.txt",
@@ -141,7 +136,39 @@ class TestIO : public CppUnit::TestCase {
 
 
     void testPrintHelp(){
+        char *argv[] = { "./dEploid" };
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(1, argv) );
+
+        CPPUNIT_ASSERT_EQUAL((size_t)0, input_->argv_.size());
+        CPPUNIT_ASSERT_EQUAL( true, input_->help());
         CPPUNIT_ASSERT_NO_THROW ( this->input_->printHelp() );
+
+        char *argv1[] = { "./dEploid", "-h" };
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(2, argv1) );
+
+        CPPUNIT_ASSERT_EQUAL((size_t)1, input_->argv_.size());
+        CPPUNIT_ASSERT_EQUAL( true, input_->help());
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->printHelp() );
+
+        char *argv2[] = { "./dEploid", "-help" };
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(2, argv2) );
+
+        CPPUNIT_ASSERT_EQUAL((size_t)1, input_->argv_.size());
+        CPPUNIT_ASSERT_EQUAL( true, input_->help());
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->printHelp() );
+    }
+
+
+    void testPrintVersion(){
+        char *argv1[] = { "./dEploid", "-v" };
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(2, argv1) );
+        CPPUNIT_ASSERT_EQUAL( true, input_->version());
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->printVersion() );
+
+        char *argv2[] = { "./dEploid", "-v" };
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(2, argv2) );
+        CPPUNIT_ASSERT_EQUAL( true, input_->version());
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->printVersion() );
     }
 
 
