@@ -11,7 +11,12 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-
+   introduction
+   installation
+   input
+   output
+   example
+   citation
    bug-report
 
 
