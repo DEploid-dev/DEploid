@@ -12,6 +12,9 @@ Contents:
    :maxdepth: 2
 
 
+   bug-report
+
+
 
 Indices and tables
 ==================
