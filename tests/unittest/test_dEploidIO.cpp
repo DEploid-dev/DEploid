@@ -326,12 +326,12 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "tests/testData/lab_first100_Panel.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(9, argv1), FileNameMissing );
-        CPPUNIT_ASSERT_THROW_MESSAGE( "Ref count file path missing!", this->input_->core(9, argv1), FileNameMissing );
+        CPPUNIT_ASSERT_THROW_MESSAGE( "\033[1;31mRef count\033[0m file path missing!", this->input_->core(9, argv1), FileNameMissing );
         try {
             this->input_->core(9, argv1);
         }
         catch (const exception &e) {
-            CPPUNIT_ASSERT_EQUAL( string("Ref count file path missing!"), string(e.what()) );
+            CPPUNIT_ASSERT_EQUAL( string("\033[1;31mRef count\033[0m file path missing!"), string(e.what()) );
         }
 
         char *argv2[] = { "./dEploid",
@@ -345,7 +345,7 @@ class TestIO : public CppUnit::TestCase {
             this->input_->core(9, argv2);
         }
         catch (const exception &e) {
-            CPPUNIT_ASSERT_EQUAL( string("Alt count file path missing!"), string(e.what()) );
+            CPPUNIT_ASSERT_EQUAL( string("\033[1;31mAlt count\033[0m file path missing!"), string(e.what()) );
         }
 
         // plaf missing
@@ -378,7 +378,7 @@ class TestIO : public CppUnit::TestCase {
             this->input_->core(11, argv);
         }
         catch (const exception &e) {
-            CPPUNIT_ASSERT_EQUAL( string("Invalid input file: PG0390_first100ref.txt"), string(e.what()) );
+            CPPUNIT_ASSERT_EQUAL( string("Invalid input file: \033[1;31mPG0390_first100ref.txt\033[0m"), string(e.what()) );
         }
     }
 

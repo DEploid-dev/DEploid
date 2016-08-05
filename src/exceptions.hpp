@@ -41,12 +41,12 @@ struct InvalidInput : std::exception {
   }
 
   explicit InvalidInput( string str ){
-    this->src      = str;
+    this->src      = "\033[1;31m" + str + "\033[0m";
     this->reason   = "";
   }
   virtual ~InvalidInput() throw() {}
   virtual const char* what () const noexcept {
-    return throwMsg.c_str();
+      return throwMsg.c_str();
   }
 };
 
