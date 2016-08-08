@@ -30,7 +30,7 @@ import shlex
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+extensions = [ "breathe", "sphinx.ext.todo", "sphinx.ext.coverage" ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -104,7 +104,7 @@ pygments_style = 'sphinx'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
-
+#sphinx.ext.coverage =True
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -255,7 +255,7 @@ latex_use_parts = False
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'deploid', 'DEploid Documentation',
+    (master_doc, 'DEploid', '',
      [author], 1)
 ]
 
@@ -290,4 +290,3 @@ breathe_projects = {
     "dEploid":"../xml/",
     }
 
-extensions = [ "breathe" ]

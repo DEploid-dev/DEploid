@@ -1,5 +1,0 @@
-.. _sec-introduction:
-
-============
-Introduction
-============

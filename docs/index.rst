@@ -3,28 +3,29 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to DEploid's documentation!
-===================================
+DEploid
+=======
 
-Contents:
+      A software that deconvolutes mixed genomes with unknown proportions.
 
 .. toctree::
    :maxdepth: 2
 
-   introduction
+   synopsis
+   description
    installation
    input
    output
    example
-   citation
    bug-report
+   citation
+   cppdocument
 
 
+.. Indices and tables
+.. ==================
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`
 
