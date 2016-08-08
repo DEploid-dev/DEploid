@@ -32,4 +32,4 @@ Interpreting the output
 ***********************
 
 .. todo::
-    Include r scripts and plots for data exploration
+    Include r scripts calling for interpreting the data

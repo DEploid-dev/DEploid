@@ -4,6 +4,14 @@
 Example
 =======
 
+.. todo::
+    Full example of working pipeline.
+
+
+.. note::
+    Caveat: need to run the program multiple times, because some models are harder than the others.
+
+
 ::
 
     $ ./dEploid -ref labStrains/PG0390_first100ref.txt \
