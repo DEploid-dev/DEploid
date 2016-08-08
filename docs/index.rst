@@ -19,7 +19,7 @@ DEploid
    example
    bug-report
    citation
-   cppdocument
+..    cppdocument
 
 
 .. Indices and tables
