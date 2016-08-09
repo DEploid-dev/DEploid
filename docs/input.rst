@@ -82,9 +82,9 @@ You may also try
     File path of reference and alternative allele count.
 
 .. note::
-    In early ``dEploid`` versions (prior to `v0.2-release`), allele counts extracted from the vcf file are placed in two files, and parsed by flags **-ref [file]** and **-alt [file]**. Tab-delimited plain text for input. First and second columns record chromosome and position labels respectively.  Third columns records the reference allele count, alternative allele count or population level allele frequency. For example,
+    In early ``dEploid`` versions (prior to `v0.2-release`), allele counts extracted from the vcf file are placed in two files, and parsed by flags **-ref [file]** and **-alt [file]**. Tab-delimited plain text for input. First and second columns record chromosome and position labels respectively.  Third columns records the reference allele count or alternative allele count. For example,
 
-.. csv-table:: reference allele count
+.. csv-table:: Reference allele count
     :header: CHROM, POS, PG0390.C
     :widths: 1,1,1
 
@@ -93,7 +93,7 @@ You may also try
     Pf3D7_01_v3,94459,90
     Pf3D7_01_v3,94487,79
 
-.. csv-table:: alternative allele count
+.. csv-table:: Alternative allele count
     :header: CHROM, POS, PG0390.C
     :widths: 1,1,1
 
@@ -143,6 +143,7 @@ Use our data exploration tools to investigate the data.
      -plaf tests/testData/labStrains_samples_PLAF.txt
      -o PG0389-C " < utilities/dataExplore.r
 
+
 .. image:: _static/PG0389-CaltVsRefAndWSAFvsPLAF.png
    :width: 1024px
    :alt: Plot alternative allele and reference allele counts to identify evidence of mixed infection in *Pf3k* sample PG0389-C.
@@ -150,3 +151,5 @@ Use our data exploration tools to investigate the data.
 .. todo::
     Explain a bit more.
 
+.. note::
+    The population level allele frequencies can be extracted from simple scripting.

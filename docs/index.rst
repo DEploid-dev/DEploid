@@ -16,9 +16,9 @@ DEploid
    installation
    input
    output
-   example
    bug-report
    citation
+..    example
 ..    cppdocument
 
 
