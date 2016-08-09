@@ -62,7 +62,8 @@ fun.dEploidPrefix <- function ( prefix ){
 
     return ( list ( propFileName = paste(prefix, ".prop",   sep = ""),
                     hapFileName  = paste(prefix, ".hap",    sep = ""),
-                    llkFileName  = paste(prefix, ".llk",    sep = "") ) )
+                    llkFileName  = paste(prefix, ".llk",    sep = ""),
+                    dicLogFileName  = paste(prefix, "dic.log", sep = "") ) )
 }
 
 
@@ -117,9 +118,9 @@ fun.dic.by.theta <- function ( tmpllk, thetallk ){
 }
 
 
-plot.prop <-function (propMat, title){
+plot.prop <-function (propMat, title = "Components"){
     rainbowColorBin = 5
-    barplot(t(tmpProp), beside=F, border=NA, col=rainbow(rainbowColorBin), space=0, xlab="Iteration", ylab="Component Freq", main=title)
+    barplot(t(propMat), beside=F, border=NA, col=rainbow(rainbowColorBin), space=0, xlab="Iteration", ylab="Component Freq", main=title)
 }
 
 
@@ -144,16 +145,16 @@ plot.wsaf.hist <- function ( obsWSAF, indexed = TRUE, title ="Histogram 0<WSAF<1
 }
 
 
-plot.llk <- function (llkTable, ref, alt, expWSAF, logFileName ){
+plot.llk <- function (llkTable, ref, alt, expWSAF, title = "" ){
     llk = llkTable$V2
     llkEvent = llkTable$V1
-    llk_sd = sd(llk)
-    llk_range = range(llk)
-    dic.by.var = fun.dic.by.llk.var (llk)
-    dic.by.theta = fun.dic.by.theta ( llk, fun.llk(ref, alt, expWSAF))
-    plot(llk, lty=2, type="l", col="black", xlab="Iteration", ylab="LLK", main=paste("LLK sd:", round(llk_sd, digits = 4),
-                                                                                     ", dic.by.var: ",round(dic.by.var),
-                                                                                     ", dic.by.theta: ",round(dic.by.theta)));
+#    llk_sd = sd(llk)
+#    llk_range = range(llk)
+
+#    dic.by.var = fun.dic.by.llk.var (llk)
+#    dic.by.theta = fun.dic.by.theta ( llk, fun.llk(ref, alt, expWSAF))
+
+    plot(llk, lty=2, type="l", col="black", xlab="Iteration", ylab="LLK", main=title);
     updateSingleAt = which(llkEvent == 1)
     updateBothAt = which(llkEvent == 2)
     updatePropAt = which(llkEvent == 0)
@@ -162,9 +163,22 @@ plot.llk <- function (llkTable, ref, alt, expWSAF, logFileName ){
     points(index[updateBothAt], llk[updateBothAt], cex = 0.6, col="blue")
     points(index[updatePropAt], llk[updatePropAt], cex = 0.6, col="green")
 
-#    cat ( "dic.by.var: ", dic.by.var, "\n", file = logFileName, append = T)
-#    cat ( "dic.by.theta: ", dic.by.theta, "\n", file = logFileName, append = T)
+}
 
+
+fun.getllk.dic <- function ( llkTable, ref, alt, expWSAF, logFileName ){
+    llk = llkTable$V2
+    llkEvent = llkTable$V1
+    llk_sd = sd(llk)
+    llk_range = range(llk)
+    dic.by.var = fun.dic.by.llk.var (llk)
+    dic.by.theta = fun.dic.by.theta ( llk, fun.llk(ref, alt, expWSAF))
+
+    cat ( "dic.by.var: ", dic.by.var, "\n", file = logFileName, append = T)
+    cat ( "dic.by.theta: ", dic.by.theta, "\n", file = logFileName, append = T)
+    return (paste("LLK sd:", round(llk_sd, digits = 4),
+                  ", dic.by.var: ",round(dic.by.var),
+                  ", dic.by.theta: ",round(dic.by.theta)))
 }
 
 
@@ -176,16 +190,21 @@ plot.plaf.vs.wsaf <- function ( plaf, obsWSAF, expWSAF = c(), title = "PLAF vs W
 }
 
 
-plot.wsaf <- function (obsWSAF, expWSAF, logFileName){
+fun.getWSAF.corr <- function( obsWSAF, expWSAF, dicLogFileName ){
     currentWSAFcov  = cov(obsWSAF, expWSAF)
     currentWSAFcorr = cor(obsWSAF, expWSAF)
+    cat ( "corr: ",  currentWSAFcorr, "\n", file = dicLogFileName)
 
+    return (paste("Sample Freq (cov =",format(currentWSAFcov,digits=4), "corr = ", format(currentWSAFcorr,digits=4),")"))
+}
+
+
+plot.wsaf <- function (obsWSAF, expWSAF, title = ""){
     plot(obsWSAF, expWSAF, pch=19, col="blue", xlab="Observed WSAF (ALT/(ALT+REF))", ylab="Expected WSAF (h%*%p)",
-         main=paste("Sample Freq (cov =",format(currentWSAFcov,digits=4), "corr = ", format(currentWSAFcorr,digits=4),")"),
+         main=title,
          xlim = c(-0.05, 1.05), cex = 0.5, ylim = c(-0.05, 1.05));
     abline(0,1,lty="dotted");
 
-    cat ( "corr: ",  currentWSAFcorr, "\n", file = logFileName)
 }
 
 
@@ -214,24 +233,34 @@ fun.dataExplore <- function (vcfInfo, plafInfo, prefix = "") {
 }
 
 
-fun.interpretDEploid <- function (vcfInfo, plafInfo, prefix = "") {
+fun.interpretDEploid.1 <- function (vcfInfo, plafInfo, dEploidPrefix, prefix = "") {
+
     PLAF = plafInfo$PLAF
     ref = vcfInfo$refCount
     alt = vcfInfo$altCount
 
+    dEploidOutput = fun.dEploidPrefix ( dEploidPrefix )
+    tmpProp = read.table(dEploidOutput$propFileName, header=F)
+    prop = as.numeric(tmpProp[dim(tmpProp)[1],])
+    hap = as.matrix(read.table(dEploidOutput$hapFileName, header=T)[,-c(1,2)] )
+    expWSAF = hap %*%prop
+    llkTable = read.table( dEploidOutput$llkFileName, header=F)
+
     png ( paste ( prefix, ".interpretDEploidFigure.1.png", sep = "" ),  width = 1500, height = 1000)
     par( mfrow = c(2,3) )
-
     plot.altVsRef ( ref, alt )
 
     obsWSAF = fun.calc.obsWSAF ( alt, ref )
     plot.wsaf.hist ( obsWSAF )
-    plot.plaf.vs.wsaf ( PLAF, obsWSAF )
+    plot.plaf.vs.wsaf ( PLAF, obsWSAF, expWSAF )
 
-plot.prop( tmpProp, "Components" )
-plot.wsaf ( obsWSAF, expWSAF, logFileName )
-plot.plaf.vs.wsaf (plaf, obsWSAF, expWSAF)
-plot.llk( llkTable, ref, alt, expWSAF, logFileName)
+    plot.prop( tmpProp )
+
+    tmpTitle = fun.getWSAF.corr (obsWSAF, expWSAF, dEploidOutput$dicLogFileName)
+    plot.wsaf ( obsWSAF, expWSAF, tmpTitle )
+
+    tmpTitle = fun.getllk.dic (llkTable, ref, alt, expWSAF, dEploidOutput$dicLogFileName )
+    plot.llk( llkTable, ref, alt, expWSAF, tmpTitle )
 
 
 
