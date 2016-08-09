@@ -5,6 +5,8 @@ distdir = $(PACKAGE)-$(VERSION)
 
 bin_PROGRAMS = dEploid dEploid_dbg
 
+man1_MANS = docs/_build/man/DEploid.1
+
 TESTS = unit_tests
 check_PROGRAMS = unit_tests dEploid_dbg dEploid_prof
 PROG = DEPLOID

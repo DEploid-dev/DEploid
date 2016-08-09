@@ -257,7 +257,7 @@ latex_use_parts = False
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'DEploid', '',
+    (master_doc, 'dEploid', '',
      [author], 1)
 ]
 
