@@ -9,10 +9,10 @@ Making sense of the output
 Output files
 ************
 
-``DEploid`` outputs text files with user-specified prefix with flag **-o**.
+``dEploid`` outputs text files with user-specified prefix with flag **-o**.
 
 *prefix*.log
-    Log file records _DEploid_ version, input file paths, parameter used and proportion estimates at the final iteration.
+    Log file records ``dEploid`` version, input file paths, parameter used and proportion estimates at the final iteration.
 
 *prefix*.llk
     Log likelihood of the MCMC chain.

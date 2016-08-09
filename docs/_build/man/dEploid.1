@@ -46,16 +46,16 @@ A software that deconvolutes mixed genomes with unknown proportions.
 .UNINDENT
 .SH DESCRIPTION
 .sp
-\fBDEploid\fP is designed for deconvoluting mixed genomes with unknown proportions. Traditional \(aqphasing\(aq programs are limited to diploid organisms. Our method modifies Li and Stephen’s [Li2003] algorithm with Markov chain Monte Carlo (MCMC) approaches, and builds a generic framework that allows haloptype searches in a multiple infection setting.
+\fBdEploid\fP is designed for deconvoluting mixed genomes with unknown proportions. Traditional \(aqphasing\(aq programs are limited to diploid organisms. Our method modifies Li and Stephen’s [Li2003] algorithm with Markov chain Monte Carlo (MCMC) approaches, and builds a generic framework that allows haloptype searches in a multiple infection setting.
 .sp
-\fBDEploid\fP is primarily developed as part of the \fI\%Pf3k\fP project, from which this documentation will take examples from for demonstration. The Pf3k project is a global collaboration using the latest sequencing technologies to provide a high\-resolution view of natural variation in the malaria parasite \fIPlasmodium falciparum\fP\&. Parasite DNA are extracted from patient blood sample, which often contains more than one parasite strain, with unknown proportions. \fBDEploid\fP is used for deconvoluting mixed haplotypes, and reporting the mixture proportions from each sample.
+\fBdEploid\fP is primarily developed as part of the \fI\%Pf3k\fP project, from which this documentation will take examples from for demonstration. The Pf3k project is a global collaboration using the latest sequencing technologies to provide a high\-resolution view of natural variation in the malaria parasite \fIPlasmodium falciparum\fP\&. Parasite DNA are extracted from patient blood sample, which often contains more than one parasite strain, with unknown proportions. \fBDEploid\fP is used for deconvoluting mixed haplotypes, and reporting the mixture proportions from each sample.
 [image: An illustration of mixed infection in malaria]
 [image]
 .IP [Li2003] 5
 Li, N. and M. Stephens (2003). Modeling linkage disequilibrium and identifying recombination hotspots using single\-nucleotide polymorphism data. \fIGenetics\fP 165(4), 2213–2233.
 .SH INSTALLATION
 .sp
-\fBDEploid\fP is written in C++.
+\fBdEploid\fP is written in C++.
 .SS Stable Release
 .INDENT 0.0
 .INDENT 3.5
@@ -66,7 +66,7 @@ You can download the latest stable release packaged for a variety of different p
 .UNINDENT
 .SS Development Version From GitHub
 .sp
-You can also install \fBDEploid\fP directly from the git repository. Here, you need to install \fBautoconf\fP first:
+You can also install \fBdEploid\fP directly from the git repository. Here, you need to install \fBautoconf\fP first:
 .sp
 On Debian/Ubuntu based systems:
 .INDENT 0.0
@@ -74,7 +74,7 @@ On Debian/Ubuntu based systems:
 .sp
 .nf
 .ft C
-apt\-get install build\-essential autoconf autoconf\-archive libcppunit\-dev
+$ apt\-get install build\-essential autoconf autoconf\-archive libcppunit\-dev
 .ft P
 .fi
 .UNINDENT
@@ -86,7 +86,7 @@ On Mac OS:
 .sp
 .nf
 .ft C
-port install automake autoconf autoconf\-archive cppunit
+$ port install automake autoconf autoconf\-archive cppunit
 .ft P
 .fi
 .UNINDENT
@@ -98,12 +98,14 @@ Afterwards you can build the binary using
 .sp
 .nf
 .ft C
-\&./bootstrap
-make
+$ ./bootstrap
+$ make
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
+.sp
+or install with \fBmake install\fP\&.
 .SH HOW IT WORKS?
 .SS Program parameters and options
 .SS Mostly used
@@ -449,11 +451,11 @@ Explain a bit more.
 .SH MAKING SENSE OF THE OUTPUT
 .SS Output files
 .sp
-\fBDEploid\fP outputs text files with user\-specified prefix with flag \fB\-o\fP\&.
+\fBdEploid\fP outputs text files with user\-specified prefix with flag \fB\-o\fP\&.
 .INDENT 0.0
 .TP
 .B \fIprefix\fP\&.log
-Log file records _DEploid_ version, input file paths, parameter used and proportion estimates at the final iteration.
+Log file records \fBdEploid\fP version, input file paths, parameter used and proportion estimates at the final iteration.
 .TP
 .B \fIprefix\fP\&.llk
 Log likelihood of the MCMC chain.
@@ -512,7 +514,7 @@ $ ./dEploid \-ref labStrains/PG0390_first100ref.txt \e
 \(ga\fP
 .SH REPORTING BUGS
 .sp
-If you encounter any problem when using _DEploid, please file a short bug report by using the \fI\%issue tracker\fP
+If you encounter any problem when using \fBdEploid\fP, please file a short bug report by using the \fI\%issue tracker\fP
 on GitHub or email joe.zhu (at) well.ox.ac.uk.
 .sp
 Please include the output of \fBdEploid \-v\fP and the platform you are using \fBdEploid\fP on in the report. If the problem occurs while executing \fBdEploid\fP, please also include the command you are using and the random seed.
@@ -520,49 +522,9 @@ Please include the output of \fBdEploid \-v\fP and the platform you are using \f
 Thank you!
 .SH CITING DEPLOID
 .sp
-If you use \fBDEploid\fP in your work, please cite the program:
+If you use \fBdEploid\fP in your work, please cite the program:
 .sp
 Sha Zhu, DEploid (2016). \fIGitHub repository\fP, \fI\%https://github.com/mcveanlab/DEploid\fP [accessed DATE]
-.SH DOCUMENTATION FOR FUNCTIONS AND CLASSES
-.INDENT 0.0
-.TP
-.B class AtMarker
-.UNINDENT
-.INDENT 0.0
-.TP
-.B spam(eggs)
-.TP
-.B ham(eggs)
-Spam or ham the foo.
-.UNINDENT
-.INDENT 0.0
-.TP
-.B \-r revision
-Specify the revision to work upon.
-.UNINDENT
-.INDENT 0.0
-.TP
-.B $.getJSON(href, callback[, errback])
-.INDENT 7.0
-.TP
-.B Arguments
-.INDENT 7.0
-.IP \(bu 2
-\fBhref\fP (\fIstring\fP) \-\- An URI to the location of the resource.
-.IP \(bu 2
-\fBcallback\fP \-\- Gets called with the object.
-.IP \(bu 2
-\fBerrback\fP \-\- Gets called in case the request fails. And a lot of other
-text so we need multiple lines.
-.UNINDENT
-.TP
-.B Throws
-\fBSomeError\fP \-\- For whatever reason in that case.
-.TP
-.B Returns
-Something.
-.UNINDENT
-.UNINDENT
 .SH AUTHOR
 Sha (Joe) Zhu
 .SH COPYRIGHT

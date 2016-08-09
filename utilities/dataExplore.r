@@ -7,50 +7,7 @@
 #    R --slave "--args -vcf tests/testData/PG0389-C.vcf -plaf tests/testData/labStrains_samples_PLAF.txt -o PG0389-C " < utilities/dataExplore.r
 
 rm(list= ls())
-
-fun.parse <- function( args ){
-    fun.local.checkAndIncreaseArgI <- function ( ){
-        arg_i = arg_i+1
-    }
-
-    outPrefix = "dataExplore"
-    vcfFileName = ""
-    plafFileName = ""
-
-    arg_i = 1
-    while ( arg_i < length(args) ){
-        argv = args[arg_i]
-        if ( argv == "-vcf" ){
-            arg_i = fun.local.checkAndIncreaseArgI ( )
-            vcfFileName = args[arg_i]
-        } else if ( argv == "-plaf" ){
-            arg_i = fun.local.checkAndIncreaseArgI ( )
-            plafFileName = args[arg_i]
-        } else if ( argv == "-o" ){
-            arg_i = fun.local.checkAndIncreaseArgI ( )
-            outPrefix = args[arg_i]
-        } else {
-            cat ("Unknow flag: ", argv, "\n")
-        }
-
-        arg_i = arg_i + 1
-    }
-
-    if ( vcfFileName == "" ){
-        stop ("Vcf File name not specified!")
-    }
-
-    if ( plafFileName == "" ){
-        stop ("Plaf File name not specified!")
-    }
-
-#    cat ("vcfFileName: ", vcfFileName, "\n")
-#    cat ("plafFileName: ", plafFileName, "\n")
-
-    return ( list ( vcfFileName = vcfFileName,
-                    plafFileName = plafFileName,
-                    outPrefix = outPrefix) )
-}
+source (
 
 
 fun.extract.vcf <- function ( vcfName, ADFieldIndex = 2 ){
