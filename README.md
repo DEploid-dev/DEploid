@@ -1,7 +1,4 @@
 
-DEploid
-=======
-
 <img src="docs/_static/deploid.png" width="180">
 [![Circle CI](https://circleci.com/gh/mcveanlab/DEploid.svg?style=svg)](https://circleci.com/gh/mcveanlab/DEploid)
 [![Build Status](https://travis-ci.org/mcveanlab/DEploid.svg?branch=master)](https://travis-ci.org/mcveanlab/DEploid)
