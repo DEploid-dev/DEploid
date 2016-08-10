@@ -146,7 +146,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     void testInitializeHap(){
         size_t hapLength = 1000000;
         size_t kStrain = 5;
-        size_t constPlaf = 0.3;
+        double constPlaf = 0.3;
         this->mcmcMachinery_->kStrain_ = kStrain;
         this->dEploidIO_->plaf_ = vector <double> (hapLength, constPlaf);
         this->mcmcMachinery_->initializeHap();
