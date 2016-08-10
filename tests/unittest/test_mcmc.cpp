@@ -151,7 +151,12 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         this->dEploidIO_->plaf_ = vector <double> (hapLength, constPlaf);
         this->mcmcMachinery_->initializeHap();
         for ( size_t i = 0; i < kStrain ; i++ ){
-            CPPUNIT_ASSERT_DOUBLES_EQUAL ( constPlaf, sumOfVec(this->mcmcMachinery_->currentHap_[i])/(double)hapLength, epsilon2 );
+            double tmpSum = 0;
+            for ( size_t j = 0 ; j < hapLength; j++ ){
+                tmpSum += this->mcmcMachinery_->currentHap_[j][i];
+            }
+
+            CPPUNIT_ASSERT_DOUBLES_EQUAL ( constPlaf, tmpSum/(double)hapLength, epsilon2 );
         }
     }
 
