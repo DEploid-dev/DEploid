@@ -1,5 +1,9 @@
 DEPLOIDVERSION = $(shell git show HEAD | head -1 | sed -e "s/commit //g" | cat)
-EXTRA_DIST = bootstrap
+EXTRA_DIST = bootstrap \
+             $(top_srcdir)/utilities/dataExplore.r \
+             $(top_srcdir)/utilities/interpretDEploid.r \
+             docs/_build/man/dEploid.1
+
 COMPILEDATE = $(shell date -u | sed -e "s/ /-/g")
 distdir = $(PACKAGE)-$(VERSION)
 

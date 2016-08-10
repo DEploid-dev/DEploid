@@ -19,7 +19,9 @@ myPlafInfo = fun.extract.plaf ( myInput$plafFileName )
 
 print(myInput$dEploidPrefix)
 
-
-
-
 fun.interpretDEploid.1 (myVcfInfo, myPlafInfo, myInput$dEploidPrefix, myInput$outPrefix)
+
+fun.interpretDEploid.2 (myVcfInfo, myInput$dEploidPrefix, myInput$outPrefix)
+
+
+# if files exist, trigar fun.interpretDEploid.3

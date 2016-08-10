@@ -24,8 +24,10 @@ Output files
     Haplotypes at the final iteration in plain text file.
 
 *prefix*.vcf
-    Haplotypes at the final iteration in VCF format.
+    When flag ``-vcfOut`` is turned on, haplotypes are saved at the final iteration in VCF format.
 
+*prefix*.single*i*
+    When flag ``-exportPostProb`` is turned on, posterior probabilities of the final iteration of strain *i*.
 
 ***********************
 Interpreting the output

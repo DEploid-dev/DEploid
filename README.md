@@ -1,4 +1,4 @@
-=======
+
 DEploid
 =======
 
@@ -7,9 +7,8 @@ DEploid
 [![Coverage Status](https://coveralls.io/repos/github/mcveanlab/DEploid/badge.svg)](https://coveralls.io/github/mcveanlab/DEploid)
 
 
-************
 Installation
-************
+------------
 
     ./bootstrap
     make
@@ -31,9 +30,9 @@ Options              | Useage |
 -noPanel |  Use population level allele frequency as prior.
 
 
-*******
 Licence
-*******
+-------
+
 You can freely use all code in this project under the conditions of the GNU GPL Version 3 or later.
 
 

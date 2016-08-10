@@ -262,7 +262,42 @@ fun.interpretDEploid.1 <- function (vcfInfo, plafInfo, dEploidPrefix, prefix = "
     tmpTitle = fun.getllk.dic (llkTable, ref, alt, expWSAF, dEploidOutput$dicLogFileName )
     plot.llk( llkTable, ref, alt, expWSAF, tmpTitle )
 
-
-
     dev.off()
 }
+
+
+plot.wsaf.vs.index <- function ( chrom, obsWSAF, expWSAF = c(), excludeIndex = c(), titlePrefix = "" ){
+    chromList = levels(chrom)
+
+    for ( chromI in chromList ){
+        chromIndex = which (chrom == chromI)
+        plot( obsWSAF[chromIndex], col="red", ylim=c(0,1), main = paste(titlePrefix, chromI, "WSAF"))
+
+        if ( length(expWSAF) > 0 ){
+            points(expWSAF[chromIndex], col="blue")
+        }
+    }
+
+}
+
+fun.interpretDEploid.2 <- function ( vcfInfo, dEploidPrefix, prefix = "" ){
+
+    ref = vcfInfo$refCount
+    alt = vcfInfo$altCount
+
+    dEploidOutput = fun.dEploidPrefix ( dEploidPrefix )
+    tmpProp = read.table(dEploidOutput$propFileName, header=F)
+    prop = as.numeric(tmpProp[dim(tmpProp)[1],])
+    hap = as.matrix(read.table(dEploidOutput$hapFileName, header=T)[,-c(1,2)] )
+    expWSAF = hap %*%prop
+    obsWSAF = fun.calc.obsWSAF ( alt, ref )
+
+    png(paste( prefix, ".interpretDEploidFigure.2.png", sep= ""), width = 3500, height = 2000)
+    par (mfrow = c(7,2))
+
+    plot.wsaf.vs.index ( vcfInfo$CHROM, obsWSAF, expWSAF )
+
+    dev.off()
+
+}
+
