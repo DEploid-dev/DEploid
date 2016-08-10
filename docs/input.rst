@@ -82,9 +82,9 @@ You may also try
     File path of reference and alternative allele count.
 
 .. note::
-    In early ``dEploid`` versions (prior to `v0.2-release`), allele counts extracted from the vcf file are placed in two files, and parsed by flags **-ref [file]** and **-alt [file]**. Tab-delimited plain text for input. First and second columns record chromosome and position labels respectively.  Third columns records the reference allele count, alternative allele count or population level allele frequency. For example,
+    In early ``dEploid`` versions (prior to `v0.2-release`), allele counts extracted from the vcf file are placed in two files, and parsed by flags **-ref [file]** and **-alt [file]**. Tab-delimited plain text for input. First and second columns record chromosome and position labels respectively.  Third columns records the reference allele count or alternative allele count. For example,
 
-.. csv-table:: reference allele count
+.. csv-table:: Reference allele count
     :header: CHROM, POS, PG0390.C
     :widths: 1,1,1
 
@@ -93,7 +93,7 @@ You may also try
     Pf3D7_01_v3,94459,90
     Pf3D7_01_v3,94487,79
 
-.. csv-table:: alternative allele count
+.. csv-table:: Alternative allele count
     :header: CHROM, POS, PG0390.C
     :widths: 1,1,1
 
@@ -130,12 +130,30 @@ You may also try
     Output precision (default value 8).
 
 
+.. _sec-eg:
 
-****************
-Data exploration
-****************
-
-.. todo::
-    Include r scripts and plots for data exploration
+***************************
+Example of data exploration
+***************************
 
 
+Use our data exploration tools to investigate the data.
+
+::
+
+    $ R --slave "--args -vcf tests/testData/PG0389-C.vcf
+     -plaf tests/testData/labStrains_samples_PLAF.txt
+     -o PG0389-C " < utilities/dataExplore.r
+
+
+.. image:: _static/PG0389-CaltVsRefAndWSAFvsPLAF.png
+   :width: 1024px
+   :alt: Plot alternative allele and reference allele counts to identify evidence of mixed infection in *Pf3k* sample PG0389-C.
+
+
+- Figure on the left plots the alternative allele count against the reference allele count. As *P. falciparum* genomes are haploid, in clonal samples, one woule expect to see either alternative or reference allele at any sites. Heterozygous sites are indications of mixed infection.
+- Figure in the middle is the histogram of the allele frequency within sample.
+- Figure on the right show allele frequency within sample, compare against the population average.
+
+.. .. note::
+..     The population level allele frequencies can be extracted from simple scripting.
