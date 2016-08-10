@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "DEPLOID" "1" "August 09, 2016" "v0.2-release" "DEploid"
+.TH "DEPLOID" "1" "August 10, 2016" "v0.2-release" "DEploid"
 .SH NAME
 dEploid \- 
 .
@@ -296,10 +296,10 @@ File path of reference and alternative allele count.
 \fBNOTE:\fP
 .INDENT 0.0
 .INDENT 3.5
-In early \fBdEploid\fP versions (prior to \fIv0.2\-release\fP), allele counts extracted from the vcf file are placed in two files, and parsed by flags \fB\-ref [file]\fP and \fB\-alt [file]\fP\&. Tab\-delimited plain text for input. First and second columns record chromosome and position labels respectively.  Third columns records the reference allele count, alternative allele count or population level allele frequency. For example,
+In early \fBdEploid\fP versions (prior to \fIv0.2\-release\fP), allele counts extracted from the vcf file are placed in two files, and parsed by flags \fB\-ref [file]\fP and \fB\-alt [file]\fP\&. Tab\-delimited plain text for input. First and second columns record chromosome and position labels respectively.  Third columns records the reference allele count or alternative allele count. For example,
 .UNINDENT
 .UNINDENT
-.SS reference allele count
+.SS Reference allele count
 .TS
 center;
 |l|l|l|.
@@ -345,7 +345,7 @@ T}	T{
 T}
 _
 .TE
-.SS alternative allele count
+.SS Alternative allele count
 .TS
 center;
 |l|l|l|.
@@ -424,7 +424,7 @@ Initialize proportions.
 .B \-p [int]
 Output precision (default value 8).
 .UNINDENT
-.SS Data exploration
+.SS Example of data exploration
 .sp
 Use our data exploration tools to investigate the data.
 .INDENT 0.0
@@ -442,11 +442,12 @@ $ R \-\-slave "\-\-args \-vcf tests/testData/PG0389\-C.vcf
 [image: Plot alternative allele and reference allele counts to identify evidence of mixed infection in *Pf3k* sample PG0389-C.]
 [image]
 .INDENT 0.0
-.INDENT 3.5
-.SS Todo
-.sp
-Explain a bit more.
-.UNINDENT
+.IP \(bu 2
+Figure on the left plots the alternative allele count against the reference allele count. As \fIP. falciparum\fP genomes are haploid, in clonal samples, one woule expect to see either alternative or reference allele at any sites. Heterozygous sites are indications of mixed infection.
+.IP \(bu 2
+Figure in the middle is the histogram of the allele frequency within sample.
+.IP \(bu 2
+Figure on the right show allele frequency within sample, compare against the population average.
 .UNINDENT
 .SH MAKING SENSE OF THE OUTPUT
 .SS Output files
@@ -467,51 +468,52 @@ MCMC updates of the proportion estimates.
 Haplotypes at the final iteration in plain text file.
 .TP
 .B \fIprefix\fP\&.vcf
-Haplotypes at the final iteration in VCF format.
+When flag \fB\-vcfOut\fP is turned on, haplotypes are saved at the final iteration in VCF format.
+.TP
+.B \fIprefix\fP\&.single[i]
+When flag \fB\-exportPostProb\fP is turned on, posterior probabilities of the final iteration of strain [i].
 .UNINDENT
-.SS Interpreting the output
-.INDENT 0.0
-.INDENT 3.5
-.SS Todo
-.sp
-Include r scripts calling for interpreting the data
-.UNINDENT
-.UNINDENT
-.SH EXAMPLE
-.INDENT 0.0
-.INDENT 3.5
-.SH TODO
-.sp
-Full example of working pipeline.
-.UNINDENT
-.UNINDENT
-.sp
-\fBNOTE:\fP
-.INDENT 0.0
-.INDENT 3.5
-Caveat: need to run the program multiple times, because some models are harder than the others.
-.UNINDENT
-.UNINDENT
+.SS Example of output interpretion
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-$ ./dEploid \-ref labStrains/PG0390_first100ref.txt \e
-\-alt labStrains/PG0390_first100alt.txt \e
-\-plaf labStrains/labStrains_first100_PLAF.txt \e
-\-panel labStrains/lab_first100_Panel.txt \e
-\-o tmp1
+$ ./dEploid \-vcf tests/testData/PG0389\-C.vcf \e
+\-plaf tests/testData/labStrains_samples_PLAF.txt \e
+\-noPanel \-o PG0389\-CNopanel
+$ R \-\-slave "\-\-args \-vcf tests/testData/PG0389\-C.vcf
+\-plaf tests/testData/labStrains_samples_PLAF.txt
+\-dEprefix PG0389\-CNopanel
+\-o PG0389\-CNopanel " < utilities/interpretDEploid.r
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
+[image: interpretDEploidFigure.1]
+[image]
 .sp
-###Input examples :
-\fB\(gabash
-./dEploid \-ref labStrains/PG0390_first100ref.txt \-alt labStrains/PG0390_first100alt.txt \-plaf labStrains/labStrains_first100_PLAF.txt \-panel labStrains/lab_first100_Panel.txt \-o tmp1
-./dEploid \-ref labStrains/PG0390_first100ref.txt \-alt labStrains/PG0390_first100alt.txt \-plaf labStrains/labStrains_first100_PLAF.txt \-panel labStrains/lab_first100_Panel.txt \-nSample 100 \-rate 3
-\(ga\fP
+The top three figures are the same as figures show in data example, with a small addition of inferred WSAF marked in blue, in the top right figure.
+.INDENT 0.0
+.IP \(bu 2
+The bottom left figure show the relative proportion change history of the MCMC chain.
+.IP \(bu 2
+The middle figure show the correlation between the expected and observed allele frequency in sample.
+.IP \(bu 2
+The right figure shows changes in MCMC likelihood .
+.UNINDENT
+[image: interpretDEploidFigure.2]
+[image]
+.sp
+This panel figure shows all allele frequencies within sample across all 14 chromosomes. Expected and observed WSAF are marked in blue and red respectively.
+.SH EXAMPLE
+.INDENT 0.0
+.INDENT 3.5
+.SH TODO
+.sp
+Full example of working pipeline will be provided with the \fIPf3k\fP pilot paper.
+.UNINDENT
+.UNINDENT
 .SH REPORTING BUGS
 .sp
 If you encounter any problem when using \fBdEploid\fP, please file a short bug report by using the \fI\%issue tracker\fP
@@ -524,7 +526,7 @@ Thank you!
 .sp
 If you use \fBdEploid\fP in your work, please cite the program:
 .sp
-Sha Zhu, DEploid (2016). \fIGitHub repository\fP, \fI\%https://github.com/mcveanlab/DEploid\fP [accessed DATE]
+PLACEHOLDER FOR APP NOTE
 .SH AUTHOR
 Sha (Joe) Zhu
 .SH COPYRIGHT
