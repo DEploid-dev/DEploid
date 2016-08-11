@@ -301,3 +301,29 @@ fun.interpretDEploid.2 <- function ( vcfInfo, dEploidPrefix, prefix = "" ){
 
 }
 
+
+plot.prob <-function (tmpProp, title){
+    rainbowColorBin = 16
+    barplot(t(tmpProp), beside=F, border=NA, col=rainbow(rainbowColorBin), space=0, xlab="SNP index", ylab="Posterior probabilities", main=title)
+}
+
+
+plot.postProb.ofCase <- function ( inPrefix, outPrefix, case ){
+    png(paste(outPrefix, ".", case, ".png", sep = ""), width = 3500, height = 2000)
+    obj = read.table( paste(inPrefix, ".", case, sep = ""), header=T)
+    chromName = levels(obj$CHROM)
+    par(mfrow = c(length(chromName)/2,2))
+    for ( chromI in chromName ){
+        plot.prob ( obj[which( chromI == obj$CHROM),c(3:dim(obj)[2])], "")
+    }
+    dev.off()
+}
+
+
+fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "" ){
+    strainI = 0
+    while ( file.exists(paste(inPrefix, ".single", strainI, sep="")) ){
+        plot.postProb.ofCase( inPrefix, outPrefix, paste("single", strainI, sep=""))
+        strainI = strainI+1
+    }
+}
