@@ -758,7 +758,8 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = src/atMarker.hpp src/atMarker.cpp \
+INPUT                  = src/variantIndex.hpp src/variantIndex.cpp \
+                         src/txtReader.hpp src/txtReader.cpp \
                          src/mcmc.hpp src/mcmc.cpp   \
                          src/panel.hpp src/panel.cpp \
                          src/dEploid.cpp src/exceptions.hpp \

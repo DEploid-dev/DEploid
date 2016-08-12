@@ -25,7 +25,8 @@ common_src = src/random/fastfunc.cpp \
 			 src/dEploidIO.cpp \
 			 src/utility.cpp \
 			 src/updateHap.cpp \
-			 src/atMarker.cpp \
+			 src/txtReader.cpp \
+			 src/variantIndex.cpp \
 			 src/export/dEploidIOExport.cpp \
 			 src/export/dEploidIOExportPosteriorProb.cpp \
 			 src/vcfReader.cpp

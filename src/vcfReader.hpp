@@ -26,7 +26,7 @@
 #include <fstream>
 #include <stdlib.h>     /* strtol, strtod */
 #include "exceptions.hpp"
-
+#include "variantIndex.hpp"
 
 #ifndef VCF
 #define VCF
@@ -121,7 +121,7 @@ class VariantLine{
 
 
 /*! \brief VCF file reader @ingroup group_data */
-class VcfReader{
+class VcfReader : public VariantIndex {
 
 #ifdef UNITTEST
  friend class TestVCF;
@@ -149,6 +149,9 @@ class VcfReader{
     void readVariants();
     void readHeader( );
     void checkFeilds( );
+
+    void getChromList();
+    void removeMarkers ( vector < size_t > & indexOfContentToBeRemoved );
 
     // Debug tools
     bool printSampleName();

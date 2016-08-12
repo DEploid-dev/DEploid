@@ -29,7 +29,6 @@
 #include <sstream>      // std::stringstream
 #include "global.h"
 #include "exceptions.hpp"
-#include "atMarker.hpp"
 #include "panel.hpp"
 #include "vcfReader.hpp"
 

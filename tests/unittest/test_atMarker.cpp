@@ -2,8 +2,8 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "atMarker.hpp"
 
-class TestAtMarker : public CppUnit::TestCase {
-    CPPUNIT_TEST_SUITE( TestAtMarker );
+class TestTxtReader : public CppUnit::TestCase {
+    CPPUNIT_TEST_SUITE( TestTxtReader );
     CPPUNIT_TEST( testMainConstructor );
     CPPUNIT_TEST( checkSizeBefore );
     CPPUNIT_TEST( checkInfo );
@@ -12,13 +12,13 @@ class TestAtMarker : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE_END();
 
   private:
-    AtMarker * atMarker_;
+    TxtReader * atMarker_;
     InputMarker * altCount_;
     ExcludeMarker* excludedMarkers_;
 
   public:
     void setUp() {
-        this->atMarker_ = new AtMarker();
+        this->atMarker_ = new TxtReader();
         this->altCount_ = new InputMarker();
         this->excludedMarkers_ = new ExcludeMarker();
         this->altCount_->readFromFile("tests/testData/atMarkerForTesting.txt" );
@@ -178,4 +178,4 @@ class TestAtMarker : public CppUnit::TestCase {
     }
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION( TestAtMarker );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTxtReader );

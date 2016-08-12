@@ -25,7 +25,7 @@
 #include <math.h>
 #include <iostream>
 
-Panel::Panel():InputMarker(){
+Panel::Panel():TxtReader(){
     //this->nPanel_ = this->nInfoLines_;
 };
 

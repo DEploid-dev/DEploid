@@ -37,7 +37,6 @@ VcfReader::VcfReader(string fileName){
     this->init( fileName );
     this->readHeader();
     this->readVariants();
-    this->finalize();
 }
 
 
@@ -131,6 +130,40 @@ void VcfReader::readVariants(){
         getline(inFile, this->tmpLine_);
     }
 }
+
+
+void VcfReader::getChromList(){
+    assert ( this->chrom_.size() == (size_t)0 );
+    assert ( this->indexOfChromStarts_.size() == (size_t)0 );
+    assert ( this->position_.size() == (size_t)0 );
+    string previousChrom ("");
+    vector <double> positionOfChrom_;
+    for ( size_t i = 0; i < this->variants.size() ; i++ ){
+        if ( previousChrom != this->variants[i].chromStr ){
+            //cout << previousChrom << endl;
+            if ( previousChrom.size() != 0 ){
+                this->position_.push_back(positionOfChrom_);
+                //cout << positionOfChrom_.size() <<endl;
+                positionOfChrom_.clear();
+            }
+        }
+        positionOfChrom_.push_back( strtod (this->variants[i].posStr.c_str(), NULL) );
+        previousChrom = this->variants[i].chromStr;
+    }
+    this->position_.push_back(positionOfChrom_);
+    cout << "finished"<<endl;
+}
+
+
+void VcfReader::removeMarkers ( vector < size_t > & indexOfContentToBeRemoved ){
+    for ( auto const &value: indexOfContentToBeRemoved){
+        //this->content_.erase(this->content_.begin() + value );
+    }
+
+    //this->getIndexOfChromStarts();
+    //this->nLoci_ = this->content_.size();
+}
+
 
 
 VariantLine::VariantLine ( string tmpLine ){
@@ -248,3 +281,5 @@ void VariantLine::extract_field_VARIANT ( ){
     }
 
 }
+
+
