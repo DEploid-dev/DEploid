@@ -35,6 +35,11 @@ using namespace std;
 class ExcludeMarker;
 
 class VariantIndex {
+#ifdef UNITTEST
+ friend class TestPanel;
+ friend class TestTxtReader;
+ friend class VcfReader;
+#endif
  friend class DEploidIO;
  friend class TxtReader;
  friend class ExcludeMarker;
@@ -45,18 +50,32 @@ class VariantIndex {
     // Members
     vector <string> chrom_;
     vector < size_t > indexOfChromStarts_;
-    vector < vector < double> > position_;
+    vector < vector < int> > position_;
+    vector < vector < int> > keptPosition_;
     size_t nLoci_;
-    vector < size_t > findWhoToBeRemoved (ExcludeMarker* excludedMarkers );
-    virtual void removeMarkers ( vector < size_t > & index ){};
+
+    // For removing markers and positions
+    void findWhoToBeKept (ExcludeMarker* excludedMarkers );
+    virtual void removeMarkers ( ){};
+
+    /* Index of content/info will be kept */
+    vector < size_t > indexOfContentToBeKept;
+    /* Index of positions entry to be kept, this will have the same size as this->chrom_, */
+    vector < vector < size_t > > indexOfPosToBeKept;
+
+    bool doneGetIndexOfChromStarts_;
+    bool doneGetIndexOfChromStarts() const { return doneGetIndexOfChromStarts_; }
+    void setDoneGetIndexOfChromStarts ( const bool setTo ){ this->doneGetIndexOfChromStarts_ = setTo; }
+
+    // Methods
+    void init();
+    void getIndexOfChromStarts();
+    void removePositions();
 
   public:
-    VariantIndex(){};
+    VariantIndex();
     virtual ~VariantIndex(){};
-    void findAndRemoveMarkers( ExcludeMarker* excludedMarkers ){
-        vector < size_t > indexOfContentToBeRemoved = this->findWhoToBeRemoved (excludedMarkers );
-        this->removeMarkers (indexOfContentToBeRemoved);
-    }
+    void findAndKeepMarkers( ExcludeMarker* excludedMarkers );
 };
 
 

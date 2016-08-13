@@ -37,6 +37,9 @@ VcfReader::VcfReader(string fileName){
     this->init( fileName );
     this->readHeader();
     this->readVariants();
+    this->getChromList();
+    this->getIndexOfChromStarts();
+    assert(this->doneGetIndexOfChromStarts_ == true);
 }
 
 
@@ -78,7 +81,7 @@ void VcfReader::readHeader(){
         throw InvalidInputFile( this->fileName_ );
     }
 
-    dout << " there are "<< this->headerLines.size() << " lines" <<endl;
+    dout << " There are "<< this->headerLines.size() << " lines in the header." <<endl;
 }
 
 
@@ -133,35 +136,40 @@ void VcfReader::readVariants(){
 
 
 void VcfReader::getChromList(){
+    this->chrom_.clear();
+    this->position_.clear();
+
     assert ( this->chrom_.size() == (size_t)0 );
-    assert ( this->indexOfChromStarts_.size() == (size_t)0 );
     assert ( this->position_.size() == (size_t)0 );
+
     string previousChrom ("");
-    vector <double> positionOfChrom_;
+    vector <int> positionOfChrom_;
+
     for ( size_t i = 0; i < this->variants.size() ; i++ ){
-        if ( previousChrom != this->variants[i].chromStr ){
-            //cout << previousChrom << endl;
-            if ( previousChrom.size() != 0 ){
-                this->position_.push_back(positionOfChrom_);
-                //cout << positionOfChrom_.size() <<endl;
-                positionOfChrom_.clear();
-            }
+        if ( previousChrom != this->variants[i].chromStr && previousChrom.size() > (size_t)0 ){
+            this->chrom_.push_back( previousChrom );
+            this->position_.push_back(positionOfChrom_);
+            positionOfChrom_.clear();
         }
-        positionOfChrom_.push_back( strtod (this->variants[i].posStr.c_str(), NULL) );
+        positionOfChrom_.push_back( stoi (this->variants[i].posStr.c_str(), NULL) );
         previousChrom = this->variants[i].chromStr;
     }
+
+    this->chrom_.push_back( previousChrom );
     this->position_.push_back(positionOfChrom_);
-    cout << "finished"<<endl;
+    assert ( this->position_.size() == this->chrom_.size() );
 }
 
 
-void VcfReader::removeMarkers ( vector < size_t > & indexOfContentToBeRemoved ){
-    for ( auto const &value: indexOfContentToBeRemoved){
-        //this->content_.erase(this->content_.begin() + value );
+void VcfReader::removeMarkers ( ){
+    assert ( this->keptVariants.size() == (size_t)0 );
+    for ( auto const &value: this->indexOfContentToBeKept){
+        this->keptVariants.push_back(this->variants[value] );
     }
-
-    //this->getIndexOfChromStarts();
-    //this->nLoci_ = this->content_.size();
+    this->variants.clear();
+    this->variants = this->keptVariants;
+    this->nLoci_ = this->variants.size();
+    dout << " Vcf number of loci kept = " << this->nLoci_ << endl;
 }
 
 
@@ -258,7 +266,6 @@ void VariantLine::extract_field_FORMAT ( ){
         throw VcfCoverageFieldNotFound ( this->tmpStr_ );
     }
     assert ( adFieldIndex_ > -1 );
-    //cout << formatStr << "  " << adFieldIndex_ << endl;
 }
 
 

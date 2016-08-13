@@ -134,6 +134,7 @@ class VcfReader : public VariantIndex {
 
   private:
     vector <VariantLine> variants;
+    vector <VariantLine> keptVariants;
     vector <double> refCount;
     vector <double> altCount;
     vector <string> headerLines ;
@@ -151,7 +152,7 @@ class VcfReader : public VariantIndex {
     void checkFeilds( );
 
     void getChromList();
-    void removeMarkers ( vector < size_t > & indexOfContentToBeRemoved );
+    void removeMarkers ( );
 
     // Debug tools
     bool printSampleName();

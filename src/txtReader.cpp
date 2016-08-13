@@ -75,9 +75,10 @@ void TxtReader::readFromFileBase(const char inchar[]){
         this->reshapeContentToInfo();
     }
 
+    this->getIndexOfChromStarts();
     assert ( tmpChromInex_ > -1 );
     assert ( chrom_.size() == position_.size() );
-    this->getIndexOfChromStarts();
+    assert(this->doneGetIndexOfChromStarts_ == true);
 }
 
 
@@ -103,39 +104,31 @@ void TxtReader::extractChrom( string & tmp_str ){
 
 
 void TxtReader::extractPOS( string & tmp_str ){
-    this->tmpPosition_.push_back(strtod(tmp_str.c_str(), NULL));
+    this->tmpPosition_.push_back(stoi(tmp_str.c_str(), NULL));
 }
 
 
 void TxtReader::reshapeContentToInfo(){
     assert ( this->info_.size() == 0 );
-    for ( size_t i = 0; i < this->nLoci_; i++){
+    for ( size_t i = 0; i < this->content_.size(); i++){
         this->info_.push_back( this->content_[i][0] );
     }
 }
 
 
-void TxtReader::getIndexOfChromStarts(){
-    this->indexOfChromStarts_.clear();
-    assert( indexOfChromStarts_.size() == 0 );
-    indexOfChromStarts_.push_back( (size_t) 0);
-    for ( size_t tmpChrom = 0 ; indexOfChromStarts_.size() < this->chrom_.size(); tmpChrom++ ){
-        indexOfChromStarts_.push_back(indexOfChromStarts_.back()+this->position_[tmpChrom].size());
+void TxtReader::removeMarkers ( ){
+    assert( this->keptContent_.size() == (size_t)0 );
+    for ( auto const &value: this->indexOfContentToBeKept){
+        this->keptContent_.push_back(this->content_[value] );
     }
-    assert( indexOfChromStarts_.size() == this->chrom_.size() );
-}
 
-
-void TxtReader::removeMarkers ( vector < size_t > & indexOfContentToBeRemoved ){
-    for ( auto const &value: indexOfContentToBeRemoved){
-        this->content_.erase(this->content_.begin() + value );
-    }
+    this->content_.clear();
+    assert(this->content_.size() == (size_t)0);
+    this->content_ = this->keptContent_;
 
     if ( this->nInfoLines_ == 1 ){
-        for ( auto const &value: indexOfContentToBeRemoved){
-            this->info_.erase(this->info_.begin() + value );
-        }
+        this->info_.clear();
+        this->reshapeContentToInfo();
     }
-    this->getIndexOfChromStarts();
     this->nLoci_ = this->content_.size();
 }

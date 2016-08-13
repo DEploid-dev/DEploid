@@ -115,7 +115,7 @@ class DEploidIO{
     vector <double> initialProp;
     vector <string> chrom_;
     vector < size_t > indexOfChromStarts_;
-    vector < vector < double> > position_;
+    vector < vector < int > > position_;
     vector <double> plaf_;
     vector <double> refCount_;
     vector <double> altCount_;

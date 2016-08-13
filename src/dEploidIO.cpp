@@ -149,7 +149,7 @@ void DEploidIO::finalize(){
     if ( useVcf() ){ // read vcf files, and parse it to refCount and altCount
         this->vcfReaderPtr_ = new VcfReader (vcfFileName_ );
         if ( this->excludeSites() ){
-            this->vcfReaderPtr_->findAndRemoveMarkers (excludedMarkers);
+            this->vcfReaderPtr_->findAndKeepMarkers (excludedMarkers);
         }
 
         this->vcfReaderPtr_->finalize(); // Finalize after remove variantlines
@@ -159,29 +159,29 @@ void DEploidIO::finalize(){
         TxtReader ref;
         ref.readFromFile(refFileName_.c_str());
         if ( this->excludeSites() ){
-            ref.findAndRemoveMarkers( excludedMarkers );
+            ref.findAndKeepMarkers( excludedMarkers );
         }
         this->refCount_ = ref.info_;
 
         TxtReader alt;
         alt.readFromFile(altFileName_.c_str());
         if ( this->excludeSites() ){
-            alt.findAndRemoveMarkers( excludedMarkers );
+            alt.findAndKeepMarkers( excludedMarkers );
         }
         this->altCount_ = alt.info_;
     }
     TxtReader plaf;
     plaf.readFromFile(plafFileName_.c_str());
     if ( this->excludeSites() ){
-        plaf.findAndRemoveMarkers( excludedMarkers );
+        plaf.findAndKeepMarkers( excludedMarkers );
     }
     this->plaf_ = plaf.info_;
     this->chrom_ = plaf.chrom_;
     this->position_ = plaf.position_;
     this->indexOfChromStarts_ = plaf.indexOfChromStarts_;
 
+    cout << "refCount_.size()" << refCount_.size()<<endl;
     this->nLoci_ = refCount_.size();
-cout << "nloci = " << this->nLoci_<< endl;
 
     if ( this->nLoci_ != this->plaf_.size() ){
         throw LociNumberUnequal( this->plafFileName_ );

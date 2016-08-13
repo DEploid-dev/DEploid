@@ -42,26 +42,26 @@ class TxtReader : public VariantIndex {
 
     // content is a matrix of n.loci by n.strains, i.e. content length is n.loci
     vector < vector < double > > content_;
+    vector < vector < double > > keptContent_;
     // info_ only refers to the first column of the content
     vector <double> info_;
 
     size_t nInfoLines_;
 
     int tmpChromInex_;
-    vector < double > tmpPosition_;
+    vector < int > tmpPosition_;
 
     // Methods
     void extractChrom( string & tmp_str );
     void extractPOS ( string & tmp_str );
     void reshapeContentToInfo();
-    void getIndexOfChromStarts();
 
-  public:
+  public: // move the following to private
     TxtReader (){};
     virtual void readFromFile( const char inchar[] ){ this->readFromFileBase( inchar ); };
     void readFromFileBase( const char inchar[] );
     virtual ~TxtReader(){};
-    void removeMarkers ( vector < size_t > & indexOfContentToBeRemoved );
+    void removeMarkers ( );
 };
 
 
@@ -74,12 +74,5 @@ class ExcludeMarker : public TxtReader {
     ~ExcludeMarker(){};
 };
 
-
-//class InputMarker : public TxtReader {
-  //public:
-    //InputMarker ():TxtReader(){};
-    //~InputMarker(){};
-    //void removeMarkers( ExcludeMarker* excludedMarkers );
-//};
 
 #endif

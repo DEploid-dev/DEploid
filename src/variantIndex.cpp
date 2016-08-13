@@ -26,49 +26,82 @@
 #include <algorithm> // find
 #include <iostream>
 
-vector < size_t > VariantIndex::findWhoToBeRemoved( ExcludeMarker* excludedMarkers ){
 
-    /* Index of content/info will be removed */
-    vector < size_t > indexOfContentToBeRemoved;
-    /* Index of positions entry to be removed, this will have the same size as this->chrom_, */
-    vector < vector < size_t > > indexOfPosRemovals;
+VariantIndex::VariantIndex(){
+    this->init();
+};
+
+void VariantIndex::findWhoToBeKept( ExcludeMarker* excludedMarkers ){
+
+    dout << " Starts findWhoToBeKept " << endl;
+    assert ( this->indexOfContentToBeKept.size() == 0 );
+    assert ( this->indexOfPosToBeKept.size() == 0 );
 
     for ( size_t chromI = 0; chromI < this->chrom_.size(); chromI++){
-        vector < size_t > tmpIndexOfPosRemovals;
+        dout << "   Going through chrom "<< chrom_[chromI] << endl;
+        vector < size_t > tmpindexOfPosToBeKept;
 
         // detemine if something needs to be removed from the current chrom.
-        vector<string>::iterator chromIt;
-        chromIt = find ( excludedMarkers->chrom_.begin(),  excludedMarkers->chrom_.end(), this->chrom_[chromI]);
-        if ( chromIt == excludedMarkers->chrom_.end() ) {
-            dout << " Remove markers skipping " << chrom_[chromI] << endl;
-            indexOfPosRemovals.push_back(tmpIndexOfPosRemovals);
-            continue;
-        }
+        vector<string>::iterator chromIt = find ( excludedMarkers->chrom_.begin(),  excludedMarkers->chrom_.end(), this->chrom_[chromI]);
 
         size_t hapIndex = indexOfChromStarts_[ chromI ];
         size_t chromIndexInExclude = std::distance(excludedMarkers->chrom_.begin(), chromIt);
-
         for ( size_t posI = 0; posI < this->position_[chromI].size(); posI++){
-            if ( std::find(excludedMarkers->position_[chromIndexInExclude].begin(), excludedMarkers->position_[chromIndexInExclude].end(), this->position_[chromI][posI]) != excludedMarkers->position_[chromIndexInExclude].end() ){
-                indexOfContentToBeRemoved.push_back(hapIndex);
-                tmpIndexOfPosRemovals.push_back(posI);
+            if (  std::find( excludedMarkers->position_[chromIndexInExclude].begin(),
+                             excludedMarkers->position_[chromIndexInExclude].end(),
+                             this->position_[chromI][posI]) == excludedMarkers->position_[chromIndexInExclude].end() ){
+                indexOfContentToBeKept.push_back(hapIndex);
+                tmpindexOfPosToBeKept.push_back(posI);
             }
             hapIndex++;
         }
-        reverse( tmpIndexOfPosRemovals.begin(), tmpIndexOfPosRemovals.end() );
-        indexOfPosRemovals.push_back(tmpIndexOfPosRemovals);
+        indexOfPosToBeKept.push_back(tmpindexOfPosToBeKept);
     }
-    assert ( indexOfPosRemovals.size() == this->chrom_.size() );
+    assert ( indexOfPosToBeKept.size() == this->chrom_.size() );
 
-    reverse( indexOfContentToBeRemoved.begin(), indexOfContentToBeRemoved.end() );
-
-    for ( size_t chromI = 0; chromI < this->chrom_.size(); chromI++){
-        for ( auto const &value: indexOfPosRemovals[chromI]){
-            this->position_[chromI].erase ( this->position_[chromI].begin() + value );
-        }
-    }
-
-    return indexOfContentToBeRemoved;
-
+    dout << indexOfContentToBeKept.size() << " sites need to be Kept " << endl;
 }
+
+
+void VariantIndex::findAndKeepMarkers( ExcludeMarker* excludedMarkers ){
+    this->setDoneGetIndexOfChromStarts( false );
+    dout << " findAndKeepMarkers called" <<endl;
+    this->findWhoToBeKept (excludedMarkers );
+    this->removePositions();
+    this->getIndexOfChromStarts();
+    this->removeMarkers ();
+}
+
+
+void VariantIndex::removePositions(){
+    assert ( this->keptPosition_.size() == (size_t)0 );
+    for ( size_t chromI = 0; chromI < this->chrom_.size(); chromI++){
+        vector <int> tmpKeptPosition_;
+        for ( size_t i = 0; i < this->indexOfPosToBeKept[chromI].size(); i++ ){
+            tmpKeptPosition_.push_back( this->position_[chromI][this->indexOfPosToBeKept[chromI][i]] );
+        }
+        this->keptPosition_.push_back(tmpKeptPosition_);
+    }
+    this->position_.clear();
+    this->position_ = this->keptPosition_;
+}
+
+
+void VariantIndex::getIndexOfChromStarts(){
+    assert(this->doneGetIndexOfChromStarts_ == false);
+    this->indexOfChromStarts_.clear();
+    assert( indexOfChromStarts_.size() == 0 );
+    this->indexOfChromStarts_.push_back( (size_t) 0);
+    for ( size_t tmpChrom = 0 ; indexOfChromStarts_.size() < this->chrom_.size(); tmpChrom++ ){
+        indexOfChromStarts_.push_back(indexOfChromStarts_.back()+this->position_[tmpChrom].size());
+    }
+    assert( indexOfChromStarts_.size() == this->chrom_.size() );
+    this->setDoneGetIndexOfChromStarts( true );
+}
+
+
+void VariantIndex::init(){
+    this->setDoneGetIndexOfChromStarts( false );
+}
+
 
