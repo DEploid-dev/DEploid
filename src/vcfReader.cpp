@@ -168,6 +168,7 @@ void VcfReader::removeMarkers ( ){
     }
     this->variants.clear();
     this->variants = this->keptVariants;
+    this->keptVariants.clear();
     this->nLoci_ = this->variants.size();
     dout << " Vcf number of loci kept = " << this->nLoci_ << endl;
 }

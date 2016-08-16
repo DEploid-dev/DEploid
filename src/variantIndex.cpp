@@ -47,7 +47,10 @@ void VariantIndex::findWhoToBeKept( ExcludeMarker* excludedMarkers ){
         size_t hapIndex = indexOfChromStarts_[ chromI ];
         size_t chromIndexInExclude = std::distance(excludedMarkers->chrom_.begin(), chromIt);
         for ( size_t posI = 0; posI < this->position_[chromI].size(); posI++){
-            if (  std::find( excludedMarkers->position_[chromIndexInExclude].begin(),
+            if ( chromIt == excludedMarkers->chrom_.end() ){
+                indexOfContentToBeKept.push_back(hapIndex);
+                tmpindexOfPosToBeKept.push_back(posI);
+            } else if (  std::find( excludedMarkers->position_[chromIndexInExclude].begin(),
                              excludedMarkers->position_[chromIndexInExclude].end(),
                              this->position_[chromI][posI]) == excludedMarkers->position_[chromIndexInExclude].end() ){
                 indexOfContentToBeKept.push_back(hapIndex);
@@ -84,6 +87,7 @@ void VariantIndex::removePositions(){
     }
     this->position_.clear();
     this->position_ = this->keptPosition_;
+    this->keptPosition_.clear();
 }
 
 

@@ -13,18 +13,22 @@ class TestTxtReader : public CppUnit::TestCase {
 
   private:
     TxtReader * txtReader_;
+    TxtReader * afterExclude_;
     ExcludeMarker* excludedMarkers_;
 
   public:
     void setUp() {
         this->txtReader_ = new TxtReader();
+        this->afterExclude_ = new TxtReader();
         this->excludedMarkers_ = new ExcludeMarker();
-        this->txtReader_->readFromFile("tests/testData/atMarkerForTesting.txt" );
-        this->excludedMarkers_->readFromFile("tests/testData/excludeFortesting.txt" );
+        this->txtReader_->readFromFile("data/testData/txtReaderForTesting.txt" );
+        this->afterExclude_->readFromFile("data/testData/txtReaderForTestingAfterExclude.txt");
+        this->excludedMarkers_->readFromFile("data/testData/txtReaderForTestingToBeExclude.txt" );
     }
 
     void tearDown() {
         delete txtReader_;
+        delete afterExclude_;
         delete excludedMarkers_;
     }
 
@@ -48,6 +52,17 @@ class TestTxtReader : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL ( (size_t)4, this->excludedMarkers_->position_[0].size() );
         CPPUNIT_ASSERT_EQUAL ( (size_t)1, this->excludedMarkers_->position_[1].size() );
         CPPUNIT_ASSERT_EQUAL ( (size_t)2, this->excludedMarkers_->position_[2].size() );
+
+        CPPUNIT_ASSERT_EQUAL ( (size_t)93, this->afterExclude_->info_.size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)93, this->afterExclude_->nLoci_ );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)6, this->afterExclude_->chrom_.size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)6, this->afterExclude_->position_.size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)12, this->afterExclude_->position_[0].size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)12, this->afterExclude_->position_[1].size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)17, this->afterExclude_->position_[2].size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)23, this->afterExclude_->position_[3].size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)20, this->afterExclude_->position_[4].size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)9, this->afterExclude_->position_[5].size() );
     }
 
     void checkInfo(){
@@ -99,6 +114,7 @@ class TestTxtReader : public CppUnit::TestCase {
 
     void checkRemoveMarkers(){
         CPPUNIT_ASSERT_NO_THROW ( this->txtReader_->findAndKeepMarkers (excludedMarkers_) );
+        CPPUNIT_ASSERT_NO_THROW ( this->afterExclude_->findAndKeepMarkers (excludedMarkers_) );
     }
 
     void checkSizeAfter(){
@@ -172,6 +188,56 @@ class TestTxtReader : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL ( (int)180270, this->txtReader_->position_[5][8] );
         CPPUNIT_ASSERT_EQUAL ( (double)0, this->txtReader_->info_[94-2] );
         CPPUNIT_ASSERT_EQUAL ( (double)0, this->txtReader_->content_[94-2][0] );
+
+        this->afterExclude_->findAndKeepMarkers (excludedMarkers_);
+        CPPUNIT_ASSERT_EQUAL ( (size_t)93, this->afterExclude_->info_.size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)93, this->afterExclude_->nLoci_ );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)6, this->afterExclude_->chrom_.size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)6, this->afterExclude_->position_.size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)12, this->afterExclude_->position_[0].size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)(16-4), this->afterExclude_->position_[1].size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)17, this->afterExclude_->position_[2].size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)(24-1), this->afterExclude_->position_[3].size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)20, this->afterExclude_->position_[4].size() );
+        CPPUNIT_ASSERT_EQUAL ( (size_t)(11-2), this->afterExclude_->position_[5].size() );
+
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->info_.size(), this->afterExclude_->info_.size() );
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->content_.size(), this->afterExclude_->content_.size() );
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->keptContent_.size(), this->afterExclude_->keptContent_.size() );
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->keptContent_.size(), (size_t)0 );
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->nInfoLines_, this->afterExclude_->nInfoLines_ );
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->nInfoLines_, (size_t)1);
+
+        for ( size_t i = 0; i < 93; i++ ){
+            CPPUNIT_ASSERT_EQUAL (this->txtReader_->info_[i], this->afterExclude_->info_[i] );
+            CPPUNIT_ASSERT_EQUAL (this->txtReader_->content_[i][0], this->afterExclude_->content_[i][0] );
+        }
+
+
+        for ( size_t i = 0; i < 93; i++ ){
+            CPPUNIT_ASSERT_EQUAL (this->txtReader_->info_[i], this->afterExclude_->info_[i] );
+            CPPUNIT_ASSERT_EQUAL (this->txtReader_->content_[i][0], this->afterExclude_->content_[i][0] );
+        }
+
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->chrom_.size(), this->afterExclude_->chrom_.size() );
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->chrom_.size(), (size_t)6 );
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->indexOfChromStarts_.size(), this->afterExclude_->indexOfChromStarts_.size() );
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->indexOfChromStarts_.size(), (size_t)6 );
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->position_.size(), this->afterExclude_->position_.size() );
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->position_.size(), (size_t)6 );
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->keptPosition_.size(), this->afterExclude_->keptPosition_.size() );
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->keptPosition_.size(), (size_t)0 );
+
+        for ( size_t i = 0; i < 6; i++ ){
+            CPPUNIT_ASSERT_EQUAL (this->txtReader_->chrom_[i], this->afterExclude_->chrom_[i] );
+            CPPUNIT_ASSERT_EQUAL (this->txtReader_->indexOfChromStarts_[i], this->afterExclude_->indexOfChromStarts_[i] );
+            CPPUNIT_ASSERT_EQUAL (this->txtReader_->position_[i].size(), this->afterExclude_->position_[i].size() );
+            for ( size_t j = 0; j < this->txtReader_->position_[i].size(); j++ ){
+                CPPUNIT_ASSERT_EQUAL (this->txtReader_->position_[i][j], this->afterExclude_->position_[i][j] );
+
+            }
+        }
+        CPPUNIT_ASSERT_EQUAL (this->txtReader_->nLoci_, this->afterExclude_->nLoci_ );
     }
 };
 

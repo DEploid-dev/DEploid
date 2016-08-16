@@ -35,7 +35,7 @@ class TestPanel : public CppUnit::TestCase {
   public:
     void setUp() {
         this->epsilon3 = 0.000000000001;
-        this->panelName_ = "tests/testData/clonalPanel.csv";
+        this->panelName_ = "data/testData/testingPanel.txt";
         // in R: panel = read.csv("clonalPanel.csv", header = T)
         this->panel1_ = new Panel();
         this->panel1_->readFromFile(panelName_.c_str() );
@@ -55,6 +55,8 @@ class TestPanel : public CppUnit::TestCase {
     void tearDown() {
         delete panel1_;
         delete panel2_;
+        delete panel3_;
+        delete panel4_;
     }
 
 

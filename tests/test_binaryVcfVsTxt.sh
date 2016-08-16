@@ -66,3 +66,5 @@ if [ $? -ne 0 ]; then
   echo "Text Vcf columns unequal"
   exit 1
 fi
+
+rm vcf* txt*
