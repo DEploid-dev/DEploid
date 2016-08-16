@@ -12,7 +12,7 @@ class TestVCF : public CppUnit::TestCase {
 
   public:
     void setUp() {
-        this->vcf_ = new VcfReader ( "tests/testData/PG0389-C100.vcf" );
+        this->vcf_ = new VcfReader ( "data/testData/PG0390-C.test.vcf" );
     }
 
     void tearDown(){

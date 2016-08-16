@@ -16,9 +16,9 @@ test:
   override:
     - ./bootstrap
     - make
+    - gzip -d data/testData/PG0390-C.test.vcf.gz
     - make check
     #- valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
-    - gzip -d tests/testData/PG0390-C.vcf.gz
     - ./tests/test_binary.sh
     - ./tests/testPOS.sh
     - ./tests/test_binaryVcfVsTxt.sh
