@@ -17,7 +17,7 @@ before_script:
 script:
   - make
   - make check
-  - gzip -d tests/testData/PG0390-C.vcf.gz; mv PG0390-C.vcf tests/testData/
+  - gzip -d tests/testData/PG0390-C.vcf.gz
   - ./tests/test_binary.sh
   - ./tests/testPOS.sh
   - ./tests/test_binaryVcfVsTxt.sh
