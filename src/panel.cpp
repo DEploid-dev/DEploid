@@ -39,9 +39,6 @@ Panel::~Panel(){};
 
 
 void Panel::checkForExceptions( size_t nLoci, string panelFileName ){
-    cout << "this->content_.size()" <<this->content_.size()<<endl;
-    cout << "loci" <<nLoci<<endl;
-    cout << "this->pRec_.size()" <<this->pRec_.size()<<endl;
     if ( this->content_.size() != nLoci ){
         throw LociNumberUnequal( panelFileName );
     }
@@ -92,8 +89,6 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bo
         this->pRecNoRec_.push_back ( 0.0 );
         this->pNoRecNoRec_.push_back ( 0.0 );
     }
-    cout << "pRec_.size() = " << pRec_.size() <<endl;
-    cout << "this->nLoci_ = " << this->nLoci_ <<endl;
     assert(pRec_.size() == this->nLoci_ );
     assert(pRecEachHap_.size() == this->nLoci_ );
     assert(pNoRec_.size() == this->nLoci_ );

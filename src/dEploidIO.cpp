@@ -180,7 +180,6 @@ void DEploidIO::finalize(){
     this->position_ = plaf.position_;
     this->indexOfChromStarts_ = plaf.indexOfChromStarts_;
 
-    cout << "refCount_.size()" << refCount_.size()<<endl;
     this->nLoci_ = refCount_.size();
 
     if ( this->nLoci_ != this->plaf_.size() ){
