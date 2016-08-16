@@ -39,9 +39,6 @@ Panel::~Panel(){};
 
 
 void Panel::checkForExceptions( size_t nLoci, string panelFileName ){
-    cout << "this->content_.size()" <<this->content_.size()<<endl;
-    cout << "loci" <<nLoci<<endl;
-    cout << "this->pRec_.size()" <<this->pRec_.size()<<endl;
     if ( this->content_.size() != nLoci ){
         throw LociNumberUnequal( panelFileName );
     }
@@ -92,8 +89,6 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bo
         this->pRecNoRec_.push_back ( 0.0 );
         this->pNoRecNoRec_.push_back ( 0.0 );
     }
-    cout << "pRec_.size() = " << pRec_.size() <<endl;
-    cout << "this->nLoci_ = " << this->nLoci_ <<endl;
     assert(pRec_.size() == this->nLoci_ );
     assert(pRecEachHap_.size() == this->nLoci_ );
     assert(pNoRec_.size() == this->nLoci_ );
@@ -104,18 +99,18 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bo
 
 
 void Panel::buildExamplePanel1(){
-    this->position_.push_back( vector <int> ({93157, 94422, 94459, 94487, 95518, 95632, 95641 }) );
     this->chrom_ = vector <string> ({"Pf3D7_01_v3"});
+    this->position_.push_back( vector <int> ({93157, 94422, 94459, 94487, 95518, 95632, 95641 }) );
     this->indexOfChromStarts_ = vector <size_t> ({0});
     this->buildExamplePanelContent();
 }
 
 
 void Panel::buildExamplePanel2(){
+    this->chrom_ = vector <string> ({"Pf3D7_01_v3", "Pf3D7_02_v3", "Pf3D7_03_v3"});
     this->position_.push_back( vector <int> ({93157}) );
     this->position_.push_back( vector <int> ({94422, 94459, 94487, 95518, 95632}) );
     this->position_.push_back( vector <int> ({95641 }) );
-    this->chrom_ = vector <string> ({"Pf3D7_01_v3", "Pf3D7_02_v3", "Pf3D7_03_v3"});
     this->indexOfChromStarts_ = vector <size_t> ({0, 1, 6});
     this->buildExamplePanelContent();
 }

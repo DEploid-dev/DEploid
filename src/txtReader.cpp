@@ -125,6 +125,7 @@ void TxtReader::removeMarkers ( ){
     this->content_.clear();
     assert(this->content_.size() == (size_t)0);
     this->content_ = this->keptContent_;
+    this->keptContent_.clear();
 
     if ( this->nInfoLines_ == 1 ){
         this->info_.clear();
