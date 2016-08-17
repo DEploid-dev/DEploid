@@ -55,7 +55,8 @@ echo "Testing examples"
  test_noRepeat -h
  test_noRepeat -v
  test_noRepeat -version
- #test_dEploid -ref tests/testData/PG0390_first100ref.txt -alt tests/testData/PG0390_first100alt.txt -plaf tests/testData/labStrains_first100_PLAF.txt -panel tests/testData/lab_first100_Panel.txt -nSample 100 -rate 3 || exit 1
- #test_dEploid -ref "tests/testData/PG0390_first100ref.txt" -alt "tests/testData/PG0390_first100alt.txt" -plaf "tests/testData/labStrains_first100_PLAF.txt" -panel "tests/testData/lab_first100_Panel.txt" -o tmp1 || exit 1
- test_dEploid -vcf tests/testData/PG0390-C.vcf -o tmp1 -exclude tests/testData/labStrainsExcludeBelow07.csv -plaf tests/testData/labStrains_PLAF.txt -noPanel || exit 1
+ test_dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -noPanel -o tmp1 || exit 1
+ test_dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel ldata/testData/abStrains.test.panel.txt -o tmp1 || exit 1
+ test_dEploid -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -noPanel -o tmp1 || exit 1
+ test_dEploid -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel data/testData/labStrains.test.panel.txt -o tmp1 || exit 1
 echo ""

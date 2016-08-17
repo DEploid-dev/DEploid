@@ -1,11 +1,14 @@
 #!/bin/bash
-./dEploid -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp -exportPostProb -k 2
+./dEploid -ref data/testData/PG0390-C.test.ref \
+-alt data/testData/PG0390-C.test.alt \
+-plaf data/testData/labStrains.test.PLAF.txt \
+-panel data/testData/labStrains.test.panel.txt -o tmp -exportPostProb -k 2
 cut -f 1 tmp.hap | tail -n+2 > tmpCHROM
 cut -f 2 tmp.hap | tail -n+2 > tmpPOS
 
 
-awk -F "\"*,\"*" '{print $1}' tests/testData/refCountForTesting.csv  | tail -n+2 > trueCHROM
-awk -F "\"*,\"*" '{print $2}' tests/testData/refCountForTesting.csv  | tail -n+2 > truePOS
+cut -f 1 data/testData/PG0390-C.test.ref  | tail -n+2 > trueCHROM
+cut -f 2 data/testData/PG0390-C.test.ref | tail -n+2 > truePOS
 
 
 diff trueCHROM tmpCHROM
