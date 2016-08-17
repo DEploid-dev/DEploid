@@ -1,9 +1,7 @@
 #!/bin/bash
-#./dEploid -vcf tests/testData/PG0389-C100.vcf  -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o vcf -seed 1 -vcfOut
-#./dEploid -ref tests/testData/PG0389.C_ref100.txt -alt tests/testData/PG0389.C_alt100.txt -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o txt -seed 1  -vcfOut
-
-./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel data/testData/labStrains.test.panel.txt -o vcf -seed 1 -vcfOut || exit 1
-./dEploid -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel data/testData/labStrains.test.panel.txt -o txt -seed 1  -vcfOut || exit 1
+sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel data/testData/labStrains.test.panel.txt -seed 1 -vcfOut "
+./dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf -o vcf || exit 1
+./dEploid ${sameFlags} -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -o txt || exit 1
 
 diff txt.prop vcf.prop
 if [ $? -ne 0 ]; then

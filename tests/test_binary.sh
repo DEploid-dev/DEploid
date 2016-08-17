@@ -49,6 +49,7 @@ function test_noRepeat {
   echo " done."
 }
 
+sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt"
 
 echo "Testing examples"
  test_noRepeat
@@ -56,8 +57,8 @@ echo "Testing examples"
  test_noRepeat -h
  test_noRepeat -v
  test_noRepeat -version
- test_dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -noPanel -o tmp1 || exit 1
- test_dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel data/testData/labStrains.test.panel.txt -o tmp1 || exit 1
- test_dEploid -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -noPanel -o tmp1 || exit 1
- test_dEploid -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel data/testData/labStrains.test.panel.txt -o tmp1 || exit 1
+ test_dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf -noPanel -o tmp1 || exit 1
+ #test_dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf -panel data/testData/labStrains.test.panel.txt -o tmp1 || exit 1
+ #test_dEploid ${sameFlags} -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -noPanel -o tmp1 || exit 1
+ #test_dEploid ${sameFlags} -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -panel data/testData/labStrains.test.panel.txt -o tmp1 || exit 1
 echo ""
