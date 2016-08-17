@@ -45,7 +45,6 @@ test-driver
 .dirstamp
 dEploid
 dEploid_dbg
-pfdeconv*.tar.gz
 
 # unittest
 test-suite.log

@@ -1,5 +1,5 @@
 #!/bin/bash
-previousVersion="0.2-beta"
+previousVersion="0.2-release"
 previousVersionTag=v${previousVersion}
 wget --no-check-certificate https://github.com/mcveanlab/DEploid/archive/${previousVersionTag}.tar.gz -o /dev/null
 tar -xf ${previousVersionTag}.tar.gz
