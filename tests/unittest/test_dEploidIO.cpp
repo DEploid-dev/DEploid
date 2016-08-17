@@ -70,22 +70,22 @@ class TestIO : public CppUnit::TestCase {
     void testMainConstructor() {
 
         char *argv1[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-o", "tmp1",
-                         "-exclude", "tests/testData/PG0389.C.exclude.csv", "-vcfOut"};
+                         "-exclude", "data/testData/labStrains.test.exclude.txt", "-vcfOut"};
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(11, argv1) );
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(13, argv1) );
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(14, argv1) );
 
         char *argv2[] = { "./dEploid",
-                         "-vcf", "tests/testData/PG0389-C100.vcf",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-vcf", "data/testData/PG0390-C.test.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-o", "tmp1",
-                         "-exclude", "tests/testData/PG0389.C.exclude.csv"};
+                         "-exclude", "data/testData/labStrains.test.exclude.txt"};
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(9, argv2) );
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(11, argv2) );
     }
@@ -93,43 +93,43 @@ class TestIO : public CppUnit::TestCase {
 
     void testInitialProp() {
         char *argv1[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-initialP", "0.1", "0.2", "0.3", "0.4", "-k", "4" };
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(16, argv1) );
         CPPUNIT_ASSERT_THROW ( this->input_->core(14, argv1), NumOfPropNotMatchNumStrain );
 
         char *argv2[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-initialP", "0.1", "0.2", "0.3", "0.3", "0.2"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(15, argv2), SumOfPropNotOne );
 
         char *argv3[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-initialP", "0.1", "0.2", "0.3", "0.3", "0.02"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(15, argv3), SumOfPropNotOne );
 
         char *argv4[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-initialP", "-o", "tmp"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(12, argv4), NotEnoughArg );
 
         char *argv5[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-initialP"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv5), NotEnoughArg );
     }
@@ -174,26 +174,26 @@ class TestIO : public CppUnit::TestCase {
 
     void testOutOfRange(){
         char *argv1[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-burn", "1.1" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv1), OutOfRange );
 
         char *argv2[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-miss", "5.1"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv2), OutOfRange );
 
         char *argv3[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-recomb", "2.1" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv3), OutOfRange );
     }
@@ -201,70 +201,70 @@ class TestIO : public CppUnit::TestCase {
 
     void testNotEnoughArg(){
         char *argv1[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-o" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv1), NotEnoughArg );
 
         char *argv2[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-seed"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv2), NotEnoughArg );
 
         char *argv3[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-p"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv3), NotEnoughArg );
 
         char *argv4[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-k"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv4), NotEnoughArg );
 
         char *argv5[] = { "./dEploid",
                          "-ref",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt" };
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(8, argv5), NotEnoughArg );
 
         char *argv6[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
                          "-alt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt" };
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(8, argv6), NotEnoughArg );
 
         char *argv7[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
                          "-plaf",
-                         "-panel", "tests/testData/lab_first100_Panel.txt" };
+                         "-panel", "data/testData/labStrains.test.panel.txt" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(8, argv7), NotEnoughArg );
 
         char *argv8[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
                          "-panel" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(8, argv8), NotEnoughArg );
 
         char *argv9[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-exclude" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv9), NotEnoughArg );
 
@@ -273,46 +273,46 @@ class TestIO : public CppUnit::TestCase {
 
     void testWrongType(){
         char *argv2[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-seed", "asdf"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv2), NotEnoughArg );
         CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv2), WrongType );
 
         char *argv3[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-p", "asdf"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv3), NotEnoughArg );
         CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv3), WrongType );
 
         char *argv4[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-k", "asdf"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv4), NotEnoughArg );
         CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv4), WrongType );
 
         char *argv5[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-nSample", "asdf"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv5), NotEnoughArg );
         CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv5), WrongType );
 
         char *argv6[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-rate", "asdf"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv6), NotEnoughArg );
         CPPUNIT_ASSERT_THROW ( this->input_->core(11, argv6), WrongType );
@@ -321,9 +321,9 @@ class TestIO : public CppUnit::TestCase {
 
     void testFileNameMissing(){
         char *argv1[] = { "./dEploid",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(9, argv1), FileNameMissing );
         CPPUNIT_ASSERT_THROW_MESSAGE( "\033[1;31mRef count\033[0m file path missing!", this->input_->core(9, argv1), FileNameMissing );
@@ -335,9 +335,9 @@ class TestIO : public CppUnit::TestCase {
         }
 
         char *argv2[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(9, argv2), FileNameMissing );
 
@@ -350,17 +350,17 @@ class TestIO : public CppUnit::TestCase {
 
         // plaf missing
         char *argv3[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(9, argv3), FileNameMissing );
 
         // panel missing
         char *argv4[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(9, argv4), FileNameMissing );
     }
@@ -369,9 +369,9 @@ class TestIO : public CppUnit::TestCase {
     void testInvalidInputFile(){
         char *argv[] = { "./dEploid",
                          "-ref", "PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_THROW( this->input_->core(11, argv), InvalidInputFile );
         try {
@@ -392,65 +392,65 @@ class TestIO : public CppUnit::TestCase {
     void testFlagsConflict(){
         // panel conflict with noPanel
         char *argv1[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-noPanel" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv1), FlagsConflict );
 
         // noPanel conflict with panel
         char *argv2[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
                          "-noPanel",
-                         "-panel", "tests/testData/lab_first100_Panel.txt"};
+                         "-panel", "data/testData/labStrains.test.panel.txt"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(10, argv2), FlagsConflict );
 
         // ref, alt conflict with vcf
         char *argv3[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-o", "tmp1",
-                         "-vcf", "tests/testData/PG0389-C100.vcf"};
+                         "-vcf", "data/testData/PG0390-C.test.vcf"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(13, argv3), FlagsConflict );
 
         // vcf conflict with ref
         char *argv4[] = { "./dEploid",
-                         "-vcf", "tests/testData/PG0389-C100.vcf",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-vcf", "data/testData/PG0390-C.test.vcf",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(13, argv4), FlagsConflict );
 
         // vcf conflict with alt
         char *argv5[] = { "./dEploid",
-                         "-vcf", "tests/testData/PG0389-C100.vcf",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-vcf", "data/testData/PG0390-C.test.vcf",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-o", "tmp1" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(13, argv5), FlagsConflict );
 
         // exportPostProb conflict with noPanel
         char *argv6[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
                          "-noPanel", "-exportPostProb" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(9, argv6), FlagsConflict );
 
         // noPanel conflict with exportPostProb
         char *argv7[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
                          "-exportPostProb", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(9, argv7), FlagsConflict );
     }
@@ -458,17 +458,17 @@ class TestIO : public CppUnit::TestCase {
 
     void testLociNumberUnequal(){
         char *argv1[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_samples_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt" };
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390.C_alt.txt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(9, argv1), LociNumberUnequal );
 
         char *argv2[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390.C_alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt" };
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains_samples_PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt" };
         CPPUNIT_ASSERT_THROW ( this->input_->core(9, argv2), LociNumberUnequal );
 
     }
@@ -476,50 +476,50 @@ class TestIO : public CppUnit::TestCase {
 
     void testExtractRefAltPlaf(){
         char *argv1[] = { "./dEploid",
-         "-ref", "tests/testData/PG0390_first100ref.txt",
-         "-alt", "tests/testData/PG0390_first100alt.txt",
-         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-         "-panel", "tests/testData/lab_first100_Panel.txt",
+         "-ref", "data/testData/PG0390-C.test.ref",
+         "-alt", "data/testData/PG0390-C.test.alt",
+         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+         "-panel", "data/testData/labStrains.test.panel.txt",
          "-o", "tmp1" };
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(11, argv1) );
 
-        CPPUNIT_ASSERT_EQUAL((size_t)100, this->input_->nLoci_);
-        //"Pf3D7_01_v3"	93157	0.0190612159917058
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0190612159917058, this->input_->plaf_[0], 0.000000000001);
-        //"Pf3D7_01_v3"	93157	85
+        CPPUNIT_ASSERT_EQUAL((size_t)594, this->input_->nLoci_);
+        //Pf3D7_01_v3	93157	0.35824742268032
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.35824742268032, this->input_->plaf_[0], 0.000000000001);
+        //Pf3D7_01_v3	93157	85
         CPPUNIT_ASSERT_EQUAL(85.0, this->input_->refCount_[0]);
-        //"Pf3D7_01_v3"	93157	0
+        //Pf3D7_01_v3	93157	0
         CPPUNIT_ASSERT_EQUAL(0.0, this->input_->altCount_[0]);
 
-        //"Pf3D7_01_v3"	95518	0.687463394087723
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.687463394087723, this->input_->plaf_[4], 0.000000000001);
-        //"Pf3D7_01_v3"	95518	156
+        //Pf3D7_01_v3	95518	0.553038882597102
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.553038882597102, this->input_->plaf_[4], 0.000000000001);
+        //Pf3D7_01_v3	95518	156
         CPPUNIT_ASSERT_EQUAL(156.0, this->input_->refCount_[4]);
-        //"Pf3D7_01_v3"	95518	46
+        //Pf3D7_01_v3	95518	46
         CPPUNIT_ASSERT_EQUAL(46.0, this->input_->altCount_[4]);
 
-        //"Pf3D7_01_v3"	113396	0.0207016179419847
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0207016179419847, this->input_->plaf_[20], 0.000000000001);
-        //"Pf3D7_01_v3"	113396	177
-        CPPUNIT_ASSERT_EQUAL(177.0, this->input_->refCount_[20]);
-        //"Pf3D7_01_v3"	113396	0
-        CPPUNIT_ASSERT_EQUAL(0.0, this->input_->altCount_[20]);
+        //Pf3D7_01_v3	112038	0.178471474703944
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.178471474703944, this->input_->plaf_[20], 0.000000000001);
+        //Pf3D7_01_v3	112038	157
+        CPPUNIT_ASSERT_EQUAL(157.0, this->input_->refCount_[20]);
+        //Pf3D7_01_v3	112038	28
+        CPPUNIT_ASSERT_EQUAL(28.0, this->input_->altCount_[20]);
 
-        //"Pf3D7_01_v3"	180270	0.426732645350475
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.426732645350475, this->input_->plaf_[99], 0.000000000001);
-        //"Pf3D7_01_v3"	180270	199
+        //Pf3D7_01_v3	180192	0.747258396161626
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.747258396161626, this->input_->plaf_[99], 0.000000000001);
+        //Pf3D7_01_v3	180192	199
         CPPUNIT_ASSERT_EQUAL(199.0, this->input_->refCount_[99]);
-        //"Pf3D7_01_v3"	180270	0
+        //Pf3D7_01_v3	180192	0
         CPPUNIT_ASSERT_EQUAL(0.0, this->input_->altCount_[99]);
     }
 
 
     void testForbidMoves() {
         char *argv1[] = { "./dEploid",
-                         "-ref", "tests/testData/PG0390_first100ref.txt",
-                         "-alt", "tests/testData/PG0390_first100alt.txt",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt",
-                         "-panel", "tests/testData/lab_first100_Panel.txt",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
                          "-o", "tmp1", "-forbidUpdateProp", "-forbidUpdateSingle", "-forbidUpdatePair" };
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(14, argv1) );
         CPPUNIT_ASSERT_EQUAL( this->input_->doUpdateProp(), false);
@@ -545,68 +545,68 @@ class TestIO : public CppUnit::TestCase {
 
     void testInvalidVcf(){
         char *argv1[] = { "./dEploid",
-                         "-vcf", "tests/testData/PG0389-C10.vcf",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+                         "-vcf", "data/testData/PG0389-C.test.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv1), InvalidInputFile );
     }
 
 
     void testVcfHeader(){
         char *argv1[] = { "./dEploid",
-                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.alt.vcf",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+                         "-vcf", "data/testData/crappyVcf/badHeaderFieldNames.alt.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv1), VcfInvalidHeaderFieldNames );
 
         char *argv2[] = { "./dEploid",
-                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.chrom2.vcf",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+                         "-vcf", "data/testData/crappyVcf/badHeaderFieldNames.chrom2.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv2), VcfInvalidHeaderFieldNames );
 
         char *argv3[] = { "./dEploid",
-                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.chrom.vcf",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+                         "-vcf", "data/testData/crappyVcf/badHeaderFieldNames.chrom.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv3), VcfInvalidHeaderFieldNames );
 
         char *argv4[] = { "./dEploid",
-                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.filter.vcf",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+                         "-vcf", "data/testData/crappyVcf/badHeaderFieldNames.filter.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv4), VcfInvalidHeaderFieldNames );
 
         char *argv5[] = { "./dEploid",
-                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.format.vcf",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+                         "-vcf", "data/testData/crappyVcf/badHeaderFieldNames.format.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv5), VcfInvalidHeaderFieldNames );
 
         char *argv6[] = { "./dEploid",
-                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.id.vcf",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+                         "-vcf", "data/testData/crappyVcf/badHeaderFieldNames.id.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv6), VcfInvalidHeaderFieldNames );
 
         char *argv7[] = { "./dEploid",
-                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.info.vcf",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+                         "-vcf", "data/testData/crappyVcf/badHeaderFieldNames.info.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv7), VcfInvalidHeaderFieldNames );
 
         char *argv8[] = { "./dEploid",
-                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.pos.vcf",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+                         "-vcf", "data/testData/crappyVcf/badHeaderFieldNames.pos.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv8), VcfInvalidHeaderFieldNames );
 
         char *argv9[] = { "./dEploid",
-                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.qual.vcf",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+                         "-vcf", "data/testData/crappyVcf/badHeaderFieldNames.qual.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv9), VcfInvalidHeaderFieldNames );
 
         char *argv10[] = { "./dEploid",
-                         "-vcf", "tests/testData/crappyVcf/badHeaderFieldNames.ref.vcf",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+                         "-vcf", "data/testData/crappyVcf/badHeaderFieldNames.ref.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv10), VcfInvalidHeaderFieldNames );
     }
 
     void testVcfNoAD(){
         char *argv1[] = { "./dEploid",
-                         "-vcf", "tests/testData/crappyVcf/badVariant.noAD.vcf",
-                         "-plaf", "tests/testData/labStrains_first100_PLAF.txt", "-noPanel"};
+                         "-vcf", "data/testData/crappyVcf/badVariant.noAD.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv1), VcfCoverageFieldNotFound );
     }
 };

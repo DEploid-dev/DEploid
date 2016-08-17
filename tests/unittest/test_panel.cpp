@@ -35,7 +35,7 @@ class TestPanel : public CppUnit::TestCase {
   public:
     void setUp() {
         this->epsilon3 = 0.000000000001;
-        this->panelName_ = "tests/testData/clonalPanel.csv";
+        this->panelName_ = "data/testData/testingPanel.txt";
         // in R: panel = read.csv("clonalPanel.csv", header = T)
         this->panel1_ = new Panel();
         this->panel1_->readFromFile(panelName_.c_str() );
@@ -55,6 +55,8 @@ class TestPanel : public CppUnit::TestCase {
     void tearDown() {
         delete panel1_;
         delete panel2_;
+        delete panel3_;
+        delete panel4_;
     }
 
 
@@ -127,10 +129,10 @@ class TestPanel : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL( (size_t)14, this->panel1_->position_.size() );
 
         CPPUNIT_ASSERT_EQUAL( (size_t)590, this->panel1_->position_[0].size() );
-        CPPUNIT_ASSERT_EQUAL( (double)93157, this->panel1_->position_[0][0] );
-        CPPUNIT_ASSERT_EQUAL( (double)95518, this->panel1_->position_[0][4] );
-        CPPUNIT_ASSERT_EQUAL( (double)113396, this->panel1_->position_[0][20] );
-        CPPUNIT_ASSERT_EQUAL( (double)180270, this->panel1_->position_[0][99] );
+        CPPUNIT_ASSERT_EQUAL( (int)93157, this->panel1_->position_[0][0] );
+        CPPUNIT_ASSERT_EQUAL( (int)95518, this->panel1_->position_[0][4] );
+        CPPUNIT_ASSERT_EQUAL( (int)113396, this->panel1_->position_[0][20] );
+        CPPUNIT_ASSERT_EQUAL( (int)180270, this->panel1_->position_[0][99] );
 
         CPPUNIT_ASSERT_EQUAL( (size_t)705, this->panel1_->position_[1].size() );
         CPPUNIT_ASSERT_EQUAL( (size_t)742, this->panel1_->position_[2].size() );
@@ -142,7 +144,7 @@ class TestPanel : public CppUnit::TestCase {
 
         CPPUNIT_ASSERT_EQUAL( (size_t)1079, this->panel1_->position_[8].size() );
         // in R: panel[panel$CHROM=="Pf3D7_09_v3",][10,]
-        CPPUNIT_ASSERT_EQUAL( (double)89744, this->panel1_->position_[8][9] );
+        CPPUNIT_ASSERT_EQUAL( (int)89744, this->panel1_->position_[8][9] );
 
         CPPUNIT_ASSERT_EQUAL( (size_t)1275, this->panel1_->position_[9].size() );
         CPPUNIT_ASSERT_EQUAL( (size_t)1385, this->panel1_->position_[10].size() );
@@ -152,10 +154,10 @@ class TestPanel : public CppUnit::TestCase {
 
         CPPUNIT_ASSERT_EQUAL( (size_t)14, this->panel2_->position_.size() );
         CPPUNIT_ASSERT_EQUAL( (size_t)590, this->panel2_->position_[0].size() );
-        CPPUNIT_ASSERT_EQUAL( (double)93157, this->panel2_->position_[0][0] );
-        CPPUNIT_ASSERT_EQUAL( (double)95518, this->panel2_->position_[0][4] );
-        CPPUNIT_ASSERT_EQUAL( (double)113396, this->panel2_->position_[0][20] );
-        CPPUNIT_ASSERT_EQUAL( (double)180270, this->panel2_->position_[0][99] );
+        CPPUNIT_ASSERT_EQUAL( (int)93157, this->panel2_->position_[0][0] );
+        CPPUNIT_ASSERT_EQUAL( (int)95518, this->panel2_->position_[0][4] );
+        CPPUNIT_ASSERT_EQUAL( (int)113396, this->panel2_->position_[0][20] );
+        CPPUNIT_ASSERT_EQUAL( (int)180270, this->panel2_->position_[0][99] );
 
         CPPUNIT_ASSERT_EQUAL( (size_t)705, this->panel2_->position_[1].size() );
 

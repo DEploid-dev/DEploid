@@ -24,10 +24,10 @@
 #ifndef PANEL
 #define PANEL
 
-#include "atMarker.hpp"
+#include "txtReader.hpp"
 #include "exceptions.hpp"
 
-class Panel: public InputMarker{
+class Panel: public TxtReader{
 #ifdef UNITTEST
  friend class TestPanel;
 #endif

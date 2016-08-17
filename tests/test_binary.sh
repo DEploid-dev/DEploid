@@ -2,7 +2,7 @@
 
 function test_dEploid {
   echo -n " dEploid $@ "
-  for i in `seq 1 5`; do
+  for i in `seq 1 1`; do
     echo -n "."
 
     # Test using dEploid self-checks
@@ -14,6 +14,7 @@ function test_dEploid {
       exit 1
     fi
 
+    echo -n "."
     # Test for memory leaks
     valgrind --error-exitcode=1 --leak-check=full -q ./dEploid $@ -seed $i > /dev/null
     if [ $? -ne 0 ]; then
@@ -48,6 +49,7 @@ function test_noRepeat {
   echo " done."
 }
 
+sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt"
 
 echo "Testing examples"
  test_noRepeat
@@ -55,6 +57,8 @@ echo "Testing examples"
  test_noRepeat -h
  test_noRepeat -v
  test_noRepeat -version
- test_dEploid -ref tests/testData/PG0390_first100ref.txt -alt tests/testData/PG0390_first100alt.txt -plaf tests/testData/labStrains_first100_PLAF.txt -panel tests/testData/lab_first100_Panel.txt -nSample 100 -rate 3 || exit 1
- test_dEploid -ref "tests/testData/PG0390_first100ref.txt" -alt "tests/testData/PG0390_first100alt.txt" -plaf "tests/testData/labStrains_first100_PLAF.txt" -panel "tests/testData/lab_first100_Panel.txt" -o tmp1 || exit 1
+ test_dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf -noPanel -o tmp1 || exit 1
+ #test_dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf -panel data/testData/labStrains.test.panel.txt -o tmp1 || exit 1
+ #test_dEploid ${sameFlags} -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -noPanel -o tmp1 || exit 1
+ #test_dEploid ${sameFlags} -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -panel data/testData/labStrains.test.panel.txt -o tmp1 || exit 1
 echo ""

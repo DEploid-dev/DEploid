@@ -50,7 +50,7 @@ int main( int argc, char *argv[] ){
             panel = new Panel();
             panel->readFromFile(dEploidIO.panelFileName_.c_str());
             if ( dEploidIO.excludeSites() ){
-                panel->removeMarkers( dEploidIO.excludedMarkers );
+                panel->findAndKeepMarkers( dEploidIO.excludedMarkers );
             }
 
             panel->computeRecombProbs( dEploidIO.averageCentimorganDistance(), dEploidIO.Ne(), dEploidIO.useConstRecomb(), dEploidIO.constRecombProb(), dEploidIO.forbidCopyFromSame() );

@@ -29,7 +29,6 @@
 #include <sstream>      // std::stringstream
 #include "global.h"
 #include "exceptions.hpp"
-#include "atMarker.hpp"
 #include "panel.hpp"
 #include "vcfReader.hpp"
 
@@ -116,7 +115,7 @@ class DEploidIO{
     vector <double> initialProp;
     vector <string> chrom_;
     vector < size_t > indexOfChromStarts_;
-    vector < vector < double> > position_;
+    vector < vector < int > > position_;
     vector <double> plaf_;
     vector <double> refCount_;
     vector <double> altCount_;

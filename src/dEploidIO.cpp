@@ -147,35 +147,33 @@ void DEploidIO::finalize(){
     }
 
     if ( useVcf() ){ // read vcf files, and parse it to refCount and altCount
+        this->vcfReaderPtr_ = new VcfReader (vcfFileName_ );
         if ( this->excludeSites() ){
-            // todo!!! to be implemented with excludeMarkers
-            this->vcfReaderPtr_ = new VcfReader (vcfFileName_ );
-        } else {
-            this->vcfReaderPtr_ = new VcfReader (vcfFileName_ );
-
+            this->vcfReaderPtr_->findAndKeepMarkers (excludedMarkers);
         }
 
+        this->vcfReaderPtr_->finalize(); // Finalize after remove variantlines
         this->refCount_ = this->vcfReaderPtr_->refCount;
         this->altCount_ = this->vcfReaderPtr_->altCount;
     } else {
-        InputMarker ref;
+        TxtReader ref;
         ref.readFromFile(refFileName_.c_str());
         if ( this->excludeSites() ){
-            ref.removeMarkers( excludedMarkers );
+            ref.findAndKeepMarkers( excludedMarkers );
         }
         this->refCount_ = ref.info_;
 
-        InputMarker alt;
+        TxtReader alt;
         alt.readFromFile(altFileName_.c_str());
         if ( this->excludeSites() ){
-            alt.removeMarkers( excludedMarkers );
+            alt.findAndKeepMarkers( excludedMarkers );
         }
         this->altCount_ = alt.info_;
     }
-    InputMarker plaf;
+    TxtReader plaf;
     plaf.readFromFile(plafFileName_.c_str());
     if ( this->excludeSites() ){
-        plaf.removeMarkers( excludedMarkers );
+        plaf.findAndKeepMarkers( excludedMarkers );
     }
     this->plaf_ = plaf.info_;
     this->chrom_ = plaf.chrom_;
@@ -423,7 +421,7 @@ void DEploidIO::printHelp(){
     cout << "./dEploid -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -o tmp1" << endl;
     cout << "./dEploid -ref labStrains/PG0390_first100ref.txt -alt   labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
     cout << "./dEploid -ref tests/testData/refCountForTesting.csv -alt tests/testData/altCountForTesting.csv -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp"<< endl;
-    //cout << "./dEploid -vcf tests/testData/PG0389-C100.vcf  -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp"<< endl;
+    cout << "./dEploid -vcf tests/testData/PG0390-C.vcf -o tmp1 -exclude tests/testData/labStrainsExcludeBelow07.csv -plaf tests/testData/labStrains_PLAF.txt -noPanel"<< endl;//cout << "./dEploid -vcf tests/testData/PG0389-C100.vcf  -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp"<< endl;
     //cout << "./dEploid -ref tests/testData/PG0389.C_ref100.txt -alt tests/testData/PG0389.C_alt100.txt -plaf tests/testData/plafForTesting.csv -panel tests/testData/panelForTesting.csv -o tmp"<< endl;
     //cout << "./dEploid_dbg -ref labStrains/PG0390_first100ref.txt -alt labStrains/PG0390_first100alt.txt -plaf labStrains/labStrains_first100_PLAF.txt -panel labStrains/lab_first100_Panel.txt -nSample 100 -rate 3" << endl;
     //cout << "./dEploid_dbg -ref labStrains/PG0390.C_ref.txt -alt labStrains/PG0390.C_alt.txt -plaf labStrains/labStrains_samples_PLAF.txt -panel labStrains/clonalPanel.csv -nSample 500 -rate 5" << endl;

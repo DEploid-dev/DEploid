@@ -22,73 +22,57 @@
 */
 
 
-#ifndef ATMARKER
-#define ATMARKER
+#ifndef TXTREADER
+#define TXTREADER
 
-#include <vector>
-#include <string>
-#include <cassert>
-#include "global.h"
+#include "variantIndex.hpp"
 
-using namespace std;
-
-class AtMarker{
+class TxtReader : public VariantIndex {
 #ifdef UNITTEST
  friend class TestPanel;
- friend class TestAtMarker;
+ friend class TestTxtReader;
 #endif
  friend class UpdateSingleHap;
  friend class UpdatePairHap;
  friend class UpdateHap;
  friend class Panel;
  friend class DEploidIO;
- friend class InputMarker;
- friend class ExcludeMarker;
   private:
     // Members
-    vector <string> chrom_;
-    vector < size_t > indexOfChromStarts_;
-    vector < vector < double> > position_;
+
     // content is a matrix of n.loci by n.strains, i.e. content length is n.loci
     vector < vector < double > > content_;
+    vector < vector < double > > keptContent_;
     // info_ only refers to the first column of the content
     vector <double> info_;
 
-    size_t nLoci_;
     size_t nInfoLines_;
 
     int tmpChromInex_;
-    vector < double > tmpPosition_;
+    vector < int > tmpPosition_;
 
     // Methods
     void extractChrom( string & tmp_str );
     void extractPOS ( string & tmp_str );
     void reshapeContentToInfo();
-    void getIndexOfChromStarts();
 
-  public:
-    AtMarker ();
+  public: // move the following to private
+    TxtReader (){};
     virtual void readFromFile( const char inchar[] ){ this->readFromFileBase( inchar ); };
     void readFromFileBase( const char inchar[] );
-    virtual ~AtMarker();
+    virtual ~TxtReader(){};
+    void removeMarkers ( );
 };
 
 
-class ExcludeMarker : public AtMarker {
+
+
+class ExcludeMarker : public TxtReader {
   // sorting
   public:
-    ExcludeMarker();
-    //ExcludeMarker( const char inchar[] );
-    ~ExcludeMarker();
+    ExcludeMarker():TxtReader(){};
+    ~ExcludeMarker(){};
 };
 
-
-class InputMarker : public AtMarker {
-  public:
-    InputMarker ();
-    //InputMarker( const char inchar[] );
-    ~InputMarker();
-    void removeMarkers( ExcludeMarker* excludedMarkers );
-};
 
 #endif
