@@ -35,14 +35,7 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-grep -v "#" data/testData/PG0390-C.test.vcf | cut -f 1-8 > originalVcf1to8
-grep -v "#" vcf.vcf | cut -f 1-8 > newVcf1to8
-diff originalVcf1to8 newVcf1to8
-if [ $? -ne 0 ]; then
-  echo ""
-  echo "Vcf columns unequal"
-  exit 1
-fi
+# Because of exclude, do not compare vcf columns 1 to 9
 
 tail -n +2 txt.hap | cut -f 1-2 > txtHap1to2
 grep -v "#" txt.vcf | cut -f 1-2 > txtVcf1to2
