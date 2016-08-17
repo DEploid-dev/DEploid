@@ -2,7 +2,7 @@
 
 function test_dEploid {
   echo -n " dEploid $@ "
-  for i in `seq 1 5`; do
+  for i in `seq 1 1`; do
     echo -n "."
 
     # Test using dEploid self-checks
@@ -57,7 +57,7 @@ echo "Testing examples"
  test_noRepeat -v
  test_noRepeat -version
  test_dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -noPanel -o tmp1 || exit 1
- #test_dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel data/testData/labStrains.test.panel.txt -o tmp1 || exit 1
- #test_dEploid -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -noPanel -o tmp1 || exit 1
+ test_dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel data/testData/labStrains.test.panel.txt -o tmp1 || exit 1
+ test_dEploid -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -noPanel -o tmp1 || exit 1
  test_dEploid -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel data/testData/labStrains.test.panel.txt -o tmp1 || exit 1
 echo ""
