@@ -8,7 +8,7 @@ dependencies:
     - sudo apt-get update
   override:
     - sudo apt-get install libcppunit-dev
-    - sudo apt-get install valgrind doxygen graphviz
+    - sudo apt-get install valgrind
     #- sudo apt-get install python-pip
     #- pip install --user cpp-coveralls
 
@@ -23,5 +23,4 @@ test:
     - ./tests/testPOS.sh
     - ./tests/test_binaryVcfVsTxt.sh
     - ./tests/test-against-previous-version.sh
-    - cd docs/doxygen; doxygen Doxyfile
     #- coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
