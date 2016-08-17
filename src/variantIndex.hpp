@@ -38,7 +38,6 @@ class VariantIndex {
 #ifdef UNITTEST
  friend class TestPanel;
  friend class TestTxtReader;
- friend class VcfReader;
 #endif
  friend class DEploidIO;
  friend class TxtReader;
