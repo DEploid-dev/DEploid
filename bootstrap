@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rm -r Makefile Makefile.in autom4te.cache config.* depcomp install-sh missing configure aclocal.m4 .deps INSTALL compile test-driver
+rm -r Makefile Makefile.in autom4te.cache config.* depcomp install-sh missing configure aclocal.m4 .deps INSTALL compile test-driver docs/doxygen/Makefile docs/doxygen/Makefile.in
 
 
 aclocal

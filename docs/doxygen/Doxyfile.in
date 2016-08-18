@@ -32,13 +32,13 @@ DOXYFILE_ENCODING      = UTF-8
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
 
-PROJECT_NAME           = "DEploid"
+PROJECT_NAME           = @PACKAGE_NAME@
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = v0.2-beta
+PROJECT_NUMBER         = @PACKAGE_VERSION@
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -758,21 +758,21 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = src/variantIndex.hpp src/variantIndex.cpp \
-                         src/txtReader.hpp src/txtReader.cpp \
-                         src/mcmc.hpp src/mcmc.cpp   \
-                         src/panel.hpp src/panel.cpp \
-                         src/dEploid.cpp src/exceptions.hpp \
-                         src/random/fastfunc.cpp src/random/fastfunc.hpp \
-                         src/random/mersenne_twister.hpp src/random/mersenne_twister.cpp \
-                         src/random/random_generator.hpp src/random/random_generator.cpp \
-                         src/fastfunc.hpp src/fastfunc.cpp \
-                         src/mersenne_twister.hpp src/mersenne_twister.cpp \
-                         src/dEploidIO.hpp src/dEploidIO.cpp \
-                         src/updateHap.hpp src/updateHap.cpp \
-                         src/utility.hpp src/utility.cpp \
-                         src/export/dEploidIOExport.cpp  src/export/dEploidIOExportPosteriorProb.cpp \
-                         src/vcfReader.hpp src/vcfReader.cpp
+INPUT                  = @top_srcdir@/src/variantIndex.hpp @top_srcdir@/src/variantIndex.cpp \
+                         @top_srcdir@/src/txtReader.hpp @top_srcdir@/src/txtReader.cpp \
+                         @top_srcdir@/src/mcmc.hpp @top_srcdir@/src/mcmc.cpp   \
+                         @top_srcdir@/src/panel.hpp @top_srcdir@/src/panel.cpp \
+                         @top_srcdir@/src/dEploid.cpp @top_srcdir@/src/exceptions.hpp \
+                         @top_srcdir@/src/random/fastfunc.cpp @top_srcdir@/src/random/fastfunc.hpp \
+                         @top_srcdir@/src/random/mersenne_twister.hpp @top_srcdir@/src/random/mersenne_twister.cpp \
+                         @top_srcdir@/src/random/random_generator.hpp @top_srcdir@/src/random/random_generator.cpp \
+                         @top_srcdir@/src/fastfunc.hpp @top_srcdir@/src/fastfunc.cpp \
+                         @top_srcdir@/src/mersenne_twister.hpp @top_srcdir@/src/mersenne_twister.cpp \
+                         @top_srcdir@/src/dEploidIO.hpp @top_srcdir@/src/dEploidIO.cpp \
+                         @top_srcdir@/src/updateHap.hpp @top_srcdir@/src/updateHap.cpp \
+                         @top_srcdir@/src/utility.hpp @top_srcdir@/src/utility.cpp \
+                         @top_srcdir@/src/export/dEploidIOExport.cpp  @top_srcdir@/src/export/dEploidIOExportPosteriorProb.cpp \
+                         @top_srcdir@/src/vcfReader.hpp @top_srcdir@/src/vcfReader.cpp
 
 
 # This tag can be used to specify the character encoding of the source files

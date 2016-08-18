@@ -52,17 +52,15 @@ AX_CXXFLAGS_WARN_ALL
 #AX_CHECK_COMPILE_FLAG([-Woverloaded-virtual], [OPT_CXXFLAGS="$OPT_CXXFLAGS -Woverloaded-virtual"], [], [-Werror])
 #AX_CHECK_COMPILE_FLAG([-pedantic], [OPT_CXXFLAGS="$OPT_CXXFLAGS -pedantic"], [], [-Werror])
 
-m4_include([m4/ac_doxygen.m4])
-DX_INIT_DOXYGEN(DEploid, Doxyfile, html/)
-DX_HTML_FEATURE(ON)
-DX_CHM_FEATURE(OFF)
-DX_CHI_FEATURE(OFF)
-DX_MAN_FEATURE(OFF)
-DX_RTF_FEATURE(OFF)
-DX_XML_FEATURE(OFF)
-DX_PDF_FEATURE(OFF)
-DX_PS_FEATURE(OFF)
+
+AC_CHECK_PROGS([DOXYGEN], [doxygen])
+if test -z "$DOXYGEN";
+   then AC_MSG_WARN([Doxygen not found - continuing without Doxygen support])
+fi
+
+AM_CONDITIONAL([HAVE_DOXYGEN],
+[test -n "$DOXYGEN"])AM_COND_IF([HAVE_DOXYGEN], [AC_CONFIG_FILES([docs/doxygen/Doxyfile])])
 
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile docs/doxygen/Makefile])
 AC_OUTPUT
