@@ -216,8 +216,12 @@ void McmcMachinery::runMcmcChain( ){
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++){
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
+        if ( this->currentMcmcIteration_ > 0 && this->currentMcmcIteration_%100 == 0 ){
+            clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->maxIteration_) << "% completed."<<flush;
+        }
         this->sampleMcmcEvent();
     }
+    clog << "\r" << " MCMC step" << setw(4) << 100 << "% completed."<<endl;
     this->mcmcSample_->hap = this->currentHap_;
 
     this->writeLastFwdProb();
