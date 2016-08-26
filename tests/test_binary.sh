@@ -58,6 +58,7 @@ echo "Testing examples"
  test_noRepeat -v
  test_noRepeat -version
  test_dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf -noPanel -o tmp1 || exit 1
+ test_dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf.gz -noPanel -o tmp1 || exit 1
  #test_dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf -panel data/testData/labStrains.test.panel.txt -o tmp1 || exit 1
  #test_dEploid ${sameFlags} -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -noPanel -o tmp1 || exit 1
  #test_dEploid ${sameFlags} -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -panel data/testData/labStrains.test.panel.txt -o tmp1 || exit 1
