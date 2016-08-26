@@ -87,8 +87,14 @@ void VcfReader::finalize(){
 
 
 void VcfReader::readHeader(){
-    if ( !inFile.good() || !inFileGz.good() ){
-        throw InvalidInputFile( this->fileName_ );
+    if ( this->isCompressed() ){
+        if (!inFileGz.good()){
+            throw InvalidInputFile( this->fileName_ );
+        }
+    } else {
+        if (!inFile.good()){
+            throw InvalidInputFile( this->fileName_ );
+        }
     }
 
     if ( this->isCompressed() ){
