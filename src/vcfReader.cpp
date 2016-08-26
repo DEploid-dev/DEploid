@@ -52,9 +52,9 @@ void VcfReader::checkFileCompressed(){
 
     unsigned char magic[2];
 
-    //size_t buffSize =
     fread((void *)magic, 1, 2, f);
     this->setIsCompressed( (int(magic[0]) == 0x1f) && (int(magic[1]) == 0x8b) );
+    fclose(f);
 }
 
 void VcfReader::init( string fileName ){
