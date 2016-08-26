@@ -9,8 +9,8 @@ compiler:
 before_install:
   - echo $LANG
   - echo $LC_ALL
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -qq; sudo apt-get install -qq libcppunit-dev valgrind r-base-core lcov python-pip doxygen graphviz; pip install --user cpp-coveralls; fi
-  - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install llvm cppunit valgrind && brew link --force llvm; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -qq; sudo apt-get install -qq libcppunit-dev valgrind r-base-core lcov python-pip doxygen graphviz zlib1g-dev; pip install --user cpp-coveralls; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install llvm cppunit valgrind zlib1g-dev && brew link --force llvm; fi
 before_script:
   - ./bootstrap
 
@@ -25,4 +25,4 @@ script:
   - if [ $TRAVIS_OS_NAME == linux ]; then cd docs/doxygen; doxygen Doxyfile; cd ../..; fi
 
 after_success:
-  - coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
+  - coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --exclude src/gzstream/ --gcov-options '\-lp'

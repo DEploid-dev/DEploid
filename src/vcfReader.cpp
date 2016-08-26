@@ -47,7 +47,13 @@ void VcfReader::init( string fileName ){
     /*! Initialize other VcfReader class members
      */
     this->fileName_ = fileName;
-    this->inFile.open( this->fileName_.c_str());
+    this->setIsCompressed(true);
+
+    if ( this->isCompressed() ){
+        this->inFileGz.open(this->fileName_.c_str());
+    } else {
+        this->inFile.open(this->fileName_.c_str());
+    }
 }
 
 
@@ -56,30 +62,44 @@ void VcfReader::finalize(){
         this->refCount.push_back( (double)this->variants[i].ref );
         this->altCount.push_back( (double)this->variants[i].alt );
     }
-    this->inFile.close();
+
+    if ( this->isCompressed() ){
+        this->inFileGz.close();
+    } else {
+        this->inFile.close();
+    }
 }
 
 
 void VcfReader::readHeader(){
-    if ( inFile.good() ){
+    if ( !inFile.good() || !inFileGz.good() ){
+        throw InvalidInputFile( this->fileName_ );
+    }
+
+    if ( this->isCompressed() ){
+        getline ( inFileGz, this->tmpLine_ );
+    } else {
         getline ( inFile, this->tmpLine_ );
-        while ( this->tmpLine_.size()>0 ){
-            if ( this->tmpLine_[0]=='#' ){
-                if ( this->tmpLine_[1]=='#' ){
-                    this->headerLines.push_back( this->tmpLine_ );
-                    getline ( inFile, this->tmpLine_ );
+    }
+
+    while ( this->tmpLine_.size()>0 ){
+        if ( this->tmpLine_[0]=='#' ){
+            if ( this->tmpLine_[1]=='#' ){
+                this->headerLines.push_back( this->tmpLine_ );
+                if ( this->isCompressed() ){
+                    getline ( inFileGz, this->tmpLine_ );
                 } else {
-                    this->checkFeilds();
-                    break; //end of the header
+                    getline ( inFile, this->tmpLine_ );
                 }
             } else {
                 this->checkFeilds();
+                break; //end of the header
             }
+        } else {
+            this->checkFeilds();
         }
     }
-    else {
-        throw InvalidInputFile( this->fileName_ );
-    }
+
 
     dout << " There are "<< this->headerLines.size() << " lines in the header." <<endl;
 }
@@ -125,12 +145,20 @@ void VcfReader::checkFeilds(){
 
 
 void VcfReader::readVariants(){
-    getline( inFile, this->tmpLine_ );
+    if ( this->isCompressed() ){
+        getline ( inFileGz, this->tmpLine_ );
+    } else {
+        getline ( inFile, this->tmpLine_ );
+    }
     while ( inFile.good() && this->tmpLine_.size()>0 ){
         VariantLine newVariant ( this->tmpLine_ );
         // check variantLine quality
         this->variants.push_back(newVariant);
-        getline(inFile, this->tmpLine_);
+        if ( this->isCompressed() ){
+            getline ( inFileGz, this->tmpLine_ );
+        } else {
+            getline ( inFile, this->tmpLine_ );
+        }
     }
 }
 

@@ -29,6 +29,7 @@ AC_CHECK_LIB(cppunit,TestCase,[])
 # Checks for header files.
 AC_HEADER_STDC
 AC_LANG(C++)
+AC_CHECK_HEADERS([zlib.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
