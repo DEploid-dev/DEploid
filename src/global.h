@@ -1,4 +1,5 @@
 #define dEploid_src_macros
+#pragma GCC diagnostic ignored "-Wunused-result"
 
 #ifndef NDEBUG
 #define dout std::cout << "   "

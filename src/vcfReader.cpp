@@ -43,16 +43,31 @@ VcfReader::VcfReader(string fileName){
 }
 
 
+void VcfReader::checkFileCompressed(){
+    FILE *f = NULL;
+    f = fopen(this->fileName_.c_str(), "rb");
+    if ( f == NULL){
+        throw InvalidInputFile( this->fileName_ );
+    }
+
+    unsigned char magic[2];
+
+    fread((void *)magic, 1, 2, f);
+    this->setIsCompressed( (int(magic[0]) == 0x1f) && (int(magic[1]) == 0x8b) );
+    fclose(f);
+}
+
 void VcfReader::init( string fileName ){
     /*! Initialize other VcfReader class members
      */
     this->fileName_ = fileName;
-    this->setIsCompressed(true);
+
+    this->checkFileCompressed();
 
     if ( this->isCompressed() ){
-        this->inFileGz.open(this->fileName_.c_str());
+        this->inFileGz.open(this->fileName_.c_str(), std::ios::in);
     } else {
-        this->inFile.open(this->fileName_.c_str());
+        this->inFile.open(this->fileName_.c_str(), std::ios::in);
     }
 }
 
@@ -72,8 +87,14 @@ void VcfReader::finalize(){
 
 
 void VcfReader::readHeader(){
-    if ( !inFile.good() || !inFileGz.good() ){
-        throw InvalidInputFile( this->fileName_ );
+    if ( this->isCompressed() ){
+        if (!inFileGz.good()){
+            throw InvalidInputFile( this->fileName_ );
+        }
+    } else {
+        if (!inFile.good()){
+            throw InvalidInputFile( this->fileName_ );
+        }
     }
 
     if ( this->isCompressed() ){

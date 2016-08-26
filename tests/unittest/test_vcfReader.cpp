@@ -9,14 +9,17 @@ class TestVCF : public CppUnit::TestCase {
 
   private:
     VcfReader* vcf_;
+    VcfReader* vcfGz_;
 
   public:
     void setUp() {
         this->vcf_ = new VcfReader ( "data/testData/PG0390-C.test.vcf" );
+        this->vcfGz_ = new VcfReader ( "data/testData/PG0390-C.test.vcf.gz" );
     }
 
     void tearDown(){
         delete this->vcf_;
+        delete this->vcfGz_;
     }
 
     void testMainConstructor(){
