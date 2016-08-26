@@ -43,11 +43,26 @@ VcfReader::VcfReader(string fileName){
 }
 
 
+void VcfReader::checkFileCompressed(){
+    FILE *f = NULL;
+    f = fopen(this->fileName_.c_str(), "rb");
+    if ( f == NULL){
+        throw InvalidInputFile( this->fileName_ );
+    }
+
+    unsigned char magic[2];
+
+    //size_t buffSize =
+    fread((void *)magic, 1, 2, f);
+    this->setIsCompressed( (int(magic[0]) == 0x1f) && (int(magic[1]) == 0x8b) );
+}
+
 void VcfReader::init( string fileName ){
     /*! Initialize other VcfReader class members
      */
     this->fileName_ = fileName;
-    this->setIsCompressed(true);
+
+    this->checkFileCompressed();
 
     if ( this->isCompressed() ){
         this->inFileGz.open(this->fileName_.c_str());

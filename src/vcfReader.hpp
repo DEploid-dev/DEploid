@@ -145,6 +145,7 @@ class VcfReader : public VariantIndex {
     bool isCompressed_;
     bool isCompressed() const { return this->isCompressed_; }
     void setIsCompressed ( const bool compressed ){ this->isCompressed_ = compressed; }
+    void checkFileCompressed();
     string sampleName;
     string tmpLine_;
     string tmpStr_;
