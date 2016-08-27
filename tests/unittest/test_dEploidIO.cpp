@@ -23,6 +23,10 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST( testInvalidVcf );
     CPPUNIT_TEST( testVcfHeader );
     CPPUNIT_TEST( testVcfNoAD );
+    CPPUNIT_TEST( testInvalidVcfGz );
+    CPPUNIT_TEST( testVcfGzHeader );
+    CPPUNIT_TEST( testVcfGzNoAD );
+    CPPUNIT_TEST( testVcfOutUnSpecified );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -42,6 +46,7 @@ class TestIO : public CppUnit::TestCase {
     void testInitialization(){
         CPPUNIT_ASSERT_EQUAL( this->input_->randomSeedWasSet(), false );
         CPPUNIT_ASSERT_EQUAL( this->input_->doExportRecombProb(), false );
+        CPPUNIT_ASSERT_EQUAL( this->input_->compressVcf(), false );
         CPPUNIT_ASSERT_EQUAL( this->input_->initialPropWasGiven(), false );
         CPPUNIT_ASSERT_EQUAL( this->input_->excludeSites() , false );
         CPPUNIT_ASSERT( this->input_->excludedMarkers == NULL);
@@ -67,6 +72,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL( this->input_->doExportVcf(), false );
     }
 
+
     void testMainConstructor() {
 
         char *argv1[] = { "./dEploid",
@@ -75,10 +81,11 @@ class TestIO : public CppUnit::TestCase {
                          "-plaf", "data/testData/labStrains.test.PLAF.txt",
                          "-panel", "data/testData/labStrains.test.panel.txt",
                          "-o", "tmp1",
-                         "-exclude", "data/testData/labStrains.test.exclude.txt", "-vcfOut"};
+                         "-exclude", "data/testData/labStrains.test.exclude.txt", "-vcfOut", "-z"};
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(11, argv1) );
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(13, argv1) );
         CPPUNIT_ASSERT_NO_THROW ( this->input_->core(14, argv1) );
+        CPPUNIT_ASSERT_NO_THROW ( this->input_->core(15, argv1) );
 
         char *argv2[] = { "./dEploid",
                          "-vcf", "data/testData/PG0390-C.test.vcf",
@@ -608,6 +615,80 @@ class TestIO : public CppUnit::TestCase {
                          "-vcf", "data/testData/crappyVcf/badVariant.noAD.vcf",
                          "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv1), VcfCoverageFieldNotFound );
+    }
+
+    void testInvalidVcfGz(){
+        char *argv1[] = { "./dEploid",
+                         "-vcf", "data/testData/PG0389-C.test.vcf.gz",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv1), InvalidInputFile );
+    }
+
+
+    void testVcfGzHeader(){
+        char *argv1[] = { "./dEploid",
+                         "-vcf", "data/testData/crappyVcfGz/badHeaderFieldNames.alt.vcf.gz",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv1), VcfInvalidHeaderFieldNames );
+
+        char *argv2[] = { "./dEploid",
+                         "-vcf", "data/testData/crappyVcfGz/badHeaderFieldNames.chrom2.vcf.gz",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv2), VcfInvalidHeaderFieldNames );
+
+        char *argv3[] = { "./dEploid",
+                         "-vcf", "data/testData/crappyVcfGz/badHeaderFieldNames.chrom.vcf.gz",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv3), VcfInvalidHeaderFieldNames );
+
+        char *argv4[] = { "./dEploid",
+                         "-vcf", "data/testData/crappyVcfGz/badHeaderFieldNames.filter.vcf.gz",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv4), VcfInvalidHeaderFieldNames );
+
+        char *argv5[] = { "./dEploid",
+                         "-vcf", "data/testData/crappyVcfGz/badHeaderFieldNames.format.vcf.gz",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv5), VcfInvalidHeaderFieldNames );
+
+        char *argv6[] = { "./dEploid",
+                         "-vcf", "data/testData/crappyVcfGz/badHeaderFieldNames.id.vcf.gz",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv6), VcfInvalidHeaderFieldNames );
+
+        char *argv7[] = { "./dEploid",
+                         "-vcf", "data/testData/crappyVcfGz/badHeaderFieldNames.info.vcf.gz",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv7), VcfInvalidHeaderFieldNames );
+
+        char *argv8[] = { "./dEploid",
+                         "-vcf", "data/testData/crappyVcfGz/badHeaderFieldNames.pos.vcf.gz",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv8), VcfInvalidHeaderFieldNames );
+
+        char *argv9[] = { "./dEploid",
+                         "-vcf", "data/testData/crappyVcfGz/badHeaderFieldNames.qual.vcf.gz",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv9), VcfInvalidHeaderFieldNames );
+
+        char *argv10[] = { "./dEploid",
+                         "-vcf", "data/testData/crappyVcfGz/badHeaderFieldNames.ref.vcf.gz",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv10), VcfInvalidHeaderFieldNames );
+    }
+
+    void testVcfGzNoAD(){
+        char *argv1[] = { "./dEploid",
+                         "-vcf", "data/testData/crappyVcfGz/badVariant.noAD.vcf.gz",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(6, argv1), VcfCoverageFieldNotFound );
+    }
+
+    void testVcfOutUnSpecified(){
+        char *argv1[] = { "./dEploid",
+                         "-vcf", "data/testData/PG0390-C.test.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel", "-z"};
+        CPPUNIT_ASSERT_THROW ( this->input_->core(7, argv1), VcfOutUnSpecified );
     }
 };
 
