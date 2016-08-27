@@ -1,7 +1,7 @@
 language: cpp
 os:
   - linux
-  - osx
+  #- osx
 
 compiler:
   - gcc
@@ -9,8 +9,8 @@ compiler:
 before_install:
   - echo $LANG
   - echo $LC_ALL
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-add-repository "deb http://packages.medibuntu.org/ trusty free non-free"; apt-cache policy zlib*; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -qq; sudo apt-get install -qq libcppunit-dev valgrind r-base-core lcov python-pip doxygen graphviz zlib1g-dev; pip install --user cpp-coveralls; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-add-repository "deb http://packages.medibuntu.org/ trusty free non-free"; sudo apt-get update -qq; apt-cache policy zlib*; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then brew tap homebrew/dupes && brew update && brew install llvm cppunit valgrind zlib && brew link --force llvm; fi
 before_script:
   - ./bootstrap
