@@ -9,6 +9,7 @@ dependencies:
   override:
     - sudo apt-get install libcppunit-dev
     - sudo apt-get install valgrind
+    - apt-cache policy zlib*
     - sudo apt-get install zlibc
     #- sudo apt-get install python-pip
     #- pip install --user cpp-coveralls
