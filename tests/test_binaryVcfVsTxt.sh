@@ -1,7 +1,9 @@
 #!/bin/bash
 sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel data/testData/labStrains.test.panel.txt -seed 1 -vcfOut "
-./dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf.gz -o vcf || exit 1
+./dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf.gz -o vcf -z || exit 1
 ./dEploid ${sameFlags} -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -o txt || exit 1
+
+gzip -d vcf.vcf.gz
 
 diff txt.prop vcf.prop
 if [ $? -ne 0 ]; then
