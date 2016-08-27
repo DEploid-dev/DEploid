@@ -27,6 +27,7 @@
 #include <stdlib.h>     /* strtol, strtod */
 #include "exceptions.hpp"
 #include "variantIndex.hpp"
+#include "gzstream.h"
 
 #ifndef VCF
 #define VCF
@@ -140,6 +141,11 @@ class VcfReader : public VariantIndex {
     vector <string> headerLines ;
     string fileName_;
     ifstream inFile;
+    igzstream inFileGz;
+    bool isCompressed_;
+    bool isCompressed() const { return this->isCompressed_; }
+    void setIsCompressed ( const bool compressed ){ this->isCompressed_ = compressed; }
+    void checkFileCompressed();
     string sampleName;
     string tmpLine_;
     string tmpStr_;

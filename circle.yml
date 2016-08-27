@@ -9,6 +9,7 @@ dependencies:
   override:
     - sudo apt-get install libcppunit-dev
     - sudo apt-get install valgrind
+    #- sudo apt-get install zlib1g-dbg
     #- sudo apt-get install python-pip
     #- pip install --user cpp-coveralls
 
@@ -16,7 +17,6 @@ test:
   override:
     - ./bootstrap
     - make
-    - gzip -d data/testData/PG0390-C.test.vcf.gz
     - make check
     #- valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
     - ./tests/test_binary.sh

@@ -15,7 +15,8 @@ TESTS = unit_tests
 check_PROGRAMS = unit_tests dEploid_dbg dEploid_prof
 PROG = DEPLOID
 
-common_flags = -std=c++0x -Isrc/ -Isrc/codeCogs/ -Isrc/random/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
+common_flags = -std=c++0x -Isrc/ -Isrc/codeCogs/ -Isrc/random/ -Isrc/gzstream/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
+common_LDADD = -lz
 
 common_src = src/random/fastfunc.cpp \
 			 src/random/random_generator.cpp \
@@ -29,7 +30,8 @@ common_src = src/random/fastfunc.cpp \
 			 src/variantIndex.cpp \
 			 src/export/dEploidIOExport.cpp \
 			 src/export/dEploidIOExportPosteriorProb.cpp \
-			 src/vcfReader.cpp
+			 src/vcfReader.cpp \
+			 src/gzstream/gzstream.cpp
 
 debug_src = src/debug/mcmcDebug.cpp src/debug/vcfReaderDebug.cpp
 
@@ -41,6 +43,9 @@ dEploid_CXXFLAGS = $(common_flags) -DNDEBUG -O3
 dEploid_dbg_CXXFLAGS = -g $(common_flags) -O3
 dEploid_prof_CXXFLAGS = $(common_flags) -DNDEBUG -fno-omit-frame-pointer -pg -O1
 
+dEploid_LDADD = $(common_LDADD)
+dEploid_dbg_LDADD = $(common_LDADD)
+dEploid_prof_LDADD = $(common_LDADD)
 
 unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_runner.cpp \
@@ -54,7 +59,7 @@ unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_vcfReader.cpp
 
 unit_tests_CXXFLAGS = $(common_flags) -DNDEBUG -DUNITTEST -Wno-write-strings --coverage
-unit_tests_LDADD          = -lcppunit -ldl
+unit_tests_LDADD    = -lcppunit -ldl $(common_LDADD)
 
 clean-local: clean-local-check
 .PHONY: clean-local-check
