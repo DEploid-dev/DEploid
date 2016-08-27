@@ -141,14 +141,14 @@ Use our data exploration tools to investigate the data.
 
 ::
 
-    $ R --slave "--args -vcf tests/testData/PG0389-C.vcf
-     -plaf tests/testData/labStrains_samples_PLAF.txt
-     -o PG0389-C " < utilities/dataExplore.r
+    $ R --slave "--args -vcf data/exampleData/PG0390-C.eg.vcf.gz
+     -plaf data/exampleData/labStrains.eg.PLAF.txt
+     -o PG0390-C " < utilities/dataExplore.r
 
 
-.. image:: _static/PG0389-CaltVsRefAndWSAFvsPLAF.png
+.. image:: _static/PG0390-CaltVsRefAndWSAFvsPLAF.png
    :width: 1024px
-   :alt: Plot alternative allele and reference allele counts to identify evidence of mixed infection in *Pf3k* sample PG0389-C.
+   :alt: Plot alternative allele and reference allele counts to identify evidence of mixed infection in *Pf3k* sample PG0390-C.
 
 
 - Figure on the left plots the alternative allele count against the reference allele count. As *P. falciparum* genomes are haploid, in clonal samples, one woule expect to see either alternative or reference allele at any sites. Heterozygous sites are indications of mixed infection.

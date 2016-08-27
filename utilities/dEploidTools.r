@@ -69,8 +69,13 @@ fun.dEploidPrefix <- function ( prefix ){
 
 fun.extract.vcf <- function ( vcfName, ADFieldIndex = 2 ){
     # Assume that AD is the second field
-    skipNum = as.numeric(system(paste("cat ", vcfName, " | head -500 | grep \"##\" | wc -l"), T))
-    vcf  = read.table( vcfName, skip=skipNum, header=T, comment.char="", stringsAsFactors = FALSE, check.names=FALSE)
+    catCmd = "cat"
+    if ( grepl("gzip", system(paste("file --mime-type", vcfName), T) ) == TRUE ){
+        catCmd = "zcat"
+    }
+
+    skipNum = as.numeric(system(paste(catCmd, vcfName, " | head -5000 | grep \"##\" | wc -l"), T))
+    vcf  = read.table( gzfile(vcfName), skip=skipNum, header=T, comment.char="", stringsAsFactors = FALSE, check.names=FALSE)
 
     sampleName = names(vcf)[10]
 
