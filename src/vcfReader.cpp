@@ -65,9 +65,9 @@ void VcfReader::init( string fileName ){
     this->checkFileCompressed();
 
     if ( this->isCompressed() ){
-        this->inFileGz.open(this->fileName_.c_str());
+        this->inFileGz.open(this->fileName_.c_str(), std::ios::in);
     } else {
-        this->inFile.open(this->fileName_.c_str());
+        this->inFile.open(this->fileName_.c_str(), std::ios::in);
     }
 }
 
