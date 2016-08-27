@@ -67,8 +67,9 @@ void DEploidIO::core(int argc, char *argv[]) {
 
 
 void DEploidIO::init() {
-    this->setDoExportRecombProb ( false );
-    this->setRandomSeedWasSet( false );
+    this->setDoExportRecombProb(false);
+    this->setRandomSeedWasSet(false);
+    this->setCompressVcf(false);
     this->initialPropWasGiven_ = false;
     this->initialProp.clear();
     this->setExcludeSites( false );
@@ -137,6 +138,10 @@ void DEploidIO::reInit() {
 
 
 void DEploidIO::finalize(){
+    if ( this->compressVcf() && !this->doExportVcf() ){
+        throw VcfOutUnSpecified("");
+    }
+
     if ( !this->randomSeedWasSet_ ){
         this->set_seed( (unsigned)(time(0)) );
     }
@@ -197,7 +202,11 @@ void DEploidIO::finalize(){
 void DEploidIO::removeFilesWithSameName(){
     strExportLLK = this->prefix_ + ".llk";
     strExportHap = this->prefix_ + ".hap";
+
     strExportVcf = this->prefix_ + ".vcf";
+    if ( compressVcf() ){
+        strExportVcf += ".gz";
+    }
     strExportProp = this->prefix_ + ".prop";
     strExportLog =  this->prefix_ + ".log";
     strExportRecombProb = this->prefix_ + ".recomb";
@@ -322,6 +331,8 @@ void DEploidIO::parse (){
         } else if ( *argv_i == "-seed"){
             this->set_seed( readNextInput<size_t>() );
             this->setRandomSeedWasSet( true );
+        } else if ( *argv_i == "-z" ){
+            this->setCompressVcf(true);
         } else if ( *argv_i == "-h" || *argv_i == "-help"){
             this->set_help(true);
         } else if ( *argv_i == "-v" || *argv_i == "-version"){

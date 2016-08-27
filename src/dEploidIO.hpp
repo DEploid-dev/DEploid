@@ -142,6 +142,10 @@ class DEploidIO{
     void setDoExportVcf( const bool exportVcf ){ this->doExportVcf_ = exportVcf; }
     bool doExportVcf() const { return this->doExportVcf_; }
 
+    bool compressVcf_;
+    void setCompressVcf( const bool compress ){ this->compressVcf_ = compress; }
+    bool compressVcf() const { return this->compressVcf_; }
+
     bool doExportRecombProb_;
     void setDoExportRecombProb( const bool exportRecombProb ){ this->doExportRecombProb_ = exportRecombProb; }
     bool doExportRecombProb() const { return this->doExportRecombProb_; }
@@ -177,17 +181,11 @@ class DEploidIO{
     string strExportTwoMissCopyTwo;
 
     ofstream ofstreamExportTmp;
-    ofstream ofstreamExportLLK;
-    ofstream ofstreamExportHap;
-    ofstream ofstreamExportProp;
-    ofstream ofstreamExportLog;
-    ofstream ofstreamExportRecombProb;
     ofstream ofstreamExportFwdProb;
 
     string startingTime_;
     string endTime_;
     void getTime( bool isStartingTime );
-
 
 
     // Methods

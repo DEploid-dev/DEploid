@@ -59,6 +59,14 @@ struct NotEnoughArg : public InvalidInput{
   ~NotEnoughArg() throw() {}
 };
 
+struct VcfOutUnSpecified : public InvalidInput{
+  VcfOutUnSpecified( string str ):InvalidInput( str ){
+    this->reason = "Missing flag \"-vcfOut\".";
+    throwMsg = this->reason + this->src;
+  }
+  ~VcfOutUnSpecified() throw() {}
+};
+
 
 struct WrongType : public InvalidInput{
   WrongType( string str ):InvalidInput( str ){
