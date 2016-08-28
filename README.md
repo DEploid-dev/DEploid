@@ -11,22 +11,31 @@ Please see the [documentation](http://deploid.readthedocs.io/en/latest/) for fur
 Installation
 ------------
 
-You can also install `dEploid` directly from the git repository. Here, you need to install `autoconf` first:
+You can also install `dEploid` directly from the git repository. Here, you will need `autoconf`, check whether this is already installed by running:
+```bash
+$ which autoconf
+```
 
 On Debian/Ubuntu based systems:
 ```bash
-apt-get install build-essential autoconf autoconf-archive libcppunit-dev
+$ apt-get install build-essential autoconf autoconf-archive libcppunit-dev
 ```
 
 On Mac OS:
 ```bash
-port install automake autoconf autoconf-archive cppunit
+$ port install automake autoconf autoconf-archive cppunit
 ```
 
-Afterwards you can build the binary using
+Afterwards you can clone the code from the github repository,
 ```bash
-./bootstrap
-make
+$ git clone git@github.com:mcveanlab/DEploid.git
+$ cd DEploid
+```
+
+and build the binary using
+```bash
+$ ./bootstrap
+$ make
 ```
 
 Usage
