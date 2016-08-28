@@ -12,10 +12,14 @@ Mostly used
 -----------
 
 -vcf [*file*]
-    File path of the isolate vcf.
+    File path of the isolate vcf. Assume all variants are ``PASS`` in the ``QUAL`` column, the VCF file also reqires the ``AD`` field.
+
+.. note::
+    In the current implementation, ``DEploid`` only take the first sample in the VCF file. ``DEploid`` DO NOT handle multi-allelic variants, nor indels. The ``FILTER`` column will not be used.
+
 
 -plaf [*file*]
-    File path of population level allele frequencies. Text file with population level alternative allele frequency, for example
+    File path of population level allele frequencies (tab-delimited plain text file), for example
 
 .. csv-table::
     :header: CHROM, POS, PLAF
@@ -27,7 +31,7 @@ Mostly used
     Pf3D7_01_v3,94487,0.143439298925837
 
 -panel [*file*]
-    File path of the reference panel. Reference panel recorded in CSV format, for example
+    File path of the reference panel (tab-delimited plain text file), for example
 
 .. csv-table::
    :header: CHROM, POS, 3D7, Dd2, Hb3, 7G8
@@ -46,7 +50,7 @@ Mostly used
     Flags **-panel** and **-noPanel** should not be used together.
 
 -exclude [file]
-    File path of sites to be excluded.
+    File path of sites to be excluded (tab-delimited plain text file).
 
 -o [string]
     Specify the file name prefix of the output.
@@ -79,7 +83,7 @@ You may also try
 ----------------
 
 -ref [file] -alt [file]
-    File path of reference and alternative allele count.
+    File path of reference and alternative allele count (tab-delimited plain text file).
 
 .. note::
     In early ``dEploid`` versions (prior to `v0.2-release`), allele counts extracted from the vcf file are placed in two files, and parsed by flags **-ref [file]** and **-alt [file]**. Tab-delimited plain text for input. First and second columns record chromosome and position labels respectively.  Third columns records the reference allele count or alternative allele count. For example,
