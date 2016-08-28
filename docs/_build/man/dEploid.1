@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "DEPLOID" "1" "August 18, 2016" "v0.3-beta" "DEploid"
+.TH "DEPLOID" "1" "August 28, 2016" "v0.3-beta" "DEploid"
 .SH NAME
 dEploid \- 
 .
@@ -44,6 +44,22 @@ A software that deconvolutes mixed genomes with unknown proportions.
 .B dEploid [ \-vcf \fIfile\fP ] [ \-plaf \fIfile\fP ] [ \-panel \fIfile\fP ] ... [ \-exclude \fIfile\fP ] [ \-vcfOut ] [ \-o \fIstring\fP ] 
 
 .UNINDENT
+.SS Example:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ ./dEploid \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
+\-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+\-exclude data/testData/labStrains.test.exclude.txt \e
+\-noPanel \e
+\-o test_run \e
+\-vcfOut \-z
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .SH DESCRIPTION
 .sp
 \fBdEploid\fP is designed for deconvoluting mixed genomes with unknown proportions. Traditional \(aqphasing\(aq programs are limited to diploid organisms. Our method modifies Li and Stephen’s [Li2003] algorithm with Markov chain Monte Carlo (MCMC) approaches, and builds a generic framework that allows haloptype searches in a multiple infection setting.
@@ -66,7 +82,17 @@ You can download the latest stable release packaged for a variety of different p
 .UNINDENT
 .SS Development Version From GitHub
 .sp
-You can also install \fBdEploid\fP directly from the git repository. Here, you need to install \fBautoconf\fP first:
+You can also install \fBdEploid\fP directly from the git repository. Here, you will need \fBautoconf\fP, check whether this is already installed by running:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ which autoconf
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .sp
 On Debian/Ubuntu based systems:
 .INDENT 0.0
@@ -92,7 +118,20 @@ $ port install automake autoconf autoconf\-archive cppunit
 .UNINDENT
 .UNINDENT
 .sp
-Afterwards you can build the binary using
+Afterwards you can clone the code from the github repository,
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ git clone git@github.com:mcveanlab/DEploid.git
+$ cd DEploid
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+and build the binary using
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -112,10 +151,19 @@ or install with \fBmake install\fP\&.
 .INDENT 0.0
 .TP
 .B \-vcf [\fIfile\fP]
-File path of the isolate vcf.
+File path of the isolate vcf. Assume all variants are \fBPASS\fP in the \fBQUAL\fP column, the VCF file also reqires the \fBAD\fP field.
+.UNINDENT
+.sp
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+In the current implementation, \fBDEploid\fP only take the first sample in the VCF file. \fBDEploid\fP DO NOT handle multi\-allelic variants, nor indels. The \fBFILTER\fP column will not be used.
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
 .TP
 .B \-plaf [\fIfile\fP]
-File path of population level allele frequencies. Text file with population level alternative allele frequency, for example
+File path of population level allele frequencies (tab\-delimited plain text file), for example
 .UNINDENT
 .TS
 center;
@@ -165,7 +213,7 @@ _
 .INDENT 0.0
 .TP
 .B \-panel [\fIfile\fP]
-File path of the reference panel. Reference panel recorded in CSV format, for example
+File path of the reference panel (tab\-delimited plain text file), for example
 .UNINDENT
 .TS
 center;
@@ -257,7 +305,7 @@ Flags \fB\-panel\fP and \fB\-noPanel\fP should not be used together.
 .INDENT 0.0
 .TP
 .B \-exclude [file]
-File path of sites to be excluded.
+File path of sites to be excluded (tab\-delimited plain text file).
 .TP
 .B \-o [string]
 Specify the file name prefix of the output.
@@ -290,7 +338,7 @@ Save final halpotypes into a VCF file.
 .INDENT 0.0
 .TP
 .B \-ref [file] \-alt [file]
-File path of reference and alternative allele count.
+File path of reference and alternative allele count (tab\-delimited plain text file).
 .UNINDENT
 .sp
 \fBNOTE:\fP
@@ -432,14 +480,14 @@ Use our data exploration tools to investigate the data.
 .sp
 .nf
 .ft C
-$ R \-\-slave "\-\-args \-vcf tests/testData/PG0389\-C.vcf
- \-plaf tests/testData/labStrains_samples_PLAF.txt
- \-o PG0389\-C " < utilities/dataExplore.r
+$ R \-\-slave "\-\-args \-vcf data/exampleData/PG0390\-C.eg.vcf.gz
+ \-plaf data/exampleData/labStrains.eg.PLAF.txt
+ \-o PG0390\-C " < utilities/dataExplore.r
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
-[image: Plot alternative allele and reference allele counts to identify evidence of mixed infection in *Pf3k* sample PG0389-C.]
+[image: Plot alternative allele and reference allele counts to identify evidence of mixed infection in *Pf3k* sample PG0390-C.]
 [image]
 .INDENT 0.0
 .IP \(bu 2
@@ -479,13 +527,13 @@ When flag \fB\-exportPostProb\fP is turned on, posterior probabilities of the fi
 .sp
 .nf
 .ft C
-$ ./dEploid \-vcf tests/testData/PG0389\-C.vcf \e
-\-plaf tests/testData/labStrains_samples_PLAF.txt \e
-\-noPanel \-o PG0389\-CNopanel
-$ R \-\-slave "\-\-args \-vcf tests/testData/PG0389\-C.vcf
-\-plaf tests/testData/labStrains_samples_PLAF.txt
-\-dEprefix PG0389\-CNopanel
-\-o PG0389\-CNopanel " < utilities/interpretDEploid.r
+$ ./dEploid \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
+\-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+\-noPanel \-o PG0390\-CNopanel
+$ R \-\-slave "\-\-args \-vcf data/exampleData/PG0390\-C.eg.vcf.gz
+\-plaf data/exampleData/labStrains.eg.PLAF.txt
+\-dEprefix PG0390\-CNopanel
+\-o PG0390\-CNopanel " < utilities/interpretDEploid.r
 .ft P
 .fi
 .UNINDENT

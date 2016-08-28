@@ -36,15 +36,15 @@ Example of output interpretion
 
 ::
 
-    $ ./dEploid -vcf tests/testData/PG0389-C.vcf \
-    -plaf tests/testData/labStrains_samples_PLAF.txt \
-    -noPanel -o PG0389-CNopanel
-    $ R --slave "--args -vcf tests/testData/PG0389-C.vcf
-    -plaf tests/testData/labStrains_samples_PLAF.txt
-    -dEprefix PG0389-CNopanel
-    -o PG0389-CNopanel " < utilities/interpretDEploid.r
+    $ ./dEploid -vcf data/exampleData/PG0390-C.eg.vcf.gz \
+    -plaf data/exampleData/labStrains.eg.PLAF.txt \
+    -noPanel -o PG0390-CNopanel
+    $ R --slave "--args -vcf data/exampleData/PG0390-C.eg.vcf.gz
+    -plaf data/exampleData/labStrains.eg.PLAF.txt
+    -dEprefix PG0390-CNopanel
+    -o PG0390-CNopanel " < utilities/interpretDEploid.r
 
-.. image:: _static/PG0389-CNopanel.interpretDEploidFigure.1.png
+.. image:: _static/PG0390-CNopanel.interpretDEploidFigure.1.png
    :width: 1024px
    :alt: interpretDEploidFigure.1
 
@@ -54,7 +54,7 @@ The top three figures are the same as figures show in :ref:`data example <sec-eg
 - The middle figure show the correlation between the expected and observed allele frequency in sample.
 - The right figure shows changes in MCMC likelihood .
 
-.. image:: _static/PG0389-CNopanel.interpretDEploidFigure.2.png
+.. image:: _static/PG0390-CNopanel.interpretDEploidFigure.2.png
    :width: 1024px
    :alt: interpretDEploidFigure.2
 

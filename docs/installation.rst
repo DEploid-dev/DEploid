@@ -18,7 +18,11 @@ Stable Release
 Development Version From GitHub
 *******************************
 
-You can also install ``dEploid`` directly from the git repository. Here, you need to install ``autoconf`` first:
+You can also install ``dEploid`` directly from the git repository. Here, you will need ``autoconf``, check whether this is already installed by running:
+
+.. code-block:: bash
+
+    $ which autoconf
 
 On Debian/Ubuntu based systems:
 
@@ -34,7 +38,14 @@ On Mac OS:
     $ port install automake autoconf autoconf-archive cppunit
 
 
-Afterwards you can build the binary using
+Afterwards you can clone the code from the github repository,
+
+.. code-block:: bash
+
+    $ git clone git@github.com:mcveanlab/DEploid.git
+    $ cd DEploid
+
+and build the binary using
 
 .. code-block:: bash
 
