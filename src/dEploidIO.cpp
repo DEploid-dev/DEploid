@@ -430,5 +430,5 @@ void DEploidIO::printHelp(){
     cout << "Examples:" << endl;
     cout << endl;
     cout << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel"<< endl;
-    cout << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel"<< endl;
+    cout << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanelExclude -noPanel"<< endl;
 }

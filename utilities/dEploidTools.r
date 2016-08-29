@@ -48,10 +48,6 @@ fun.parse <- function( args ){
 #        stop ("Vcf File name not specified!")
 #    }
 
-#    if ( excludeBool ){
-#        stop ("Exclude not implemented yet!")
-#    }
-
     if ( plafFileName == "" ){
         stop ("Plaf File name not specified!")
     }
@@ -65,7 +61,8 @@ fun.parse <- function( args ){
                     plafFileName = plafFileName,
                     outPrefix = outPrefix,
                     dEploidPrefix = dEploidPrefix,
-                    excludeFileName = excludeFileName) )
+                    excludeFileName = excludeFileName,
+                    excludeBool = excludeBool) )
 }
 
 
@@ -304,17 +301,14 @@ fun.interpretDEploid.1 <- function (coverage, plafInfo, dEploidPrefix, prefix = 
     plot.wsaf.hist ( obsWSAF )
 
     if (exclude$excludeBool){
-
-    excludeLogic = ( paste(ref.full$CHROM, ref.full$POS) %in% paste(exclude$CHROM, exclude$POS) )
-    excludeindex = which(excludeLogic)
-    includeindex = which(!excludeLogic)
-    exclude.ref = ref.full[excludeindex,3]
-    exclude.alt = alt.full[excludeindex,3]
-
-    plaf = read.table(plafFile, header = T)[includeindex,3]
-
+        excludeLogic = ( paste(coverage$CHROM, coverage$POS) %in% paste(exclude$excludeTable$CHROM, exclude$excludeTable$POS) )
+        excludeindex = which(excludeLogic)
+        includeindex = which(!excludeLogic)
+        obsWSAF = obsWSAF[includeindex]
+        PLAF = PLAF[includeindex]
+        ref = ref[includeindex]
+        alt = alt[includeindex]
     }
-
     plot.plaf.vs.wsaf ( PLAF, obsWSAF, expWSAF )
 
     plot.prop( tmpProp )

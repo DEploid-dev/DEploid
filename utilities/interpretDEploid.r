@@ -6,7 +6,7 @@ rm(list=ls()); dEploidRootDir="/home/joezhu/DEploid"
 #
 # EXAMPLE:
 #    R --slave "--args -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -dEprefix PG0390-CNopanel -o PG0390-CNopanel " < utilities/interpretDEploid.r
-#    R --slave "--args -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -dEprefix PG0390-CNopanel -o PG0390-CNopanel -exclude data/testData/labStrains.test.exclude.txt " < utilities/interpretDEploid.r
+#    R --slave "--args -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -dEprefix PG0390-CNopanelExclude -o PG0390-CNopanelExclude -exclude data/testData/labStrains.test.exclude.txt " < utilities/interpretDEploid.r
 
 if (!exists("dEploidRootDir")){
     print("dEploidRootDir undefined, try make dEploid again!")
