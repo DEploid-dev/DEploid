@@ -7,7 +7,7 @@ EXTRA_DIST = bootstrap \
 COMPILEDATE = $(shell date -u | sed -e "s/ /-/g")
 distdir = $(PACKAGE)-$(VERSION)
 
-bin_PROGRAMS = dEploid dEploid_dbg
+bin_PROGRAMS = dEploid dEploid_dbg utilities
 
 man1_MANS = docs/_build/man/dEploid.1
 
@@ -62,7 +62,12 @@ unit_tests_CXXFLAGS = $(common_flags) -DNDEBUG -DUNITTEST -Wno-write-strings --c
 unit_tests_LDADD    = -lcppunit -ldl $(common_LDADD)
 
 clean-local: clean-local-check
-.PHONY: clean-local-check
+.PHONY: clean-local-check utilities
 clean-local-check:
 	-rm -rf src/*.gc* tests/unittest/*.gc* src/*.gcov
 
+utilities: utilities/dataExplore.r utilities/interpretDEploid.r
+	sed -i '/rm(list=ls())/d' utilities/dataExplore.r
+	sed -i '1irm(list=ls()); dEploidRootDir="$(PWD)"' utilities/dataExplore.r
+	sed -i '/rm(list=ls())/d' utilities/interpretDEploid.r
+	sed -i '1irm(list=ls()); dEploidRootDir="$(PWD)"' utilities/interpretDEploid.r

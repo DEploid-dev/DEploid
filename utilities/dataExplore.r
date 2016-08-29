@@ -1,3 +1,4 @@
+rm(list=ls()); dEploidRootDir="/home/joezhu/DEploid"
 # DESCRIPTION:
 #
 # USAGE:
@@ -7,8 +8,11 @@
 #    R --slave "--args -vcf data/testData/PG0390-C.test.vcf.gz -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-C " < utilities/dataExplore.r
 #    R --slave "--args -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-C " < utilities/dataExplore.r
 
-rm(list= ls())
-source ("utilities/dEploidTools.r")
+if (!exists("dEploidRootDir")){
+    print("dEploidRootDir undefined, try make dEploid again!")
+}
+
+source(paste(dEploidRootDir, "/utilities/dEploidTools.r", sep=""))
 
 args = (commandArgs(TRUE))
 

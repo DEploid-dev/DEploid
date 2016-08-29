@@ -1,13 +1,17 @@
+rm(list=ls()); dEploidRootDir="/home/joezhu/DEploid"
 # DESCRIPTION:
 #
 # USAGE:
 #    R --slave "--args -vcf FILE -plaf FILE -dEprefix STRING -o STRING " < utilities/interpretDEploid.r
 #
 # EXAMPLE:
-#    R --slave "--args -vcf data/testData/PG0389-C.vcf -plaf data/testData/labStrains_samples_PLAF.txt -dEprefix PG0389-Cpanel -o PG0389-Cpanel " < utilities/interpretDEploid.r
+#    R --slave "--args -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -dEprefix PG0390-CNopanel -o PG0390-CNopanel " < utilities/interpretDEploid.r
 
-rm(list= ls())
-source ("utilities/dEploidTools.r")
+if (!exists("dEploidRootDir")){
+    print("dEploidRootDir undefined, try make dEploid again!")
+}
+
+source(paste(dEploidRootDir, "/utilities/dEploidTools.r", sep=""))
 
 args = (commandArgs(TRUE))
 
