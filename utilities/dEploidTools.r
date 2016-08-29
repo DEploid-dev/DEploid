@@ -5,6 +5,8 @@ fun.parse <- function( args ){
 
     outPrefix = "dataExplore"
     vcfFileName = ""
+    refFileName = ""
+    altFileName = ""
     plafFileName = ""
     excludeFileName = ""
     dEploidPrefix = ""
@@ -19,6 +21,12 @@ fun.parse <- function( args ){
         } else if ( argv == "-plaf" ){
             arg_i = fun.local.checkAndIncreaseArgI ( )
             plafFileName = args[arg_i]
+        } else if ( argv == "-ref" ){
+            arg_i = fun.local.checkAndIncreaseArgI ( )
+            refFileName = args[arg_i]
+        } else if ( argv == "-alt" ){
+            arg_i = fun.local.checkAndIncreaseArgI ( )
+            altFileName = args[arg_i]
         } else if ( argv == "-exclude" ){
             arg_i = fun.local.checkAndIncreaseArgI ( )
             excludeFileName = args[arg_i]
@@ -36,9 +44,9 @@ fun.parse <- function( args ){
         arg_i = arg_i + 1
     }
 
-    if ( vcfFileName == "" ){
-        stop ("Vcf File name not specified!")
-    }
+#    if ( vcfFileName == "" || ( refFileName == "" && altFileName == "") ){
+#        stop ("Vcf File name not specified!")
+#    }
 
     if ( plafFileName == "" ){
         stop ("Plaf File name not specified!")
@@ -48,6 +56,8 @@ fun.parse <- function( args ){
 #    cat ("plafFileName: ", plafFileName, "\n")
 
     return ( list ( vcfFileName = vcfFileName,
+                    refFileName = refFileName,
+                    altFileName = altFileName,
                     plafFileName = plafFileName,
                     outPrefix = outPrefix,
                     dEploidPrefix = dEploidPrefix,
@@ -64,6 +74,28 @@ fun.dEploidPrefix <- function ( prefix ){
                     hapFileName  = paste(prefix, ".hap",    sep = ""),
                     llkFileName  = paste(prefix, ".llk",    sep = ""),
                     dicLogFileName  = paste(prefix, "dic.log", sep = "") ) )
+}
+
+
+fun.extract.coverage <- function ( inputs ){
+    if ( inputs$vcfFileName != "" ){
+        return (fun.extract.vcf (inputs$vcfFileName))
+    } else {
+        return (fun.extract.coverage.from.txt (inputs$refFileName, inputs$altFileName))
+    }
+
+}
+
+
+
+fun.extract.coverage.from.txt <- function ( refFileName, altFileName ){
+    ref = read.table(refFileName, header = TRUE, comment.char = "")
+    alt = read.table(altFileName, header = TRUE, comment.char = "")
+    return ( data.frame( CHROM = ref[,1],
+                         POS = ref[,2],
+                         refCount = ref[,3],
+                         altCount = alt[,3] )
+           )
 }
 
 
@@ -218,10 +250,10 @@ fun.calc.obsWSAF <- function (alt, ref) {
 }
 
 
-fun.dataExplore <- function (vcfInfo, plafInfo, prefix = "") {
+fun.dataExplore <- function (coverage, plafInfo, prefix = "") {
     PLAF = plafInfo$PLAF
-    ref = vcfInfo$refCount
-    alt = vcfInfo$altCount
+    ref = coverage$refCount
+    alt = coverage$altCount
 
     png ( paste ( prefix, "altVsRefAndWSAFvsPLAF.png", sep = "" ), width = 1800, height = 600)
     par( mfrow = c(1,3) )
@@ -238,11 +270,11 @@ fun.dataExplore <- function (vcfInfo, plafInfo, prefix = "") {
 }
 
 
-fun.interpretDEploid.1 <- function (vcfInfo, plafInfo, dEploidPrefix, prefix = "") {
+fun.interpretDEploid.1 <- function (coverage, plafInfo, dEploidPrefix, prefix = "") {
 
     PLAF = plafInfo$PLAF
-    ref = vcfInfo$refCount
-    alt = vcfInfo$altCount
+    ref = coverage$refCount
+    alt = coverage$altCount
 
     dEploidOutput = fun.dEploidPrefix ( dEploidPrefix )
     tmpProp = read.table(dEploidOutput$propFileName, header=F)
@@ -285,10 +317,10 @@ plot.wsaf.vs.index <- function ( chrom, obsWSAF, expWSAF = c(), excludeIndex = c
 
 }
 
-fun.interpretDEploid.2 <- function ( vcfInfo, dEploidPrefix, prefix = "" ){
+fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "" ){
 
-    ref = vcfInfo$refCount
-    alt = vcfInfo$altCount
+    ref = coverage$refCount
+    alt = coverage$altCount
 
     dEploidOutput = fun.dEploidPrefix ( dEploidPrefix )
     tmpProp = read.table(dEploidOutput$propFileName, header=F)
@@ -300,7 +332,7 @@ fun.interpretDEploid.2 <- function ( vcfInfo, dEploidPrefix, prefix = "" ){
     png(paste( prefix, ".interpretDEploidFigure.2.png", sep= ""), width = 3500, height = 2000)
     par (mfrow = c(7,2))
 
-    plot.wsaf.vs.index ( vcfInfo$CHROM, obsWSAF, expWSAF )
+    plot.wsaf.vs.index ( coverage$CHROM, obsWSAF, expWSAF )
 
     dev.off()
 
