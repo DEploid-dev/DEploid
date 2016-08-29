@@ -6,6 +6,7 @@ rm(list=ls()); dEploidRootDir="/home/joezhu/DEploid"
 #
 # EXAMPLE:
 #    R --slave "--args -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -dEprefix PG0390-CNopanel -o PG0390-CNopanel " < utilities/interpretDEploid.r
+#    R --slave "--args -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -dEprefix PG0390-CNopanel -o PG0390-CNopanel -exclude data/testData/labStrains.test.exclude.txt " < utilities/interpretDEploid.r
 
 if (!exists("dEploidRootDir")){
     print("dEploidRootDir undefined, try make dEploid again!")
@@ -20,8 +21,6 @@ myInput = fun.parse ( args )
 myCoverageInfo = fun.extract.coverage ( myInput )
 
 myPlafInfo = fun.extract.plaf ( myInput$plafFileName )
-
-print(myInput$dEploidPrefix)
 
 fun.interpretDEploid.1 (myCoverageInfo, myPlafInfo, myInput$dEploidPrefix, myInput$outPrefix)
 

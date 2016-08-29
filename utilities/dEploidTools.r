@@ -48,6 +48,10 @@ fun.parse <- function( args ){
 #        stop ("Vcf File name not specified!")
 #    }
 
+    if ( excludeBool ){
+        stop ("Exclude not implemented yet!")
+    }
+
     if ( plafFileName == "" ){
         stop ("Plaf File name not specified!")
     }
