@@ -22,7 +22,9 @@ myCoverageInfo = fun.extract.coverage ( myInput )
 
 myPlafInfo = fun.extract.plaf ( myInput$plafFileName )
 
-fun.interpretDEploid.1 (myCoverageInfo, myPlafInfo, myInput$dEploidPrefix, myInput$outPrefix)
+myExcludeInfo = fun.extract.exclude (myInput$excludeFileName, myInput$excludeBool)
+
+fun.interpretDEploid.1 (myCoverageInfo, myPlafInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo)
 
 fun.interpretDEploid.2 (myCoverageInfo, myInput$dEploidPrefix, myInput$outPrefix)
 
