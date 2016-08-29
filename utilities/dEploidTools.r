@@ -48,10 +48,6 @@ fun.parse <- function( args ){
 #        stop ("Vcf File name not specified!")
 #    }
 
-    if ( excludeBool ){
-        stop ("Exclude not implemented yet!")
-    }
-
     if ( plafFileName == "" ){
         stop ("Plaf File name not specified!")
     }
@@ -65,7 +61,8 @@ fun.parse <- function( args ){
                     plafFileName = plafFileName,
                     outPrefix = outPrefix,
                     dEploidPrefix = dEploidPrefix,
-                    excludeFileName = excludeFileName) )
+                    excludeFileName = excludeFileName,
+                    excludeBool = excludeBool) )
 }
 
 
@@ -91,7 +88,6 @@ fun.extract.coverage <- function ( inputs ){
 }
 
 
-
 fun.extract.coverage.from.txt <- function ( refFileName, altFileName ){
     ref = read.table(refFileName, header = TRUE, comment.char = "")
     alt = read.table(altFileName, header = TRUE, comment.char = "")
@@ -100,6 +96,16 @@ fun.extract.coverage.from.txt <- function ( refFileName, altFileName ){
                          refCount = ref[,3],
                          altCount = alt[,3] )
            )
+}
+
+
+fun.extract.exclude <- function (excludeFileName, excludeBool){
+    if ( excludeBool ) {
+        return ( list ( excludeBool = excludeBool,
+                        excludeTable = read.table(excludeFileName, header = TRUE, comment.char = "")))
+    } else {
+        return ( list ( excludeBool = excludeBool ))
+    }
 }
 
 
@@ -274,7 +280,7 @@ fun.dataExplore <- function (coverage, plafInfo, prefix = "") {
 }
 
 
-fun.interpretDEploid.1 <- function (coverage, plafInfo, dEploidPrefix, prefix = "") {
+fun.interpretDEploid.1 <- function (coverage, plafInfo, dEploidPrefix, prefix = "", exclude ) {
 
     PLAF = plafInfo$PLAF
     ref = coverage$refCount
@@ -293,6 +299,16 @@ fun.interpretDEploid.1 <- function (coverage, plafInfo, dEploidPrefix, prefix = 
 
     obsWSAF = fun.calc.obsWSAF ( alt, ref )
     plot.wsaf.hist ( obsWSAF )
+
+    if (exclude$excludeBool){
+        excludeLogic = ( paste(coverage$CHROM, coverage$POS) %in% paste(exclude$excludeTable$CHROM, exclude$excludeTable$POS) )
+        excludeindex = which(excludeLogic)
+        includeindex = which(!excludeLogic)
+        obsWSAF = obsWSAF[includeindex]
+        PLAF = PLAF[includeindex]
+        ref = ref[includeindex]
+        alt = alt[includeindex]
+    }
     plot.plaf.vs.wsaf ( PLAF, obsWSAF, expWSAF )
 
     plot.prop( tmpProp )
