@@ -67,7 +67,6 @@ clean-local-check:
 	-rm -rf src/*.gc* tests/unittest/*.gc* src/*.gcov
 
 utilities: utilities/dataExplore.r utilities/interpretDEploid.r
-	sed -i '/rm(list=ls())/d' utilities/dataExplore.r
-	sed -i '1irm(list=ls()); dEploidRootDir="$(PWD)"' utilities/dataExplore.r
-	sed -i '/rm(list=ls())/d' utilities/interpretDEploid.r
-	sed -i '1irm(list=ls()); dEploidRootDir="$(PWD)"' utilities/interpretDEploid.r
+	sed -i'.bak' -e '/rm(list=ls())/d' utilities/dataExplore.r ; echo "rm(list=ls()); dEploidRootDir=\"$(PWD)\"" > tmpTxt ; cat utilities/dataExplore.r >> tmpTxt ;	mv tmpTxt utilities/dataExplore.r
+	sed -i'.bak' -e '/rm(list=ls())/d' utilities/interpretDEploid.r; echo "rm(list=ls()); dEploidRootDir=\"$(PWD)\"" > tmpTxt ; cat utilities/interpretDEploid.r >> tmpTxt ; mv tmpTxt utilities/interpretDEploid.r
+
