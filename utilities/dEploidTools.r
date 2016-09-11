@@ -293,6 +293,7 @@ fun.interpretDEploid.1 <- function (coverage, plafInfo, dEploidPrefix, prefix = 
     expWSAF = hap %*%prop
     llkTable = read.table( dEploidOutput$llkFileName, header=F)
 
+#    png ( paste ( prefix, ".interpretDEploidFigure.1.png", sep = "" ),  width = 1500, height = 500, bg="transparent")
     png ( paste ( prefix, ".interpretDEploidFigure.1.png", sep = "" ),  width = 1500, height = 1000)
     par( mfrow = c(2,3) )
     plot.altVsRef ( ref, alt )
@@ -323,37 +324,46 @@ fun.interpretDEploid.1 <- function (coverage, plafInfo, dEploidPrefix, prefix = 
 }
 
 
-plot.wsaf.vs.index <- function ( chrom, obsWSAF, expWSAF = c(), excludeIndex = c(), titlePrefix = "" ){
-    chromList = levels(chrom)
+plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), exclude, titlePrefix = "" ){
+    chromList = levels(coverage$CHROM)
+    ref = coverage$refCount
+    alt = coverage$altCount
+    obsWSAF = fun.calc.obsWSAF ( alt, ref )
 
     for ( chromI in chromList ){
-        chromIndex = which (chrom == chromI)
-        plot( obsWSAF[chromIndex], col="red", ylim=c(0,1), main = paste(titlePrefix, chromI, "WSAF"))
+        plot( obsWSAF[coverage$CHROM==chromI], col="red", ylim=c(0,1), main = paste(titlePrefix, chromI, "WSAF"))
 
         if ( length(expWSAF) > 0 ){
-            points(expWSAF[chromIndex], col="blue")
+            plotIndex = c()
+            if (exclude$excludeBool){
+                tmpCoveragePos = coverage$POS[coverage$CHROM==chromI]
+                tmpExcludePos = exclude$excludeTable$POS[exclude$excludeTable$CHROM==chromI]
+                excludeLogic = ( tmpCoveragePos %in% tmpExcludePos )
+                excludeindex = which(excludeLogic)
+                plotIndex = which(!excludeLogic)
+            } else {
+                plotIndex = c(1:length(obsWSAF))
+            }
+            points(plotIndex, expWSAF[expWSAFChrom == chromI], col="blue")
         }
     }
 
 }
 
-fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "" ){
-
-    ref = coverage$refCount
-    alt = coverage$altCount
-
+fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclude ){
     dEploidOutput = fun.dEploidPrefix ( dEploidPrefix )
     tmpProp = read.table(dEploidOutput$propFileName, header=F)
     prop = as.numeric(tmpProp[dim(tmpProp)[1],])
-    hap = as.matrix(read.table(dEploidOutput$hapFileName, header=T)[,-c(1,2)] )
+    hapInfo = read.table(dEploidOutput$hapFileName, header=T)
+    hapChrom = hapInfo[,1]
+    hap = as.matrix(hapInfo[,-c(1,2)])
     expWSAF = hap %*%prop
-    obsWSAF = fun.calc.obsWSAF ( alt, ref )
 
     png(paste( prefix, ".interpretDEploidFigure.2.png", sep= ""), width = 3500, height = 2000)
-    par (mfrow = c(7,2))
-
-    plot.wsaf.vs.index ( coverage$CHROM, obsWSAF, expWSAF )
-
+    chromName = levels(coverage$CHROM)
+    ncol = ceiling(length(chromName)/2)
+    par(mfrow = c(ncol,length(chromName)/ncol))
+    plot.wsaf.vs.index ( coverage, expWSAF, hapChrom, exclude)
     dev.off()
 
 }
@@ -369,7 +379,8 @@ plot.postProb.ofCase <- function ( inPrefix, outPrefix, case ){
     png(paste(outPrefix, ".", case, ".png", sep = ""), width = 3500, height = 2000)
     obj = read.table( paste(inPrefix, ".", case, sep = ""), header=T)
     chromName = levels(obj$CHROM)
-    par(mfrow = c(length(chromName)/2,2))
+    ncol = ceiling(length(chromName)/2)
+    par(mfrow = c(ncol,length(chromName)/ncol))
     for ( chromI in chromName ){
         plot.prob ( obj[which( chromI == obj$CHROM),c(3:dim(obj)[2])], "")
     }

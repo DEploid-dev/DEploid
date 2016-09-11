@@ -26,6 +26,6 @@ myExcludeInfo = fun.extract.exclude (myInput$excludeFileName, myInput$excludeBoo
 
 fun.interpretDEploid.1 (myCoverageInfo, myPlafInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo)
 
-fun.interpretDEploid.2 (myCoverageInfo, myInput$dEploidPrefix, myInput$outPrefix)
+fun.interpretDEploid.2 (myCoverageInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo)
 
 fun.interpretDEploid.3 (myInput$dEploidPrefix, myInput$outPrefix)
