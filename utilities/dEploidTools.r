@@ -342,7 +342,7 @@ plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), ex
                 excludeindex = which(excludeLogic)
                 plotIndex = which(!excludeLogic)
             } else {
-                plotIndex = c(1:length(obsWSAF))
+                plotIndex = c(1:length(obsWSAF[coverage$CHROM==chromI]))
             }
             points(plotIndex, expWSAF[expWSAFChrom == chromI], col="blue")
         }
