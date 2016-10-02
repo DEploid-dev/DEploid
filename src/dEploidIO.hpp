@@ -50,9 +50,11 @@ class DEploidIO{
  friend class McmcMachinery;
   public:
     DEploidIO();
+    DEploidIO(const std::string &arg);
+    DEploidIO(int argc, char *argv[]);
     ~DEploidIO ();
 
-    void core(int argc, char *argv[]);
+    void core();
     void printHelp();
     bool help() const { return help_; }
     void printVersion();
@@ -80,6 +82,9 @@ class DEploidIO{
 
     // Log
     void write (McmcSample * mcmcSample, Panel * panel );
+    bool randomSeedWasSet() const {return this->randomSeedWasSet_; }
+
+    friend std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO);
 
   private:
 
@@ -94,7 +99,6 @@ class DEploidIO{
     size_t randomSeed() const { return randomSeed_;}
     bool randomSeedWasSet_;
     void setRandomSeedWasSet(const bool random){ this->randomSeedWasSet_ = random; }
-    bool randomSeedWasSet() const {return this->randomSeedWasSet_; }
 
 
     bool initialPropWasGiven_;

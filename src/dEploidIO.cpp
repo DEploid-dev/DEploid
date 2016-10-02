@@ -26,10 +26,30 @@
 #include <cassert>       // assert
 #include <iomanip>      // std::setw
 #include <ctime>
+#include <iterator>
 
 
 DEploidIO::DEploidIO(){
     this->init();
+}
+
+
+DEploidIO::DEploidIO(const std::string &arg) {
+    this->init();
+    std::istringstream iss(arg);
+    copy(std::istream_iterator<std::string>(iss),
+         std::istream_iterator<std::string>(),
+         std::back_inserter(argv_));
+    this->core();
+}
+
+
+
+DEploidIO::DEploidIO(int argc, char *argv[]) {
+    this->init();
+    argv_ = std::vector<std::string>(argv + 1, argv + argc);
+    this->argv_i = argv_.begin();
+    this->core();
 }
 
 
@@ -45,10 +65,7 @@ DEploidIO::~DEploidIO(){
 }
 
 
-void DEploidIO::core(int argc, char *argv[]) {
-    argv_ = std::vector<std::string>(argv + 1, argv + argc);
-    this->argv_i = argv_.begin();
-
+void DEploidIO::core() {
     if ( argv_.size() == 0 ) {
         this->set_help(true);
         return;
@@ -431,4 +448,10 @@ void DEploidIO::printHelp(){
     cout << endl;
     cout << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel"<< endl;
     cout << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanelExclude -noPanel"<< endl;
+}
+
+
+std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO) {
+  for (std::string arg : dEploidIO.argv_) stream << " " << arg;
+  return stream;
 }

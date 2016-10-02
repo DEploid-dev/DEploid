@@ -32,7 +32,7 @@ int main( int argc, char *argv[] ){
     try {
 
         DEploidIO dEploidIO;
-        (void)dEploidIO.core( argc, argv );
+        (void)dEploidIO.core();
 
         if ( dEploidIO.version() ){
             dEploidIO.printVersion();
