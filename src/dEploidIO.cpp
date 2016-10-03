@@ -44,7 +44,6 @@ DEploidIO::DEploidIO(const std::string &arg) {
 }
 
 
-
 DEploidIO::DEploidIO(int argc, char *argv[]) {
     this->init();
     argv_ = std::vector<std::string>(argv + 1, argv + argc);

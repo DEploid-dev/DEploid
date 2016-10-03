@@ -30,9 +30,7 @@ using namespace std;
 
 int main( int argc, char *argv[] ){
     try {
-
-        DEploidIO dEploidIO;
-        (void)dEploidIO.core();
+        DEploidIO dEploidIO(argc, argv);
 
         if ( dEploidIO.version() ){
             dEploidIO.printVersion();

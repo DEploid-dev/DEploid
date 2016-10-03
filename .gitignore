@@ -22,6 +22,10 @@
 *.a
 *.lib
 
+# Backup file generated while rewriting r scripts
+utilities/dataExplore.r.bak
+utilities/interpretDEploid.r.bak
+
 # Executables
 *.exe
 *.out
@@ -79,3 +83,6 @@ vcf.*
 *.gcov
 libbash_test.info
 test_coverage/
+
+# Doxyfile
+docs/doxygen/Doxyfile
