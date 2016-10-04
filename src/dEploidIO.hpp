@@ -55,9 +55,9 @@ class DEploidIO{
     ~DEploidIO ();
 
     void core();
-    void printHelp();
+    void printHelp(std::ostream& out);
     bool help() const { return help_; }
-    void printVersion();
+    void printVersion(std::ostream& out);
     bool version() const { return version_; }
 
     bool initialPropWasGiven() const { return initialPropWasGiven_; }

@@ -31,14 +31,15 @@ using namespace std;
 int main( int argc, char *argv[] ){
     try {
         DEploidIO dEploidIO(argc, argv);
+        std::ostream *output = &std::cout;
 
         if ( dEploidIO.version() ){
-            dEploidIO.printVersion();
+            dEploidIO.printVersion(*output);
             return EXIT_SUCCESS;
         }
 
         if ( dEploidIO.help() ){
-            dEploidIO.printHelp();
+            dEploidIO.printHelp(*output);
             return EXIT_SUCCESS;
         }
 

@@ -143,40 +143,42 @@ class TestIO : public CppUnit::TestCase {
 
     void testPrintHelp(){
         char *argv[] = { "./dEploid" };
+        std::ostream *output = &std::cout;
         CPPUNIT_ASSERT_NO_THROW ( DEploidIO(1, argv) );
         DEploidIO dEploidIO1(1, argv);
         CPPUNIT_ASSERT_EQUAL((size_t)0, dEploidIO1.argv_.size());
         CPPUNIT_ASSERT_EQUAL( true, dEploidIO1.help());
-        CPPUNIT_ASSERT_NO_THROW ( dEploidIO1.printHelp() );
+        CPPUNIT_ASSERT_NO_THROW(dEploidIO1.printHelp(*output));
 
         char *argv1[] = { "./dEploid", "-h" };
         CPPUNIT_ASSERT_NO_THROW ( DEploidIO(2, argv1) );
         DEploidIO dEploidIO2(2, argv1);
         CPPUNIT_ASSERT_EQUAL((size_t)1, dEploidIO2.argv_.size());
         CPPUNIT_ASSERT_EQUAL( true, dEploidIO2.help());
-        CPPUNIT_ASSERT_NO_THROW ( dEploidIO2.printHelp() );
+        CPPUNIT_ASSERT_NO_THROW (dEploidIO2.printHelp(*output));
 
         char *argv2[] = { "./dEploid", "-help" };
         CPPUNIT_ASSERT_NO_THROW(DEploidIO(2, argv2));
         DEploidIO dEploidIO3(2, argv2);
         CPPUNIT_ASSERT_EQUAL((size_t)1, dEploidIO3.argv_.size());
         CPPUNIT_ASSERT_EQUAL(true, dEploidIO3.help());
-        CPPUNIT_ASSERT_NO_THROW(dEploidIO3.printHelp());
+        CPPUNIT_ASSERT_NO_THROW(dEploidIO3.printHelp(*output));
     }
 
 
     void testPrintVersion(){
+        std::ostream *output = &std::cout;
         char *argv1[] = { "./dEploid", "-v" };
         CPPUNIT_ASSERT_NO_THROW ( DEploidIO(2, argv1) );
         DEploidIO dEploidIO1(2, argv1);
         CPPUNIT_ASSERT_EQUAL( true, dEploidIO1.version());
-        CPPUNIT_ASSERT_NO_THROW ( dEploidIO1.printVersion() );
+        CPPUNIT_ASSERT_NO_THROW ( dEploidIO1.printVersion(*output) );
 
         char *argv2[] = { "./dEploid", "-v" };
         CPPUNIT_ASSERT_NO_THROW ( DEploidIO(2, argv2) );
         DEploidIO dEploidIO2(2, argv2);
         CPPUNIT_ASSERT_EQUAL( true, dEploidIO2.version());
-        CPPUNIT_ASSERT_NO_THROW ( dEploidIO2.printVersion() );
+        CPPUNIT_ASSERT_NO_THROW ( dEploidIO2.printVersion(*output) );
     }
 
 
