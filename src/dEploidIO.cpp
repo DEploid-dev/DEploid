@@ -40,6 +40,7 @@ DEploidIO::DEploidIO(const std::string &arg) {
     copy(std::istream_iterator<std::string>(iss),
          std::istream_iterator<std::string>(),
          std::back_inserter(argv_));
+    this->argv_i = argv_.begin();
     this->core();
 }
 
