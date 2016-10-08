@@ -59,7 +59,7 @@ int main( int argc, char *argv[] ){
         McmcSample * mcmcSample = new McmcSample();
 
         McmcMachinery mcmcMachinery(&dEploidIO, panel, mcmcSample);
-        mcmcMachinery.runMcmcChain();
+        mcmcMachinery.runMcmcChain(true);
 
         dEploidIO.write(mcmcSample, panel);
 
