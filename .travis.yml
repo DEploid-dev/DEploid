@@ -11,7 +11,7 @@ before_install:
   - echo $LC_ALL
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -qq; sudo apt-get install -qq libcppunit-dev valgrind r-base-core lcov python-pip doxygen graphviz; pip install --user cpp-coveralls; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then apt-cache policy zlib*; fi
-  - if [ $TRAVIS_OS_NAME == osx ]; then brew tap homebrew/dupes && brew update && brew install llvm cppunit valgrind-devel zlib && brew link --force llvm; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then brew tap homebrew/dupes && brew update && brew install llvm cppunit valgrind zlib && brew link --force llvm; fi
 before_script:
   - ./bootstrap
 
