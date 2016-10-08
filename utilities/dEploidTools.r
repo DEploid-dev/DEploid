@@ -368,7 +368,24 @@ fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclu
 
 }
 
-
+#' Deconvolute mixed haplotypes, and reporting the mixture proportions from each sample
+#' This function provieds an interface for calling \emph{dEploid} from R.
+#' The command line options are passed via the \code{args} argument and \code{file}
+#'
+#' @section blahblah:
+#' Blah blah
+#'
+#' @param tmpProp blah blah blah
+#'
+#' @param title blah blah blah
+#'
+#' @return A named list of something something ...
+#'
+#' @export
+#'
+#' @examples
+#' set.seed(1234)
+#'
 plot.prob <-function (tmpProp, title){
     rainbowColorBin = 16
     barplot(t(tmpProp), beside=F, border=NA, col=rainbow(rainbowColorBin), space=0, xlab="SNP index", ylab="Posterior probabilities", main=title)

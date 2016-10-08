@@ -6,7 +6,7 @@
  *
  * This file is part of dEploid.
  *
- * scrm is free software: you can redistribute it and/or modify
+ * dEploid is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -18,11 +18,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
-*/
-
-#ifndef scrm_src_random_random_generator
-#define scrm_src_random_random_generator
+#ifndef dEploid_src_random_random_generator
+#define dEploid_src_random_random_generator
 
 //#include "../macros.h" // Needs to be before cassert
 
@@ -88,7 +88,7 @@ class RandomGenerator
  protected:
   // Sample from a unit exponential distribution
   // Unit tested
-  // fastlog can return 0, which causes a bug in scrm.
+  // fastlog can return 0, which causes a bug in dEploid.
   // log or fastlog does seems to have an influence on the runtime.
   virtual double sampleUnitExponential() {
     return -(this->ff()->fastlog(sample()));
