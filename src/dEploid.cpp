@@ -63,9 +63,8 @@ int main( int argc, char *argv[] ){
         mcmcMachinery.runMcmcChain(true);
 
         dEploidIO.write(mcmcSample, panel);
-        //rg->clearFastFunc();
-        //delete rg;
 
+        rg.clearFastFunc();
         if ( panel ){
             delete panel;
         }
