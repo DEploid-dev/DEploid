@@ -16,7 +16,7 @@ function test_dEploid {
 
     echo -n "."
     # Test for memory leaks
-    valgrind --error-exitcode=1 --leak-check=full -q ./dEploid $@ -seed $i > /dev/null
+    valgrind --error-exitcode=1 --leak-check=full -q --gen-suppressions=yes ./dEploid $@ -seed $i > /dev/null
     if [ $? -ne 0 ]; then
       echo ""
       echo "Valgrind check of \"./dEploid $@ -seed $i\" failed."
@@ -39,7 +39,7 @@ function test_noRepeat {
   fi
 
   # Test for memory leaks
-  valgrind --error-exitcode=1 --leak-check=full -q ./dEploid $@ > /dev/null
+  valgrind --error-exitcode=1 --leak-check=full -q --gen-suppressions=yes ./dEploid $@ > /dev/null
   if [ $? -ne 0 ]; then
     echo ""
     echo "Valgrind check of \"./dEploid $@ \" failed."
