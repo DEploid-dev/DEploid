@@ -42,6 +42,7 @@ class McmcSample {
 #endif
   friend class McmcMachinery;
   friend class DEploidIO;
+  friend class RMcmcSample;
   public:
     McmcSample();
     ~McmcSample();
@@ -52,11 +53,11 @@ class McmcSample {
     }
 
 
-  private:
-    vector < int > moves;
     vector < vector <double> > proportion;
     vector < vector <double> > hap;
     vector < double > sumLLKs;
+  private:
+    vector < int > moves;
 };
 
 

@@ -48,6 +48,7 @@ class DEploidIO{
  friend class TestMcmcMachinery;
 #endif
  friend class McmcMachinery;
+ friend class RMcmcSample;
   public:
     DEploidIO();
     DEploidIO(const std::string &arg);
@@ -67,6 +68,8 @@ class DEploidIO{
     string panelFileName_;
 
     size_t nLoci() const { return this->nLoci_; }
+    size_t kStrain() const { return this->kStrain_;}
+    size_t nMcmcSample() const { return this->nMcmcSample_; }
     double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
     double Ne() const { return this->Ne_; }
     double constRecombProb() const { return this->constRecombProb_; }

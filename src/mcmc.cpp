@@ -31,9 +31,9 @@
 McmcSample::McmcSample(){};
 McmcSample::~McmcSample(){};
 
-McmcMachinery::McmcMachinery(DEploidIO* pfDeconfIO, Panel *panel, McmcSample *mcmcSample, RandomGenerator* rg_ ){ // initialiseMCMCmachinery
+McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, Panel *panel, McmcSample *mcmcSample, RandomGenerator* rg_ ){ // initialiseMCMCmachinery
 
-    this->dEploidIO_ = pfDeconfIO;
+    this->dEploidIO_ = dEploidIO;
     this->panel_ = panel;
     this->mcmcSample_ = mcmcSample;
     this->seed_ = this->dEploidIO_->randomSeed();
@@ -47,7 +47,7 @@ McmcMachinery::McmcMachinery(DEploidIO* pfDeconfIO, Panel *panel, McmcSample *mc
     //this->propRg_  = new MersenneTwister(this->seed_);
     //this->initialHapRg_ = new MersenneTwister(this->seed_);
 
-    this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, pfDeconfIO->mcmcBurn_ );
+    this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
 
     this->MN_LOG_TITRE = 0.0;
     this->SD_LOG_TITRE = 3.0;
