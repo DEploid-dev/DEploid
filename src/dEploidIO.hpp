@@ -85,6 +85,7 @@ class DEploidIO{
     bool randomSeedWasSet() const {return this->randomSeedWasSet_; }
 
     friend std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO);
+    size_t randomSeed() const { return randomSeed_;}
 
   private:
 
@@ -96,7 +97,6 @@ class DEploidIO{
     string excludeFileName_;
     string prefix_;
     size_t randomSeed_;
-    size_t randomSeed() const { return randomSeed_;}
     bool randomSeedWasSet_;
     void setRandomSeedWasSet(const bool random){ this->randomSeedWasSet_ = random; }
 

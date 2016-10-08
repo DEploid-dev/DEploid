@@ -123,7 +123,7 @@ double calcLLK( double ref, double alt, double unadjustedWsaf, double err, doubl
 }
 
 
-size_t sampleIndexGivenProp ( MersenneTwister* rg, vector <double> proportion ){
+size_t sampleIndexGivenProp ( RandomGenerator* rg, vector <double> proportion ){
     #ifndef NDEBUG
         auto biggest = std::max_element(std::begin(proportion), std::end(proportion));
         return std::distance(proportion.begin(), biggest);

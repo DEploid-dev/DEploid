@@ -57,11 +57,14 @@ int main( int argc, char *argv[] ){
         }
 
         McmcSample * mcmcSample = new McmcSample();
+        MersenneTwister rg(dEploidIO.randomSeed());
 
-        McmcMachinery mcmcMachinery(&dEploidIO, panel, mcmcSample);
+        McmcMachinery mcmcMachinery(&dEploidIO, panel, mcmcSample, &rg);
         mcmcMachinery.runMcmcChain(true);
 
         dEploidIO.write(mcmcSample, panel);
+        //rg->clearFastFunc();
+        //delete rg;
 
         if ( panel ){
             delete panel;

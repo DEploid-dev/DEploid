@@ -76,7 +76,7 @@ void normalizeBySum ( vector <double> & array );
 void normalizeBySumMat ( vector <vector <double> > & matrix );
 vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf, size_t firstIndex, size_t length );
 double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01, double fac=100 ) ;
-size_t sampleIndexGivenProp ( MersenneTwister* rg, vector <double> proportion );
+size_t sampleIndexGivenProp ( RandomGenerator* rg, vector <double> proportion );
 vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );
 
 

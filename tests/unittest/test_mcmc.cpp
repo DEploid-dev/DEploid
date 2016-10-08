@@ -51,6 +51,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     DEploidIO* dEploidIO_;
     Panel* panel_;
     McmcMachinery* mcmcMachinery_;
+    MersenneTwister* rg_;
     size_t nRepeat;
     double epsilon1;
     double epsilon2;
@@ -95,8 +96,9 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     void setUp() {
         mcmcSample_ = new McmcSample();
         dEploidIO_ = new DEploidIO();
+        rg_ = new MersenneTwister(dEploidIO_->randomSeed());
         panel_ = new Panel();
-        mcmcMachinery_ = new McmcMachinery(this->dEploidIO_, this->panel_, this->mcmcSample_ );
+        mcmcMachinery_ = new McmcMachinery(this->dEploidIO_, this->panel_, this->mcmcSample_, this->rg_ );
         nRepeat = 1000000;
         epsilon1 = 0.01;
         epsilon2 = 0.001;
@@ -105,6 +107,8 @@ class TestMcmcMachinery: public CppUnit::TestCase {
 
 
     void tearDown() {
+        rg_->clearFastFunc();
+        delete rg_;
         delete mcmcMachinery_;
         delete mcmcSample_;
         delete dEploidIO_;
@@ -113,7 +117,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
 
 
     void testMainConstructor(){
-        McmcMachinery tmpMcmcMachinery(this->dEploidIO_, this->panel_, this->mcmcSample_ );
+        McmcMachinery tmpMcmcMachinery(this->dEploidIO_, this->panel_, this->mcmcSample_, this->rg_ );
     }
 
 

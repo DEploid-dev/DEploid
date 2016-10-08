@@ -51,7 +51,7 @@ class UpdateHap{
                vector <double> &expectedWsaf,
                vector <double> &proportion,
                vector < vector <double> > &haplotypes,
-               MersenneTwister* rg,
+               RandomGenerator* rg,
                size_t segmentStartIndex,
                size_t nLoci,
                Panel* panel,
@@ -60,9 +60,9 @@ class UpdateHap{
 
     Panel* panel_;
     double missCopyProb_;
-    MersenneTwister* recombRg_;
-    MersenneTwister* recombLevel2Rg_;
-    MersenneTwister* missCopyRg_;
+    RandomGenerator* recombRg_;
+    RandomGenerator* recombLevel2Rg_;
+    RandomGenerator* missCopyRg_;
 
     size_t kStrain_;
     size_t nPanel_;
@@ -106,7 +106,7 @@ class UpdateSingleHap : public UpdateHap{
                       vector <double> &expectedWsaf,
                       vector <double> &proportion,
                       vector < vector <double> > &haplotypes,
-                      MersenneTwister* rg,
+                      RandomGenerator* rg,
                       size_t segmentStartIndex,
                       size_t nLoci,
                       Panel* panel, double missCopyProb,
@@ -160,7 +160,7 @@ class UpdatePairHap : public UpdateHap{
                       vector <double> &expectedWsaf,
                       vector <double> &proportion,
                       vector < vector <double> > &haplotypes,
-                      MersenneTwister* rg,
+                      RandomGenerator* rg,
                       size_t segmentStartIndex,
                       size_t nLoci,
                       Panel* panel, double missCopyProb, bool forbidCopyFromSame,

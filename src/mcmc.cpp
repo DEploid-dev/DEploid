@@ -31,15 +31,15 @@
 McmcSample::McmcSample(){};
 McmcSample::~McmcSample(){};
 
-McmcMachinery::McmcMachinery(DEploidIO* pfDeconfIO, Panel *panel, McmcSample *mcmcSample ){ // initialiseMCMCmachinery
+McmcMachinery::McmcMachinery(DEploidIO* pfDeconfIO, Panel *panel, McmcSample *mcmcSample, RandomGenerator* rg_ ){ // initialiseMCMCmachinery
 
     this->dEploidIO_ = pfDeconfIO;
     this->panel_ = panel;
     this->mcmcSample_ = mcmcSample;
-
     this->seed_ = this->dEploidIO_->randomSeed();
 
-    this->hapRg_ = new MersenneTwister(this->seed_);
+    //this->hapRg_ = new MersenneTwister(this->seed_);
+    this->hapRg_ = rg_ ;
     this->mcmcEventRg_ = this->hapRg_;
     this->propRg_ = this->hapRg_;
     this->initialHapRg_ = this->hapRg_;
@@ -65,10 +65,10 @@ McmcMachinery::McmcMachinery(DEploidIO* pfDeconfIO, Panel *panel, McmcSample *mc
 
 
 McmcMachinery::~McmcMachinery(){
-    if ( this->hapRg_ ){
-        this->hapRg_->clearFastFunc();
-        delete hapRg_;
-    }
+    //if ( this->hapRg_ ){
+        //this->hapRg_->clearFastFunc();
+        //delete hapRg_;
+    //}
 
     //if ( this->mcmcEventRg_ ){
         //this->mcmcEventRg_->clearFastFunc();

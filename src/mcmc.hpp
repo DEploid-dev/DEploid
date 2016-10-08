@@ -66,7 +66,7 @@ class McmcMachinery {
 #endif
   public:
     //McmcMachinery();
-    McmcMachinery( DEploidIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample );
+    McmcMachinery( DEploidIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample, RandomGenerator* rg_ );
     ~McmcMachinery();
     void runMcmcChain( bool showProgress = true );
 
@@ -89,10 +89,10 @@ class McmcMachinery {
     size_t strainIndex2_;
 
     size_t seed_;
-    MersenneTwister* hapRg_;
-    MersenneTwister* mcmcEventRg_;
-    MersenneTwister* propRg_;
-    MersenneTwister* initialHapRg_;
+    RandomGenerator* hapRg_;
+    RandomGenerator* mcmcEventRg_;
+    RandomGenerator* propRg_;
+    RandomGenerator* initialHapRg_;
 
     std::default_random_engine* std_generator_;// (this->seed_);
     std::normal_distribution<double>* initialTitre_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);

@@ -35,6 +35,7 @@
 class RandomGenerator
 {
  friend class MersenneTwister;
+ friend class RRandomGenerator;
  public:
   RandomGenerator() { this->ff_ = new FastFunc(); };
   RandomGenerator( FastFunc* ff ) { this->ff_ = ff; };
