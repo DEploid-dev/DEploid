@@ -20,7 +20,7 @@ myInput = fun.parse ( args )
 
 myCoverageInfo = fun.extract.coverage ( myInput )
 
-myPlafInfo = fun.extract.plaf ( myInput$plafFileName )
+myPlafInfo = extractPLAF( myInput$plafFileName )
 
 fun.dataExplore (myCoverageInfo, myPlafInfo, myInput$outPrefix)
 

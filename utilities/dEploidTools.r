@@ -173,8 +173,24 @@ extractCoverageFromVcf <- function ( vcfName, ADFieldIndex = 2 ){
 }
 
 
-fun.extract.plaf <- function ( plafName ){
-    return ( read.table(plafName, header=T) )
+#' @title Extract PLAF
+#'
+#' @description Extract population level allele frequency (PLAF) from text file.
+#'
+#' @note The text file must have header, and population level allele frequency recorded in the "PLAF" field.
+#'
+#' @param plafName Path of the PLAF text file.
+#'
+#' @return A numeric array of PLAF
+#'
+#' @export
+#'
+#' @examples
+#' plafFile = system.file("extdata", "labStrains.test.PLAF.txt", package = "DEploid")
+#' plaf = extractPLAF(plafFile)
+#'
+extractPLAF<- function ( plafName ){
+    return ( read.table(plafName, header=T)$PLAF )
 }
 
 
@@ -328,7 +344,31 @@ fun.getllk.dic <- function ( llkTable, ref, alt, expWSAF, logFileName ){
 }
 
 
-plot.plaf.vs.wsaf <- function ( plaf, obsWSAF, expWSAF = c(), title = "PLAF vs WSAF" ){
+#' @title Plot WSAF vs PLAF
+#'
+#' @description Plot allele frequencies within sample against population level.
+#'
+#' @param plaf Numeric array of population level allele frequency.
+#'
+#' @param obsWSAF Numeric array of observed altenative allele frequencies within sample.
+#'
+#' @param expWSAF Numeric array of expected WSAF from model.
+#'
+#' @param title Figure title, "WSAF vs PLAF" by default
+#'
+#' @return
+#'
+#' @export
+#'
+#' @examples
+#' vcfFile = system.file("extdata", "PG0390-C.test.vcf.gz", package = "DEploid")
+#' PG0390 = extractCoverageFromVcf(vcfFile)
+#' obsWSAF = computeObsWSAF( PG0390$altCount, PG0390$refCount )
+#' plafFile = system.file("extdata", "labStrains.test.PLAF.txt", package = "DEploid")
+#' plaf = extractPLAF(plafFile)
+#' plotWSAFvsPLAF(plaf, obsWSAF)
+#'
+plotWSAFvsPLAF <- function ( plaf, obsWSAF, expWSAF = c(), title = "WSAF vs PLAF" ){
     plot ( plaf, obsWSAF, cex = 0.5, xlim = c(0,1), ylim = c(0,1), col = "red", main = title, xlab = "PLAF", ylab = "WSAF" )
     if ( length(expWSAF) > 0 ){
         points ( plaf, expWSAF, cex = 0.5, col = "blue")
@@ -378,8 +418,8 @@ computeObsWSAF <- function (alt, ref) {
 }
 
 
-fun.dataExplore <- function (coverage, plafInfo, prefix = "") {
-    PLAF = plafInfo$PLAF
+fun.dataExplore <- function (coverage, PLAF, prefix = "") {
+#    PLAF = plafInfo$PLAF
     ref = coverage$refCount
     alt = coverage$altCount
 
@@ -392,15 +432,15 @@ fun.dataExplore <- function (coverage, plafInfo, prefix = "") {
 
     histWSAF ( obsWSAF )
 
-    plot.plaf.vs.wsaf ( PLAF, obsWSAF )
+    plotWSAFvsPLAF ( PLAF, obsWSAF )
 
     dev.off()
 }
 
 
-fun.interpretDEploid.1 <- function (coverage, plafInfo, dEploidPrefix, prefix = "", exclude ) {
+fun.interpretDEploid.1 <- function (coverage, PLAF, dEploidPrefix, prefix = "", exclude ) {
 
-    PLAF = plafInfo$PLAF
+#    PLAF = plafInfo$PLAF
     ref = coverage$refCount
     alt = coverage$altCount
 
@@ -428,7 +468,7 @@ fun.interpretDEploid.1 <- function (coverage, plafInfo, dEploidPrefix, prefix = 
         ref = ref[includeindex]
         alt = alt[includeindex]
     }
-    plot.plaf.vs.wsaf ( PLAF, obsWSAF, expWSAF )
+    plotWSAFvsPLAF ( PLAF, obsWSAF, expWSAF )
 
     plotProportions( tmpProp )
 
