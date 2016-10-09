@@ -347,8 +347,8 @@ plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), ex
             points(plotIndex, expWSAF[expWSAFChrom == chromI], col="blue")
         }
     }
-
 }
+
 
 fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclude ){
     dEploidOutput = fun.dEploidPrefix ( dEploidPrefix )
@@ -368,27 +368,28 @@ fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclu
 
 }
 
-#' Deconvolute mixed haplotypes, and reporting the mixture proportions from each sample
-#' This function provieds an interface for calling \emph{dEploid} from R.
-#' The command line options are passed via the \code{args} argument and \code{file}
+#' @title Plot proportions
 #'
-#' @section blahblah:
-#' Blah blah
+#' @description Plot the MCMC samples of the proportion, indexed by the MCMC chain.
 #'
-#' @param tmpProp blah blah blah
+#' @param proportions Matrix of the MCMC proportion samples. The matrix size is number of the MCMC samples by the number of strains.
 #'
-#' @param title blah blah blah
+#' @param title Figure title.
 #'
-#' @return A named list of something something ...
+#' @return
 #'
 #' @export
 #'
 #' @examples
-#' set.seed(1234)
+#' plafFile = system.file("extdata", "labStrains.test.PLAF.txt", package = "DEploid")
+#' vcfFile = system.file("extdata", "PG0390-C.test.vcf.gz", package = "DEploid")
+#' panelFile = system.file("extdata", "labStrains.test.panel.txt", package = "DEploid")
+#' PG0390 = dEploid(paste("-vcf", vcfFile, "-plaf", plafFile, "-noPanel"))
+#' plotProportions( PG0390$Proportions, "PG0390-C proportions" )
 #'
-plot.prob <-function (tmpProp, title){
+plotProportions <-function (proportions, title = ""){
     rainbowColorBin = 16
-    barplot(t(tmpProp), beside=F, border=NA, col=rainbow(rainbowColorBin), space=0, xlab="SNP index", ylab="Posterior probabilities", main=title)
+    barplot(t(proportions), beside=F, border=NA, col=rainbow(rainbowColorBin), space=0, xlab="SNP index", ylab="Posterior probabilities", main=title)
 }
 
 
@@ -399,7 +400,7 @@ plot.postProb.ofCase <- function ( inPrefix, outPrefix, case ){
     ncol = ceiling(length(chromName)/2)
     par(mfrow = c(ncol,length(chromName)/ncol))
     for ( chromI in chromName ){
-        plot.prob ( obj[which( chromI == obj$CHROM),c(3:dim(obj)[2])], "")
+        plotProportions ( obj[which( chromI == obj$CHROM),c(3:dim(obj)[2])], "")
     }
     dev.off()
 }
