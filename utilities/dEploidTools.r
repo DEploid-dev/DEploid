@@ -419,7 +419,7 @@ plotObsExpWSAF <- function (obsWSAF, expWSAF, title = "WSAF(observed vs expected
 #'
 #' @return Numeric array of observed allele frequency within sample.
 #'
-#' @seealso \code{\link{histWSAF}} for histogram, \code{\link{plotWSAF}} for WSAFs plotted against indices.
+#' @seealso \code{\link{histWSAF}} for histogram.
 #'
 #' @export
 #'
