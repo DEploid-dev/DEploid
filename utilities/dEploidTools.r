@@ -80,7 +80,7 @@ fun.dEploidPrefix <- function ( prefix ){
 
 fun.extract.coverage <- function ( inputs ){
     if ( inputs$vcfFileName != "" ){
-        return (fun.extract.vcf (inputs$vcfFileName))
+        return (extractCoverageFromVcf (inputs$vcfFileName))
     } else {
         return (fun.extract.coverage.from.txt (inputs$refFileName, inputs$altFileName))
     }
@@ -108,8 +108,25 @@ fun.extract.exclude <- function (excludeFileName, excludeBool){
     }
 }
 
-
-fun.extract.vcf <- function ( vcfName, ADFieldIndex = 2 ){
+#' @title Extract read counts from VCF
+#'
+#' @description Extract read counts from VCF file of a single sample.
+#'
+#' @note The VCF file should only contain one sample. If more samples present in the VCF, it only returns coverage for of the first sample.
+#'
+#' @param vcfName Path of the VCF file.
+#'
+#' @param ADFieldIndex Index of the AD field of the sample field. For example, if the format is "GT:AD:DP:GQ:PL", the AD index is 2 (by default).
+#'
+#' @return A data.frame contains four columns: chromosomes, positions, reference allele count, alternative allele count.
+#'
+#' @export
+#'
+#' @examples
+#' vcfFile = system.file("extdata", "PG0390-C.test.vcf.gz", package = "DEploid")
+#' PG0390 = extractCoverageFromVcf(vcfFile)
+#'
+extractCoverageFromVcf <- function ( vcfName, ADFieldIndex = 2 ){
     # Assume that AD is the second field
     catCmd = "cat"
     if ( grepl("gzip", system(paste("file --mime-type", vcfName), T) ) == TRUE ){
