@@ -82,13 +82,31 @@ fun.extract.coverage <- function ( inputs ){
     if ( inputs$vcfFileName != "" ){
         return (extractCoverageFromVcf (inputs$vcfFileName))
     } else {
-        return (fun.extract.coverage.from.txt (inputs$refFileName, inputs$altFileName))
+        return (extractCoverageFromTxt (inputs$refFileName, inputs$altFileName))
     }
 
 }
 
-
-fun.extract.coverage.from.txt <- function ( refFileName, altFileName ){
+#' @title Extract read counts from plain text file
+#'
+#' @description Extract read counts from tab-delimited text files of a single sample.
+#'
+#' @note The allele count files must be tab-delimited. The allele count files contain three columns: chromosomes, positions and allele count.
+#'
+#' @param refFileName Path of the reference allele count file.
+#'
+#' @param altFileName Path of the alternative allele count file.
+#'
+#' @return A data.frame contains four columns: chromosomes, positions, reference allele count, alternative allele count.
+#'
+#' @export
+#'
+#' @examples
+#' refFile = system.file("extdata", "PG0390-C.test.ref", package = "DEploid")
+#' altFile = system.file("extdata", "PG0390-C.test.alt", package = "DEploid")
+#' PG0390 = extractCoverageFromTxt(refFile, altFile)
+#'
+extractCoverageFromTxt <- function ( refFileName, altFileName ){
     ref = read.table(refFileName, header = TRUE, comment.char = "")
     alt = read.table(altFileName, header = TRUE, comment.char = "")
     return ( data.frame( CHROM = ref[,1],
