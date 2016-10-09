@@ -236,7 +236,9 @@ plotProportions <-function (proportions, title = "Components"){
 #'
 #' @param title Figure title, "Alt vs Ref" by default
 #'
-#' @param exclude.ref @param exclude.alt
+#' @param exclude.ref Numeric array of reference allele count at sites that are not deconvoluted.
+#'
+#' @param exclude.alt Numeric array of alternative allele count at sites that are not deconvoluted
 #'
 #' @return
 #'
