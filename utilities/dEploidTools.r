@@ -333,7 +333,26 @@ plot.wsaf <- function (obsWSAF, expWSAF, title = ""){
 }
 
 
-fun.calc.obsWSAF <- function (alt, ref) {
+#' @title Compute observed WSAF
+#'
+#' @description Compute observed allele frequency within sample from the allele counts.
+#'
+#' @param ref Numeric array of reference allele count.
+#'
+#' @param alt Numeric array of alternative allele count.
+#'
+#' @return Numeric array of observed allele frequency within sample.
+#'
+#' @seealso \code{\link{histWSAF}} for histogram, \code{\link{plotWSAF}} for WSAFs plotted against indices.
+#'
+#' @export
+#'
+#' @examples
+#' vcfFile = system.file("extdata", "PG0390-C.test.vcf.gz", package = "DEploid")
+#' PG0390 = extractCoverageFromVcf(vcfFile)
+#' computeObsWSAF( PG0390$altCount, PG0390$refCount )
+#'
+computeObsWSAF <- function (alt, ref) {
     return ( alt / (ref + alt + 0.00000001) )
 }
 
@@ -348,11 +367,11 @@ fun.dataExplore <- function (coverage, plafInfo, prefix = "") {
 
     plotAltVsRef ( ref, alt )
 
-    WSAF = fun.calc.obsWSAF ( alt, ref )
+    obsWSAF = computeObsWSAF ( alt, ref )
 
-    plot.wsaf.hist ( WSAF )
+    plot.wsaf.hist ( obsWSAF )
 
-    plot.plaf.vs.wsaf ( PLAF, WSAF )
+    plot.plaf.vs.wsaf ( PLAF, obsWSAF )
 
     dev.off()
 }
@@ -376,7 +395,7 @@ fun.interpretDEploid.1 <- function (coverage, plafInfo, dEploidPrefix, prefix = 
     par( mfrow = c(2,3) )
     plotAltVsRef ( ref, alt )
 
-    obsWSAF = fun.calc.obsWSAF ( alt, ref )
+    obsWSAF = computeObsWSAF ( alt, ref )
     plot.wsaf.hist ( obsWSAF )
 
     if (exclude$excludeBool){
@@ -406,7 +425,7 @@ plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), ex
     chromList = levels(coverage$CHROM)
     ref = coverage$refCount
     alt = coverage$altCount
-    obsWSAF = fun.calc.obsWSAF ( alt, ref )
+    obsWSAF = computeObsWSAF ( alt, ref )
 
     for ( chromI in chromList ){
         plot( obsWSAF[coverage$CHROM==chromI], col="red", ylim=c(0,1), main = paste(titlePrefix, chromI, "WSAF"))
