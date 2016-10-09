@@ -200,15 +200,56 @@ fun.dic.by.theta <- function ( tmpllk, thetallk ){
 }
 
 
-plot.prop <-function (propMat, title = "Components"){
-    rainbowColorBin = 5
-    barplot(t(propMat), beside=F, border=NA, col=rainbow(rainbowColorBin), space=0, xlab="Iteration", ylab="Component Freq", main=title)
+
+#' @title Plot proportions
+#'
+#' @description Plot the MCMC samples of the proportion, indexed by the MCMC chain.
+#'
+#' @param proportions Matrix of the MCMC proportion samples. The matrix size is number of the MCMC samples by the number of strains.
+#'
+#' @param title Figure title.
+#'
+#' @return
+#'
+#' @export
+#'
+#' @examples
+#' plafFile = system.file("extdata", "labStrains.test.PLAF.txt", package = "DEploid")
+#' vcfFile = system.file("extdata", "PG0390-C.test.vcf.gz", package = "DEploid")
+#' panelFile = system.file("extdata", "labStrains.test.panel.txt", package = "DEploid")
+#' PG0390 = dEploid(paste("-vcf", vcfFile, "-plaf", plafFile, "-noPanel"))
+#' plotProportions( PG0390$Proportions, "PG0390-C proportions" )
+#'
+plotProportions <-function (proportions, title = "Components"){
+    rainbowColorBin = 16
+    barplot(t(proportions), beside=F, border=NA, col=rainbow(rainbowColorBin), space=0, xlab="Iteration", ylab="Component proportion", main=title)
 }
 
 
-plot.altVsRef <- function ( ref, alt, title = "Alt vs Ref", exclude.ref = c(), exclude.alt = c() ){
+#' @title Plot coverage
+#'
+#' @description Plot alternative allele count vs reference allele count at each site.
+#'
+#' @param ref Numeric array of reference allele count.
+#'
+#' @param alt Numeric array of alternative allele count.
+#'
+#' @param title Figure title, "Alt vs Ref" by default
+#'
+#' @param exclude.ref @param exclude.alt
+#'
+#' @return
+#'
+#' @export
+#'
+#' @examples
+#' vcfFile = system.file("extdata", "PG0390-C.test.vcf.gz", package = "DEploid")
+#' PG0390 = extractCoverageFromVcf(vcfFile)
+#' plotAltVsRef( PG0390$refCount, PG0390$altCount )
+#'
+plotAltVsRef <- function ( ref, alt, title = "Alt vs Ref", exclude.ref = c(), exclude.alt = c() ){
     tmp.range = 1.1*mean(max(alt), max(ref))
-    plot ( ref, alt, xlim=c(0,tmp.range), ylim=c(0,tmp.range), cex = 0.5, xlab = "REF", ylab = "ALT", main = title)
+    plot ( ref, alt, xlim=c(0, tmp.range), ylim=c(0,tmp.range), cex = 0.5, xlab = "REF", ylab = "ALT", main = title)
     points (exclude.ref, exclude.alt, col = "red")
     abline(v =50, untf = FALSE, lty = 2)
     abline(h =50, untf = FALSE, lty = 2)
@@ -303,7 +344,7 @@ fun.dataExplore <- function (coverage, plafInfo, prefix = "") {
     png ( paste ( prefix, "altVsRefAndWSAFvsPLAF.png", sep = "" ), width = 1800, height = 600)
     par( mfrow = c(1,3) )
 
-    plot.altVsRef ( ref, alt )
+    plotAltVsRef ( ref, alt )
 
     WSAF = fun.calc.obsWSAF ( alt, ref )
 
@@ -331,7 +372,7 @@ fun.interpretDEploid.1 <- function (coverage, plafInfo, dEploidPrefix, prefix = 
 #    png ( paste ( prefix, ".interpretDEploidFigure.1.png", sep = "" ),  width = 1500, height = 500, bg="transparent")
     png ( paste ( prefix, ".interpretDEploidFigure.1.png", sep = "" ),  width = 1500, height = 1000)
     par( mfrow = c(2,3) )
-    plot.altVsRef ( ref, alt )
+    plotAltVsRef ( ref, alt )
 
     obsWSAF = fun.calc.obsWSAF ( alt, ref )
     plot.wsaf.hist ( obsWSAF )
@@ -347,7 +388,7 @@ fun.interpretDEploid.1 <- function (coverage, plafInfo, dEploidPrefix, prefix = 
     }
     plot.plaf.vs.wsaf ( PLAF, obsWSAF, expWSAF )
 
-    plot.prop( tmpProp )
+    plotProportions( tmpProp )
 
     tmpTitle = fun.getWSAF.corr (obsWSAF, expWSAF, dEploidOutput$dicLogFileName)
     plot.wsaf ( obsWSAF, expWSAF, tmpTitle )
@@ -403,11 +444,11 @@ fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclu
 
 }
 
-#' @title Plot proportions
+#' @title Painting haplotype according the reference panel
 #'
-#' @description Plot the MCMC samples of the proportion, indexed by the MCMC chain.
+#' @description Plot the posterior probabilities of a haplotype given the refernece panel.
 #'
-#' @param proportions Matrix of the MCMC proportion samples. The matrix size is number of the MCMC samples by the number of strains.
+#' @param posteriorProbabilities Posterior probabilities matrix with the size of number of loci by the number of reference strain.
 #'
 #' @param title Figure title.
 #'
@@ -416,15 +457,11 @@ fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclu
 #' @export
 #'
 #' @examples
-#' plafFile = system.file("extdata", "labStrains.test.PLAF.txt", package = "DEploid")
-#' vcfFile = system.file("extdata", "PG0390-C.test.vcf.gz", package = "DEploid")
-#' panelFile = system.file("extdata", "labStrains.test.panel.txt", package = "DEploid")
-#' PG0390 = dEploid(paste("-vcf", vcfFile, "-plaf", plafFile, "-noPanel"))
-#' plotProportions( PG0390$Proportions, "PG0390-C proportions" )
+#' to do ...
 #'
-plotProportions <-function (proportions, title = ""){
+haplotypePainter <-function (posteriorProbabilities, title = ""){
     rainbowColorBin = 16
-    barplot(t(proportions), beside=F, border=NA, col=rainbow(rainbowColorBin), space=0, xlab="SNP index", ylab="Posterior probabilities", main=title)
+    barplot(t(posteriorProbabilities), beside=F, border=NA, col=rainbow(rainbowColorBin), space=0, xlab="SNP index", ylab="Posterior probabilities", main=title)
 }
 
 
@@ -435,7 +472,7 @@ plot.postProb.ofCase <- function ( inPrefix, outPrefix, case ){
     ncol = ceiling(length(chromName)/2)
     par(mfrow = c(ncol,length(chromName)/ncol))
     for ( chromI in chromName ){
-        plotProportions ( obj[which( chromI == obj$CHROM),c(3:dim(obj)[2])], "")
+        haplotypePainter ( obj[which( chromI == obj$CHROM),c(3:dim(obj)[2])], "")
     }
     dev.off()
 }
