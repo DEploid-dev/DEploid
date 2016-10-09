@@ -261,12 +261,33 @@ plotAltVsRef <- function ( ref, alt, title = "Alt vs Ref", exclude.ref = c(), ex
 }
 
 
-plot.wsaf.hist <- function ( obsWSAF, indexed = TRUE, title ="Histogram 0<WSAF<1" ){
+#' @title WSAF histogram
+#'
+#' @description Produce histogram of the allele frequency within sample.
+#'
+#' @param obsWSAF Observed allele frequency within sample
+#'
+#' @param exclusive When TRUE 0 < WSAF < 1; otherwise 0 <= WSAF <= 1.
+#'
+#' @param title Histogram title
+#'
+#' @return histogram
+#'
+#' @export
+#'
+#' @examples
+#' vcfFile = system.file("extdata", "PG0390-C.test.vcf.gz", package = "DEploid")
+#' PG0390 = extractCoverageFromVcf(vcfFile)
+#' obsWSAF = computeObsWSAF( PG0390$altCount, PG0390$refCount )
+#' histWSAF(obsWSAF)
+#' myhist = histWSAF(obsWSAF, FALSE)
+#'
+histWSAF <- function ( obsWSAF, exclusive = TRUE, title ="Histogram 0<WSAF<1" ){
     tmpWSAF_index = 1:length(obsWSAF)
-    if ( indexed ){
+    if ( exclusive ){
         tmpWSAF_index = which(((obsWSAF<1) * (obsWSAF>0) ) == 1)
     }
-    hist(obsWSAF, main=title, breaks = seq(0, 1, by =0.1), xlab = "WSAF")
+    return (hist(obsWSAF[tmpWSAF_index], main=title, breaks = seq(0, 1, by =0.1), xlab = "WSAF"))
 }
 
 
@@ -369,7 +390,7 @@ fun.dataExplore <- function (coverage, plafInfo, prefix = "") {
 
     obsWSAF = computeObsWSAF ( alt, ref )
 
-    plot.wsaf.hist ( obsWSAF )
+    histWSAF ( obsWSAF )
 
     plot.plaf.vs.wsaf ( PLAF, obsWSAF )
 
@@ -396,7 +417,7 @@ fun.interpretDEploid.1 <- function (coverage, plafInfo, dEploidPrefix, prefix = 
     plotAltVsRef ( ref, alt )
 
     obsWSAF = computeObsWSAF ( alt, ref )
-    plot.wsaf.hist ( obsWSAF )
+    histWSAF ( obsWSAF )
 
     if (exclude$excludeBool){
         excludeLogic = ( paste(coverage$CHROM, coverage$POS) %in% paste(exclude$excludeTable$CHROM, exclude$excludeTable$POS) )
