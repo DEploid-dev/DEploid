@@ -385,7 +385,30 @@ fun.getWSAF.corr <- function( obsWSAF, expWSAF, dicLogFileName ){
 }
 
 
-plot.wsaf <- function (obsWSAF, expWSAF, title = ""){
+#' @title Plot WSAF
+#'
+#' @description Plot observed alternative allele frequency within sample against expected WSAF.
+#'
+#' @param obsWSAF Numeric array of observed WSAF.
+#'
+#' @param expWSAF Numeric array of expected WSAF.
+#'
+#' @param title Figure title.
+#'
+#' @return
+#'
+#' @export
+#'
+#' @examples
+#' vcfFile = system.file("extdata", "PG0390-C.test.vcf.gz", package = "DEploid")
+#' PG0390 = extractCoverageFromVcf(vcfFile)
+#' obsWSAF = computeObsWSAF( PG0390$altCount, PG0390$refCount )
+#' PG0390.deconv = dEploid(paste("-vcf", vcfFile, "-plaf", plafFile, "-noPanel"))
+#' prop = PG0390.deconv$Proportions[dim(PG0390.deconv$Proportions)[1],]
+#' expWSAF = t(PG0390.deconv$Haps) %*% prop
+#' plotObsExpWSAF(obsWSAF, expWSAF)
+#'
+plotObsExpWSAF <- function (obsWSAF, expWSAF, title = "WSAF(observed vs expected)"){
     plot(obsWSAF, expWSAF, pch=19, col="blue", xlab="Observed WSAF (ALT/(ALT+REF))", ylab="Expected WSAF (h%*%p)",
          main=title,
          xlim = c(-0.05, 1.05), cex = 0.5, ylim = c(-0.05, 1.05));
@@ -473,7 +496,7 @@ fun.interpretDEploid.1 <- function (coverage, PLAF, dEploidPrefix, prefix = "", 
     plotProportions( tmpProp )
 
     tmpTitle = fun.getWSAF.corr (obsWSAF, expWSAF, dEploidOutput$dicLogFileName)
-    plot.wsaf ( obsWSAF, expWSAF, tmpTitle )
+    plotObsExpWSAF ( obsWSAF, expWSAF, tmpTitle )
 
     tmpTitle = fun.getllk.dic (llkTable, ref, alt, expWSAF, dEploidOutput$dicLogFileName )
     plot.llk( llkTable, ref, alt, expWSAF, tmpTitle )
