@@ -225,8 +225,6 @@ fun.dic.by.theta <- function ( tmpllk, thetallk ){
 #'
 #' @param title Figure title.
 #'
-#' @return
-#'
 #' @export
 #'
 #' @examples
@@ -255,8 +253,6 @@ plotProportions <-function (proportions, title = "Components"){
 #' @param exclude.ref Numeric array of reference allele count at sites that are not deconvoluted.
 #'
 #' @param exclude.alt Numeric array of alternative allele count at sites that are not deconvoluted
-#'
-#' @return
 #'
 #' @export
 #'
@@ -356,8 +352,6 @@ fun.getllk.dic <- function ( llkTable, ref, alt, expWSAF, logFileName ){
 #'
 #' @param title Figure title, "WSAF vs PLAF" by default
 #'
-#' @return
-#'
 #' @export
 #'
 #' @examples
@@ -394,8 +388,6 @@ fun.getWSAF.corr <- function( obsWSAF, expWSAF, dicLogFileName ){
 #' @param expWSAF Numeric array of expected WSAF.
 #'
 #' @param title Figure title.
-#'
-#' @return
 #'
 #' @export
 #'
@@ -557,12 +549,9 @@ fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclu
 #'
 #' @param title Figure title.
 #'
-#' @return
-#'
 #' @export
 #'
 #' @examples
-#' to do ...
 #'
 haplotypePainter <-function (posteriorProbabilities, title = ""){
     rainbowColorBin = 16
