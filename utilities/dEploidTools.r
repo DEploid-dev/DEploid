@@ -395,6 +395,7 @@ fun.getWSAF.corr <- function( obsWSAF, expWSAF, dicLogFileName ){
 #' vcfFile = system.file("extdata", "PG0390-C.test.vcf.gz", package = "DEploid")
 #' PG0390 = extractCoverageFromVcf(vcfFile)
 #' obsWSAF = computeObsWSAF( PG0390$altCount, PG0390$refCount )
+#' plafFile = system.file("extdata", "labStrains.test.PLAF.txt", package = "DEploid")
 #' PG0390.deconv = dEploid(paste("-vcf", vcfFile, "-plaf", plafFile, "-noPanel"))
 #' prop = PG0390.deconv$Proportions[dim(PG0390.deconv$Proportions)[1],]
 #' expWSAF = t(PG0390.deconv$Haps) %*% prop
@@ -550,8 +551,6 @@ fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclu
 #' @param title Figure title.
 #'
 #' @export
-#'
-#' @examples
 #'
 haplotypePainter <-function (posteriorProbabilities, title = ""){
     rainbowColorBin = 16
