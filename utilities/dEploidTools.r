@@ -148,7 +148,7 @@ extractCoverageFromVcf <- function ( vcfName, ADFieldIndex = 2 ){
     # Assume that AD is the second field
     catCmd = "cat"
     if ( grepl("gzip", system(paste("file --mime-type", vcfName), T) ) == TRUE ){
-        catCmd = "zcat"
+        catCmd = "zcat <"
     }
 
     skipNum = as.numeric(system(paste(catCmd, vcfName, " | head -5000 | grep \"##\" | wc -l"), T))
