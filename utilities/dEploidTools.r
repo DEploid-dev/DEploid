@@ -146,12 +146,24 @@ fun.extract.exclude <- function (excludeFileName, excludeBool){
 #'
 extractCoverageFromVcf <- function ( vcfName, ADFieldIndex = 2 ){
     # Assume that AD is the second field
-    catCmd = "cat"
-    if ( grepl("gzip", system(paste("file --mime-type", vcfName), T) ) == TRUE ){
-        catCmd = "zcat <"
+    h <- function(w){
+         if( any( grepl( "gzfile connection", w) ) )
+         invokeRestart( "muffleWarning" )
     }
 
-    skipNum = as.numeric(system(paste(catCmd, vcfName, " | head -5000 | grep \"##\" | wc -l"), T))
+    gzf = gzfile(vcfFile, open = "rb")
+    skipNum = 0
+    line = withCallingHandlers( readLines(gzf, n=1), warning=h)
+    while ( length(line) > 0 ){
+        if (grepl("##", line )){
+            skipNum = skipNum+1
+        } else {
+            break
+        }
+        line = withCallingHandlers( readLines(gzf, n=1), warning=h)
+    }
+    close(gzf)
+
     vcf  = read.table( gzfile(vcfName), skip=skipNum, header=T, comment.char="", stringsAsFactors = FALSE, check.names=FALSE)
 
     sampleName = names(vcf)[10]
