@@ -6,7 +6,7 @@
  *
  * This file is part of dEploid.
  *
- * scrm is free software: you can redistribute it and/or modify
+ * dEploid is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -18,8 +18,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
+ *
+ */
 
 #include "mcmc.hpp"
 #include "utility.hpp"
@@ -31,15 +31,15 @@
 McmcSample::McmcSample(){};
 McmcSample::~McmcSample(){};
 
-McmcMachinery::McmcMachinery(DEploidIO* pfDeconfIO, Panel *panel, McmcSample *mcmcSample ){ // initialiseMCMCmachinery
+McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, Panel *panel, McmcSample *mcmcSample, RandomGenerator* rg_ ){ // initialiseMCMCmachinery
 
-    this->dEploidIO_ = pfDeconfIO;
+    this->dEploidIO_ = dEploidIO;
     this->panel_ = panel;
     this->mcmcSample_ = mcmcSample;
-
     this->seed_ = this->dEploidIO_->randomSeed();
 
-    this->hapRg_ = new MersenneTwister(this->seed_);
+    //this->hapRg_ = new MersenneTwister(this->seed_);
+    this->hapRg_ = rg_ ;
     this->mcmcEventRg_ = this->hapRg_;
     this->propRg_ = this->hapRg_;
     this->initialHapRg_ = this->hapRg_;
@@ -47,7 +47,7 @@ McmcMachinery::McmcMachinery(DEploidIO* pfDeconfIO, Panel *panel, McmcSample *mc
     //this->propRg_  = new MersenneTwister(this->seed_);
     //this->initialHapRg_ = new MersenneTwister(this->seed_);
 
-    this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, pfDeconfIO->mcmcBurn_ );
+    this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
 
     this->MN_LOG_TITRE = 0.0;
     this->SD_LOG_TITRE = 3.0;
@@ -65,10 +65,10 @@ McmcMachinery::McmcMachinery(DEploidIO* pfDeconfIO, Panel *panel, McmcSample *mc
 
 
 McmcMachinery::~McmcMachinery(){
-    if ( this->hapRg_ ){
-        this->hapRg_->clearFastFunc();
-        delete hapRg_;
-    }
+    //if ( this->hapRg_ ){
+        //this->hapRg_->clearFastFunc();
+        //delete hapRg_;
+    //}
 
     //if ( this->mcmcEventRg_ ){
         //this->mcmcEventRg_->clearFastFunc();
@@ -212,11 +212,11 @@ vector <double> McmcMachinery::titre2prop(vector <double> & tmpTitre){
 }
 
 
-void McmcMachinery::runMcmcChain( ){
+void McmcMachinery::runMcmcChain( bool showProgress ){
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++){
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
-        if ( this->currentMcmcIteration_ > 0 && this->currentMcmcIteration_%100 == 0 ){
+        if ( this->currentMcmcIteration_ > 0 && this->currentMcmcIteration_%100 == 0 && showProgress ){
             clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->maxIteration_) << "% completed."<<flush;
         }
         this->sampleMcmcEvent();

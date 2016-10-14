@@ -6,7 +6,7 @@
  *
  * This file is part of dEploid.
  *
- * scrm is free software: you can redistribute it and/or modify
+ * dEploid is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -18,8 +18,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
+ *
+ */
 
 #include <iostream> // std::cout
 #include "mcmc.hpp"
@@ -30,17 +30,16 @@ using namespace std;
 
 int main( int argc, char *argv[] ){
     try {
-
-        DEploidIO dEploidIO;
-        (void)dEploidIO.core( argc, argv );
+        DEploidIO dEploidIO(argc, argv);
+        std::ostream *output = &std::cout;
 
         if ( dEploidIO.version() ){
-            dEploidIO.printVersion();
+            dEploidIO.printVersion(*output);
             return EXIT_SUCCESS;
         }
 
         if ( dEploidIO.help() ){
-            dEploidIO.printHelp();
+            dEploidIO.printHelp(*output);
             return EXIT_SUCCESS;
         }
 
@@ -58,12 +57,14 @@ int main( int argc, char *argv[] ){
         }
 
         McmcSample * mcmcSample = new McmcSample();
+        MersenneTwister rg(dEploidIO.randomSeed());
 
-        McmcMachinery mcmcMachinery(&dEploidIO, panel, mcmcSample);
-        mcmcMachinery.runMcmcChain();
+        McmcMachinery mcmcMachinery(&dEploidIO, panel, mcmcSample, &rg);
+        mcmcMachinery.runMcmcChain(true);
 
         dEploidIO.write(mcmcSample, panel);
 
+        rg.clearFastFunc();
         if ( panel ){
             delete panel;
         }

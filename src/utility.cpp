@@ -6,7 +6,7 @@
  *
  * This file is part of dEploid.
  *
- * scrm is free software: you can redistribute it and/or modify
+ * dEploid is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -18,8 +18,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
+ *
+ */
 
 #include "logbeta.h"
 #include "utility.hpp"
@@ -123,7 +123,7 @@ double calcLLK( double ref, double alt, double unadjustedWsaf, double err, doubl
 }
 
 
-size_t sampleIndexGivenProp ( MersenneTwister* rg, vector <double> proportion ){
+size_t sampleIndexGivenProp ( RandomGenerator* rg, vector <double> proportion ){
     #ifndef NDEBUG
         auto biggest = std::max_element(std::begin(proportion), std::end(proportion));
         return std::distance(proportion.begin(), biggest);

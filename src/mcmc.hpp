@@ -6,7 +6,7 @@
  *
  * This file is part of dEploid.
  *
- * scrm is free software: you can redistribute it and/or modify
+ * dEploid is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -18,8 +18,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
+ *
+ */
 
 #include <vector>
 #include <iostream>
@@ -42,6 +42,7 @@ class McmcSample {
 #endif
   friend class McmcMachinery;
   friend class DEploidIO;
+  friend class RMcmcSample;
   public:
     McmcSample();
     ~McmcSample();
@@ -52,11 +53,11 @@ class McmcSample {
     }
 
 
-  private:
-    vector < int > moves;
     vector < vector <double> > proportion;
     vector < vector <double> > hap;
     vector < double > sumLLKs;
+  private:
+    vector < int > moves;
 };
 
 
@@ -66,9 +67,9 @@ class McmcMachinery {
 #endif
   public:
     //McmcMachinery();
-    McmcMachinery( DEploidIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample );
+    McmcMachinery( DEploidIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample, RandomGenerator* rg_ );
     ~McmcMachinery();
-    void runMcmcChain( );
+    void runMcmcChain( bool showProgress = true );
 
   private:
     McmcSample* mcmcSample_;
@@ -89,10 +90,10 @@ class McmcMachinery {
     size_t strainIndex2_;
 
     size_t seed_;
-    MersenneTwister* hapRg_;
-    MersenneTwister* mcmcEventRg_;
-    MersenneTwister* propRg_;
-    MersenneTwister* initialHapRg_;
+    RandomGenerator* hapRg_;
+    RandomGenerator* mcmcEventRg_;
+    RandomGenerator* propRg_;
+    RandomGenerator* initialHapRg_;
 
     std::default_random_engine* std_generator_;// (this->seed_);
     std::normal_distribution<double>* initialTitre_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);

@@ -6,7 +6,7 @@
  *
  * This file is part of dEploid.
  *
- * scrm is free software: you can redistribute it and/or modify
+ * dEploid is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -18,8 +18,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
+ *
+ */
 
 #include <stdlib.h>     /* strtol, strtod */
 #include <fstream>
@@ -48,14 +48,17 @@ class DEploidIO{
  friend class TestMcmcMachinery;
 #endif
  friend class McmcMachinery;
+ friend class RMcmcSample;
   public:
     DEploidIO();
+    DEploidIO(const std::string &arg);
+    DEploidIO(int argc, char *argv[]);
     ~DEploidIO ();
 
-    void core(int argc, char *argv[]);
-    void printHelp();
+    void core();
+    void printHelp(std::ostream& out);
     bool help() const { return help_; }
-    void printVersion();
+    void printVersion(std::ostream& out);
     bool version() const { return version_; }
 
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
@@ -65,6 +68,8 @@ class DEploidIO{
     string panelFileName_;
 
     size_t nLoci() const { return this->nLoci_; }
+    size_t kStrain() const { return this->kStrain_;}
+    size_t nMcmcSample() const { return this->nMcmcSample_; }
     double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
     double Ne() const { return this->Ne_; }
     double constRecombProb() const { return this->constRecombProb_; }
@@ -80,6 +85,10 @@ class DEploidIO{
 
     // Log
     void write (McmcSample * mcmcSample, Panel * panel );
+    bool randomSeedWasSet() const {return this->randomSeedWasSet_; }
+
+    friend std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO);
+    size_t randomSeed() const { return randomSeed_;}
 
   private:
 
@@ -91,10 +100,8 @@ class DEploidIO{
     string excludeFileName_;
     string prefix_;
     size_t randomSeed_;
-    size_t randomSeed() const { return randomSeed_;}
     bool randomSeedWasSet_;
     void setRandomSeedWasSet(const bool random){ this->randomSeedWasSet_ = random; }
-    bool randomSeedWasSet() const {return this->randomSeedWasSet_; }
 
 
     bool initialPropWasGiven_;

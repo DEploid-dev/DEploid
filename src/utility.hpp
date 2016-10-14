@@ -6,7 +6,7 @@
  *
  * This file is part of dEploid.
  *
- * scrm is free software: you can redistribute it and/or modify
+ * dEploid is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -18,8 +18,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
+ *
+ */
 
 #include <vector>
 #include <iostream>
@@ -76,7 +76,7 @@ void normalizeBySum ( vector <double> & array );
 void normalizeBySumMat ( vector <vector <double> > & matrix );
 vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf, size_t firstIndex, size_t length );
 double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01, double fac=100 ) ;
-size_t sampleIndexGivenProp ( MersenneTwister* rg, vector <double> proportion );
+size_t sampleIndexGivenProp ( RandomGenerator* rg, vector <double> proportion );
 vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );
 
 

@@ -1,4 +1,4 @@
-rm(list=ls()); dEploidRootDir="/home/joezhu/DEploid"
+rm(list=ls()); dEploidRootDir="/home/joezhu/DEploid-r/.DEploid"
 # DESCRIPTION:
 #
 # USAGE:
@@ -20,7 +20,7 @@ myInput = fun.parse ( args )
 
 myCoverageInfo = fun.extract.coverage ( myInput )
 
-myPlafInfo = fun.extract.plaf ( myInput$plafFileName )
+myPlafInfo = extractPLAF( myInput$plafFileName )
 
 myExcludeInfo = fun.extract.exclude (myInput$excludeFileName, myInput$excludeBool)
 

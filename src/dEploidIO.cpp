@@ -6,7 +6,7 @@
  *
  * This file is part of dEploid.
  *
- * scrm is free software: you can redistribute it and/or modify
+ * dEploid is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -18,7 +18,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 */
 
 #include "dEploidIO.hpp"
@@ -26,10 +25,30 @@
 #include <cassert>       // assert
 #include <iomanip>      // std::setw
 #include <ctime>
+#include <iterator>
 
 
 DEploidIO::DEploidIO(){
     this->init();
+}
+
+
+DEploidIO::DEploidIO(const std::string &arg) {
+    this->init();
+    std::istringstream iss(arg);
+    copy(std::istream_iterator<std::string>(iss),
+         std::istream_iterator<std::string>(),
+         std::back_inserter(argv_));
+    this->argv_i = argv_.begin();
+    this->core();
+}
+
+
+DEploidIO::DEploidIO(int argc, char *argv[]) {
+    this->init();
+    argv_ = std::vector<std::string>(argv + 1, argv + argc);
+    this->argv_i = argv_.begin();
+    this->core();
 }
 
 
@@ -45,10 +64,7 @@ DEploidIO::~DEploidIO(){
 }
 
 
-void DEploidIO::core(int argc, char *argv[]) {
-    argv_ = std::vector<std::string>(argv + 1, argv + argc);
-    this->argv_i = argv_.begin();
-
+void DEploidIO::core() {
     if ( argv_.size() == 0 ) {
         this->set_help(true);
         return;
@@ -394,41 +410,47 @@ void DEploidIO::readNextStringto( string &readto ){
 }
 
 
-void DEploidIO::printVersion(){
-    cout << endl
-         << "dEploid " << VERSION
-         << endl
-         << "Git commit: " << dEploidGitVersion_ << endl;
+void DEploidIO::printVersion(std::ostream& out){
+    out << endl
+        << "dEploid " << VERSION
+        << endl
+        << "Git commit: " << dEploidGitVersion_ << endl;
 }
 
-void DEploidIO::printHelp(){
-    cout << endl
-         << "dEploid " << VERSION
-         << endl
-         << endl;
-    cout << "Usage:"
-         << endl;
-    cout << setw(20) << "-h or -help"         << "  --  " << "Help. List the following content."<<endl;
-    cout << setw(20) << "-v or -version"      << "  --  " << "DEploid version."<<endl;
-    cout << setw(20) << "-ref STR"            << "  --  " << "File path of reference allele count."<<endl;
-    cout << setw(20) << "-alt STR"            << "  --  " << "File path of alternative allele count."<<endl;
-    cout << setw(20) << "-plaf STR"           << "  --  " << "File path of population level allele frequencies."<<endl;
-    cout << setw(20) << "-panel STR"          << "  --  " << "File path of the reference panel."<<endl;
-    cout << setw(20) << "-exclude STR"        << "  --  " << "File path of sites to be excluded."<<endl;
-    cout << setw(20) << "-o STR"              << "  --  " << "Specify the file name prefix of the output."<<endl;
-    cout << setw(20) << "-p INT"              << "  --  " << "Out put precision (default value 8)."<<endl;
-    cout << setw(20) << "-k INT"              << "  --  " << "Number of strain (default value 5)."<<endl;
-    cout << setw(20) << "-seed INT"           << "  --  " << "Random seed."<<endl;
-    cout << setw(20) << "-nSample INT"        << "  --  " << "Number of MCMC samples."<<endl;
-    cout << setw(20) << "-rate INT"           << "  --  " << "MCMC sample rate."<<endl;
-    cout << setw(20) << "-noPanel"            << "  --  " << "Use population level allele frequency as prior."<<endl;
-    cout << setw(20) << "-forbidUpdateProp"   << "  --  " << "Forbid MCMC moves to update proportions."<<endl;
-    cout << setw(20) << "-forbidUpdateSingle" << "  --  " << "Forbid MCMC moves to update single haplotype."<<endl;
-    cout << setw(20) << "-forbidUpdatePair"   << "  --  " << "Forbid MCMC moves to update pair haplotypes."<<endl;
-    cout << setw(20) << "-initialP FLT ..."   << "  --  " << "Initialize proportions."<<endl;
-    cout << endl;
-    cout << "Examples:" << endl;
-    cout << endl;
-    cout << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel"<< endl;
-    cout << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanelExclude -noPanel"<< endl;
+void DEploidIO::printHelp(std::ostream& out){
+    out << endl
+        << "dEploid " << VERSION
+        << endl
+        << endl;
+    out << "Usage:"
+        << endl;
+    out << setw(20) << "-h or -help"         << "  --  " << "Help. List the following content."<<endl;
+    out << setw(20) << "-v or -version"      << "  --  " << "DEploid version."<<endl;
+    out << setw(20) << "-ref STR"            << "  --  " << "File path of reference allele count."<<endl;
+    out << setw(20) << "-alt STR"            << "  --  " << "File path of alternative allele count."<<endl;
+    out << setw(20) << "-plaf STR"           << "  --  " << "File path of population level allele frequencies."<<endl;
+    out << setw(20) << "-panel STR"          << "  --  " << "File path of the reference panel."<<endl;
+    out << setw(20) << "-exclude STR"        << "  --  " << "File path of sites to be excluded."<<endl;
+    out << setw(20) << "-o STR"              << "  --  " << "Specify the file name prefix of the output."<<endl;
+    out << setw(20) << "-p INT"              << "  --  " << "Out put precision (default value 8)."<<endl;
+    out << setw(20) << "-k INT"              << "  --  " << "Number of strain (default value 5)."<<endl;
+    out << setw(20) << "-seed INT"           << "  --  " << "Random seed."<<endl;
+    out << setw(20) << "-nSample INT"        << "  --  " << "Number of MCMC samples."<<endl;
+    out << setw(20) << "-rate INT"           << "  --  " << "MCMC sample rate."<<endl;
+    out << setw(20) << "-noPanel"            << "  --  " << "Use population level allele frequency as prior."<<endl;
+    out << setw(20) << "-forbidUpdateProp"   << "  --  " << "Forbid MCMC moves to update proportions."<<endl;
+    out << setw(20) << "-forbidUpdateSingle" << "  --  " << "Forbid MCMC moves to update single haplotype."<<endl;
+    out << setw(20) << "-forbidUpdatePair"   << "  --  " << "Forbid MCMC moves to update pair haplotypes."<<endl;
+    out << setw(20) << "-initialP FLT ..."   << "  --  " << "Initialize proportions."<<endl;
+    out << endl;
+    out << "Examples:" << endl;
+    out << endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel"<< endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanelExclude -noPanel"<< endl;
+}
+
+
+std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO) {
+  for (std::string arg : dEploidIO.argv_) stream << " " << arg;
+  return stream;
 }

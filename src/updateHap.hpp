@@ -6,7 +6,7 @@
  *
  * This file is part of dEploid.
  *
- * scrm is free software: you can redistribute it and/or modify
+ * dEploid is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -18,8 +18,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
+ *
+ */
 
 #include <vector>
 #include <iostream>
@@ -51,7 +51,7 @@ class UpdateHap{
                vector <double> &expectedWsaf,
                vector <double> &proportion,
                vector < vector <double> > &haplotypes,
-               MersenneTwister* rg,
+               RandomGenerator* rg,
                size_t segmentStartIndex,
                size_t nLoci,
                Panel* panel,
@@ -60,9 +60,9 @@ class UpdateHap{
 
     Panel* panel_;
     double missCopyProb_;
-    MersenneTwister* recombRg_;
-    MersenneTwister* recombLevel2Rg_;
-    MersenneTwister* missCopyRg_;
+    RandomGenerator* recombRg_;
+    RandomGenerator* recombLevel2Rg_;
+    RandomGenerator* missCopyRg_;
 
     size_t kStrain_;
     size_t nPanel_;
@@ -106,7 +106,7 @@ class UpdateSingleHap : public UpdateHap{
                       vector <double> &expectedWsaf,
                       vector <double> &proportion,
                       vector < vector <double> > &haplotypes,
-                      MersenneTwister* rg,
+                      RandomGenerator* rg,
                       size_t segmentStartIndex,
                       size_t nLoci,
                       Panel* panel, double missCopyProb,
@@ -160,7 +160,7 @@ class UpdatePairHap : public UpdateHap{
                       vector <double> &expectedWsaf,
                       vector <double> &proportion,
                       vector < vector <double> > &haplotypes,
-                      MersenneTwister* rg,
+                      RandomGenerator* rg,
                       size_t segmentStartIndex,
                       size_t nLoci,
                       Panel* panel, double missCopyProb, bool forbidCopyFromSame,
