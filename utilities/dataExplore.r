@@ -13,6 +13,7 @@ if (!exists("dEploidRootDir")){
 }
 
 source(paste(dEploidRootDir, "/utilities/dEploidTools.r", sep=""))
+source(paste(dEploidRootDir, "/utilities/DEploidR.R", sep=""))
 
 args = (commandArgs(TRUE))
 
