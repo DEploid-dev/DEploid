@@ -120,7 +120,6 @@ class TestUpdatePairHap : public CppUnit::TestCase {
         delete updatePairHapPanel2_;
         delete panel1_;
         delete panel2_;
-        this->rg_->clearFastFunc();
         delete rg_;
     }
 

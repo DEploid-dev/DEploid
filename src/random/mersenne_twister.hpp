@@ -31,13 +31,19 @@ class MersenneTwister : public RandomGenerator
 {
  public:
   MersenneTwister();
-  MersenneTwister(FastFunc* ff);
   MersenneTwister(const size_t seed);
   MersenneTwister(const bool use_seed, size_t seed);
-  MersenneTwister(const size_t seed, FastFunc* ff);
-  virtual ~MersenneTwister() {};
 
-  void initialize() {};
+  MersenneTwister(std::shared_ptr<FastFunc> ff):RandomGenerator(ff) {
+      this->construct_common(generateRandomSeed());
+  }
+
+  MersenneTwister(const size_t seed, std::shared_ptr<FastFunc> ff):RandomGenerator(ff) {
+      this->construct_common(seed);
+  }
+
+  ~MersenneTwister() {};
+
   void set_seed(const size_t seed);
   void construct_common(const size_t seed);
 

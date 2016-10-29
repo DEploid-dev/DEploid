@@ -107,7 +107,6 @@ class TestMcmcMachinery: public CppUnit::TestCase {
 
 
     void tearDown() {
-        rg_->clearFastFunc();
         delete rg_;
         delete mcmcMachinery_;
         delete mcmcSample_;

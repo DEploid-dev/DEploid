@@ -58,7 +58,6 @@ class TestUpdateHap : public CppUnit::TestCase {
         delete updateHapPlaf_;
         delete updateHapPanel_;
         delete panel_;
-        this->rg_->clearFastFunc();
         delete rg_;
     }
 
@@ -206,7 +205,6 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
         delete updateSingleHapPanel2_;
         delete panel1_;
         delete panel2_;
-        this->rg_->clearFastFunc();
         delete rg_;
     }
 
