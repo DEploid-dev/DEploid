@@ -58,7 +58,6 @@ class TestUtility : public CppUnit::TestCase {
 
 
     void tearDown() {
-        rg->clearFastFunc();
         delete rg;
     }
 
