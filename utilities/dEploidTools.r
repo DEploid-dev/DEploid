@@ -151,7 +151,7 @@ extractCoverageFromVcf <- function ( vcfName, ADFieldIndex = 2 ){
          invokeRestart( "muffleWarning" )
     }
 
-    gzf = gzfile(vcfFile, open = "rb")
+    gzf = gzfile(vcfName, open = "rb")
     skipNum = 0
     line = withCallingHandlers( readLines(gzf, n=1), warning=h)
     while ( length(line) > 0 ){
