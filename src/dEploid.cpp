@@ -64,7 +64,6 @@ int main( int argc, char *argv[] ){
 
         dEploidIO.write(mcmcSample, panel);
 
-        rg.clearFastFunc();
         if ( panel ){
             delete panel;
         }

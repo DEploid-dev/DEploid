@@ -36,7 +36,7 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, Panel *panel, McmcSample *mcm
     this->dEploidIO_ = dEploidIO;
     this->panel_ = panel;
     this->mcmcSample_ = mcmcSample;
-    this->seed_ = this->dEploidIO_->randomSeed();
+    this->seed_ = rg_->seed();
 
     //this->hapRg_ = new MersenneTwister(this->seed_);
     this->hapRg_ = rg_ ;
