@@ -103,5 +103,4 @@ class RandomGenerator
   std::shared_ptr<FastFunc> ff_;
 };
 
-
 #endif
