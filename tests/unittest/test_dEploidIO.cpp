@@ -174,7 +174,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL( true, dEploidIO1.version());
         CPPUNIT_ASSERT_NO_THROW ( dEploidIO1.printVersion(*output) );
 
-        char *argv2[] = { "./dEploid", "-v" };
+        char *argv2[] = { "./dEploid", "-version" };
         CPPUNIT_ASSERT_NO_THROW ( DEploidIO(2, argv2) );
         DEploidIO dEploidIO2(2, argv2);
         CPPUNIT_ASSERT_EQUAL( true, dEploidIO2.version());

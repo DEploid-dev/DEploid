@@ -1,4 +1,4 @@
-rm(list=ls()); dEploidRootDir="/home/joezhu/DEploid-r/.DEploid"
+rm(list=ls()); dEploidRootDir="/home/joezhu/DEploid"
 # DESCRIPTION:
 #
 # USAGE:
