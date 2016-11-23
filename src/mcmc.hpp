@@ -29,6 +29,7 @@
 #include "panel.hpp"
 #include "utility.hpp"
 #include "global.h"
+#include "randomSample.hpp"
 
 #ifndef MCMC
 #define MCMC
@@ -51,7 +52,6 @@ class McmcSample {
         sumLLKs.clear();
         moves.clear();
     }
-
 
     vector < vector <double> > proportion;
     vector < vector <double> > hap;
@@ -95,9 +95,10 @@ class McmcMachinery {
     RandomGenerator* propRg_;
     RandomGenerator* initialHapRg_;
 
-    std::mt19937* std_generator_;// (this->seed_);
-    std::normal_distribution<double>* initialTitre_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);
-    std::normal_distribution<double>* deltaX_normal_distribution_;// (0, 1/PROP_SCALE);
+    //std::mt19937* std_generator_;// (this->seed_);
+    //std::normal_distribution<double>* initialTitre_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);
+    //std::normal_distribution<double>* deltaX_normal_distribution_;// (0, 1/PROP_SCALE);
+    StandNormalRandomSample* stdNorm_;
     double MN_LOG_TITRE;
     double SD_LOG_TITRE;
     double PROP_SCALE;
