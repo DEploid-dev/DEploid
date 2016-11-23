@@ -53,7 +53,7 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, Panel *panel, McmcSample *mcm
     this->SD_LOG_TITRE = 3.0;
     this->PROP_SCALE = 40.0;
 
-    std_generator_ = new std::mt19937_64(this->seed_);
+    std_generator_ = new std::mt19937(this->seed_);
     initialTitre_normal_distribution_ = new std::normal_distribution<double>(MN_LOG_TITRE, SD_LOG_TITRE);
     deltaX_normal_distribution_ = new std::normal_distribution<double>(MN_LOG_TITRE, 1.0/PROP_SCALE);
 
@@ -188,7 +188,6 @@ void McmcMachinery::initializeTitre(){
     if ( this->dEploidIO_->doUpdateProp() ){
         for ( size_t k = 0; k < this->kStrain_; k++){
             double tmp = (*this->initialTitre_normal_distribution_)((*std_generator_));
-            cout << tmp << endl;
             this->currentTitre_[k] = tmp;
         }
     }
