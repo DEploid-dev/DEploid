@@ -188,6 +188,7 @@ void McmcMachinery::initializeTitre(){
     if ( this->dEploidIO_->doUpdateProp() ){
         for ( size_t k = 0; k < this->kStrain_; k++){
             double tmp = (*this->initialTitre_normal_distribution_)((*std_generator_));
+            cout << tmp << endl;
             this->currentTitre_[k] = tmp;
         }
     }
