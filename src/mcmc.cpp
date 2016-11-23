@@ -54,9 +54,6 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, Panel *panel, McmcSample *mcm
     this->PROP_SCALE = 40.0;
 
     stdNorm_ = new StandNormalRandomSample((double)this->seed_);
-    //std_generator_ = new std::mt19937(this->seed_);
-    //initialTitre_normal_distribution_ = new std::normal_distribution<double>(MN_LOG_TITRE, SD_LOG_TITRE);
-    //deltaX_normal_distribution_ = new std::normal_distribution<double>(MN_LOG_TITRE, 1.0/PROP_SCALE);
 
     this->kStrain_ = this->dEploidIO_->kStrain_;
     this->nLoci_ = this->dEploidIO_->plaf_.size();
@@ -66,38 +63,9 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, Panel *panel, McmcSample *mcm
 
 
 McmcMachinery::~McmcMachinery(){
-    //if ( this->hapRg_ ){
-        //this->hapRg_->clearFastFunc();
-        //delete hapRg_;
-    //}
-
-    //if ( this->mcmcEventRg_ ){
-        //this->mcmcEventRg_->clearFastFunc();
-        //delete mcmcEventRg_;
-    //}
-
-    //if ( this->propRg_ ){
-        //this->propRg_->clearFastFunc();
-        //delete propRg_;
-    //}
-
-    //if ( this->initialHapRg_ ){
-        //this->initialHapRg_->clearFastFunc();
-        //delete initialHapRg_;
-    //}
-
     if ( this->stdNorm_ ){
         delete stdNorm_;
     }
-
-    //if ( this->initialTitre_normal_distribution_ ){
-        //delete initialTitre_normal_distribution_;
-    //}
-
-    //if ( this->deltaX_normal_distribution_ ){
-        //delete deltaX_normal_distribution_;
-    //}
-
 }
 
 

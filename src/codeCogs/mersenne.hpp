@@ -31,18 +31,17 @@ class Mersenne {
 
     //! Constructor that initializes the generator with the given seed.
 
-    Mersenne(double s = 0.46875) {
-        assert(s > 0 && s < 1);
-        seed = s;
-        Init((unsigned long)(s * MERSENNEDIV));
+    Mersenne(size_t s = 46875) {
+        this->setSeed(s);
+        Init((unsigned long)(s));
     }
 
     //! Copy constructor
 
     Mersenne(const Mersenne &C) {
-        double s = C.seed;
-        seed = s;
-        Init((unsigned long)(s * MERSENNEDIV));
+        size_t s = C.getSeed();
+        this->setSeed (s);
+        Init((unsigned long)(s));
     }
 
     //! Generates an uniform floating point number in the (0, 1) interval (endpoints are excluded).
@@ -59,16 +58,15 @@ class Mersenne {
 
     //! Resets the seed of the generator to the given parameter.
 
-    void setSeed(double s) {
-        assert(s > 0 && s < 1);
-        seed = s;
-        Init((unsigned long)(s * MERSENNEDIV));
+    void setSeed(size_t s) {
+        this->seed_ = s;
+        Init((unsigned long)(s));
     }
 
     //! Returns the seed of the generator.
 
-    double getSeed() {
-        return seed;
+    size_t getSeed() const {
+        return seed_;
     }
 
   private:
@@ -110,7 +108,7 @@ class Mersenne {
         return y;
 
     }
-    double seed;
+    size_t seed_;
     unsigned long mt[N];
     int mti;
 };
