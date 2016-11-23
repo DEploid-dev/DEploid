@@ -32,6 +32,8 @@
 
 #include "fastfunc.hpp"
 
+#define SQRT2PI  2.506628274631
+
 
 class RandomGenerator
 {
@@ -95,6 +97,11 @@ class RandomGenerator
     //return -std::log(sample());
   }
 
+  inline double normalPdf(double x, double m=0, double s=1){
+    double a = (x - m) / s;
+    return exp(- a * a / 2) / SQRT2PI / s;
+  }
+
  protected:
   // seed
   size_t seed_;
@@ -102,5 +109,8 @@ class RandomGenerator
   double unit_exponential_;
   std::shared_ptr<FastFunc> ff_;
 };
+
+
+#undef SQRT2PI
 
 #endif
