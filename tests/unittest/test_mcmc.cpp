@@ -34,7 +34,9 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     CPPUNIT_TEST( testInitializeHap );
     CPPUNIT_TEST( testInitializellk );
     CPPUNIT_TEST( testInitializeProp );
+    CPPUNIT_TEST( testSdNormal );
     CPPUNIT_TEST( testInitializeTitre );
+    CPPUNIT_TEST( testDeltaTitre );
     CPPUNIT_TEST( testInitializeExpectedWsaf );
     CPPUNIT_TEST( testCalcMaxIteration );
     CPPUNIT_TEST( testCalcExpectedWsaf );
@@ -177,8 +179,50 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     }
 
 
+    void testSdNormal(){
+        double x = 0.0;
+        double x2 = 0.0;
+        for (size_t i = 0; i < nRepeat; ++i) {
+            double tmp = this->mcmcMachinery_->stdNorm_->genReal();
+            x += tmp;
+            x2 += pow(tmp, 2.0);
+        }
+        x /= nRepeat;
+        x2 /= nRepeat;
+        double sd = sqrt(x2 - pow(x, 2.0));
+        CPPUNIT_ASSERT( -0.01 <= x && x <= 0.01 );
+        CPPUNIT_ASSERT( 0.99 <= sd && sd <= 1.01 );
+    }
+
     void testInitializeTitre(){
-        // TODO
+        double x = 0.0;
+        double x2 = 0.0;
+        for (size_t i = 0; i < nRepeat; ++i) {
+            double tmp = this->mcmcMachinery_->initialTitreNormalVariable();
+            x += tmp;
+            x2 += pow(tmp, 2.0);
+        }
+        x /= nRepeat;
+        x2 /= nRepeat;
+        double sd = sqrt(x2 - pow(x, 2.0));
+        CPPUNIT_ASSERT( this->mcmcMachinery_->MN_LOG_TITRE - 0.01 <= x && x <= this->mcmcMachinery_->MN_LOG_TITRE + 0.01 );
+        CPPUNIT_ASSERT( this->mcmcMachinery_->SD_LOG_TITRE - 0.01 <= sd && sd <= this->mcmcMachinery_->SD_LOG_TITRE + 0.01 );
+    }
+
+
+    void testDeltaTitre(){
+        double x = 0.0;
+        double x2 = 0.0;
+        for (size_t i = 0; i < nRepeat; ++i) {
+            double tmp = this->mcmcMachinery_->deltaXnormalVariable();
+            x += tmp;
+            x2 += pow(tmp, 2.0);
+        }
+        x /= nRepeat;
+        x2 /= nRepeat;
+        double sd = sqrt(x2 - pow(x, 2.0));
+        CPPUNIT_ASSERT( this->mcmcMachinery_->MN_LOG_TITRE - 0.01 <= x && x <= this->mcmcMachinery_->MN_LOG_TITRE + 0.01 );
+        CPPUNIT_ASSERT( 1.0/(this->mcmcMachinery_->PROP_SCALE)  - 0.01 <= sd && sd <= 1.0/(this->mcmcMachinery_->PROP_SCALE)  + 0.01 );
     }
 
 

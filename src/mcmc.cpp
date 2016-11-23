@@ -156,8 +156,7 @@ void McmcMachinery::initializeTitre(){
 
     if ( this->dEploidIO_->doUpdateProp() ){
         for ( size_t k = 0; k < this->kStrain_; k++){
-            double tmp = this->stdNorm_->genReal() * SD_LOG_TITRE + MN_LOG_TITRE;
-            this->currentTitre_[k] = tmp;
+            this->currentTitre_[k] = this->initialTitreNormalVariable();
         }
     }
     assert( currentTitre_.size() == this->kStrain_);
@@ -291,7 +290,7 @@ double McmcMachinery::deltaLLKs ( vector <double> &newLLKs ){
 vector <double> McmcMachinery::calcTmpTitre(){
     vector <double> tmpTitre;
     for ( size_t k = 0; k < this->kStrain_; k++){
-        double dt = this->stdNorm_->genReal() * 1.0/PROP_SCALE + MN_LOG_TITRE;
+        double dt = this->deltaXnormalVariable();
         tmpTitre.push_back( currentTitre_[k] + dt );
     }
     return tmpTitre;
