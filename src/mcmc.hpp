@@ -95,7 +95,7 @@ class McmcMachinery {
     RandomGenerator* propRg_;
     RandomGenerator* initialHapRg_;
 
-    std::mt19937* std_generator_;// (this->seed_);
+    std::mt19937_64* std_generator_;// (this->seed_);
     std::normal_distribution<double>* initialTitre_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);
     std::normal_distribution<double>* deltaX_normal_distribution_;// (0, 1/PROP_SCALE);
     double MN_LOG_TITRE;
