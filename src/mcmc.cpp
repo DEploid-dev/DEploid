@@ -53,7 +53,7 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, Panel *panel, McmcSample *mcm
     this->SD_LOG_TITRE = 3.0;
     this->PROP_SCALE = 40.0;
 
-    stdNorm_ = new StandNormalRandomSample((double)this->seed_);
+    stdNorm_ = new StandNormalRandomSample(this->seed_);
 
     this->kStrain_ = this->dEploidIO_->kStrain_;
     this->nLoci_ = this->dEploidIO_->plaf_.size();

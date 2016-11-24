@@ -26,7 +26,7 @@ class StandNormalRandomSample : public Mersenne {
   public:
 
     //! Class constructor.
-    StandNormalRandomSample(double s = 0.65234) : Mersenne(s) {
+    StandNormalRandomSample(size_t s = 65234) : Mersenne(s) {
         sx = new double[60];
         sfx = new double[60];
         double sxi = 0.0;
