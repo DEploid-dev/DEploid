@@ -18,12 +18,12 @@
 #' PG0390 = extractCoverageFromTxt(refFile, altFile)
 #'
 extractCoverageFromTxt <- function ( refFileName, altFileName ){
-    ref = read.table(refFileName, header = TRUE, comment.char = "")
-    alt = read.table(altFileName, header = TRUE, comment.char = "")
-    return ( data.frame( CHROM = ref[,1],
-                         POS = ref[,2],
-                         refCount = ref[,3],
-                         altCount = alt[,3] )
+    ref <- read.table(refFileName, header = TRUE, comment.char = "")
+    alt <- read.table(altFileName, header = TRUE, comment.char = "")
+    return ( data.frame( CHROM = ref[, 1],
+                         POS = ref[, 2],
+                         refCount = ref[, 3],
+                         altCount = alt[, 3] )
            )
 }
 
@@ -34,7 +34,7 @@ extractCoverageFromTxt <- function ( refFileName, altFileName ){
 #'
 #' @note The VCF file should only contain one sample. If more samples present in the VCF, it only returns coverage for of the first sample.
 #'
-#' @param vcfName Path of the VCF file.
+#' @param vcfFileName Path of the VCF file.
 #'
 #' @param ADFieldIndex Index of the AD field of the sample field. For example, if the format is "GT:AD:DP:GQ:PL", the AD index is 2 (by default).
 #'
@@ -46,41 +46,43 @@ extractCoverageFromTxt <- function ( refFileName, altFileName ){
 #' vcfFile = system.file("extdata", "PG0390-C.test.vcf.gz", package = "DEploid")
 #' PG0390 = extractCoverageFromVcf(vcfFile)
 #'
-extractCoverageFromVcf <- function ( vcfName, ADFieldIndex = 2 ){
+extractCoverageFromVcf <- function ( vcfFileName, ADFieldIndex = 2 ){
     # Assume that AD is the second field
     h <- function(w){
-         if( any( grepl( "gzfile connection", w) ) )
+         if ( any( grepl( "gzfile connection", w) ) )
          invokeRestart( "muffleWarning" )
     }
 
-    gzf = gzfile(vcfName, open = "rb")
-    skipNum = 0
-    line = withCallingHandlers( readLines(gzf, n=1), warning=h)
+    gzf <- gzfile(vcfFileName, open = "rb")
+    numberOfHeaderLines <- 0
+    line <- withCallingHandlers( readLines(gzf, n = 1), warning = h)
     while ( length(line) > 0 ){
         if (grepl("##", line )){
-            skipNum = skipNum+1
+            numberOfHeaderLines <- numberOfHeaderLines + 1
         } else {
             break
         }
-        line = withCallingHandlers( readLines(gzf, n=1), warning=h)
+        line <- withCallingHandlers( readLines(gzf, n = 1), warning = h)
     }
     close(gzf)
 
-    vcf  = read.table( gzfile(vcfName), skip=skipNum, header=T, comment.char="", stringsAsFactors = FALSE, check.names=FALSE)
+    vcf <- read.table( gzfile(vcfFileName), skip = numberOfHeaderLines,
+        header = T, comment.char = "", stringsAsFactors = FALSE,
+        check.names = FALSE)
 
-    sampleName = names(vcf)[10]
+    sampleName <- names(vcf)[10]
 
-    tmp = vcf[[sampleName]]
-    field = strsplit(as.character(tmp),":")
+    tmp <- vcf[[sampleName]]
+    field <- strsplit(as.character(tmp), ":")
 
-    tmpCovStr = unlist(lapply(field, `[[`, ADFieldIndex))
-    tmpCov = strsplit(as.character(tmpCovStr),",")
+    tmpCovStr <- unlist(lapply(field, `[[`, ADFieldIndex))
+    tmpCov <- strsplit(as.character(tmpCovStr), ",")
 
-    refCount = as.numeric(unlist(lapply(tmpCov, `[[`, 1)))
-    altCount = as.numeric(unlist(lapply(tmpCov, `[[`, 2)))
+    refCount <- as.numeric(unlist(lapply(tmpCov, `[[`, 1)))
+    altCount <- as.numeric(unlist(lapply(tmpCov, `[[`, 2)))
 
-    return ( data.frame( CHROM = vcf[,1],
-                         POS = vcf[,2],
+    return ( data.frame( CHROM = vcf[, 1],
+                         POS = vcf[, 2],
                          refCount = refCount,
                          altCount = altCount )
            )
@@ -93,7 +95,7 @@ extractCoverageFromVcf <- function ( vcfName, ADFieldIndex = 2 ){
 #'
 #' @note The text file must have header, and population level allele frequency recorded in the "PLAF" field.
 #'
-#' @param plafName Path of the PLAF text file.
+#' @param plafFileName Path of the PLAF text file.
 #'
 #' @return A numeric array of PLAF
 #'
@@ -103,8 +105,8 @@ extractCoverageFromVcf <- function ( vcfName, ADFieldIndex = 2 ){
 #' plafFile = system.file("extdata", "labStrains.test.PLAF.txt", package = "DEploid")
 #' plaf = extractPLAF(plafFile)
 #'
-extractPLAF<- function ( plafName ){
-    return ( read.table(plafName, header=T)$PLAF )
+extractPLAF <- function ( plafFileName ){
+    return ( read.table(plafFileName, header = T)$PLAF )
 }
 
 
@@ -135,9 +137,11 @@ extractPLAF<- function ( plafName ){
 #' PG0390CoverageVcf.deconv = dEploid(paste("-vcf", vcfFile, "-plaf", plafFile, "-noPanel"))
 #' plotProportions( PG0390CoverageVcf.deconv$Proportions, "PG0390-C proportions" )
 #'
-plotProportions <-function (proportions, title = "Components"){
-    rainbowColorBin = 16
-    barplot(t(proportions), beside=F, border=NA, col=rainbow(rainbowColorBin), space=0, xlab="Iteration", ylab="Component proportion", main=title)
+plotProportions <- function (proportions, title = "Components"){
+    rainbowColorBin <- 16
+    barplot(t(proportions), beside = F, border = NA,
+        col = rainbow(rainbowColorBin), space = 0, xlab = "Iteration",
+        ylab = "Component proportion", main = title)
 }
 
 
@@ -169,15 +173,17 @@ plotProportions <-function (proportions, title = "Components"){
 #' PG0390CoverageVcf = extractCoverageFromVcf(vcfFile)
 #' plotAltVsRef( PG0390CoverageVcf$refCount, PG0390CoverageVcf$altCount )
 #'
-plotAltVsRef <- function ( ref, alt, title = "Alt vs Ref", exclude.ref = c(), exclude.alt = c() ){
-    tmp.range = 1.1*mean(max(alt), max(ref))
-    plot ( ref, alt, xlim=c(0, tmp.range), ylim=c(0,tmp.range), cex = 0.5, xlab = "REF", ylab = "ALT", main = title)
+plotAltVsRef <- function ( ref, alt, title = "Alt vs Ref",
+                    exclude.ref = c(), exclude.alt = c() ){
+    tmpRange <- 1.1 * mean(max(alt), max(ref))
+    plot ( ref, alt, xlim = c(0, tmpRange), ylim = c(0, tmpRange),
+        cex = 0.5, xlab = "REF", ylab = "ALT", main = title)
     points (exclude.ref, exclude.alt, col = "red")
-    abline(v =50, untf = FALSE, lty = 2)
-    abline(h =50, untf = FALSE, lty = 2)
+    abline(v = 50, untf = FALSE, lty = 2)
+    abline(h = 50, untf = FALSE, lty = 2)
 
-    abline(h =150, untf = FALSE, lty = 2)
-    abline(v =150, untf = FALSE, lty = 2)
+    abline(h = 150, untf = FALSE, lty = 2)
+    abline(v = 150, untf = FALSE, lty = 2)
 }
 
 
@@ -211,12 +217,14 @@ plotAltVsRef <- function ( ref, alt, title = "Alt vs Ref", exclude.ref = c(), ex
 #' histWSAF(obsWSAF)
 #' myhist = histWSAF(obsWSAF, FALSE)
 #'
-histWSAF <- function ( obsWSAF, exclusive = TRUE, title ="Histogram 0<WSAF<1" ){
-    tmpWSAF_index = 1:length(obsWSAF)
+histWSAF <- function ( obsWSAF, exclusive = TRUE,
+                title ="Histogram 0<WSAF<1" ){
+    tmpWSAFIndex <- 1:length(obsWSAF)
     if ( exclusive ){
-        tmpWSAF_index = which(((obsWSAF<1) * (obsWSAF>0) ) == 1)
+        tmpWSAFIndex <- which( ( (obsWSAF < 1) * (obsWSAF > 0) ) == 1)
     }
-    return (hist(obsWSAF[tmpWSAF_index], main=title, breaks = seq(0, 1, by =0.1), xlab = "WSAF"))
+    return (hist(obsWSAF[tmpWSAFIndex], main = title,
+        breaks = seq(0, 1, by = 0.1), xlab = "WSAF"))
 }
 
 
@@ -253,8 +261,10 @@ histWSAF <- function ( obsWSAF, exclusive = TRUE, title ="Histogram 0<WSAF<1" ){
 #' plaf = extractPLAF(plafFile)
 #' plotWSAFvsPLAF(plaf, obsWSAF)
 #'
-plotWSAFvsPLAF <- function ( plaf, obsWSAF, expWSAF = c(), title = "WSAF vs PLAF" ){
-    plot ( plaf, obsWSAF, cex = 0.5, xlim = c(0,1), ylim = c(0,1), col = "red", main = title, xlab = "PLAF", ylab = "WSAF" )
+plotWSAFvsPLAF <- function ( plaf, obsWSAF, expWSAF = c(),
+                         title = "WSAF vs PLAF" ){
+    plot ( plaf, obsWSAF, cex = 0.5, xlim = c(0, 1), ylim = c(0, 1),
+        col = "red", main = title, xlab = "PLAF", ylab = "WSAF" )
     if ( length(expWSAF) > 0 ){
         points ( plaf, expWSAF, cex = 0.5, col = "blue")
     }
@@ -296,11 +306,12 @@ plotWSAFvsPLAF <- function ( plaf, obsWSAF, expWSAF = c(), title = "WSAF vs PLAF
 #' expWSAF = t(PG0390CoverageVcf.deconv$Haps) %*% prop
 #' plotObsExpWSAF(obsWSAF, expWSAF)
 #'
-plotObsExpWSAF <- function (obsWSAF, expWSAF, title = "WSAF(observed vs expected)"){
-    plot(obsWSAF, expWSAF, pch=19, col="blue", xlab="Observed WSAF (ALT/(ALT+REF))", ylab="Expected WSAF (h%*%p)",
-         main=title,
-         xlim = c(-0.05, 1.05), cex = 0.5, ylim = c(-0.05, 1.05));
-    abline(0,1,lty="dotted");
+plotObsExpWSAF <- function (obsWSAF, expWSAF,
+                      title = "WSAF(observed vs expected)"){
+    plot(obsWSAF, expWSAF, pch = 19, col = "blue",
+        xlab = "Observed WSAF (ALT/(ALT+REF))", ylab = "Expected WSAF (h%*%p)",
+        main = title, xlim = c(-0.05, 1.05), cex = 0.5, ylim = c(-0.05, 1.05));
+    abline(0, 1, lty = "dotted");
 
 }
 
@@ -346,10 +357,9 @@ computeObsWSAF <- function (alt, ref) {
 #'
 #' @export
 #'
-haplotypePainter <-function (posteriorProbabilities, title = ""){
-    rainbowColorBin = 16
-    barplot(t(posteriorProbabilities), beside=F, border=NA, col=rainbow(rainbowColorBin), space=0, xlab="SNP index", ylab="Posterior probabilities", main=title)
+haplotypePainter <- function (posteriorProbabilities, title = ""){
+    rainbowColorBin <- 16
+    barplot(t(posteriorProbabilities), beside = F, border = NA,
+        col = rainbow(rainbowColorBin), space = 0, xlab = "SNP index",
+        ylab = "Posterior probabilities", main = title)
 }
-
-
-
