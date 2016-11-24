@@ -53,9 +53,7 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, Panel *panel, McmcSample *mcm
     this->SD_LOG_TITRE = 3.0;
     this->PROP_SCALE = 40.0;
 
-    std_generator_ = new std::default_random_engine(this->seed_);
-    initialTitre_normal_distribution_ = new std::normal_distribution<double>(MN_LOG_TITRE, SD_LOG_TITRE);
-    deltaX_normal_distribution_ = new std::normal_distribution<double>(MN_LOG_TITRE, 1.0/PROP_SCALE);
+    stdNorm_ = new StandNormalRandomSample((double)this->seed_);
 
     this->kStrain_ = this->dEploidIO_->kStrain_;
     this->nLoci_ = this->dEploidIO_->plaf_.size();
@@ -65,38 +63,9 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, Panel *panel, McmcSample *mcm
 
 
 McmcMachinery::~McmcMachinery(){
-    //if ( this->hapRg_ ){
-        //this->hapRg_->clearFastFunc();
-        //delete hapRg_;
-    //}
-
-    //if ( this->mcmcEventRg_ ){
-        //this->mcmcEventRg_->clearFastFunc();
-        //delete mcmcEventRg_;
-    //}
-
-    //if ( this->propRg_ ){
-        //this->propRg_->clearFastFunc();
-        //delete propRg_;
-    //}
-
-    //if ( this->initialHapRg_ ){
-        //this->initialHapRg_->clearFastFunc();
-        //delete initialHapRg_;
-    //}
-
-    if ( this->std_generator_ ){
-        delete std_generator_;
+    if ( this->stdNorm_ ){
+        delete stdNorm_;
     }
-
-    if ( this->initialTitre_normal_distribution_ ){
-        delete initialTitre_normal_distribution_;
-    }
-
-    if ( this->deltaX_normal_distribution_ ){
-        delete deltaX_normal_distribution_;
-    }
-
 }
 
 
@@ -187,8 +156,7 @@ void McmcMachinery::initializeTitre(){
 
     if ( this->dEploidIO_->doUpdateProp() ){
         for ( size_t k = 0; k < this->kStrain_; k++){
-            double tmp = (*this->initialTitre_normal_distribution_)((*std_generator_));
-            this->currentTitre_[k] = tmp;
+            this->currentTitre_[k] = this->initialTitreNormalVariable();
         }
     }
     assert( currentTitre_.size() == this->kStrain_);
@@ -322,7 +290,7 @@ double McmcMachinery::deltaLLKs ( vector <double> &newLLKs ){
 vector <double> McmcMachinery::calcTmpTitre(){
     vector <double> tmpTitre;
     for ( size_t k = 0; k < this->kStrain_; k++){
-        double dt = (*this->deltaX_normal_distribution_)((*std_generator_));
+        double dt = this->deltaXnormalVariable();
         tmpTitre.push_back( currentTitre_[k] + dt );
     }
     return tmpTitre;
