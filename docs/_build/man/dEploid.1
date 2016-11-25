@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "DEPLOID" "1" "August 28, 2016" "v0.3-beta" "DEploid"
+.TH "DEPLOID" "1" "November 25, 2016" "v0.3-release" "DEploid"
 .SH NAME
 dEploid \- 
 .
@@ -62,7 +62,7 @@ $ ./dEploid \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
 .UNINDENT
 .SH DESCRIPTION
 .sp
-\fBdEploid\fP is designed for deconvoluting mixed genomes with unknown proportions. Traditional \(aqphasing\(aq programs are limited to diploid organisms. Our method modifies Li and Stephen’s [Li2003] algorithm with Markov chain Monte Carlo (MCMC) approaches, and builds a generic framework that allows haloptype searches in a multiple infection setting.
+\fBdEploid\fP is designed for deconvoluting mixed genomes with unknown proportions. Traditional \(aqphasing\(aq programs are limited to diploid organisms. Our method modifies Li and Stephen’s [Li2003] algorithm with Markov chain Monte Carlo (MCMC) approaches, and builds a generic framework that allows haplotype searches in a multiple infection setting.
 .sp
 \fBdEploid\fP is primarily developed as part of the \fI\%Pf3k\fP project, from which this documentation will take examples from for demonstration. The Pf3k project is a global collaboration using the latest sequencing technologies to provide a high\-resolution view of natural variation in the malaria parasite \fIPlasmodium falciparum\fP\&. Parasite DNA are extracted from patient blood sample, which often contains more than one parasite strain, with unknown proportions. \fBDEploid\fP is used for deconvoluting mixed haplotypes, and reporting the mixture proportions from each sample.
 [image: An illustration of mixed infection in malaria]
@@ -323,7 +323,7 @@ Number of MCMC samples (default value 800).
 MCMC sample rate (default value 5).
 .TP
 .B \-burn [float]
-MCMC
+MCMC burn rate (default value 0.5).
 .TP
 .B \-h , \-help
 Help.

@@ -68,7 +68,7 @@ Mostly used
     MCMC sample rate (default value 5).
 
 -burn [float]
-    MCMC
+    MCMC burn rate (default value 0.5).
 
 -h , -help
     Help.
