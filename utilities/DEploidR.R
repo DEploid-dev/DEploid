@@ -184,7 +184,7 @@ plotAltVsRef <- function ( ref, alt, title = "Alt vs Ref",
         pch=20, col=scales::alpha(colors[ceiling(ratios * 30)+1], 0.7),
         xlab="Reference # Reads", ylab="Alternative # Reads", main=title,
         cex = 0.5, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5)
-    legend("topright", legend=c("100% Ref","100% Alt", "50/50"),
+    legend("topright", legend=c("100% Alt","100% Ref", "50/50"),
         fill=colors[c(1,31,15)], cex=2.5, border=NA, box.lwd=0, box.col="white",
         bg = NA)
     abline(a=0,b=1, lwd=2, lty=2, col="gray")
