@@ -11,7 +11,7 @@ fun.parse <- function( args ){
     excludeFileName = ""
     dEploidPrefix = ""
     excludeBool = FALSE
-
+    ADFieldIndex = 2
     arg_i = 1
     while ( arg_i < length(args) ){
         argv = args[arg_i]
@@ -37,6 +37,9 @@ fun.parse <- function( args ){
         } else if ( argv == "-dEprefix" ){
             arg_i = fun.local.checkAndIncreaseArgI ( )
             dEploidPrefix = args[arg_i]
+        } else if ( argv == "-ADFieldIndex" ){
+            arg_i = fun.local.checkAndIncreaseArgI ( )
+            ADFieldIndex = as.numeric(args[arg_i])
         } else {
             cat ("Unknow flag: ", argv, "\n")
         }
@@ -62,7 +65,8 @@ fun.parse <- function( args ){
                     outPrefix = outPrefix,
                     dEploidPrefix = dEploidPrefix,
                     excludeFileName = excludeFileName,
-                    excludeBool = excludeBool) )
+                    excludeBool = excludeBool,
+                    ADFieldIndex = ADFieldIndex) )
 }
 
 
@@ -80,7 +84,7 @@ fun.dEploidPrefix <- function ( prefix ){
 
 fun.extract.coverage <- function ( inputs ){
     if ( inputs$vcfFileName != "" ){
-        return (extractCoverageFromVcf (inputs$vcfFileName))
+        return (extractCoverageFromVcf (inputs$vcfFileName, inputs$ADFieldIndex ))
     } else {
         return (extractCoverageFromTxt (inputs$refFileName, inputs$altFileName))
     }
