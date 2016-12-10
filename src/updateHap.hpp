@@ -43,6 +43,7 @@ class UpdateHap{
   friend class McmcMachinery;
   friend class UpdateSingleHap;
   friend class UpdatePairHap;
+  friend class UpdateThreeHap;
 
     UpdateHap();
     UpdateHap( vector <double> &refCount,
@@ -215,4 +216,72 @@ class UpdatePairHap : public UpdateHap{
     vector <size_t> sampleMatrixIndex( vector < vector < double > > &probDist );
 };
 
+
+class UpdateThreeHap : public UpdateHap{
+#ifdef UNITTEST
+ friend class TestUpdatePairHap;
+#endif
+ friend class McmcMachinery;
+ friend class DEploidIO;
+  public:
+     UpdateThreeHap();
+     UpdateThreeHap( vector <double> &refCount,
+                      vector <double> &altCount,
+                      vector <double> &plaf,
+                      vector <double> &expectedWsaf,
+                      vector <double> &proportion,
+                      vector < vector <double> > &haplotypes,
+                      RandomGenerator* rg,
+                      size_t segmentStartIndex,
+                      size_t nLoci,
+                      Panel* panel, double missCopyProb, bool forbidCopyFromSame,
+                      size_t strainIndex1,
+                      size_t strainIndex2,
+                      size_t strainIndex3 );
+    ~UpdateThreeHap();
+
+  private:
+
+    size_t strainIndex1_;
+    size_t strainIndex2_;
+    size_t strainIndex3_;
+
+    vector <double> expectedWsaf000_;
+    vector <double> expectedWsaf001_;
+    vector <double> expectedWsaf010_;
+    vector <double> expectedWsaf011_;
+    vector <double> expectedWsaf100_;
+    vector <double> expectedWsaf101_;
+    vector <double> expectedWsaf110_;
+    vector <double> expectedWsaf111_;
+    vector <double> llk000_;
+    vector <double> llk001_;
+    vector <double> llk010_;
+    vector <double> llk011_;
+    vector <double> llk100_;
+    vector <double> llk101_;
+    vector <double> llk110_;
+    vector <double> llk111_;
+
+    vector <double> hap1_;
+    vector <double> hap2_;
+    vector <double> hap3_;
+
+    // Methods
+    void core(vector <double> &refCount,
+               vector <double> &altCount,
+               vector <double> &plaf,
+               vector <double> &expectedWsaf,
+               vector <double> &proportion,
+               vector < vector <double> > &haplotypes );
+
+    void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
+    void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
+    //void buildEmission( double missCopyProb );
+    //void calcFwdProbs( bool forbidCopyFromSame );
+    //void samplePaths();
+    //void addMissCopying( double missCopyProb );
+    void sampleHapIndependently(vector <double> &plaf);
+    void updateLLK();
+};
 #endif
