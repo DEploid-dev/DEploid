@@ -72,7 +72,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         vector <double> counter ( kStrain, 0.0 );
         for ( size_t i = 0 ; i < nRepeat; i++ ){
             mcmcMachinery_->findUpdatingStrainSingle();
-            counter[mcmcMachinery_->strainIndex_] += 1.0 ;
+            counter[mcmcMachinery_->strainIndex1_] += 1.0 ;
         }
         for ( size_t i = 0 ; i < kStrain; i++){
             CPPUNIT_ASSERT_DOUBLES_EQUAL ( 1.0/(double)kStrain, counter[i]/(double)nRepeat, epsilon1 );
