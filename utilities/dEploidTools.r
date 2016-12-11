@@ -124,7 +124,7 @@ fun.dic.by.theta <- function ( tmpllk, thetallk ){
 }
 
 
-plot.llk <- function (llkTable, ref, alt, expWSAF, title = "" ){
+plot.llk <- function (llkTable, ref, alt, expWSAF, title = "", cex.lab = 1, cex.main = 1, cex.axis = 1 ){
     llk = llkTable$V2
     llkEvent = llkTable$V1
 #    llk_sd = sd(llk)
@@ -133,7 +133,8 @@ plot.llk <- function (llkTable, ref, alt, expWSAF, title = "" ){
 #    dic.by.var = fun.dic.by.llk.var (llk)
 #    dic.by.theta = fun.dic.by.theta ( llk, fun.llk(ref, alt, expWSAF))
 
-    plot(llk, lty=2, type="l", col="black", xlab="Iteration", ylab="LLK", main=title);
+    plot(llk, lty=2, type="l", col="black", xlab="Iteration", ylab="LLK", main=title,
+        cex.lab = cex.lab, cex.main = cex.main, cex.axis = cex.axis)
     updateSingleAt = which(llkEvent == 1)
     updateBothAt = which(llkEvent == 2)
     updatePropAt = which(llkEvent == 0)
@@ -156,7 +157,7 @@ fun.getllk.dic <- function ( llkTable, ref, alt, expWSAF, logFileName ){
     cat ( "dic.by.var: ", dic.by.var, "\n", file = logFileName, append = T)
     cat ( "dic.by.theta: ", dic.by.theta, "\n", file = logFileName, append = T)
     return (paste("LLK sd:", round(llk_sd, digits = 4),
-                  ", dic.by.var: ",round(dic.by.var),
+                  ",\ndic.by.var: ",round(dic.by.var),
                   ", dic.by.theta: ",round(dic.by.theta)))
 }
 
@@ -176,15 +177,16 @@ fun.dataExplore <- function (coverage, PLAF, prefix = "") {
     alt = coverage$altCount
 
     png ( paste ( prefix, "altVsRefAndWSAFvsPLAF.png", sep = "" ), width = 1800, height = 600)
+    par(mar = c(5,7,7,4))
     par( mfrow = c(1,3) )
 
-    plotAltVsRef ( ref, alt )
+    plotAltVsRef ( ref, alt, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
 
     obsWSAF = computeObsWSAF ( alt, ref )
 
-    histWSAF ( obsWSAF )
+    histWSAF ( obsWSAF, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
 
-    plotWSAFvsPLAF ( PLAF, obsWSAF )
+    plotWSAFvsPLAF ( PLAF, obsWSAF, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
 
     dev.off()
 }
@@ -205,11 +207,12 @@ fun.interpretDEploid.1 <- function (coverage, PLAF, dEploidPrefix, prefix = "", 
 
 #    png ( paste ( prefix, ".interpretDEploidFigure.1.png", sep = "" ),  width = 1500, height = 500, bg="transparent")
     png ( paste ( prefix, ".interpretDEploidFigure.1.png", sep = "" ),  width = 1500, height = 1000)
+    par(mar = c(5,7,7,4))
     par( mfrow = c(2,3) )
-    plotAltVsRef ( ref, alt )
+    plotAltVsRef ( ref, alt, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
 
     obsWSAF = computeObsWSAF ( alt, ref )
-    histWSAF ( obsWSAF )
+    histWSAF ( obsWSAF, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
 
     if (exclude$excludeBool){
         excludeLogic = ( paste(coverage$CHROM, coverage$POS) %in% paste(exclude$excludeTable$CHROM, exclude$excludeTable$POS) )
@@ -220,15 +223,15 @@ fun.interpretDEploid.1 <- function (coverage, PLAF, dEploidPrefix, prefix = "", 
         ref = ref[includeindex]
         alt = alt[includeindex]
     }
-    plotWSAFvsPLAF ( PLAF, obsWSAF, expWSAF )
+    plotWSAFvsPLAF ( PLAF, obsWSAF, expWSAF, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
 
-    plotProportions( tmpProp )
+    plotProportions( tmpProp, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
 
     tmpTitle = fun.getWSAF.corr (obsWSAF, expWSAF, dEploidOutput$dicLogFileName)
-    plotObsExpWSAF ( obsWSAF, expWSAF, tmpTitle )
+    plotObsExpWSAF ( obsWSAF, expWSAF, tmpTitle, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
 
     tmpTitle = fun.getllk.dic (llkTable, ref, alt, expWSAF, dEploidOutput$dicLogFileName )
-    plot.llk( llkTable, ref, alt, expWSAF, tmpTitle )
+    plot.llk( llkTable, ref, alt, expWSAF, tmpTitle, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
 
     dev.off()
 }
@@ -239,9 +242,10 @@ plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), ex
     ref = coverage$refCount
     alt = coverage$altCount
     obsWSAF = computeObsWSAF ( alt, ref )
-
+    nFigures = length(chromList)
     for ( chromI in chromList ){
-        plot( obsWSAF[coverage$CHROM==chromI], col="red", ylim=c(0,1), main = paste(titlePrefix, chromI, "WSAF"))
+        plot( obsWSAF[coverage$CHROM==chromI], col="red", ylim=c(0,1), main = paste(titlePrefix, chromI, "WSAF"), ylab = "WSAF", cex.axis = 2*nFigures/8, cex.lab = 2*nFigures/8,
+        cex.main = 2*nFigures/6)
 
         if ( length(expWSAF) > 0 ){
             plotIndex = c()
@@ -272,21 +276,24 @@ fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclu
     png(paste( prefix, ".interpretDEploidFigure.2.png", sep= ""), width = 3500, height = 2000)
     chromName = levels(coverage$CHROM)
     ncol = ceiling(length(chromName)/2)
+    par(mar = c(5,7,7,4))
     par(mfrow = c(ncol,length(chromName)/ncol))
-    plot.wsaf.vs.index ( coverage, expWSAF, hapChrom, exclude)
+    plot.wsaf.vs.index ( coverage, expWSAF, hapChrom, exclude )
     dev.off()
 
 }
 
 
-plot.postProb.ofCase <- function ( inPrefix, outPrefix, case ){
+plot.postProb.ofCase <- function ( inPrefix, outPrefix, case, strainNumber ){
     png(paste(outPrefix, ".", case, ".png", sep = ""), width = 3500, height = 2000)
     obj = read.table( paste(inPrefix, ".", case, sep = ""), header=T)
     chromName = levels(obj$CHROM)
     ncol = ceiling(length(chromName)/2)
     par(mfrow = c(ncol,length(chromName)/ncol))
+    par(mar = c(5,7,7,4))
+    nFigures = length(chromName)
     for ( chromI in chromName ){
-        haplotypePainter ( obj[which( chromI == obj$CHROM),c(3:dim(obj)[2])], "")
+        haplotypePainter ( obj[which( chromI == obj$CHROM),c(3:dim(obj)[2])], paste("Strain", strainNumber+1, chromI, "posterior probabilities"), 2*nFigures)
     }
     dev.off()
 }
@@ -295,7 +302,7 @@ plot.postProb.ofCase <- function ( inPrefix, outPrefix, case ){
 fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "" ){
     strainI = 0
     while ( file.exists(paste(inPrefix, ".single", strainI, sep="")) ){
-        plot.postProb.ofCase( inPrefix, outPrefix, paste("single", strainI, sep=""))
+        plot.postProb.ofCase( inPrefix, outPrefix, paste("single", strainI, sep=""), strainI)
         strainI = strainI+1
     }
 }
