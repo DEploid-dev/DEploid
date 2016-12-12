@@ -136,6 +136,12 @@ void McmcMachinery::initializeProp( ){
     this->currentProp_ = ( this->dEploidIO_ -> initialPropWasGiven()) ?
                           this->dEploidIO_ ->initialProp:
                           this->titre2prop( this->currentTitre_ );
+    if ( this->dEploidIO_ -> initialPropWasGiven() ){
+        this->currentTitre_.clear();
+        for ( size_t i = 0; i <  this->dEploidIO_ ->initialProp.size(); i++ ) {
+            this->currentTitre_.push_back( log(this->dEploidIO_ ->initialProp[i]));
+        }
+    }
 }
 
 
