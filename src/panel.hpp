@@ -31,6 +31,7 @@ class Panel: public TxtReader{
 #ifdef UNITTEST
  friend class TestPanel;
 #endif
+ friend class McmcMachinery;
  friend class UpdateSingleHap;
  friend class UpdatePairHap;
  friend class UpdateHap;
@@ -47,10 +48,15 @@ class Panel: public TxtReader{
     vector < double > pRecNoRec_; // pRecEachHap * pNoRec;
     vector < double > pNoRecNoRec_; // pNoRec * pNoRec;
 
-    size_t nPanel_;
+    size_t truePanelSize_;
+    void setTruePanelSize ( const size_t setTo ){ this->truePanelSize_ = setTo; }
 
+    size_t inbreedingPanelSize_;
+    void setInbreedingPanelSize ( const size_t setTo ){ this->inbreedingPanelSize_ = setTo; }
 
   public:
+    size_t inbreedingPanelSize() const { return this->inbreedingPanelSize_; }
+    size_t truePanelSize() const { return this->truePanelSize_; }
     Panel();
     //Panel(const char inchar[] );
     ~Panel();

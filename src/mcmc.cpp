@@ -89,6 +89,7 @@ void McmcMachinery::initializeMcmcChain( ){
     this->initializeProp();
     this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
     this->currentLLks_ = calcLLKs( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->currentExpectedWsaf_ , 0, this->currentExpectedWsaf_.size());
+    this->intializeUpdateReferencePanel(this->panel_->truePanelSize()+kStrain_-1);
 
     assert (doutProp());
     assert (doutLLK());
@@ -107,6 +108,63 @@ void McmcMachinery::initializeHap(){
             tmpVec.push_back( this->rBernoulli(currentPlaf) );
         }
         this->currentHap_.push_back(tmpVec);
+    }
+
+}
+
+
+void McmcMachinery::intializeUpdateReferencePanel(size_t inbreedingPanelSizeSetTo){
+    //if ( this->burnIn_ > this->currentMcmcIteration_ ){
+        //return;
+    //}
+
+    if ( !this->dEploidIO_->doAllowInbreeding() ){
+        return;
+    }
+
+    this->panel_->setInbreedingPanelSize(inbreedingPanelSizeSetTo);
+    //this->panel_->setInbreedingPanelSize( this->panel_->truePanelSize() + this->kStrain_ - 2);
+    // If allows inbreeding, update reference panel by including strain haplotypes
+    dout << "************* Allow inbreeding*************" << endl;
+    dout << "*** Update reference panel with strains ***" << endl;
+
+    for ( size_t siteI = 0; siteI < this->panel_->content_.size(); siteI++ ){
+        for ( size_t panelStrainJ = this->panel_->truePanelSize() ; panelStrainJ < this->panel_->inbreedingPanelSize(); panelStrainJ++ ){
+
+            size_t strainIndex = panelStrainJ - this->panel_->truePanelSize();
+
+            this->panel_->content_[siteI].push_back( this->currentHap_[siteI][strainIndex] );
+        }
+    }
+}
+
+
+void McmcMachinery::updateReferencePanel(size_t inbreedingPanelSizeSetTo){
+    if ( this->burnIn_ > this->currentMcmcIteration_ ){
+        return;
+    }
+
+    if ( !this->dEploidIO_->doAllowInbreeding() ){
+        return;
+    }
+
+    this->panel_->setInbreedingPanelSize(inbreedingPanelSizeSetTo);
+    //this->panel_->setInbreedingPanelSize( this->panel_->truePanelSize() + this->kStrain_ - 2);
+    // If allows inbreeding, update reference panel by including strain haplotypes
+    dout << "************* Allow inbreeding*************" << endl;
+    dout << "*** Update reference panel with strains ***" << endl;
+
+    for ( size_t siteI = 0; siteI < this->panel_->content_.size(); siteI++ ){
+        for ( size_t panelStrainJ = this->panel_->truePanelSize() ; panelStrainJ < this->panel_->inbreedingPanelSize(); panelStrainJ++ ){
+
+            size_t strainIndex = panelStrainJ - this->panel_->truePanelSize();
+
+            if ( strainIndex == this->strainIndex_ ){
+                strainIndex++;
+            }
+
+            this->panel_->content_[siteI][panelStrainJ] = this->currentHap_[siteI][strainIndex];
+        }
     }
 }
 
@@ -307,6 +365,8 @@ void McmcMachinery::updateSingleHap(){
     dout << " Update Single Hap "<<endl;
     this->findUpdatingStrainSingle();
 
+    this->updateReferencePanel(this->panel_->truePanelSize()+kStrain_-1);
+
     for ( size_t chromi = 0 ; chromi < this->dEploidIO_->indexOfChromStarts_.size(); chromi++ ){
         size_t start = this->dEploidIO_->indexOfChromStarts_[chromi];
         size_t length = this->dEploidIO_->position_[chromi].size();
@@ -319,6 +379,11 @@ void McmcMachinery::updateSingleHap(){
                                   start, length,
                                   this->panel_, this->dEploidIO_->missCopyProb_,
                                   this->strainIndex_);
+
+        if ( this->dEploidIO_->doAllowInbreeding() ){
+            updating.setPanelSize(this->panel_->inbreedingPanelSize());
+        }
+
         updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
 
         size_t updateIndex = 0;
@@ -342,7 +407,6 @@ void McmcMachinery::updateSingleHap(){
             this->dEploidIO_->ofstreamExportTmp.close();
         }
     }
-
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
@@ -365,6 +429,12 @@ void McmcMachinery::updatePairHaps(){
                                 this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->forbidCopyFromSame(),
                                 this->strainIndex1_,
                                 this->strainIndex2_);
+
+        assert(updating.nPanel() == 4);
+        //if ( this->dEploidIO_->doAllowInbreeding() ){
+            //updating.setPanelSize( this->panel_->inbreedingPanelSize() );
+        //}
+
         updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
 
         size_t updateIndex = 0;

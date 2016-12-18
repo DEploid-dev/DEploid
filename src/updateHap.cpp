@@ -43,7 +43,7 @@ UpdateHap::UpdateHap( vector <double> &refCount,
     this->nPanel_ = 0; // Initialize when panel is not given
 
     if ( this->panel_ != NULL ){
-        this->nPanel_ = this->panel_->nPanel_;
+        this->setPanelSize( this->panel_->truePanelSize() );
     }
 
     this->kStrain_ = proportion.size();
@@ -188,6 +188,8 @@ void UpdateSingleHap::calcFwdProbs(){
     (void)normalizeBySum(fwd1st);
     this->fwdProbs_.push_back(fwd1st);
 
+    //double inbreedProb = 0.0;
+
     for ( size_t j = 1; j < this->nLoci_; j++ ){
         double pRecEachHap = this->panel_->pRecEachHap_[hapIndex];
         double pNoRec = this->panel_->pNoRec_[hapIndex];
@@ -195,8 +197,14 @@ void UpdateSingleHap::calcFwdProbs(){
 
         double massFromRec = sumOfVec(fwdProbs_.back()) * pRecEachHap;
         vector <double> fwdTmp (this->nPanel_, 0.0);
+
         for ( size_t i = 0 ; i < this->nPanel_; i++){
             fwdTmp[i] = this->emission_[j][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec);
+            //if ( i >= this->panel_->truePanelSize() ){
+                //fwdTmp[i] = this->emission_[j][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec) * inbreedProb;
+            //} else {
+                //fwdTmp[i] = this->emission_[j][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec);
+            //}
         }
         (void)normalizeBySum(fwdTmp);
         this->fwdProbs_.push_back(fwdTmp);

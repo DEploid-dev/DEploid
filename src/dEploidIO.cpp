@@ -103,6 +103,7 @@ void DEploidIO::init() {
     this->setDoUpdateSingle ( true );
     this->setDoExportPostProb( false );
     this->setDoExportSwitchMissCopy ( false );
+    this->setDoAllowInbreeding( false );
     this->mcmcBurn_ = 0.5;
     this->mcmcMachineryRate_ = 5;
     this->missCopyProb_ = 0.01;
@@ -295,6 +296,9 @@ void DEploidIO::parse (){
             if ( doExportPostProb() ){
                 throw ( FlagsConflict((*argv_i) , "-exportPostProb") );
             }
+            if ( doAllowInbreeding() ){
+                throw ( FlagsConflict((*argv_i) , "-inbreeding") );
+            }
             this->set_panel(false);
             this->setDoExportSwitchMissCopy ( false );
         } else if (*argv_i == "-exclude"){
@@ -336,6 +340,11 @@ void DEploidIO::parse (){
             this->setDoUpdateSingle( false );
         } else if ( *argv_i == "-forbidUpdatePair" ) {
             this->setDoUpdatePair( false );
+        } else if ( *argv_i == "-inbreeding" ) {
+            if ( this->usePanel() == false ){
+                throw ( FlagsConflict((*argv_i) , "-noPanel") );
+            }
+            this->setDoAllowInbreeding( true );
         } else if ( *argv_i == "-exportPostProb" ) {
             if ( this->usePanel() == false ){
                 throw ( FlagsConflict((*argv_i) , "-noPanel") );

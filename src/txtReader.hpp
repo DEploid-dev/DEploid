@@ -32,6 +32,7 @@ class TxtReader : public VariantIndex {
  friend class TestPanel;
  friend class TestTxtReader;
 #endif
+ friend class McmcMachinery;
  friend class UpdateSingleHap;
  friend class UpdatePairHap;
  friend class UpdateHap;

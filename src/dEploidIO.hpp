@@ -118,6 +118,7 @@ class DEploidIO{
     bool doUpdateSingle_;
     bool doExportPostProb_;
     bool doExportSwitchMissCopy_;
+    bool doAllowInbreeding_;
 
     vector <double> initialProp;
     vector <string> chrom_;
@@ -243,6 +244,9 @@ class DEploidIO{
 
     void setDoExportSwitchMissCopy ( const bool setTo ){ this->doExportSwitchMissCopy_ = setTo; }
     bool doExportSwitchMissCopy() const { return this->doExportSwitchMissCopy_; }
+
+    void setDoAllowInbreeding ( const bool setTo ) { this->doAllowInbreeding_ = setTo; }
+    bool doAllowInbreeding() const { return this->doAllowInbreeding_; }
 
     // log and export resutls
     void writeRecombProb ( Panel * panel );

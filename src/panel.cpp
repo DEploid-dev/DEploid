@@ -26,12 +26,14 @@
 #include <iostream>
 
 Panel::Panel():TxtReader(){
-    //this->nPanel_ = this->nInfoLines_;
+    this->setTruePanelSize(0);
+    this->setInbreedingPanelSize(0);
 };
 
 void Panel::readFromFile( const char inchar[] ){
     this->readFromFileBase( inchar );
-    this->nPanel_ = this->nInfoLines_;
+    this->setTruePanelSize( this->nInfoLines_ );
+    this->setInbreedingPanelSize( this->truePanelSize() );
 };
 
 
@@ -60,7 +62,7 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bo
     double averageMorganDistance = averageCentimorganDistance * 100;
     double geneticDistance;
     double rho;
-    double nPanelDouble = (double)this->nPanel_;
+    double nPanelDouble = (double)this->truePanelSize();
     double nPanlelMinus1 = nPanelDouble - 1.0;
     for ( size_t i = 0; i < this->position_.size(); i++){
         for ( size_t j = 1; j < this->position_[i].size(); j++){
@@ -126,7 +128,8 @@ void Panel::buildExamplePanelContent(){
     this->content_.push_back( vector <double> ({0,0,1,0}) );
     this->nLoci_ = this->content_.size();
     this->nInfoLines_ = this->content_.back().size();
-    this->nPanel_ = this->nInfoLines_;
+    this->setTruePanelSize(this->nInfoLines_);
+    this->setInbreedingPanelSize(this->truePanelSize());
 }
 
 
