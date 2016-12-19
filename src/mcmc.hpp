@@ -139,7 +139,7 @@ class McmcMachinery {
     void recordMcmcMachinery();
     bool recordingMcmcBool_;
     void writeLastFwdProb();
-    void updateReferencePanel(size_t inbreedingPanelSizeSetTo);
+    void updateReferencePanel(size_t inbreedingPanelSizeSetTo, size_t excludedStrain);
     void intializeUpdateReferencePanel(size_t inbreedingPanelSizeSetTo);
 
   /* Moves */

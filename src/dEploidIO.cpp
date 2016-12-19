@@ -345,6 +345,7 @@ void DEploidIO::parse (){
                 throw ( FlagsConflict((*argv_i) , "-noPanel") );
             }
             this->setDoAllowInbreeding( true );
+            this->setDoExportPostProb( true );
         } else if ( *argv_i == "-exportPostProb" ) {
             if ( this->usePanel() == false ){
                 throw ( FlagsConflict((*argv_i) , "-noPanel") );

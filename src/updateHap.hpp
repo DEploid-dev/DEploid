@@ -44,6 +44,9 @@ class UpdateHap{
   friend class UpdateSingleHap;
   friend class UpdatePairHap;
 
+  public:
+    size_t nPanel() const { return this->nPanel_; }
+  private:
     UpdateHap();
     UpdateHap( vector <double> &refCount,
                vector <double> &altCount,
@@ -67,7 +70,6 @@ class UpdateHap{
     size_t kStrain_;
     size_t nPanel_;
     void setPanelSize ( const size_t setTo ){ this->nPanel_ = setTo; }
-    size_t nPanel() const { return this->nPanel_; }
 
     vector <double> newLLK;
 

@@ -125,8 +125,8 @@ void McmcMachinery::intializeUpdateReferencePanel(size_t inbreedingPanelSizeSetT
     this->panel_->setInbreedingPanelSize(inbreedingPanelSizeSetTo);
     //this->panel_->setInbreedingPanelSize( this->panel_->truePanelSize() + this->kStrain_ - 2);
     // If allows inbreeding, update reference panel by including strain haplotypes
-    dout << "************* Allow inbreeding*************" << endl;
-    dout << "*** Update reference panel with strains ***" << endl;
+    dout << "************* Allow inbreeding ************" << endl;
+    dout << "** Initialize inbreeding reference panel **" << endl;
 
     for ( size_t siteI = 0; siteI < this->panel_->content_.size(); siteI++ ){
         for ( size_t panelStrainJ = this->panel_->truePanelSize() ; panelStrainJ < this->panel_->inbreedingPanelSize(); panelStrainJ++ ){
@@ -139,7 +139,7 @@ void McmcMachinery::intializeUpdateReferencePanel(size_t inbreedingPanelSizeSetT
 }
 
 
-void McmcMachinery::updateReferencePanel(size_t inbreedingPanelSizeSetTo){
+void McmcMachinery::updateReferencePanel(size_t inbreedingPanelSizeSetTo, size_t excludedStrain){
     if ( this->burnIn_ > this->currentMcmcIteration_ ){
         return;
     }
@@ -151,15 +151,15 @@ void McmcMachinery::updateReferencePanel(size_t inbreedingPanelSizeSetTo){
     this->panel_->setInbreedingPanelSize(inbreedingPanelSizeSetTo);
     //this->panel_->setInbreedingPanelSize( this->panel_->truePanelSize() + this->kStrain_ - 2);
     // If allows inbreeding, update reference panel by including strain haplotypes
-    dout << "************* Allow inbreeding*************" << endl;
-    dout << "*** Update reference panel with strains ***" << endl;
+    dout << "*************** Allow inbreeding **************" << endl;
+    dout << "*** Update reference panel without strain " << excludedStrain << " ***" << endl;
 
     for ( size_t siteI = 0; siteI < this->panel_->content_.size(); siteI++ ){
         for ( size_t panelStrainJ = this->panel_->truePanelSize() ; panelStrainJ < this->panel_->inbreedingPanelSize(); panelStrainJ++ ){
 
             size_t strainIndex = panelStrainJ - this->panel_->truePanelSize();
 
-            if ( strainIndex == this->strainIndex_ ){
+            if ( strainIndex == excludedStrain ){
                 strainIndex++;
             }
 
@@ -365,7 +365,7 @@ void McmcMachinery::updateSingleHap(){
     dout << " Update Single Hap "<<endl;
     this->findUpdatingStrainSingle();
 
-    this->updateReferencePanel(this->panel_->truePanelSize()+kStrain_-1);
+    this->updateReferencePanel(this->panel_->truePanelSize()+kStrain_-1, this->strainIndex_);
 
     for ( size_t chromi = 0 ; chromi < this->dEploidIO_->indexOfChromStarts_.size(); chromi++ ){
         size_t start = this->dEploidIO_->indexOfChromStarts_[chromi];
