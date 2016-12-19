@@ -365,7 +365,9 @@ void McmcMachinery::updateSingleHap(){
     dout << " Update Single Hap "<<endl;
     this->findUpdatingStrainSingle();
 
-    this->updateReferencePanel(this->panel_->truePanelSize()+kStrain_-1, this->strainIndex_);
+    if ( this->dEploidIO_->doAllowInbreeding() ){
+        this->updateReferencePanel(this->panel_->truePanelSize()+kStrain_-1, this->strainIndex_);
+    }
 
     for ( size_t chromi = 0 ; chromi < this->dEploidIO_->indexOfChromStarts_.size(); chromi++ ){
         size_t start = this->dEploidIO_->indexOfChromStarts_[chromi];
@@ -429,11 +431,6 @@ void McmcMachinery::updatePairHaps(){
                                 this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->forbidCopyFromSame(),
                                 this->strainIndex1_,
                                 this->strainIndex2_);
-
-        assert(updating.nPanel() == 4);
-        //if ( this->dEploidIO_->doAllowInbreeding() ){
-            //updating.setPanelSize( this->panel_->inbreedingPanelSize() );
-        //}
 
         updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
 
