@@ -31,7 +31,9 @@ void McmcMachinery::writeLastFwdProb(){
     }
 
     for ( size_t tmpk = 0; tmpk < this->kStrain_; tmpk++ ){
-        this->updateReferencePanel(this->panel_->truePanelSize()+kStrain_-1, tmpk);
+        if ( this->dEploidIO_->doAllowInbreeding() == true ){
+            this->updateReferencePanel(this->panel_->truePanelSize()+kStrain_-1, tmpk);
+        }
 
         for ( size_t chromi = 0 ; chromi < this->dEploidIO_->indexOfChromStarts_.size(); chromi++ ){
             size_t start = this->dEploidIO_->indexOfChromStarts_[chromi];
@@ -45,7 +47,7 @@ void McmcMachinery::writeLastFwdProb(){
                                       start, length,
                                       this->panel_, this->dEploidIO_->missCopyProb_,
                                       tmpk);
-            if ( this->dEploidIO_->doAllowInbreeding() ){
+            if ( this->dEploidIO_->doAllowInbreeding() == true ){
                 updatingSingle.setPanelSize(this->panel_->inbreedingPanelSize());
             }
 
@@ -74,7 +76,7 @@ void DEploidIO::writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t c
     if ( chromIndex == 0 ){ // Print header
         ofstreamExportFwdProb << "CHROM" << "\t" << "POS" << "\t";;
         for ( size_t ii = 0; ii < updateSingle.fwdProbs_[0].size(); ii++){
-            if (this->doAllowInbreeding()){
+            if (this->doAllowInbreeding() == true){
                 if ( ii <= (updateSingle.nPanel() - this->kStrain()) ){
                     ofstreamExportFwdProb << "P" << (ii+1) ;
                 } else {
@@ -82,7 +84,6 @@ void DEploidIO::writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t c
                 }
             } else {
                 ofstreamExportFwdProb << (ii+1) ;
-
             }
             ofstreamExportFwdProb << ((ii < (updateSingle.fwdProbs_[0].size()-1)) ? "\t" : "\n") ;
         }
