@@ -91,7 +91,6 @@ void DEploidIO::writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t c
     size_t siteIndex = 0;
     for ( size_t posI = 0; posI < position_[chromIndex].size(); posI++){
         ofstreamExportFwdProb << chrom_[chromIndex] << "\t" << (int)position_[chromIndex][posI] << "\t";
-        //cout << updateSingle.fwdProbs_[siteIndex].size() << endl;
         for ( size_t ii = 0; ii < updateSingle.fwdProbs_[siteIndex].size(); ii++){
             ofstreamExportFwdProb << updateSingle.fwdProbs_[siteIndex][ii];
             ofstreamExportFwdProb << ((ii < (updateSingle.fwdProbs_[siteIndex].size()-1)) ? "\t" : "\n") ;

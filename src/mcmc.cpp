@@ -89,7 +89,10 @@ void McmcMachinery::initializeMcmcChain( ){
     this->initializeProp();
     this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
     this->currentLLks_ = calcLLKs( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->currentExpectedWsaf_ , 0, this->currentExpectedWsaf_.size());
-    this->intializeUpdateReferencePanel(this->panel_->truePanelSize()+kStrain_-1);
+
+    if ( !this->dEploidIO_->doAllowInbreeding() ){
+        this->intializeUpdateReferencePanel(this->panel_->truePanelSize()+kStrain_-1);
+    }
 
     assert (doutProp());
     assert (doutLLK());
@@ -114,10 +117,6 @@ void McmcMachinery::initializeHap(){
 
 
 void McmcMachinery::intializeUpdateReferencePanel(size_t inbreedingPanelSizeSetTo){
-    //if ( this->burnIn_ > this->currentMcmcIteration_ ){
-        //return;
-    //}
-
     if ( !this->dEploidIO_->doAllowInbreeding() ){
         return;
     }
