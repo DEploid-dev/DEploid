@@ -90,7 +90,7 @@ void McmcMachinery::initializeMcmcChain( ){
     this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
     this->currentLLks_ = calcLLKs( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->currentExpectedWsaf_ , 0, this->currentExpectedWsaf_.size());
 
-    if ( !this->dEploidIO_->doAllowInbreeding() ){
+    if ( this->dEploidIO_->doAllowInbreeding() != true ){
         this->intializeUpdateReferencePanel(this->panel_->truePanelSize()+kStrain_-1);
     }
 
@@ -117,7 +117,7 @@ void McmcMachinery::initializeHap(){
 
 
 void McmcMachinery::intializeUpdateReferencePanel(size_t inbreedingPanelSizeSetTo){
-    if ( !this->dEploidIO_->doAllowInbreeding() ){
+    if ( this->dEploidIO_->doAllowInbreeding() != true ){
         return;
     }
 
@@ -143,7 +143,7 @@ void McmcMachinery::updateReferencePanel(size_t inbreedingPanelSizeSetTo, size_t
         return;
     }
 
-    if ( !this->dEploidIO_->doAllowInbreeding() ){
+    if ( this->dEploidIO_->doAllowInbreeding() != true ){
         return;
     }
 
@@ -364,7 +364,7 @@ void McmcMachinery::updateSingleHap(){
     dout << " Update Single Hap "<<endl;
     this->findUpdatingStrainSingle();
 
-    if ( this->dEploidIO_->doAllowInbreeding() ){
+    if ( this->dEploidIO_->doAllowInbreeding() != true ){
         this->updateReferencePanel(this->panel_->truePanelSize()+kStrain_-1, this->strainIndex_);
     }
 
@@ -381,7 +381,7 @@ void McmcMachinery::updateSingleHap(){
                                   this->panel_, this->dEploidIO_->missCopyProb_,
                                   this->strainIndex_);
 
-        if ( this->dEploidIO_->doAllowInbreeding() ){
+        if ( this->dEploidIO_->doAllowInbreeding() != true ){
             updating.setPanelSize(this->panel_->inbreedingPanelSize());
         }
 
