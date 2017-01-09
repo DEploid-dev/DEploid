@@ -12,8 +12,9 @@ fun.parse <- function( args ){
     dEploidPrefix = ""
     excludeBool = FALSE
     ADFieldIndex = 2
+    pdfBool = FALSE
     arg_i = 1
-    while ( arg_i < length(args) ){
+    while ( arg_i <= length(args) ){
         argv = args[arg_i]
         if ( argv == "-vcf" ){
             arg_i = fun.local.checkAndIncreaseArgI ( )
@@ -40,6 +41,8 @@ fun.parse <- function( args ){
         } else if ( argv == "-ADFieldIndex" ){
             arg_i = fun.local.checkAndIncreaseArgI ( )
             ADFieldIndex = as.numeric(args[arg_i])
+        } else if ( argv == "-pdf" ){
+            pdfBool = TRUE
         } else {
             cat ("Unknow flag: ", argv, "\n")
         }
@@ -66,7 +69,8 @@ fun.parse <- function( args ){
                     dEploidPrefix = dEploidPrefix,
                     excludeFileName = excludeFileName,
                     excludeBool = excludeBool,
-                    ADFieldIndex = ADFieldIndex) )
+                    ADFieldIndex = ADFieldIndex,
+                    pdfBool = pdfBool ) )
 }
 
 
@@ -171,28 +175,34 @@ fun.getWSAF.corr <- function( obsWSAF, expWSAF, dicLogFileName ){
 }
 
 
-fun.dataExplore <- function (coverage, PLAF, prefix = "") {
+fun.dataExplore <- function (coverage, PLAF, prefix = "", pdfBool) {
 #    PLAF = plafInfo$PLAF
     ref = coverage$refCount
     alt = coverage$altCount
 
-    png ( paste ( prefix, "altVsRefAndWSAFvsPLAF.png", sep = "" ), width = 1800, height = 600)
+    if ( pdfBool == TRUE ){
+        cexSize = 3
+        pdf ( paste ( prefix, "altVsRefAndWSAFvsPLAF.pdf", sep = "" ), width = 30, height = 10)
+    } else {
+        cexSize = 2.5
+        png ( paste ( prefix, "altVsRefAndWSAFvsPLAF.png", sep = "" ), width = 1800, height = 600)
+    }
     par(mar = c(5,7,7,4))
     par( mfrow = c(1,3) )
 
-    plotAltVsRef ( ref, alt, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
+    plotAltVsRef ( ref, alt, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
 
     obsWSAF = computeObsWSAF ( alt, ref )
 
-    histWSAF ( obsWSAF, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
+    histWSAF ( obsWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
 
-    plotWSAFvsPLAF ( PLAF, obsWSAF, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
+    plotWSAFvsPLAF ( PLAF, obsWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
 
     dev.off()
 }
 
 
-fun.interpretDEploid.1 <- function (coverage, PLAF, dEploidPrefix, prefix = "", exclude ) {
+fun.interpretDEploid.1 <- function (coverage, PLAF, dEploidPrefix, prefix = "", exclude, pdfBool ) {
 
 #    PLAF = plafInfo$PLAF
     ref = coverage$refCount
@@ -205,14 +215,21 @@ fun.interpretDEploid.1 <- function (coverage, PLAF, dEploidPrefix, prefix = "", 
     expWSAF = hap %*%prop
     llkTable = read.table( dEploidOutput$llkFileName, header=F)
 
-#    png ( paste ( prefix, ".interpretDEploidFigure.1.png", sep = "" ),  width = 1500, height = 500, bg="transparent")
-    png ( paste ( prefix, ".interpretDEploidFigure.1.png", sep = "" ),  width = 1500, height = 1000)
+
+    if ( pdfBool == TRUE ){
+        cexSize = 3.5
+        pdf ( paste ( prefix, ".interpretDEploidFigure.1.pdf", sep = "" ), width = 30, height = 20)
+    } else {
+        cexSize = 2.5
+        png ( paste ( prefix, ".interpretDEploidFigure.1.png", sep = "" ),  width = 1500, height = 1000)
+    }
+
     par(mar = c(5,7,7,4))
     par( mfrow = c(2,3) )
-    plotAltVsRef ( ref, alt, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
+    plotAltVsRef ( ref, alt, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
 
     obsWSAF = computeObsWSAF ( alt, ref )
-    histWSAF ( obsWSAF, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
+    histWSAF ( obsWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
 
     if (exclude$excludeBool){
         excludeLogic = ( paste(coverage$CHROM, coverage$POS) %in% paste(exclude$excludeTable$CHROM, exclude$excludeTable$POS) )
@@ -223,15 +240,15 @@ fun.interpretDEploid.1 <- function (coverage, PLAF, dEploidPrefix, prefix = "", 
         ref = ref[includeindex]
         alt = alt[includeindex]
     }
-    plotWSAFvsPLAF ( PLAF, obsWSAF, expWSAF, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
+    plotWSAFvsPLAF ( PLAF, obsWSAF, expWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
 
-    plotProportions( tmpProp, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
+    plotProportions( tmpProp, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
 
     tmpTitle = fun.getWSAF.corr (obsWSAF, expWSAF, dEploidOutput$dicLogFileName)
-    plotObsExpWSAF ( obsWSAF, expWSAF, tmpTitle, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
+    plotObsExpWSAF ( obsWSAF, expWSAF, tmpTitle, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
 
     tmpTitle = fun.getllk.dic (llkTable, ref, alt, expWSAF, dEploidOutput$dicLogFileName )
-    plot.llk( llkTable, ref, alt, expWSAF, tmpTitle, cex.lab = 2.5, cex.main = 2.5, cex.axis = 2.5 )
+    plot.llk( llkTable, ref, alt, expWSAF, tmpTitle, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
 
     dev.off()
 }
@@ -264,7 +281,7 @@ plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), ex
 }
 
 
-fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclude ){
+fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclude, pdfBool ){
     dEploidOutput = fun.dEploidPrefix ( dEploidPrefix )
     tmpProp = read.table(dEploidOutput$propFileName, header=F)
     prop = as.numeric(tmpProp[dim(tmpProp)[1],])
@@ -273,7 +290,13 @@ fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclu
     hap = as.matrix(hapInfo[,-c(1,2)])
     expWSAF = hap %*%prop
 
-    png(paste( prefix, ".interpretDEploidFigure.2.png", sep= ""), width = 3500, height = 2000)
+    if ( pdfBool == TRUE ){
+        cexSize = 3
+        pdf ( paste ( prefix, ".interpretDEploidFigure.2.pdf", sep = "" ), width = 60, height = 40)
+    } else {
+        cexSize = 2.5
+        png ( paste ( prefix, ".interpretDEploidFigure.2.png", sep= ""), width = 3500, height = 2000)
+    }
     chromName = levels(coverage$CHROM)
     ncol = ceiling(length(chromName)/2)
     par(mar = c(5,7,7,4))
@@ -284,8 +307,15 @@ fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclu
 }
 
 
-plot.postProb.ofCase <- function ( inPrefix, outPrefix, case, strainNumber ){
-    png(paste(outPrefix, ".", case, ".png", sep = ""), width = 3500, height = 2000)
+plot.postProb.ofCase <- function ( inPrefix, outPrefix, case, strainNumber, pdfBool ){
+    if ( pdfBool == TRUE ){
+        cexSize = 3
+        pdf(paste(outPrefix, ".", case, ".pdf", sep = ""), width = 60, height = 40)
+    } else {
+        cexSize = 2.5
+        png(paste(outPrefix, ".", case, ".png", sep = ""), width = 3500, height = 2000)
+    }
+
     obj = read.table( paste(inPrefix, ".", case, sep = ""), header=T)
     chromName = levels(obj$CHROM)
     ncol = ceiling(length(chromName)/2)
@@ -299,10 +329,10 @@ plot.postProb.ofCase <- function ( inPrefix, outPrefix, case, strainNumber ){
 }
 
 
-fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "" ){
+fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "", pdfBool ){
     strainI = 0
     while ( file.exists(paste(inPrefix, ".single", strainI, sep="")) ){
-        plot.postProb.ofCase( inPrefix, outPrefix, paste("single", strainI, sep=""), strainI)
+        plot.postProb.ofCase( inPrefix, outPrefix, paste("single", strainI, sep=""), strainI, pdfBool)
         strainI = strainI+1
     }
 }

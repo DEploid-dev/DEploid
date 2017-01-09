@@ -23,6 +23,6 @@ myCoverageInfo = fun.extract.coverage ( myInput )
 
 myPlafInfo = extractPLAF( myInput$plafFileName )
 
-fun.dataExplore (myCoverageInfo, myPlafInfo, myInput$outPrefix)
+fun.dataExplore (myCoverageInfo, myPlafInfo, myInput$outPrefix, myInput$pdfBool)
 
 #ls()
