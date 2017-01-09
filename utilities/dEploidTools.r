@@ -355,7 +355,7 @@ fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "", pdfBool, inbreedi
     while ( file.exists(paste(inPrefix, ".single", strainI, sep="")) ){
         plot.postProb.ofCase( inPrefix, outPrefix, paste("single", strainI, sep=""), strainI, pdfBool)
         if ( inbreeding ){
-            plot.postProb.ofCase( inPrefix, outPrefix, paste("single", strainI, sep=""), strainI, pdfBool inbreeding = TRUE)
+            plot.postProb.ofCase( inPrefix, outPrefix, paste("single", strainI, sep=""), strainI, pdfBool, inbreeding = TRUE)
         }
         strainI = strainI+1
     }
