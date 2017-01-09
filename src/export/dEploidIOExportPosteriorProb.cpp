@@ -30,11 +30,13 @@ void McmcMachinery::writeLastFwdProb(){
         return;
     }
 
-    for ( size_t chromi = 0 ; chromi < this->dEploidIO_->indexOfChromStarts_.size(); chromi++ ){
-        size_t start = this->dEploidIO_->indexOfChromStarts_[chromi];
-        size_t length = this->dEploidIO_->position_[chromi].size();
+    for ( size_t tmpk = 0; tmpk < this->kStrain_; tmpk++ ){
+        this->updateReferencePanel(this->panel_->truePanelSize()+kStrain_-1, tmpk);
 
-        for ( size_t tmpk = 0; tmpk < this->kStrain_; tmpk++ ){
+        for ( size_t chromi = 0 ; chromi < this->dEploidIO_->indexOfChromStarts_.size(); chromi++ ){
+            size_t start = this->dEploidIO_->indexOfChromStarts_[chromi];
+            size_t length = this->dEploidIO_->position_[chromi].size();
+
             UpdateSingleHap updatingSingle( this->dEploidIO_->refCount_,
                                       this->dEploidIO_->altCount_,
                                       this->dEploidIO_->plaf_,
@@ -43,20 +45,24 @@ void McmcMachinery::writeLastFwdProb(){
                                       start, length,
                                       this->panel_, this->dEploidIO_->missCopyProb_,
                                       tmpk);
+            if ( this->dEploidIO_->doAllowInbreeding() ){
+                updatingSingle.setPanelSize(this->panel_->inbreedingPanelSize());
+            }
+
             updatingSingle.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
             this->dEploidIO_->writeLastSingleFwdProb( updatingSingle, chromi, tmpk );
         }
-        UpdatePairHap updating( this->dEploidIO_->refCount_,
-                                this->dEploidIO_->altCount_,
-                                this->dEploidIO_->plaf_,
-                                this->currentExpectedWsaf_,
-                                this->currentProp_, this->currentHap_, this->hapRg_,
-                                start, length,
-                                this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->forbidCopyFromSame(),
-                                (size_t)0,
-                                (size_t)1);
-        updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
-        this->dEploidIO_->writeLastPairFwdProb( updating, chromi );
+        //UpdatePairHap updating( this->dEploidIO_->refCount_,
+                                //this->dEploidIO_->altCount_,
+                                //this->dEploidIO_->plaf_,
+                                //this->currentExpectedWsaf_,
+                                //this->currentProp_, this->currentHap_, this->hapRg_,
+                                //start, length,
+                                //this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->forbidCopyFromSame(),
+                                //(size_t)0,
+                                //(size_t)1);
+        //updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+        //this->dEploidIO_->writeLastPairFwdProb( updating, chromi );
     }
 }
 
@@ -68,7 +74,16 @@ void DEploidIO::writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t c
     if ( chromIndex == 0 ){ // Print header
         ofstreamExportFwdProb << "CHROM" << "\t" << "POS" << "\t";;
         for ( size_t ii = 0; ii < updateSingle.fwdProbs_[0].size(); ii++){
-            ofstreamExportFwdProb << (ii+1) ;
+            if (this->doAllowInbreeding()){
+                if ( ii <= (updateSingle.nPanel() - this->kStrain()) ){
+                    ofstreamExportFwdProb << "P" << (ii+1) ;
+                } else {
+                    ofstreamExportFwdProb << "I" << (ii)-(updateSingle.nPanel() - this->kStrain()) ;
+                }
+            } else {
+                ofstreamExportFwdProb << (ii+1) ;
+
+            }
             ofstreamExportFwdProb << ((ii < (updateSingle.fwdProbs_[0].size()-1)) ? "\t" : "\n") ;
         }
     }
@@ -76,6 +91,7 @@ void DEploidIO::writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t c
     size_t siteIndex = 0;
     for ( size_t posI = 0; posI < position_[chromIndex].size(); posI++){
         ofstreamExportFwdProb << chrom_[chromIndex] << "\t" << (int)position_[chromIndex][posI] << "\t";
+        //cout << updateSingle.fwdProbs_[siteIndex].size() << endl;
         for ( size_t ii = 0; ii < updateSingle.fwdProbs_[siteIndex].size(); ii++){
             ofstreamExportFwdProb << updateSingle.fwdProbs_[siteIndex][ii];
             ofstreamExportFwdProb << ((ii < (updateSingle.fwdProbs_[siteIndex].size()-1)) ? "\t" : "\n") ;
@@ -87,30 +103,30 @@ void DEploidIO::writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t c
 }
 
 
-void DEploidIO::writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex ){
-    ofstreamExportFwdProb.open( strExportPairFwdProb.c_str(), ios::out | ios::app | ios::binary );
-    if ( chromIndex == 0 ){ // Print header
-        ofstreamExportFwdProb << "CHROM" << "\t" << "POS" << "\t";;
-        for ( size_t ii = 0; ii < updatePair.fwdProbs_[0].size(); ii++){
-            for ( size_t ij = 0; ij < updatePair.fwdProbs_[0][ii].size(); ij++){
-                ofstreamExportFwdProb << (ii+1) << "X" << (ij+1);
-                ofstreamExportFwdProb << ((((ii+1) * (ij+1)) < (updatePair.fwdProbs_[0].size()*updatePair.fwdProbs_[0][ii].size()))  ? "\t" : "\n") ;
-            }
-        }
-    }
+//void DEploidIO::writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex ){
+    //ofstreamExportFwdProb.open( strExportPairFwdProb.c_str(), ios::out | ios::app | ios::binary );
+    //if ( chromIndex == 0 ){ // Print header
+        //ofstreamExportFwdProb << "CHROM" << "\t" << "POS" << "\t";;
+        //for ( size_t ii = 0; ii < updatePair.fwdProbs_[0].size(); ii++){
+            //for ( size_t ij = 0; ij < updatePair.fwdProbs_[0][ii].size(); ij++){
+                //ofstreamExportFwdProb << (ii+1) << "X" << (ij+1);
+                //ofstreamExportFwdProb << ((((ii+1) * (ij+1)) < (updatePair.fwdProbs_[0].size()*updatePair.fwdProbs_[0][ii].size()))  ? "\t" : "\n") ;
+            //}
+        //}
+    //}
 
-    size_t siteIndex = 0;
-    for ( size_t posI = 0; posI < position_[chromIndex].size(); posI++){
-        ofstreamExportFwdProb << chrom_[chromIndex] << "\t" << (int)position_[chromIndex][posI] << "\t";
-        for ( size_t ii = 0; ii < updatePair.fwdProbs_[siteIndex].size(); ii++){
-            for ( size_t ij = 0; ij < updatePair.fwdProbs_[siteIndex][ii].size(); ij++){
-                ofstreamExportFwdProb << updatePair.fwdProbs_[siteIndex][ii][ij];
-                ofstreamExportFwdProb << ((((ii+1) * (ij+1)) < (updatePair.fwdProbs_[0].size()*updatePair.fwdProbs_[0][ii].size()))  ? "\t" : "\n") ;
-            }
-        }
-        siteIndex++;
-    }
+    //size_t siteIndex = 0;
+    //for ( size_t posI = 0; posI < position_[chromIndex].size(); posI++){
+        //ofstreamExportFwdProb << chrom_[chromIndex] << "\t" << (int)position_[chromIndex][posI] << "\t";
+        //for ( size_t ii = 0; ii < updatePair.fwdProbs_[siteIndex].size(); ii++){
+            //for ( size_t ij = 0; ij < updatePair.fwdProbs_[siteIndex][ii].size(); ij++){
+                //ofstreamExportFwdProb << updatePair.fwdProbs_[siteIndex][ii][ij];
+                //ofstreamExportFwdProb << ((((ii+1) * (ij+1)) < (updatePair.fwdProbs_[0].size()*updatePair.fwdProbs_[0][ii].size()))  ? "\t" : "\n") ;
+            //}
+        //}
+        //siteIndex++;
+    //}
 
-    ofstreamExportFwdProb.close();
-}
+    //ofstreamExportFwdProb.close();
+//}
 

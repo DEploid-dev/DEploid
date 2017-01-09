@@ -388,10 +388,17 @@ computeObsWSAF <- function (alt, ref) {
 #'
 #' @export
 #'
-haplotypePainter <- function (posteriorProbabilities, title = "", labelScaling){
+haplotypePainter <- function (posteriorProbabilities, title = "", labelScaling,
+                        numberOfInbreeding = 0){
     rainbowColorBin <- 16
+    rainbowColors = rainbow(rainbowColorBin)
+    if ( numberOfInbreeding > 0 ){
+        panelSize <- dim(posteriorProbabilities)[2]-numberOfInbreeding
+        rainbowColors <- c(rep("#46a8e1", panelSize),
+                           rep("#f34747",numberOfInbreeding))
+    }
     barplot(t(posteriorProbabilities), beside = F, border = NA,
-        col = rainbow(rainbowColorBin), space = 0, xlab = "SNP index",
+        col = rainbowColors, space = 0, xlab = "SNP index",
         ylab = "", main = title, cex.axis = labelScaling / 5,
         cex.lab = labelScaling / 6, cex.main = labelScaling / 4)
 }
