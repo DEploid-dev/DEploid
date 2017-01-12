@@ -30,13 +30,16 @@
 class Panel: public TxtReader{
 #ifdef UNITTEST
  friend class TestPanel;
+ friend class TestUpdateHap;
+ friend class TestUpdatePairHap;
+ friend class TestUpdateSingleHap;
 #endif
  friend class McmcMachinery;
  friend class UpdateSingleHap;
  friend class UpdatePairHap;
  friend class UpdateHap;
  friend class DEploidIO;
-
+ friend class DeconvolutedStrains;
   private:
     // Members
     vector < double > pRec_;
@@ -54,12 +57,12 @@ class Panel: public TxtReader{
     size_t inbreedingPanelSize_;
     void setInbreedingPanelSize ( const size_t setTo ){ this->inbreedingPanelSize_ = setTo; }
 
-  public:
+  //public:
     size_t inbreedingPanelSize() const { return this->inbreedingPanelSize_; }
     size_t truePanelSize() const { return this->truePanelSize_; }
     Panel();
     //Panel(const char inchar[] );
-    ~Panel();
+    virtual ~Panel(){};
 
     // Methods
     void readFromFile( const char inchar[] );
@@ -70,6 +73,13 @@ class Panel: public TxtReader{
     void buildExamplePanelContent();
     void buildExamplePanel1();
     void buildExamplePanel2();
+};
+
+
+class DeconvolutedStrains: public Panel{
+ friend class DEploidIO;
+    DeconvolutedStrains():Panel(){}
+    ~DeconvolutedStrains(){}
 };
 
 #endif

@@ -61,6 +61,9 @@ DEploidIO::~DEploidIO(){
         delete this->vcfReaderPtr_;
     }
 
+    if ( this->panel != NULL ){
+        delete panel;
+    }
 }
 
 
@@ -86,22 +89,24 @@ void DEploidIO::init() {
     this->setDoExportRecombProb(false);
     this->setRandomSeedWasSet(false);
     this->setCompressVcf(false);
-    this->initialPropWasGiven_ = false;
+    this->setInitialPropWasGiven(false);
     this->initialProp.clear();
     this->setExcludeSites( false );
     this->excludedMarkers = NULL;
+    this->panel = NULL;
     this->set_seed( (unsigned)0 );
     this->set_help(false);
     this->setVersion(false);
-    this->set_panel(true);
+    this->setUsePanel(true);
     this->precision_ = 8;
     this->prefix_ = "pf3k-dEploid";
     this->kStrain_ = 5;
     this->nMcmcSample_ = 800;
-    this->setDoUpdateProp ( true );
-    this->setDoUpdatePair ( true );
-    this->setDoUpdateSingle ( true );
+    this->setDoUpdateProp( true );
+    this->setDoUpdatePair( true );
+    this->setDoUpdateSingle( true );
     this->setDoExportPostProb( false );
+    this->setDoPainting( false );
     this->setDoExportSwitchMissCopy ( false );
     this->setDoAllowInbreeding( false );
     this->mcmcBurn_ = 0.5;
@@ -192,6 +197,7 @@ void DEploidIO::finalize(){
         }
         this->altCount_ = alt.info_;
     }
+
     TxtReader plaf;
     plaf.readFromFile(plafFileName_.c_str());
     if ( this->excludeSites() ){
@@ -213,6 +219,8 @@ void DEploidIO::finalize(){
     }
 
     (void)removeFilesWithSameName();
+
+    this->readPanel();
 }
 
 
@@ -299,7 +307,7 @@ void DEploidIO::parse (){
             if ( doAllowInbreeding() ){
                 throw ( FlagsConflict((*argv_i) , "-inbreeding") );
             }
-            this->set_panel(false);
+            this->setUsePanel(false);
             this->setDoExportSwitchMissCopy ( false );
         } else if (*argv_i == "-exclude"){
             this->setExcludeSites( true );
@@ -351,9 +359,15 @@ void DEploidIO::parse (){
                 throw ( FlagsConflict((*argv_i) , "-noPanel") );
             }
             this->setDoExportPostProb( true );
+        } else if ( *argv_i == "-painting" ) {
+            if ( this->usePanel() == false ){
+                throw ( FlagsConflict((*argv_i) , "-noPanel") );
+            }
+            this->readNextStringto ( this->deconvolutedStrainsFileName_ ) ;
+            this->setDoPainting( true );
         } else if ( *argv_i == "-initialP" ){
             this->readInitialProportions();
-            this->initialPropWasGiven_ = true;
+            this->setInitialPropWasGiven( true );
         } else if ( *argv_i == "-seed"){
             this->set_seed( readNextInput<size_t>() );
             this->setRandomSeedWasSet( true );
@@ -463,4 +477,28 @@ void DEploidIO::printHelp(std::ostream& out){
 std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO) {
   for (std::string arg : dEploidIO.argv_) stream << " " << arg;
   return stream;
+}
+
+
+void DEploidIO::chromPainting(){
+    DeconvolutedStrains decovolutedStrainsToBeRead;
+    decovolutedStrainsToBeRead.readFromFile(this->deconvolutedStrainsFileName_.c_str());
+
+}
+
+
+void DEploidIO::readPanel(){
+    if ( this->usePanel() == false ){
+        return;
+    }
+
+    panel = new Panel();
+    panel->readFromFile(this->panelFileName_.c_str());
+    if ( this->excludeSites() ){
+        panel->findAndKeepMarkers( this->excludedMarkers );
+    }
+
+    panel->computeRecombProbs( this->averageCentimorganDistance(), this->Ne(), this->useConstRecomb(), this->constRecombProb(), this->forbidCopyFromSame() );
+    panel->checkForExceptions( this->nLoci(), this->panelFileName_ );
+
 }

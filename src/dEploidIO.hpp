@@ -55,42 +55,24 @@ class DEploidIO{
     DEploidIO(int argc, char *argv[]);
     ~DEploidIO ();
 
-    void core();
     void printHelp(std::ostream& out);
     bool help() const { return help_; }
     void printVersion(std::ostream& out);
     bool version() const { return version_; }
+    // Painting related
+    void chromPainting ();
+    bool doPainting() const { return this->doPainting_; }
 
-    bool initialPropWasGiven() const { return initialPropWasGiven_; }
-
-    // Panel related
-    bool usePanel() const { return usePanel_; }
-    string panelFileName_;
-
-    size_t nLoci() const { return this->nLoci_; }
-    size_t kStrain() const { return this->kStrain_;}
-    size_t nMcmcSample() const { return this->nMcmcSample_; }
-    double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
-    double Ne() const { return this->Ne_; }
-    double constRecombProb() const { return this->constRecombProb_; }
-    bool useConstRecomb() const { return this->useConstRecomb_; }
-
-    ExcludeMarker* excludedMarkers;
-    bool excludeSites_;
-    bool excludeSites() const {return this->excludeSites_; }
-    void setExcludeSites(const size_t exclude){ this->excludeSites_ = exclude; }
-
-    bool forbidCopyFromSame() const { return this->forbidCopyFromSame_; }
-    void setForbidCopyFromSame(const bool forbid){ this->forbidCopyFromSame_ = forbid; }
 
     // Log
-    void write (McmcSample * mcmcSample, Panel * panel );
+    void wrapUp();
     bool randomSeedWasSet() const {return this->randomSeedWasSet_; }
 
     friend std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO);
     size_t randomSeed() const { return randomSeed_;}
 
   private:
+    void core();
 
     // Read in input
     string plafFileName_;
@@ -98,6 +80,7 @@ class DEploidIO{
     string altFileName_;
     string vcfFileName_;
     string excludeFileName_;
+    string deconvolutedStrainsFileName_;
     string prefix_;
     size_t randomSeed_;
     bool randomSeedWasSet_;
@@ -119,8 +102,10 @@ class DEploidIO{
     bool doExportPostProb_;
     bool doExportSwitchMissCopy_;
     bool doAllowInbreeding_;
+    bool doPainting_;
 
     vector <double> initialProp;
+    vector <double> filnalProp;
     vector <string> chrom_;
     vector < size_t > indexOfChromStarts_;
     vector < vector < int > > position_;
@@ -137,7 +122,7 @@ class DEploidIO{
 
     // Panel related
     bool usePanel_;
-    void set_panel(const bool usePanel) { this->usePanel_ = usePanel; }
+    void setUsePanel(const bool setTo) { this->usePanel_ = setTo; }
 
     // Vcf Related
     VcfReader * vcfReaderPtr_;
@@ -248,15 +233,45 @@ class DEploidIO{
     void setDoAllowInbreeding ( const bool setTo ) { this->doAllowInbreeding_ = setTo; }
     bool doAllowInbreeding() const { return this->doAllowInbreeding_; }
 
+    void setDoPainting ( const bool setTo ){ this->doPainting_ = setTo; }
+
+    bool initialPropWasGiven() const { return initialPropWasGiven_; }
+    void setInitialPropWasGiven(const bool setTo){this->initialPropWasGiven_ = setTo; }
+
     // log and export resutls
     void writeRecombProb ( Panel * panel );
     void writeLLK (McmcSample * mcmcSample);
     void writeProp (McmcSample * mcmcSample);
     void writeHap (McmcSample * mcmcSample);
     void writeVcf (McmcSample * mcmcSample);
-    void writeLog (McmcSample * mcmcSample, ostream * writeTo );
     void writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t chromIndex, size_t strainIndex  );
     void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
+    void writeLog (ostream * writeTo );
+
+    Panel *panel;
+    void writeMcmcRelated (McmcSample * mcmcSample);
+    void readPanel();
+
+    // Panel related
+    bool usePanel() const { return usePanel_; }
+    string panelFileName_;
+
+
+    size_t nLoci() const { return this->nLoci_; }
+    size_t kStrain() const { return this->kStrain_;}
+    size_t nMcmcSample() const { return this->nMcmcSample_; }
+    double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
+    double Ne() const { return this->Ne_; }
+    double constRecombProb() const { return this->constRecombProb_; }
+    bool useConstRecomb() const { return this->useConstRecomb_; }
+
+    ExcludeMarker* excludedMarkers;
+    bool excludeSites_;
+    bool excludeSites() const {return this->excludeSites_; }
+    void setExcludeSites(const size_t exclude){ this->excludeSites_ = exclude; }
+
+    bool forbidCopyFromSame() const { return this->forbidCopyFromSame_; }
+    void setForbidCopyFromSame(const bool forbid){ this->forbidCopyFromSame_ = forbid; }
 };
 
 #endif

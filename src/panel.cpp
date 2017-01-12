@@ -30,14 +30,12 @@ Panel::Panel():TxtReader(){
     this->setInbreedingPanelSize(0);
 };
 
+
 void Panel::readFromFile( const char inchar[] ){
     this->readFromFileBase( inchar );
     this->setTruePanelSize( this->nInfoLines_ );
     this->setInbreedingPanelSize( this->truePanelSize() );
 };
-
-
-Panel::~Panel(){};
 
 
 void Panel::checkForExceptions( size_t nLoci, string panelFileName ){
@@ -50,6 +48,7 @@ void Panel::checkForExceptions( size_t nLoci, string panelFileName ){
     }
     return;
 }
+
 
 void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame ){
     assert(pRec_.size() == 0 );

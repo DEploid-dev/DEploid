@@ -67,7 +67,7 @@ class McmcMachinery {
 #endif
   public:
     //McmcMachinery();
-    McmcMachinery( DEploidIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample, RandomGenerator* rg_ );
+    McmcMachinery( DEploidIO* pdfDeconfIO, McmcSample *mcmcSample, RandomGenerator* rg_ );
     ~McmcMachinery();
     void runMcmcChain( bool showProgress = true );
 

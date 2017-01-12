@@ -31,10 +31,10 @@
 McmcSample::McmcSample(){};
 McmcSample::~McmcSample(){};
 
-McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, Panel *panel, McmcSample *mcmcSample, RandomGenerator* rg_ ){ // initialiseMCMCmachinery
+McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, McmcSample *mcmcSample, RandomGenerator* rg_ ){ // initialiseMCMCmachinery
 
     this->dEploidIO_ = dEploidIO;
-    this->panel_ = panel;
+    this->panel_ = dEploidIO->panel;
     this->mcmcSample_ = mcmcSample;
     this->seed_ = rg_->seed();
 
@@ -256,6 +256,14 @@ void McmcMachinery::runMcmcChain( bool showProgress ){
     this->mcmcSample_->hap = this->currentHap_;
 
     this->writeLastFwdProb();
+
+    this->dEploidIO_->filnalProp = this->mcmcSample_->proportion.back();
+    //for ( size_t i = 0; i < mcmcSample->proportion.back().size(); i++){
+        //(*writeTo) << setw(10) << mcmcSample->proportion.back()[ii];
+        //(*writeTo) << ((ii < (mcmcSample->proportion.back().size()-1)) ? "\t" : "\n") ;
+    //}
+
+    this->dEploidIO_->writeMcmcRelated(this->mcmcSample_);
 }
 
 
