@@ -265,8 +265,16 @@ plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), ex
     obsWSAF = computeObsWSAF ( alt, ref )
     nFigures = length(chromList)
     for ( chromI in chromList ){
-        plot( obsWSAF[coverage$CHROM==chromI], col="red", ylim=c(0,1), main = paste(titlePrefix, chromI, "WSAF"), ylab = "WSAF", cex.axis = 2*nFigures/8, cex.lab = 2*nFigures/8,
-        cex.main = 2*nFigures/6)
+        tmpWSAF = obsWSAF[coverage$CHROM==chromI]
+        plot(tmpWSAF , col="red", ylim=c(0,1), main = paste(titlePrefix, chromI, "WSAF"), ylab = "WSAF",
+            cex.axis = 2*nFigures/8, cex.lab = 2*nFigures/8, cex.main = 2*nFigures/6, xaxt = "n", yaxt = "n")
+        newXaxt = round(seq(1, length(tmpWSAF), length.out = 6))
+        axis(1, at = newXaxt, labels = as.character(newXaxt),
+            cex.axis= 2*nFigures/8)
+        newYaxt = seq(0, 1, length.out = 3)
+        axis(2, at = newYaxt, labels = as.character(newYaxt),
+            cex.axis= 2*nFigures/8)
+
 
         if ( length(expWSAF) > 0 ){
             plotIndex = c()
@@ -296,7 +304,7 @@ fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclu
 
     if ( pdfBool == TRUE ){
         cexSize = 3
-        pdf ( paste ( prefix, ".interpretDEploidFigure.2.pdf", sep = "" ), width = 60, height = 40)
+        pdf ( paste ( prefix, ".interpretDEploidFigure.2.pdf", sep = "" ), width = 45, height = 30)
     } else {
         cexSize = 2.5
         png ( paste ( prefix, ".interpretDEploidFigure.2.png", sep= ""), width = 3500, height = 2000)
@@ -315,9 +323,9 @@ plot.postProb.ofCase <- function ( inPrefix, outPrefix, case, strainNumber, pdfB
     if ( pdfBool == TRUE ){
         cexSize = 3
         if ( inbreeding ){
-            pdf(paste(outPrefix, ".", case, ".inbreeding.pdf", sep = ""), width = 60, height = 40)
+            pdf(paste(outPrefix, ".", case, ".inbreeding.pdf", sep = ""), width = 45, height = 30)
         } else {
-            pdf(paste(outPrefix, ".", case, ".pdf", sep = ""), width = 60, height = 40)
+            pdf(paste(outPrefix, ".", case, ".pdf", sep = ""), width = 45, height = 30)
         }
     } else {
         cexSize = 2.5
