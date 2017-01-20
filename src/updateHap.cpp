@@ -133,6 +133,48 @@ void UpdateSingleHap::painting( vector <double> &refCount,
 
 void UpdateSingleHap::calcFwdBwdProbs(){
     this->calcFwdProbs();
+
+    vector <double> bwdLast (this->nPanel_, 0.0);
+    for ( size_t i = 0 ; i < this->nPanel_; i++){
+        //bwdLast[i] = this->emission_[0][this->panel_->content_[hapIndex][i]];
+        //bwdLast[i] = 1.0 / (double)this->nPanel_;
+        bwdLast[i] = 1.0;
+    }
+    (void)normalizeBySum(bwdLast);
+    vector < vector < double > > bwdProbs_;
+    bwdProbs_.push_back(bwdLast);
+
+    size_t hapIndexBack = this->segmentStartIndex_ + this->nLoci_ - 1;
+    for ( size_t j = (this->nLoci_- 1); j > 0; j-- ){
+        hapIndexBack--;
+        double pRecEachHap = this->panel_->pRecEachHap_[hapIndexBack];
+        double pNoRec = this->panel_->pNoRec_[hapIndexBack];
+        //double massFromRec = sumOfVec(bwdProbs_.back()) * pRecEachHap;
+        vector <double> bwdTmp (this->nPanel_, 0.0);
+        for ( size_t i = 0 ; i < this->nPanel_; i++){
+            bwdTmp[i] = 0.0;
+            for ( size_t ii = 0 ; ii < this->nPanel_; ii++){
+                bwdTmp[i] += this->emission_[j][this->panel_->content_[hapIndexBack][ii]] * bwdProbs_.back()[i] * pRecEachHap;
+                if ( i == ii){
+                    bwdTmp[i] += this->emission_[j][this->panel_->content_[hapIndexBack][ii]] * bwdProbs_.back()[i] * pNoRec;
+                }
+            }
+        }
+        (void)normalizeBySum(bwdTmp);
+        bwdProbs_.push_back(bwdTmp);
+    }
+    assert ( bwdProbs_.size() == nLoci_ );
+cout << " hapIndexBack done"<< hapIndexBack <<endl;
+    assert (this->fwdBwdProbs_.size() == 0);
+    for ( size_t j = 0; j < this->nLoci_; j++ ) {
+        vector <double> fwdBwdTmp (this->nPanel_, 0.0);
+        for ( size_t i = 0 ; i < this->nPanel_; i++ ){
+            fwdBwdTmp[i] = this->fwdProbs_[j][i] * bwdProbs_[this->nLoci_-j-1][i];
+        }
+        (void)normalizeBySum(fwdBwdTmp);
+        fwdBwdProbs_.push_back(fwdBwdTmp);
+    }
+    assert (this->fwdBwdProbs_.size() == nLoci_ );
 }
 
 void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes ){
@@ -224,6 +266,7 @@ void UpdateSingleHap::calcFwdProbs(){
         (void)normalizeBySum(fwdTmp);
         this->fwdProbs_.push_back(fwdTmp);
     }
+    assert ( this->fwdProbs_.size() == nLoci_ );
 }
 
 

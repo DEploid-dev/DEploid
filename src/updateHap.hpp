@@ -123,6 +123,7 @@ class UpdateSingleHap : public UpdateHap{
     vector <size_t> siteOfOneSwitchOne;
     vector <size_t> siteOfOneMissCopyOne;
     vector < vector <double> > fwdProbs_;
+    vector < vector <double> > fwdBwdProbs_;
 
     size_t strainIndex_;
     vector <double> expectedWsaf0_;
