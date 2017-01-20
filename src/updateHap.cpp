@@ -164,7 +164,7 @@ void UpdateSingleHap::calcFwdBwdProbs(){
         bwdProbs_.push_back(bwdTmp);
     }
     assert ( bwdProbs_.size() == nLoci_ );
-cout << " hapIndexBack done"<< hapIndexBack <<endl;
+
     assert (this->fwdBwdProbs_.size() == 0);
     for ( size_t j = 0; j < this->nLoci_; j++ ) {
         vector <double> fwdBwdTmp (this->nPanel_, 0.0);
