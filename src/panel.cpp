@@ -132,6 +132,45 @@ void Panel::buildExamplePanelContent(){
 }
 
 
+void Panel::intializeUpdatePanel(size_t inbreedingPanelSizeSetTo){
+    this->setInbreedingPanelSize(inbreedingPanelSizeSetTo);
+
+    // If allows inbreeding, update reference panel by including strain haplotypes
+    dout << "************* Allow inbreeding ************" << endl;
+    dout << "** Initialize inbreeding reference panel **" << endl;
+
+    for ( size_t siteI = 0; siteI < this->content_.size(); siteI++ ){
+        for ( size_t panelStrainJ = this->truePanelSize() ; panelStrainJ < this->inbreedingPanelSize(); panelStrainJ++ ){
+            this->content_[siteI].push_back( 1 );
+        }
+        assert(inbreedingPanelSizeSetTo == this->content_[siteI].size());
+    }
+}
+
+
+void Panel::updatePanelWithHaps(size_t inbreedingPanelSizeSetTo, size_t excludedStrain, vector < vector<double> > & haps){
+    this->setInbreedingPanelSize(inbreedingPanelSizeSetTo);
+
+    // If allows inbreeding, update reference panel by including strain haplotypes
+    dout << "*************** Allow inbreeding **************" << endl;
+    dout << "*** Update reference panel without strain " << excludedStrain << " ***" << endl;
+
+    for ( size_t siteI = 0; siteI < this->content_.size(); siteI++ ){
+        for ( size_t panelStrainJ = this->truePanelSize() ; panelStrainJ < this->inbreedingPanelSize(); panelStrainJ++ ){
+
+            size_t strainIndex = panelStrainJ - this->truePanelSize();
+
+            if ( strainIndex == excludedStrain ){
+                strainIndex++;
+            }
+
+            this->content_[siteI][panelStrainJ] = haps[siteI][strainIndex];
+        }
+    }
+}
+
+
+
 //vector<vector<double>> outtrans(out[0].size(),
                                     //vector<double>(out.size()));
     //for (size_t i = 0; i < out.size(); ++i)

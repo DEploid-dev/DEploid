@@ -57,7 +57,6 @@ class Panel: public TxtReader{
     size_t inbreedingPanelSize_;
     void setInbreedingPanelSize ( const size_t setTo ){ this->inbreedingPanelSize_ = setTo; }
 
-  //public:
     size_t inbreedingPanelSize() const { return this->inbreedingPanelSize_; }
     size_t truePanelSize() const { return this->truePanelSize_; }
     Panel();
@@ -68,6 +67,8 @@ class Panel: public TxtReader{
     void readFromFile( const char inchar[] );
     void computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame );
     void checkForExceptions( size_t nLoci, string panelFileName );
+    void intializeUpdatePanel( size_t inbreedingPanelSizeSetTo);
+    void updatePanelWithHaps( size_t inbreedingPanelSizeSetTo, size_t excludedStrain, vector < vector<double> > & haps);
 
     void print();
     void buildExamplePanelContent();

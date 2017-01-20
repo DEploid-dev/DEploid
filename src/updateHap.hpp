@@ -104,7 +104,8 @@ class UpdateSingleHap : public UpdateHap{
 #endif
  friend class McmcMachinery;
  friend class DEploidIO;
-  public:
+  //public:
+  private:
     UpdateSingleHap ();
     UpdateSingleHap( vector <double> &refCount,
                       vector <double> &altCount,
@@ -119,7 +120,6 @@ class UpdateSingleHap : public UpdateHap{
                       size_t strainIndex );
     ~UpdateSingleHap();
 
-  private:
     vector <size_t> siteOfOneSwitchOne;
     vector <size_t> siteOfOneMissCopyOne;
     vector < vector <double> > fwdProbs_;
@@ -134,17 +134,23 @@ class UpdateSingleHap : public UpdateHap{
     vector <double> hap_;
 
     // Methods
-    void core(vector <double> &refCount,
-                           vector <double> &altCount,
-                           vector <double> &plaf,
-                           vector <double> &expectedWsaf,
-                           vector <double> &proportion,
-                           vector < vector <double> > &haplotypes );
+    void core( vector <double> &refCount,
+               vector <double> &altCount,
+               vector <double> &plaf,
+               vector <double> &expectedWsaf,
+               vector <double> &proportion,
+               vector < vector <double> > &haplotypes );
+    void painting( vector <double> &refCount,
+                   vector <double> &altCount,
+                   vector <double> &expectedWsaf,
+                   vector <double> &proportion,
+                   vector < vector <double> > &haplotypes );
     void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
     void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
     void buildEmission( double missCopyProb );
     void buildEmissionBasicVersion( double missCopyProb );
     void calcFwdProbs();
+    void calcFwdBwdProbs();
     void samplePaths();
     void addMissCopying( double missCopyProb );
     void sampleHapIndependently(vector <double> &plaf);

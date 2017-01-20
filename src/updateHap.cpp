@@ -119,6 +119,22 @@ void UpdateSingleHap::core(vector <double> &refCount,
 }
 
 
+void UpdateSingleHap::painting( vector <double> &refCount,
+                                vector <double> &altCount,
+                                vector <double> &expectedWsaf,
+                                vector <double> &proportion,
+                                vector < vector <double> > &haplotypes ){
+    this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
+    this->calcHapLLKs(refCount, altCount);
+    this->buildEmission( this->missCopyProb_ );
+    this->calcFwdBwdProbs();
+}
+
+
+void UpdateSingleHap::calcFwdBwdProbs(){
+    this->calcFwdProbs();
+}
+
 void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes ){
     //expected.WSAF.0 <- bundle$expected.WSAF - (bundle$prop[ws] * bundle$h[,ws]);
     assert ( expectedWsaf0_.size() == 0);
@@ -688,7 +704,6 @@ void UpdatePairHap::sampleHapIndependently(vector <double> &plaf){
     assert ( this->hap1_.size() == this->nLoci_ );
     assert ( this->hap2_.size() == this->nLoci_ );
 }
-
 
 
 void UpdatePairHap::updateLLK(){

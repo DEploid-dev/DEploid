@@ -70,7 +70,7 @@ void McmcMachinery::writeLastFwdProb(){
 
 
 void DEploidIO::writeLastSingleFwdProb( vector < vector <double> >& probabilities, size_t chromIndex, size_t strainIndex ){
-    if ( probabilities.size()==0 ){
+    if ( probabilities.size() == 0 ){
         return;
     }
 

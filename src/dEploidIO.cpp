@@ -528,11 +528,15 @@ void DEploidIO::chromPainting(){
 
     MersenneTwister tmpRg(this->randomSeed());
 
+
+    if ( this->doAllowInbreeding() == true ){
+        this->panel->intializeUpdatePanel(this->panel->truePanelSize()+kStrain_-1);
+    }
+
     for ( size_t tmpk = 0; tmpk < this->kStrain_; tmpk++ ){
-        //if ( this->doAllowInbreeding() == true ){
-            //this->updateReferencePanel(this->panel->truePanelSize()+kStrain_-1, tmpk);
-        //}
-        cout << "tmpk = "<< tmpk<<endl;
+        if ( this->doAllowInbreeding() == true ){
+            this->panel->updatePanelWithHaps(this->panel->truePanelSize()+kStrain_-1, tmpk, hap);
+        }
 
         for ( size_t chromi = 0 ; chromi < this->indexOfChromStarts_.size(); chromi++ ){
             size_t start = this->indexOfChromStarts_[chromi];
@@ -547,28 +551,15 @@ void DEploidIO::chromPainting(){
                                       start, length,
                                       this->panel, this->missCopyProb_,
                                       tmpk);
-            //if ( this->doAllowInbreeding() == true ){
-                //updatingSingle.setPanelSize(this->panel->inbreedingPanelSize());
-            //}
 
-        updatingSingle.calcExpectedWsaf( expectedWsaf, this->filnalProp, hap);
-        updatingSingle.calcHapLLKs(refCount_, altCount_);
+            if ( this->doAllowInbreeding() == true ){
+                updatingSingle.setPanelSize(this->panel->inbreedingPanelSize());
+            }
 
-        updatingSingle.buildEmission( updatingSingle.missCopyProb_ );
-        updatingSingle.calcFwdProbs();
-
-
-            //updatingSingle.core ( this->refCount_, this->altCount_, this->plaf_, expectedWsaf, this->filnalProp, hap);
+            updatingSingle.painting( refCount_, altCount_, expectedWsaf, this->filnalProp, hap);
             this->writeLastSingleFwdProb( updatingSingle.fwdProbs_, chromi, tmpk );
         }
     }
-
-    cout << "finished here"<<endl;
-
-
-
-
-
 }
 
 

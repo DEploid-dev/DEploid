@@ -121,20 +121,7 @@ void McmcMachinery::intializeUpdateReferencePanel(size_t inbreedingPanelSizeSetT
         return;
     }
 
-    this->panel_->setInbreedingPanelSize(inbreedingPanelSizeSetTo);
-    //this->panel_->setInbreedingPanelSize( this->panel_->truePanelSize() + this->kStrain_ - 2);
-    // If allows inbreeding, update reference panel by including strain haplotypes
-    dout << "************* Allow inbreeding ************" << endl;
-    dout << "** Initialize inbreeding reference panel **" << endl;
-
-    for ( size_t siteI = 0; siteI < this->panel_->content_.size(); siteI++ ){
-        for ( size_t panelStrainJ = this->panel_->truePanelSize() ; panelStrainJ < this->panel_->inbreedingPanelSize(); panelStrainJ++ ){
-
-            size_t strainIndex = panelStrainJ - this->panel_->truePanelSize();
-
-            this->panel_->content_[siteI].push_back( this->currentHap_[siteI][strainIndex] );
-        }
-    }
+    this->panel_->intializeUpdatePanel(inbreedingPanelSizeSetTo);
 }
 
 
@@ -146,25 +133,7 @@ void McmcMachinery::updateReferencePanel(size_t inbreedingPanelSizeSetTo, size_t
     //if ( this->dEploidIO_->doAllowInbreeding() != true ){
         //return;
     //}
-
-    this->panel_->setInbreedingPanelSize(inbreedingPanelSizeSetTo);
-    //this->panel_->setInbreedingPanelSize( this->panel_->truePanelSize() + this->kStrain_ - 2);
-    // If allows inbreeding, update reference panel by including strain haplotypes
-    dout << "*************** Allow inbreeding **************" << endl;
-    dout << "*** Update reference panel without strain " << excludedStrain << " ***" << endl;
-
-    for ( size_t siteI = 0; siteI < this->panel_->content_.size(); siteI++ ){
-        for ( size_t panelStrainJ = this->panel_->truePanelSize() ; panelStrainJ < this->panel_->inbreedingPanelSize(); panelStrainJ++ ){
-
-            size_t strainIndex = panelStrainJ - this->panel_->truePanelSize();
-
-            if ( strainIndex == excludedStrain ){
-                strainIndex++;
-            }
-
-            this->panel_->content_[siteI][panelStrainJ] = this->currentHap_[siteI][strainIndex];
-        }
-    }
+    this->panel_->updatePanelWithHaps( inbreedingPanelSizeSetTo, excludedStrain, this->currentHap_);
 }
 
 
