@@ -45,19 +45,16 @@ int main( int argc, char *argv[] ){
 
         if ( dEploidIO.doPainting() ){
             dEploidIO.chromPainting();
-            return EXIT_SUCCESS;
+        } else{
+            McmcSample * mcmcSample = new McmcSample();
+            MersenneTwister rg(dEploidIO.randomSeed());
+
+            McmcMachinery mcmcMachinery(&dEploidIO, mcmcSample, &rg);
+            mcmcMachinery.runMcmcChain(true);
+            delete mcmcSample;
         }
-
-        McmcSample * mcmcSample = new McmcSample();
-        MersenneTwister rg(dEploidIO.randomSeed());
-
-        McmcMachinery mcmcMachinery(&dEploidIO, mcmcSample, &rg);
-        mcmcMachinery.runMcmcChain(true);
-        delete mcmcSample;
-
         // Finishing, write log
         dEploidIO.wrapUp();
-
     }
     catch (const exception &e) {
       std::cerr << "Error: " << e.what() << std::endl;

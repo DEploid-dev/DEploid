@@ -43,6 +43,7 @@ class UpdateHap{
   friend class McmcMachinery;
   friend class UpdateSingleHap;
   friend class UpdatePairHap;
+  friend class DEploidIO;
 
   public:
     size_t nPanel() const { return this->nPanel_; }

@@ -149,4 +149,12 @@ struct NumOfPropNotMatchNumStrain : public InvalidInput{
 };
 
 
+struct InitialPropUngiven : public InvalidInput{
+  InitialPropUngiven( string str ):InvalidInput( str ){
+    this->reason = "Initial proportion was not specified.";
+    throwMsg = this->reason + this->src ;
+  }
+  ~InitialPropUngiven() throw() {}
+};
+
 #endif

@@ -244,7 +244,7 @@ class DEploidIO{
     void writeProp (McmcSample * mcmcSample);
     void writeHap (McmcSample * mcmcSample);
     void writeVcf (McmcSample * mcmcSample);
-    void writeLastSingleFwdProb( UpdateSingleHap & updateSingle, size_t chromIndex, size_t strainIndex  );
+    void writeLastSingleFwdProb( vector < vector <double> >& probabilities, size_t chromIndex, size_t strainIndex  );
     void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
     void writeLog (ostream * writeTo );
 
@@ -258,6 +258,7 @@ class DEploidIO{
 
 
     size_t nLoci() const { return this->nLoci_; }
+    void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}
     size_t kStrain() const { return this->kStrain_;}
     size_t nMcmcSample() const { return this->nMcmcSample_; }
     double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }

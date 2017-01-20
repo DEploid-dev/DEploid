@@ -26,7 +26,7 @@
 #include <iomanip>      // std::setw
 #include <ctime>
 #include <iterator>
-
+#include "updateHap.hpp"
 
 DEploidIO::DEploidIO(){
     this->init();
@@ -100,7 +100,7 @@ void DEploidIO::init() {
     this->setUsePanel(true);
     this->precision_ = 8;
     this->prefix_ = "pf3k-dEploid";
-    this->kStrain_ = 5;
+    this->setKstrain(5);
     this->nMcmcSample_ = 800;
     this->setDoUpdateProp( true );
     this->setDoUpdatePair( true );
@@ -217,7 +217,6 @@ void DEploidIO::finalize(){
     if ( this->nLoci_ != this->altCount_.size() ){
         throw LociNumberUnequal( this->altFileName_ );
     }
-
     (void)removeFilesWithSameName();
 
     this->readPanel();
@@ -242,7 +241,6 @@ void DEploidIO::removeFilesWithSameName(){
     strExportTwoMissCopyOne = this->prefix_ + ".twoMissCopyOne";
     strExportTwoSwitchTwo   = this->prefix_ + ".twoSwitchTwo";
     strExportTwoMissCopyTwo = this->prefix_ + ".twoMissCopyTwo";
-
 
     remove(strExportLLK.c_str());
     remove(strExportHap.c_str());
@@ -317,7 +315,7 @@ void DEploidIO::parse (){
         } else if ( *argv_i == "-p" ) {
             this->precision_ = readNextInput<size_t>() ;
         } else if ( *argv_i == "-k" ) {
-            this->kStrain_ = readNextInput<size_t>() ;
+            this->setKstrain(readNextInput<size_t>());
         } else if ( *argv_i == "-nSample" ) {
             this->nMcmcSample_ = readNextInput<size_t>() ;
         } else if ( *argv_i == "-burn" ) {
@@ -397,7 +395,8 @@ void DEploidIO::checkInput(){
     if ( this->initialPropWasGiven() && ( abs(sumOfVec(initialProp) - 1.0) > 0.000001 )){
         throw SumOfPropNotOne ( to_string(sumOfVec(initialProp)) );}
     if ( this->initialPropWasGiven() && kStrain_ != initialProp.size() ){
-        throw NumOfPropNotMatchNumStrain(""); }
+        string hint = string(" k = ") + to_string(kStrain_);
+        throw NumOfPropNotMatchNumStrain(hint); }
 }
 
 
@@ -471,6 +470,8 @@ void DEploidIO::printHelp(std::ostream& out){
     out << endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel"<< endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanelExclude -noPanel"<< endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CPanelExclude -panel data/testData/labStrains.test.panel.txt" << endl;
+    out<<"./dEploid_dbg -vcf data/exampleData/PG0390-C.eg.vcf -plaf data/exampleData/labStrains.eg.PLAF.txt -o PG0390-CPanelExclude -panel data/exampleData/labStrains.eg.panel.txt -painting PG0390-CPanel.hap"<<endl;
 }
 
 
@@ -481,8 +482,92 @@ std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO) {
 
 
 void DEploidIO::chromPainting(){
+    dout << "Painting haplotypes in" << this->deconvolutedStrainsFileName_ <<endl;
     DeconvolutedStrains decovolutedStrainsToBeRead;
     decovolutedStrainsToBeRead.readFromFile(this->deconvolutedStrainsFileName_.c_str());
+
+    if ( this->initialPropWasGiven() == false ){
+        clog << "Initial proportion was not specified. Set even proportions" << endl;
+        double evenProp = 1.0 / (double)decovolutedStrainsToBeRead.truePanelSize();
+        for ( size_t i = 0; i < decovolutedStrainsToBeRead.truePanelSize(); i++){
+            this->initialProp.push_back(evenProp);
+        }
+    }
+
+    this->setKstrain(this->initialProp.size());
+    for ( auto const& value: this->initialProp ){
+        this->filnalProp.push_back(value);
+    }
+
+    // Painting posterior probabilities
+
+    // Export the p'
+    // Make this a separate class
+    //vector < vector <double> > hap;
+    //for ( size_t siteI = 0; siteI < decovolutedStrainsToBeRead.content_.size(); siteI++ ){
+        //vector <double> tmpHap;
+        //for ( size_t tmpk = 0; tmpk < this->kStrain_; tmpk++ ){
+            //tmpHap.push_back(decovolutedStrainsToBeRead.content_[siteI][tmpk]);
+        //}
+        //hap.push_back(tmpHap);
+    //}
+
+    vector < vector <double>> hap = decovolutedStrainsToBeRead.content_;
+
+    // Make this a separate function
+    // calculate expected wsaf
+    vector <double> expectedWsaf (this->nLoci_, 0.0);
+    for ( size_t i = 0; i < hap.size(); i++ ){
+        assert( kStrain_ == hap[i].size() );
+        for ( size_t k = 0; k < this->kStrain_; k++){
+            expectedWsaf[i] += hap[i][k] * filnalProp[k];
+        }
+        assert ( expectedWsaf[i] >= 0 );
+        //assert ( expectedWsaf[i] <= 1.0 );
+    }
+
+    MersenneTwister tmpRg(this->randomSeed());
+
+    for ( size_t tmpk = 0; tmpk < this->kStrain_; tmpk++ ){
+        //if ( this->doAllowInbreeding() == true ){
+            //this->updateReferencePanel(this->panel->truePanelSize()+kStrain_-1, tmpk);
+        //}
+        cout << "tmpk = "<< tmpk<<endl;
+
+        for ( size_t chromi = 0 ; chromi < this->indexOfChromStarts_.size(); chromi++ ){
+            size_t start = this->indexOfChromStarts_[chromi];
+            size_t length = this->position_[chromi].size();
+            dout << "Painting Chrom "<< chromi << " from site "<< start << " to " << start+length << endl;
+
+            UpdateSingleHap updatingSingle( this->refCount_,
+                                      this->altCount_,
+                                      this->plaf_,
+                                      expectedWsaf,
+                                      this->filnalProp, hap, &tmpRg,
+                                      start, length,
+                                      this->panel, this->missCopyProb_,
+                                      tmpk);
+            //if ( this->doAllowInbreeding() == true ){
+                //updatingSingle.setPanelSize(this->panel->inbreedingPanelSize());
+            //}
+
+        updatingSingle.calcExpectedWsaf( expectedWsaf, this->filnalProp, hap);
+        updatingSingle.calcHapLLKs(refCount_, altCount_);
+
+        updatingSingle.buildEmission( updatingSingle.missCopyProb_ );
+        updatingSingle.calcFwdProbs();
+
+
+            //updatingSingle.core ( this->refCount_, this->altCount_, this->plaf_, expectedWsaf, this->filnalProp, hap);
+            this->writeLastSingleFwdProb( updatingSingle.fwdProbs_, chromi, tmpk );
+        }
+    }
+
+    cout << "finished here"<<endl;
+
+
+
+
 
 }
 
@@ -500,5 +585,4 @@ void DEploidIO::readPanel(){
 
     panel->computeRecombProbs( this->averageCentimorganDistance(), this->Ne(), this->useConstRecomb(), this->constRecombProb(), this->forbidCopyFromSame() );
     panel->checkForExceptions( this->nLoci(), this->panelFileName_ );
-
 }

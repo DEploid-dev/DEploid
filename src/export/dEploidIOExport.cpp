@@ -72,9 +72,16 @@ void DEploidIO::writeRecombProb ( Panel * panel ){
 
 
 void DEploidIO::writeLog ( ostream * writeTo ){
-    (*writeTo) << "#########################################\n";
+    size_t nHash = 30 + string(VERSION).size();
+    for ( size_t i = 0; i < nHash; i++){
+        (*writeTo) << "#";
+    }
+    (*writeTo) << "\n";
     (*writeTo) << "#        dEploid "<< setw(10) << VERSION << " log        #\n";
-    (*writeTo) << "#########################################\n";
+    for ( size_t i = 0; i < nHash; i++){
+        (*writeTo) << "#";
+    }
+    (*writeTo) << "\n";
     (*writeTo) << "Program was compiled on: " << compileTime_ << endl;
     (*writeTo) << "dEploid version: " << dEploidGitVersion_ << endl;
     (*writeTo) << "\n";
@@ -115,12 +122,16 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     (*writeTo) << setw(14) << "End at: "    << endTime_  ;
     (*writeTo) << "\n";
     (*writeTo) << "Output saved to:\n";
-    (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
-    (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
-    (*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
-    if ( doExportVcf() ) { (*writeTo) << setw(14) << "Vcf: "  << strExportVcf  << "\n"; }
+    if ( this->doPainting() ){
+
+    } else {
+        (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
+        (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
+        (*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
+        if ( doExportVcf() ) { (*writeTo) << setw(14) << "Vcf: "  << strExportVcf  << "\n"; }
+    }
     (*writeTo) << "\n";
-    (*writeTo) << "Proportions at the last iteration:\n";
+    (*writeTo) << "Proportions:\n";
     for ( size_t ii = 0; ii < this->filnalProp.size(); ii++){
         (*writeTo) << setw(10) << this->filnalProp[ii];
         (*writeTo) << ((ii < (this->filnalProp.size()-1)) ? "\t" : "\n") ;

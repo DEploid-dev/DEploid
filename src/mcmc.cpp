@@ -258,11 +258,6 @@ void McmcMachinery::runMcmcChain( bool showProgress ){
     this->writeLastFwdProb();
 
     this->dEploidIO_->filnalProp = this->mcmcSample_->proportion.back();
-    //for ( size_t i = 0; i < mcmcSample->proportion.back().size(); i++){
-        //(*writeTo) << setw(10) << mcmcSample->proportion.back()[ii];
-        //(*writeTo) << ((ii < (mcmcSample->proportion.back().size()-1)) ? "\t" : "\n") ;
-    //}
-
     this->dEploidIO_->writeMcmcRelated(this->mcmcSample_);
 }
 
