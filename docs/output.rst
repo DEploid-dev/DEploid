@@ -42,7 +42,7 @@ Example 1
 
     $ ./dEploid -vcf data/exampleData/PG0390-C.eg.vcf.gz \
     -plaf data/exampleData/labStrains.eg.PLAF.txt \
-    -noPanel -o PG0390-CNopanel
+    -noPanel -o PG0390-CNopanel -seed 1
     $ R --slave "--args -vcf data/exampleData/PG0390-C.eg.vcf.gz
     -plaf data/exampleData/labStrains.eg.PLAF.txt
     -dEprefix PG0390-CNopanel
@@ -68,6 +68,42 @@ This panel figure shows all allele frequencies within sample across all 14 chrom
 Example 2
 *********
 
+``dEploid`` can take its output haplotypes, and calculate the posterior probability of each deconvoluted strain with the reference panel. In this example, the reference panel includes four lab strains: 3D7 (red), Dd2 (dark orange), HB3 (orange) and 7G8 (yellow).
+
+::
+
+    $ ./dEploid -vcf data/exampleData/PG0390-C.eg.vcf.gz \
+    -plaf data/exampleData/labStrains.eg.PLAF.txt \
+    -panel data/exampleData/labStrains.eg.panel.txt \
+    -o PG0390-CPanel -seed 1 -k 3
+    $ ./dEploid -vcf data/exampleData/PG0390-C.eg.vcf.gz \
+    -plaf data/exampleData/labStrains.eg.PLAF.txt \
+    -panel data/exampleData/labStrains.eg.panel.txt \
+    -o PG0390-CPanel \
+    -painting PG0390-CPanel.hap \
+    -initialP 0.8 0 0.2 -k 3
+    $ R --slave "--args -vcf data/exampleData/PG0390-C.eg.vcf.gz
+    -plaf data/exampleData/labStrains.eg.PLAF.txt
+    -dEprefix PG0390-CPanel
+    -o PG0390-CPanel " < utilities/interpretDEploid.r
+
+.. image:: _static/PG0390-CPanel.single0.png
+   :width: 1024px
+   :alt: PG0390fwdBwd0
+
+.. image:: _static/PG0390-CPanel.single1.png
+   :width: 1024px
+   :alt: PG0390fwdBwd1
+
+.. image:: _static/PG0390-CPanel.single2.png
+   :width: 1024px
+   :alt: PG0390fwdBwd2
+
+Example 3
+*********
+
+In addition to lab mixed samples, here we show example of ``dEploid`` deconvolute field sample PD0577-C.
+
 ::
 
     $ ./dEploid -ref data/exampleData/PD0577-C_ref.trim.txt \
@@ -75,14 +111,12 @@ Example 2
     -plaf data/exampleData/asia-1_PLAF.trim.txt \
     -panel data/exampleData/asia-1_panel.trim.txt \
     -o PD0577-CPanel \
-    -k 3
+    -k 3 -seed 1484961470
 
-    $ R --slave "--args -ref data/exampleData/PD0577-C_ref.trim.txt
-    -alt data/exampleData/PD0577-C_alt.trim.txt
-    -plaf data/exampleData/asia-1_PLAF.trim.txt
-    -o PD0577-CPanel \
-    -dEprefix PD0577-CPanel
-    -inbreeding" < utilities/interpretDEploid.r
+Use ``dEploid`` to calculate the inbreeding probabilities: inbreeding (red) and outbreeding (blue).
+
+::
+
 
     $ ./dEploid -ref data/exampleData/PD0577-C_ref.trim.txt \
     -alt data/exampleData/PD0577-C_alt.trim.txt \
@@ -90,11 +124,26 @@ Example 2
     -panel data/exampleData/asia-1_panel.trim.txt \
     -o PD0577-CPanel \
     -painting PD0577-CPanel.hap \
-    -k 3 -initialP 0.5 0.25 0.25
-
+    -k 3 -inbreeding -initialP 0.25 0.5 0.25
     $ R --slave "--args -ref data/exampleData/PD0577-C_ref.trim.txt
     -alt data/exampleData/PD0577-C_alt.trim.txt
     -plaf data/exampleData/asia-1_PLAF.trim.txt
     -o PD0577-CPanel \
     -dEprefix PD0577-CPanel
     -inbreeding" < utilities/interpretDEploid.r
+
+.. image:: _static/PD0577-CPanel.interpretDEploidFigure.2.png
+   :width: 1024px
+   :alt: PD0577wsaf
+
+.. image:: _static/PD0577-CPanel.single0.inbreeding.png
+   :width: 1024px
+   :alt: PD0577fwdBwd0inbreeding
+
+.. image:: _static/PD0577-CPanel.single1.inbreeding.png
+   :width: 1024px
+   :alt: PD0577fwdBwd1inbreeding
+
+.. image:: _static/PD0577-CPanel.single2.inbreeding.png
+   :width: 1024px
+   :alt: PD0577fwdBwd2inbreeding
