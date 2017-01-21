@@ -224,6 +224,7 @@ void DEploidIO::finalize(){
 
 
 void DEploidIO::removeFilesWithSameName(){
+    strExportProp = this->prefix_ + ".prop";
     strExportLLK = this->prefix_ + ".llk";
     strExportHap = this->prefix_ + ".hap";
 
@@ -231,7 +232,6 @@ void DEploidIO::removeFilesWithSameName(){
     if ( compressVcf() ){
         strExportVcf += ".gz";
     }
-    strExportProp = this->prefix_ + ".prop";
     strExportLog =  this->prefix_ + ".log";
     strExportRecombProb = this->prefix_ + ".recomb";
 
@@ -242,10 +242,12 @@ void DEploidIO::removeFilesWithSameName(){
     strExportTwoSwitchTwo   = this->prefix_ + ".twoSwitchTwo";
     strExportTwoMissCopyTwo = this->prefix_ + ".twoMissCopyTwo";
 
-    remove(strExportLLK.c_str());
-    remove(strExportHap.c_str());
-    remove(strExportVcf.c_str());
-    remove(strExportProp.c_str());
+    if ( this->doPainting() == false ){
+        remove(strExportLLK.c_str());
+        remove(strExportHap.c_str());
+        remove(strExportVcf.c_str());
+        remove(strExportProp.c_str());
+    }
     remove(strExportLog.c_str());
     remove(strExportRecombProb.c_str());
 

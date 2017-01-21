@@ -146,7 +146,6 @@ void UpdateSingleHap::calcFwdBwdProbs(){
 
     size_t hapIndexBack = this->segmentStartIndex_ + this->nLoci_ - 1;
     for ( size_t j = (this->nLoci_- 1); j > 0; j-- ){
-        hapIndexBack--;
         double pRecEachHap = this->panel_->pRecEachHap_[hapIndexBack];
         double pNoRec = this->panel_->pNoRec_[hapIndexBack];
         //double massFromRec = sumOfVec(bwdProbs_.back()) * pRecEachHap;
@@ -162,6 +161,7 @@ void UpdateSingleHap::calcFwdBwdProbs(){
         }
         (void)normalizeBySum(bwdTmp);
         bwdProbs_.push_back(bwdTmp);
+        hapIndexBack--;
     }
     assert ( bwdProbs_.size() == nLoci_ );
 
