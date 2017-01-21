@@ -545,4 +545,31 @@ class TestPanel : public CppUnit::TestCase {
 
 };
 
+
+class TestDeconvolutedStrains : public CppUnit::TestCase {
+
+    CPPUNIT_TEST_SUITE( TestDeconvolutedStrains );
+    CPPUNIT_TEST( testMainConstructor );
+    CPPUNIT_TEST_SUITE_END();
+
+  private:
+    DeconvolutedStrains* hap_;
+
+    string hapName_;
+  public:
+    void setUp() {
+        this->hapName_ = "data/testData/PG0390-C.test.nopanel.hap";
+        this->hap_ = new DeconvolutedStrains();
+        this->hap_->readFromFile(hapName_.c_str() );
+    }
+
+    void tearDown() {
+        delete hap_;
+    }
+  public:
+    void testMainConstructor(){ }
+
+};
+
 CPPUNIT_TEST_SUITE_REGISTRATION( TestPanel );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestDeconvolutedStrains );

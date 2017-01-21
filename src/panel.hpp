@@ -30,6 +30,7 @@
 class Panel: public TxtReader{
 #ifdef UNITTEST
  friend class TestPanel;
+ friend class TestDeconvolutedStrains;
  friend class TestUpdateHap;
  friend class TestUpdatePairHap;
  friend class TestUpdateSingleHap;
@@ -78,6 +79,9 @@ class Panel: public TxtReader{
 
 
 class DeconvolutedStrains: public Panel{
+#ifdef UNITTEST
+ friend class TestDeconvolutedStrains;
+#endif
  friend class DEploidIO;
     DeconvolutedStrains():Panel(){}
     ~DeconvolutedStrains(){}
