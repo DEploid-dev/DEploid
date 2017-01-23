@@ -67,7 +67,7 @@ class McmcMachinery {
 #endif
   public:
     //McmcMachinery();
-    McmcMachinery( DEploidIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample, RandomGenerator* rg_ );
+    McmcMachinery( DEploidIO* dEploidIO, Panel *panel, McmcSample *mcmcSample, RandomGenerator* rg_ );
     ~McmcMachinery();
     void runMcmcChain( bool showProgress = true );
 
@@ -85,9 +85,9 @@ class McmcMachinery {
     size_t McmcMachineryRate_;
     int eventInt_;
 
-    size_t strainIndex_;
     size_t strainIndex1_;
     size_t strainIndex2_;
+    size_t strainIndex3_;
 
     size_t seed_;
     RandomGenerator* hapRg_;
@@ -151,6 +151,9 @@ class McmcMachinery {
     void updatePairHaps();
      //vector <size_t> sampleNoReplace(MersenneTwister* rg, vector <double> & proportion, size_t nSample );
      void findUpdatingStrainPair( );
+
+    void updateThreeHaps();
+     void findUpdatingStrainThree( );
 
   /* Debug */
     bool doutProp();

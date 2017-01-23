@@ -99,8 +99,9 @@ void DEploidIO::init() {
     this->kStrain_ = 5;
     this->nMcmcSample_ = 800;
     this->setDoUpdateProp ( true );
-    this->setDoUpdatePair ( true );
     this->setDoUpdateSingle ( true );
+    this->setDoUpdatePair ( true );
+    this->setDoUpdateThree( false );
     this->setDoExportPostProb( false );
     this->setDoExportSwitchMissCopy ( false );
     this->mcmcBurn_ = 0.5;
@@ -336,6 +337,8 @@ void DEploidIO::parse (){
             this->setDoUpdateSingle( false );
         } else if ( *argv_i == "-forbidUpdatePair" ) {
             this->setDoUpdatePair( false );
+        } else if ( *argv_i == "-updatePlus" ) {
+            this->setDoUpdateThree( true );
         } else if ( *argv_i == "-exportPostProb" ) {
             if ( this->usePanel() == false ){
                 throw ( FlagsConflict((*argv_i) , "-noPanel") );

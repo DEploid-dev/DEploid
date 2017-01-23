@@ -205,13 +205,22 @@ void McmcMachinery::runMcmcChain( bool showProgress ){
 void McmcMachinery::sampleMcmcEvent( ){
     this->recordingMcmcBool_ = ( currentMcmcIteration_ > this->mcmcThresh_ && currentMcmcIteration_ % this->McmcMachineryRate_ == 0 );
 
-    this->eventInt_ = this->mcmcEventRg_->sampleInt(3);
+    if ( this->dEploidIO_->doUpdateThree() ){
+        this->eventInt_ = this->mcmcEventRg_->sampleInt(4);
+    } else {
+        this->eventInt_ = this->mcmcEventRg_->sampleInt(3);
+    }
+
     if ( (this->eventInt_ == 0) && (this->dEploidIO_->doUpdateProp() == true) ){
         this->updateProportion();
     } else if ( (this->eventInt_ == 1) && (this->dEploidIO_->doUpdateSingle() == true) ){
         this->updateSingleHap();
     } else if ( (this->eventInt_ == 2) && (this->dEploidIO_->doUpdatePair() == true) ){
         this->updatePairHaps();
+    } else if ( (this->eventInt_ == 3) ) {
+        this->updateThreeHaps();
+    } else {
+        throw ("should never reach here");
     }
 
     assert(doutLLK());
@@ -318,12 +327,12 @@ void McmcMachinery::updateSingleHap(){
                                   this->currentProp_, this->currentHap_, this->hapRg_,
                                   start, length,
                                   this->panel_, this->dEploidIO_->missCopyProb_,
-                                  this->strainIndex_);
+                                  this->strainIndex1_);
         updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
 
         size_t updateIndex = 0;
         for ( size_t ii = start ; ii < (start+length); ii++ ){
-            this->currentHap_[ii][this->strainIndex_] = updating.hap_[updateIndex];
+            this->currentHap_[ii][this->strainIndex1_] = updating.hap_[updateIndex];
             this->currentLLks_[ii] = updating.newLLK[updateIndex];
             updateIndex++;
         }
@@ -349,6 +358,10 @@ void McmcMachinery::updateSingleHap(){
 
 void McmcMachinery::updatePairHaps(){
     dout << " Update Pair Hap "<<endl;
+    if ( kStrain_ < 2 ){
+        dout << " there is only one strain, skip "<<endl;
+        return;
+    }
     this->findUpdatingStrainPair();
 
     for ( size_t chromi = 0 ; chromi < this->dEploidIO_->indexOfChromStarts_.size(); chromi++ ){
@@ -406,11 +419,50 @@ void McmcMachinery::updatePairHaps(){
 }
 
 
+void McmcMachinery::updateThreeHaps(){
+    dout << " Update Three Hap "<<endl;
+    //if ( kStrain_ < 3 ){
+        //dout << " there are less than three strains, skip "<<endl;
+        //return;
+    //}
+    this->findUpdatingStrainThree();
+
+    for ( size_t chromi = 0 ; chromi < this->dEploidIO_->indexOfChromStarts_.size(); chromi++ ){
+        size_t start = this->dEploidIO_->indexOfChromStarts_[chromi];
+        size_t length = this->dEploidIO_->position_[chromi].size();
+        dout << "   Update Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
+
+        UpdateThreeHap updating( this->dEploidIO_->refCount_,
+                                this->dEploidIO_->altCount_,
+                                this->dEploidIO_->plaf_,
+                                this->currentExpectedWsaf_,
+                                this->currentProp_, this->currentHap_, this->hapRg_,
+                                start, length,
+                                this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->forbidCopyFromSame(),
+                                this->strainIndex1_,
+                                this->strainIndex2_,
+                                this->strainIndex3_);
+        updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+
+        size_t updateIndex = 0;
+        for ( size_t ii = start ; ii < (start+length); ii++ ){
+            this->currentHap_[ii][this->strainIndex1_] = updating.hap1_[updateIndex];
+            this->currentHap_[ii][this->strainIndex2_] = updating.hap2_[updateIndex];
+            this->currentHap_[ii][this->strainIndex3_] = updating.hap3_[updateIndex];
+            this->currentLLks_[ii] = updating.newLLK[updateIndex];
+            updateIndex++;
+        }
+    }
+
+    this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
+}
+
+
 void McmcMachinery::findUpdatingStrainSingle( ){
     vector <double> eventProb (this->kStrain_, 1);
     (void)normalizeBySum(eventProb);
-    this->strainIndex_ = sampleIndexGivenProp ( this->mcmcEventRg_, eventProb );
-    dout << "  Updating hap: "<< this->strainIndex_ <<endl;
+    this->strainIndex1_ = sampleIndexGivenProp ( this->mcmcEventRg_, eventProb );
+    dout << "  Updating hap: "<< this->strainIndex1_ <<endl;
 }
 
 
@@ -433,6 +485,31 @@ void McmcMachinery::findUpdatingStrainPair( ){
     this->strainIndex2_ = strainIndex[1];
     assert( strainIndex1_ != strainIndex2_ );
     dout << "  Updating hap: "<< this->strainIndex1_ << " and " << strainIndex2_ <<endl;
+}
+
+
+void McmcMachinery::findUpdatingStrainThree( ){
+    vector <size_t> strainIndex (3, 0);
+    int t = 0; // total input records dealt with
+    int m = 0; // number of items selected so far
+    double u;
+
+    while (m < 3) {
+        u = this->mcmcEventRg_->sample(); // call a uniform(0,1) random number generator
+        if ( ( this->kStrain_ - t)*u < 3 - m ) {
+            strainIndex[m] = t;
+            m++;
+        }
+        t++;
+    }
+
+    this->strainIndex1_ = strainIndex[0];
+    this->strainIndex2_ = strainIndex[1];
+    this->strainIndex3_ = strainIndex[2];
+    assert( strainIndex1_ != strainIndex2_ );
+    assert( strainIndex1_ != strainIndex3_ );
+    assert( strainIndex2_ != strainIndex3_ );
+    dout << "  Updating hap: "<< this->strainIndex1_ << " and " << strainIndex2_ << " and " << strainIndex3_ << endl;
 }
 
 

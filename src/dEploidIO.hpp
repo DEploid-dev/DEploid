@@ -114,8 +114,9 @@ class DEploidIO{
     double mcmcBurn_;
 
     bool doUpdateProp_;
-    bool doUpdatePair_;
     bool doUpdateSingle_;
+    bool doUpdatePair_;
+    bool doUpdateThree_;
     bool doExportPostProb_;
     bool doExportSwitchMissCopy_;
 
@@ -237,6 +238,9 @@ class DEploidIO{
 
     void setDoUpdatePair ( const bool setTo ){ this->doUpdatePair_ = setTo; }
     bool doUpdatePair() const { return this->doUpdatePair_; }
+
+    void setDoUpdateThree ( const bool setTo ){ this->doUpdateThree_ = setTo; }
+    bool doUpdateThree() const { return this->doUpdateThree_; }
 
     void setDoExportPostProb ( const bool setTo ){ this->doExportPostProb_ = setTo; }
     bool doExportPostProb() const { return this->doExportPostProb_; }

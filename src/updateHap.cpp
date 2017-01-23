@@ -700,3 +700,210 @@ void UpdatePairHap::updateLLK(){
         }
     }
 }
+
+
+UpdateThreeHap::~UpdateThreeHap(){
+    //delete recombRg_;
+    //delete recombLevel2Rg_;
+    //delete missCopyRg_;
+}
+
+UpdateThreeHap::UpdateThreeHap( vector <double> &refCount,
+                              vector <double> &altCount,
+                              vector <double> &plaf,
+                              vector <double> &expectedWsaf,
+                              vector <double> &proportion,
+                              vector < vector <double> > &haplotypes,
+                              RandomGenerator* rg,
+                              size_t segmentStartIndex,
+                              size_t nLoci,
+                              Panel* panel, double missCopyProb, bool forbidCopyFromSame,
+                              size_t strainIndex1,
+                              size_t strainIndex2,
+                              size_t strainIndex3 ):
+                UpdateHap(refCount, altCount, plaf, expectedWsaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel, missCopyProb){
+    this->strainIndex1_ = strainIndex1;
+    this->strainIndex2_ = strainIndex2;
+    this->strainIndex3_ = strainIndex3;
+}
+
+
+void UpdateThreeHap::core(vector <double> &refCount,
+                           vector <double> &altCount,
+                           vector <double> &plaf,
+                           vector <double> &expectedWsaf,
+                           vector <double> &proportion,
+                           vector < vector <double> > &haplotypes){
+
+    this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
+    this->calcHapLLKs(refCount, altCount);
+    this->sampleHapIndependently( plaf );
+    this->updateLLK();
+}
+
+
+void UpdateThreeHap:: calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes){
+  //expected.WSAF.00 <- expected.WSAF-(prop[ws[1]]*h[,ws[1]] + prop[ws[2]]*h[,ws[2]]);
+  //expected.WSAF.10 <- expected.WSAF.00 + prop[ws[1]];
+  //expected.WSAF.01 <- expected.WSAF.00 + prop[ws[2]];
+  //expected.WSAF.11 <- expected.WSAF.00 + prop[ws[1]] + prop[ws[2]];    //expected.WSAF.0 <- bundle$expected.WSAF - (bundle$prop[ws] * bundle$h[,ws]);
+    this->expectedWsaf000_ = vector <double> (expectedWsaf.begin()+this->segmentStartIndex_, expectedWsaf.begin()+(this->segmentStartIndex_+this->nLoci_));
+    size_t hapIndex = this->segmentStartIndex_;
+    for ( size_t i = 0; i < expectedWsaf000_.size(); i++ ){
+        expectedWsaf000_[i] -= (proportion[strainIndex1_] * haplotypes[hapIndex][strainIndex1_] +
+                                proportion[strainIndex2_] * haplotypes[hapIndex][strainIndex2_] +
+                                proportion[strainIndex3_] * haplotypes[hapIndex][strainIndex3_]);
+        //dout << expectedWsaf[i] << " " << expectedWsaf00_[i] << endl;
+        assert (expectedWsaf000_[i] >= 0 );
+        assert (expectedWsaf000_[i] < 1 );
+        hapIndex++;
+    }
+
+    this->expectedWsaf001_ = expectedWsaf000_;
+    for ( size_t i = 0; i < expectedWsaf001_.size(); i++ ){
+        expectedWsaf001_[i] += proportion[strainIndex3_] ;
+    }
+
+    this->expectedWsaf010_ = expectedWsaf000_;
+    for ( size_t i = 0; i < expectedWsaf010_.size(); i++ ){
+        expectedWsaf010_[i] += proportion[strainIndex2_] ;
+    }
+
+    this->expectedWsaf011_ = expectedWsaf000_;
+    for ( size_t i = 0; i < expectedWsaf011_.size(); i++ ){
+        expectedWsaf011_[i] += (proportion[strainIndex2_] + proportion[strainIndex3_]);
+    }
+
+    this->expectedWsaf100_ = expectedWsaf000_;
+    for ( size_t i = 0; i < expectedWsaf100_.size(); i++ ){
+        expectedWsaf100_[i] += proportion[strainIndex1_] ;
+    }
+
+    this->expectedWsaf101_ = expectedWsaf000_;
+    for ( size_t i = 0; i < expectedWsaf101_.size(); i++ ){
+        expectedWsaf101_[i] += (proportion[strainIndex1_] + proportion[strainIndex3_]);
+    }
+
+    this->expectedWsaf110_ = expectedWsaf000_;
+    for ( size_t i = 0; i < expectedWsaf110_.size(); i++ ){
+        expectedWsaf110_[i] += (proportion[strainIndex1_] + proportion[strainIndex2_]);
+    }
+
+    this->expectedWsaf111_ = expectedWsaf000_;
+    for ( size_t i = 0; i < expectedWsaf111_.size(); i++ ){
+        expectedWsaf111_[i] += (proportion[strainIndex1_] + proportion[strainIndex2_] + proportion[strainIndex3_]);
+    }
+}
+
+
+void UpdateThreeHap:: calcHapLLKs( vector <double> &refCount, vector <double> &altCount){
+    this->llk000_ = calcLLKs( refCount, altCount, expectedWsaf000_, this->segmentStartIndex_, this->nLoci_ );
+    this->llk010_ = calcLLKs( refCount, altCount, expectedWsaf010_, this->segmentStartIndex_, this->nLoci_ );
+    this->llk001_ = calcLLKs( refCount, altCount, expectedWsaf001_, this->segmentStartIndex_, this->nLoci_ );
+    this->llk011_ = calcLLKs( refCount, altCount, expectedWsaf011_, this->segmentStartIndex_, this->nLoci_ );
+    this->llk100_ = calcLLKs( refCount, altCount, expectedWsaf100_, this->segmentStartIndex_, this->nLoci_ );
+    this->llk110_ = calcLLKs( refCount, altCount, expectedWsaf110_, this->segmentStartIndex_, this->nLoci_ );
+    this->llk101_ = calcLLKs( refCount, altCount, expectedWsaf101_, this->segmentStartIndex_, this->nLoci_ );
+    this->llk111_ = calcLLKs( refCount, altCount, expectedWsaf111_, this->segmentStartIndex_, this->nLoci_ );
+    assert( this->llk000_.size() == this->nLoci_ );
+    assert( this->llk010_.size() == this->nLoci_ );
+    assert( this->llk001_.size() == this->nLoci_ );
+    assert( this->llk011_.size() == this->nLoci_ );
+    assert( this->llk100_.size() == this->nLoci_ );
+    assert( this->llk110_.size() == this->nLoci_ );
+    assert( this->llk101_.size() == this->nLoci_ );
+    assert( this->llk111_.size() == this->nLoci_ );
+}
+
+
+void UpdateThreeHap::sampleHapIndependently(vector <double> &plaf){
+    assert( this->hap1_.size() == 0 );
+    assert( this->hap2_.size() == 0 );
+    assert( this->hap3_.size() == 0 );
+
+    size_t plafIndex = this->segmentStartIndex_;
+    for ( size_t i = 0; i < this->nLoci_; i++){
+        double tmpMax = max_value ( vector <double> ( {llk000_[i], llk001_[i], llk010_[i], llk011_[i],
+                                                       llk100_[i], llk101_[i], llk110_[i], llk111_[i]} ) );
+        vector <double> tmpDist ( {exp(llk000_[i] - tmpMax) * (1.0-plaf[plafIndex]) * (1.0-plaf[plafIndex]) * (1.0-plaf[plafIndex]),
+                                   exp(llk001_[i] - tmpMax) * (1.0-plaf[plafIndex]) * (1.0-plaf[plafIndex]) * plaf[plafIndex],
+                                   exp(llk010_[i] - tmpMax) * (1.0-plaf[plafIndex]) * plaf[plafIndex] * (1.0-plaf[plafIndex]),
+                                   exp(llk011_[i] - tmpMax) * (1.0-plaf[plafIndex]) * plaf[plafIndex] * plaf[plafIndex],
+                                   exp(llk100_[i] - tmpMax) * plaf[plafIndex] * (1.0-plaf[plafIndex]) * (1.0-plaf[plafIndex]),
+                                   exp(llk101_[i] - tmpMax) * plaf[plafIndex] * (1.0-plaf[plafIndex]) * plaf[plafIndex],
+                                   exp(llk110_[i] - tmpMax) * plaf[plafIndex] * (1.0-plaf[plafIndex]) * plaf[plafIndex],
+                                   exp(llk111_[i] - tmpMax) * plaf[plafIndex] * plaf[plafIndex] * plaf[plafIndex]
+
+                                   } );
+        (void)normalizeBySum(tmpDist);
+
+        size_t tmpCase = sampleIndexGivenProp( this->recombRg_, tmpDist );
+
+        if ( tmpCase == 0 ){
+            this->hap1_.push_back( 0.0 );
+            this->hap2_.push_back( 0.0 );
+            this->hap3_.push_back( 0.0 );
+        } else if ( tmpCase == 1 ){
+            this->hap1_.push_back( 0.0 );
+            this->hap2_.push_back( 0.0 );
+            this->hap3_.push_back( 1.0 );
+        } else if ( tmpCase == 2 ){
+            this->hap1_.push_back( 0.0 );
+            this->hap2_.push_back( 1.0 );
+            this->hap3_.push_back( 0.0 );
+        } else if ( tmpCase == 3 ){
+            this->hap1_.push_back( 0.0 );
+            this->hap2_.push_back( 1.0 );
+            this->hap3_.push_back( 1.0 );
+        } else if ( tmpCase == 4 ){
+            this->hap1_.push_back( 1.0 );
+            this->hap2_.push_back( 0.0 );
+            this->hap3_.push_back( 0.0 );
+        } else if ( tmpCase == 5 ){
+            this->hap1_.push_back( 1.0 );
+            this->hap2_.push_back( 0.0 );
+            this->hap3_.push_back( 1.0 );
+        } else if ( tmpCase == 6 ){
+            this->hap1_.push_back( 1.0 );
+            this->hap2_.push_back( 1.0 );
+            this->hap3_.push_back( 0.0 );
+        } else if ( tmpCase == 7 ){
+            this->hap1_.push_back( 1.0 );
+            this->hap2_.push_back( 1.0 );
+            this->hap3_.push_back( 1.0 );
+        } else {
+            throw ("add missing copy should never reach here" );
+        }
+        plafIndex++;
+    }
+
+    assert ( this->hap1_.size() == this->nLoci_ );
+    assert ( this->hap2_.size() == this->nLoci_ );
+    assert ( this->hap3_.size() == this->nLoci_ );
+}
+
+
+void UpdateThreeHap::updateLLK(){
+    newLLK = vector <double> (this->nLoci_, 0.0);
+    for ( size_t i = 0; i < this->nLoci_; i++){
+        if (       this->hap1_[i] == 0 && this->hap2_[i] == 0 && this->hap3_[i] == 0 ){
+            newLLK[i] = llk000_[i];
+        } else if (this->hap1_[i] == 0 && this->hap2_[i] == 0 && this->hap3_[i] == 1 ){
+            newLLK[i] = llk001_[i];
+        } else if (this->hap1_[i] == 0 && this->hap2_[i] == 1 && this->hap3_[i] == 0 ){
+            newLLK[i] = llk010_[i];
+        } else if (this->hap1_[i] == 0 && this->hap2_[i] == 1 && this->hap3_[i] == 1 ){
+            newLLK[i] = llk011_[i];
+        } else if (this->hap1_[i] == 1 && this->hap2_[i] == 0 && this->hap3_[i] == 0 ){
+            newLLK[i] = llk100_[i];
+        } else if (this->hap1_[i] == 1 && this->hap2_[i] == 0 && this->hap3_[i] == 1 ){
+            newLLK[i] = llk101_[i];
+        } else if (this->hap1_[i] == 1 && this->hap2_[i] == 1 && this->hap3_[i] == 0 ){
+            newLLK[i] = llk110_[i];
+        } else if (this->hap1_[i] == 1 && this->hap2_[i] == 1 && this->hap3_[i] == 1 ){
+            newLLK[i] = llk111_[i];
+        } else {
+            throw("add missing copy, update llk should never reach here");
+        }
+    }
+}
