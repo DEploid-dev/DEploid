@@ -90,6 +90,7 @@ void DEploidIO::init() {
     this->setRandomSeedWasSet(false);
     this->setCompressVcf(false);
     this->setInitialPropWasGiven(false);
+    this->setInitialHapWasGiven(false);
     this->initialProp.clear();
     this->setExcludeSites( false );
     this->excludedMarkers = NULL;
@@ -368,6 +369,9 @@ void DEploidIO::parse (){
         } else if ( *argv_i == "-initialP" ){
             this->readInitialProportions();
             this->setInitialPropWasGiven( true );
+        } else if ( *argv_i == "-initialHap" ){
+            this->readInitialHaps();
+            this->setInitialHapWasGiven(true);
         } else if ( *argv_i == "-seed"){
             this->set_seed( readNextInput<size_t>() );
             this->setRandomSeedWasSet( true );

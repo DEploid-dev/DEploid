@@ -41,6 +41,7 @@ class Panel: public TxtReader{
  friend class UpdateHap;
  friend class DEploidIO;
  friend class DeconvolutedStrains;
+ friend class InitialHaplotypes;
   private:
     // Members
     vector < double > pRec_;
@@ -85,6 +86,16 @@ class DeconvolutedStrains: public Panel{
  friend class DEploidIO;
     DeconvolutedStrains():Panel(){}
     ~DeconvolutedStrains(){}
+};
+
+
+class InitialHaplotypes: public Panel{
+#ifdef UNITTEST
+ friend class TestInitialHaplotypes;
+#endif
+ friend class DEploidIO;
+    InitialHaplotypes():Panel(){}
+    ~InitialHaplotypes(){}
 };
 
 #endif

@@ -88,6 +88,7 @@ class DEploidIO{
 
 
     bool initialPropWasGiven_;
+    bool initialHapWasGiven_;
     bool useConstRecomb_;
     bool forbidCopyFromSame_;
     size_t kStrain_;
@@ -189,6 +190,7 @@ class DEploidIO{
     void finalize();
     void readNextStringto( string &readto );
     void readInitialProportions();
+    void readInitialHaps();
 
     void set_seed(const size_t seed){ this->randomSeed_ = seed; }
     void removeFilesWithSameName();
@@ -237,6 +239,9 @@ class DEploidIO{
 
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
     void setInitialPropWasGiven(const bool setTo){this->initialPropWasGiven_ = setTo; }
+
+    bool initialHapWasGiven() const { return initialHapWasGiven_; }
+    void setInitialHapWasGiven(const bool setTo){ this->initialHapWasGiven_ = setTo; }
 
     // log and export resutls
     void writeRecombProb ( Panel * panel );
