@@ -546,20 +546,20 @@ class TestPanel : public CppUnit::TestCase {
 };
 
 
-class TestDeconvolutedStrains : public CppUnit::TestCase {
+class TestInitialHaplotypes : public CppUnit::TestCase {
 
-    CPPUNIT_TEST_SUITE( TestDeconvolutedStrains );
+    CPPUNIT_TEST_SUITE( TestInitialHaplotypes );
     CPPUNIT_TEST( testMainConstructor );
     CPPUNIT_TEST_SUITE_END();
 
   private:
-    DeconvolutedStrains* hap_;
+    InitialHaplotypes* hap_;
 
     string hapName_;
   public:
     void setUp() {
         this->hapName_ = "data/testData/PG0390-C.test.nopanel.hap";
-        this->hap_ = new DeconvolutedStrains();
+        this->hap_ = new InitialHaplotypes();
         this->hap_->readFromFile(hapName_.c_str() );
     }
 
@@ -572,4 +572,4 @@ class TestDeconvolutedStrains : public CppUnit::TestCase {
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestPanel );
-CPPUNIT_TEST_SUITE_REGISTRATION( TestDeconvolutedStrains );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestInitialHaplotypes );

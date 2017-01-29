@@ -132,7 +132,7 @@ void Panel::buildExamplePanelContent(){
 }
 
 
-void Panel::intializeUpdatePanel(size_t inbreedingPanelSizeSetTo){
+void Panel::initializeUpdatePanel(size_t inbreedingPanelSizeSetTo){
     this->setInbreedingPanelSize(inbreedingPanelSizeSetTo);
 
     // If allows inbreeding, update reference panel by including strain haplotypes

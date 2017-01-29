@@ -30,7 +30,7 @@
 class Panel: public TxtReader{
 #ifdef UNITTEST
  friend class TestPanel;
- friend class TestDeconvolutedStrains;
+ friend class TestInitialHaplotypes;
  friend class TestUpdateHap;
  friend class TestUpdatePairHap;
  friend class TestUpdateSingleHap;
@@ -40,7 +40,6 @@ class Panel: public TxtReader{
  friend class UpdatePairHap;
  friend class UpdateHap;
  friend class DEploidIO;
- friend class DeconvolutedStrains;
  friend class InitialHaplotypes;
   private:
     // Members
@@ -69,7 +68,7 @@ class Panel: public TxtReader{
     void readFromFile( const char inchar[] );
     void computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame );
     void checkForExceptions( size_t nLoci, string panelFileName );
-    void intializeUpdatePanel( size_t inbreedingPanelSizeSetTo);
+    void initializeUpdatePanel( size_t inbreedingPanelSizeSetTo);
     void updatePanelWithHaps( size_t inbreedingPanelSizeSetTo, size_t excludedStrain, vector < vector<double> > & haps);
 
     void print();
@@ -79,14 +78,14 @@ class Panel: public TxtReader{
 };
 
 
-class DeconvolutedStrains: public Panel{
-#ifdef UNITTEST
- friend class TestDeconvolutedStrains;
-#endif
- friend class DEploidIO;
-    DeconvolutedStrains():Panel(){}
-    ~DeconvolutedStrains(){}
-};
+//class DeconvolutedStrains: public Panel{
+//#ifdef UNITTEST
+ //friend class TestDeconvolutedStrains;
+//#endif
+ //friend class DEploidIO;
+    //DeconvolutedStrains():Panel(){}
+    //~DeconvolutedStrains(){}
+//};
 
 
 class InitialHaplotypes: public Panel{

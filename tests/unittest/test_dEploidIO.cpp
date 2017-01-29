@@ -105,7 +105,6 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "data/testData/labStrains.test.panel.txt",
                          "-initialP", "0.1", "0.2", "0.3", "0.4", "-k", "4" };
         CPPUNIT_ASSERT_NO_THROW ( DEploidIO(16, argv1) );
-        CPPUNIT_ASSERT_THROW ( DEploidIO(14, argv1), NumOfPropNotMatchNumStrain );
 
         char *argv2[] = { "./dEploid",
                          "-ref", "data/testData/PG0390-C.test.ref",
@@ -138,6 +137,22 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "data/testData/labStrains.test.panel.txt",
                          "-initialP"};
         CPPUNIT_ASSERT_THROW ( DEploidIO(10, argv5), NotEnoughArg );
+
+        char *argv6[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                         "-initialP", "0.1", "0.2", "0.3", "0.4", "-k", "5" };
+        CPPUNIT_ASSERT_THROW ( DEploidIO(16, argv6), NumOfPropNotMatchNumStrain );
+
+        char *argv7[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                          "-k", "5", "-initialP", "0.1", "0.2", "0.3", "0.4" };
+        CPPUNIT_ASSERT_THROW ( DEploidIO(16, argv7), NumOfPropNotMatchNumStrain );
     }
 
 

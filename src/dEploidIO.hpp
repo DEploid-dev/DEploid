@@ -80,7 +80,7 @@ class DEploidIO{
     string altFileName_;
     string vcfFileName_;
     string excludeFileName_;
-    string deconvolutedStrainsFileName_;
+    string initialHapFileName_;
     string prefix_;
     size_t randomSeed_;
     bool randomSeedWasSet_;
@@ -89,6 +89,8 @@ class DEploidIO{
 
     bool initialPropWasGiven_;
     bool initialHapWasGiven_;
+    bool kStrainWasManuallySet_;
+    bool kStrainWasSetByHap_;
     bool useConstRecomb_;
     bool forbidCopyFromSame_;
     size_t kStrain_;
@@ -107,6 +109,7 @@ class DEploidIO{
 
     vector <double> initialProp;
     vector <double> filnalProp;
+    vector < vector <double> > initialHap;
     vector <string> chrom_;
     vector < size_t > indexOfChromStarts_;
     vector < vector < int > > position_;
@@ -265,6 +268,10 @@ class DEploidIO{
     size_t nLoci() const { return this->nLoci_; }
     void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}
     size_t kStrain() const { return this->kStrain_;}
+    void setKStrainWasManuallySet ( const size_t setTo ){ this->kStrainWasManuallySet_ = setTo; }
+    bool kStrainWasSetByHap() const { return this->kStrainWasSetByHap_; }
+    void setKStrainWasSetByHap ( const size_t setTo ){ this->kStrainWasSetByHap_ = setTo; }
+    bool kStrainWasManuallySet() const { return this->kStrainWasManuallySet_; }
     size_t nMcmcSample() const { return this->nMcmcSample_; }
     double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
     double Ne() const { return this->Ne_; }
