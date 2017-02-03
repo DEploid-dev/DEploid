@@ -78,16 +78,6 @@ class Panel: public TxtReader{
 };
 
 
-//class DeconvolutedStrains: public Panel{
-//#ifdef UNITTEST
- //friend class TestDeconvolutedStrains;
-//#endif
- //friend class DEploidIO;
-    //DeconvolutedStrains():Panel(){}
-    //~DeconvolutedStrains(){}
-//};
-
-
 class InitialHaplotypes: public Panel{
 #ifdef UNITTEST
  friend class TestInitialHaplotypes;

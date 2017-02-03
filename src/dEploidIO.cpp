@@ -329,7 +329,7 @@ void DEploidIO::parse (){
             }
 
             if ( this->initialPropWasGiven() && this->kStrain_ != initialProp.size() ){
-                string hint = string(" k = ") + to_string(kStrain_);
+                string hint = string(" k = ") + to_string(kStrain_) + ", flag -initialP suggests otherwise";;
                 throw NumOfPropNotMatchNumStrain(hint);
             }
 
@@ -388,12 +388,19 @@ void DEploidIO::parse (){
             this->readInitialProportions();
             this->setInitialPropWasGiven( true );
 
+            // If the k was set manually, check
             if ( this->kStrainWasManuallySet() && this->kStrain_ != initialProp.size() ){
                 string hint = string(" k = ") + to_string(kStrain_);
                 throw NumOfPropNotMatchNumStrain(hint);
             }
 
-            // check initial haplotype size ... check k strain ...
+            // If the k was set by initial Hap, check
+            if ( this->kStrainWasSetByHap() && this->kStrain() != this->initialProp.size() ){
+                string hint = string(" k = ") + to_string(this->kStrain()) + ", " + this->initialHapFileName_ + " suggests otherwise";
+                throw NumOfPropNotMatchNumStrain(hint);
+            }
+
+            this->setKstrain(this->initialProp.size());
         } else if ( *argv_i == "-initialHap" ){
             if ( this->doPainting() == true ){
                 throw ( FlagsConflict((*argv_i) , "-painting") );
@@ -401,7 +408,6 @@ void DEploidIO::parse (){
             this->readNextStringto ( this->initialHapFileName_ ) ;
             this->setInitialHapWasGiven(true);
             this->readInitialHaps();
-            // check number of strain .... check population size ...
         } else if ( *argv_i == "-seed"){
             this->set_seed( readNextInput<size_t>() );
             this->setRandomSeedWasSet( true );
@@ -528,13 +534,18 @@ void DEploidIO::readInitialHaps(){
     assert (this->initialHap.size() == 0 );
     this->initialHap = initialHapToBeRead.content_;
 
-    if ( this->kStrainWasManuallySet() && this->kStrain()!= initialHapToBeRead.truePanelSize()){
+    if ( this->kStrainWasManuallySet() && this->kStrain()!= initialHapToBeRead.truePanelSize() ){
         string hint = string(" k = ") + to_string(this->kStrain()) + ", " + this->initialHapFileName_ + " suggests otherwise";
         throw NumOfPropNotMatchNumStrain(hint);
-    } else {
-        this->setKstrain(initialHapToBeRead.truePanelSize());
-        this->setKStrainWasSetByHap(true);
     }
+
+    if ( this->kStrainWasSetByProp() && this->kStrain() != initialHapToBeRead.truePanelSize() ){
+        string hint = string(" k = ") + to_string(kStrain_) + ", flag -initialP suggests otherwise";;
+        throw NumOfPropNotMatchNumStrain(hint);
+    }
+
+    this->setKstrain(initialHapToBeRead.truePanelSize());
+    this->setKStrainWasSetByHap(true);
 }
 
 
@@ -549,7 +560,6 @@ void DEploidIO::chromPainting(){
         }
     }
 
-    //this->setKstrain(this->initialProp.size());
     for ( auto const& value: this->initialProp ){
         this->filnalProp.push_back(value);
     }

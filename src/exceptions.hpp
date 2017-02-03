@@ -30,6 +30,23 @@
 
 using namespace std;
 
+
+struct ShouldNotBeCalled : std::exception{
+
+  explicit ShouldNotBeCalled(){ }
+  virtual ~ShouldNotBeCalled() throw() {}
+  virtual const char* what () const noexcept {
+      return string("Should not reach here").c_str();
+  }
+};
+
+
+struct VirtualFunctionShouldNotBeCalled : public ShouldNotBeCalled{
+  VirtualFunctionShouldNotBeCalled():ShouldNotBeCalled(){}
+  ~VirtualFunctionShouldNotBeCalled() throw() {}
+};
+
+
 struct InvalidInput : std::exception {
   string src;
   string reason;

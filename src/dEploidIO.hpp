@@ -63,7 +63,6 @@ class DEploidIO{
     void chromPainting ();
     bool doPainting() const { return this->doPainting_; }
 
-
     // Log
     void wrapUp();
     bool randomSeedWasSet() const {return this->randomSeedWasSet_; }
@@ -91,6 +90,7 @@ class DEploidIO{
     bool initialHapWasGiven_;
     bool kStrainWasManuallySet_;
     bool kStrainWasSetByHap_;
+    bool kStrainWasSetByProp_;
     bool useConstRecomb_;
     bool forbidCopyFromSame_;
     size_t kStrain_;
@@ -272,6 +272,8 @@ class DEploidIO{
     bool kStrainWasSetByHap() const { return this->kStrainWasSetByHap_; }
     void setKStrainWasSetByHap ( const size_t setTo ){ this->kStrainWasSetByHap_ = setTo; }
     bool kStrainWasManuallySet() const { return this->kStrainWasManuallySet_; }
+    void setKStrainWasSetByProp ( const size_t setTo ){ this->kStrainWasSetByProp_ = setTo; }
+    bool kStrainWasSetByProp() const { return this->kStrainWasSetByProp_; }
     size_t nMcmcSample() const { return this->nMcmcSample_; }
     double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
     double Ne() const { return this->Ne_; }
