@@ -156,14 +156,18 @@ void Panel::updatePanelWithHaps(size_t inbreedingPanelSizeSetTo, size_t excluded
     dout << "*** Update reference panel without strain " << excludedStrain << " ***" << endl;
 
     for ( size_t siteI = 0; siteI < this->content_.size(); siteI++ ){
-        for ( size_t panelStrainJ = this->truePanelSize() ; panelStrainJ < this->inbreedingPanelSize(); panelStrainJ++ ){
+        size_t shiftAfter = this->inbreedingPanelSize();
 
+        for ( size_t panelStrainJ = this->truePanelSize() ; panelStrainJ < this->inbreedingPanelSize(); panelStrainJ++ ){
             size_t strainIndex = panelStrainJ - this->truePanelSize();
 
             if ( strainIndex == excludedStrain ){
-                strainIndex++;
+                shiftAfter = panelStrainJ;
             }
 
+            if (shiftAfter <= panelStrainJ){
+                strainIndex++;
+            }
             this->content_[siteI][panelStrainJ] = haps[siteI][strainIndex];
         }
     }

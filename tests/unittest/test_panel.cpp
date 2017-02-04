@@ -21,6 +21,7 @@ class TestPanel : public CppUnit::TestCase {
     CPPUNIT_TEST( checkForbidRecomb1 );
     CPPUNIT_TEST( checkForbidRecomb0 );
     CPPUNIT_TEST( testLociNumberUnequal );
+    CPPUNIT_TEST( checkUpdatingReferencePanel);
     CPPUNIT_TEST( checkExamplePanel );
     CPPUNIT_TEST_SUITE_END();
 
@@ -540,6 +541,63 @@ class TestPanel : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, this->panel4_->pNoRecNoRec_[5], epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, this->panel4_->pNoRecNoRec_[6], epsilon3);
 
+
+    }
+
+    void checkUpdatingReferencePanel(){
+        vector < vector<double> >  hapForTesting;
+        hapForTesting.push_back(vector <double> ({0,1,2,4,8}));
+        hapForTesting.push_back(vector <double> ({0,1,2,4,8}));
+        hapForTesting.push_back(vector <double> ({0,1,2,4,8}));
+        hapForTesting.push_back(vector <double> ({0,1,2,4,8}));
+        hapForTesting.push_back(vector <double> ({0,1,2,4,8}));
+        hapForTesting.push_back(vector <double> ({0,1,2,4,8}));
+        hapForTesting.push_back(vector <double> ({0,1,2,4,8}));
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel3_->initializeUpdatePanel(8));
+        for ( size_t i = 0; i < 7; i++){
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i].size(), (size_t)8);
+        }
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel3_->updatePanelWithHaps(8, 1, hapForTesting));
+        for ( size_t i = 0; i < 7; i++){
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][4], (double)0);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][5], (double)2);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][6], (double)4);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][7], (double)8);
+        }
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel3_->updatePanelWithHaps(8, 4, hapForTesting));
+        for ( size_t i = 0; i < 7; i++){
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][4], (double)0);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][5], (double)1);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][6], (double)2);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][7], (double)4);
+        }
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel3_->updatePanelWithHaps(8, 2, hapForTesting));
+        for ( size_t i = 0; i < 7; i++){
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][4], (double)0);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][5], (double)1);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][6], (double)4);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][7], (double)8);
+        }
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel3_->updatePanelWithHaps(8, 0, hapForTesting));
+        for ( size_t i = 0; i < 7; i++){
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][4], (double)1);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][5], (double)2);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][6], (double)4);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][7], (double)8);
+        }
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel3_->updatePanelWithHaps(8, 3, hapForTesting));
+        for ( size_t i = 0; i < 7; i++){
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][4], (double)0);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][5], (double)1);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][6], (double)2);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][7], (double)8);
+        }
 
     }
 
