@@ -31,6 +31,7 @@ class TxtReader : public VariantIndex {
 #ifdef UNITTEST
  friend class TestPanel;
  friend class TestTxtReader;
+ friend class TestInitialHaplotypes;
 #endif
  friend class McmcMachinery;
  friend class UpdateSingleHap;
@@ -61,7 +62,7 @@ class TxtReader : public VariantIndex {
     TxtReader (){};
     virtual void readFromFile( const char inchar[] ){ this->readFromFileBase( inchar ); };
     void readFromFileBase( const char inchar[] );
-    virtual ~TxtReader(){};
+    virtual ~TxtReader(){ };
     void removeMarkers ( );
 };
 

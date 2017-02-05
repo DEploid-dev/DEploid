@@ -66,23 +66,23 @@ class TestUpdateHap : public CppUnit::TestCase {
 
 
     void testVirtualFunctions(){
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPlaf_->core ( refCount_, altCount_, plaf_, expectedWsaf_, proportion_, haplotypes_) );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPlaf_->calcExpectedWsaf(expectedWsaf_, proportion_, haplotypes_ ) );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPlaf_->calcHapLLKs(refCount_, altCount_) );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPlaf_->buildEmission(0.1) );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPlaf_->samplePaths() );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPlaf_->addMissCopying(0.1) );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPlaf_->updateLLK() );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPlaf_->sampleHapIndependently(plaf_) );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPlaf_->core ( refCount_, altCount_, plaf_, expectedWsaf_, proportion_, haplotypes_), VirtualFunctionShouldNotBeCalled );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPlaf_->calcExpectedWsaf(expectedWsaf_, proportion_, haplotypes_ ), VirtualFunctionShouldNotBeCalled );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPlaf_->calcHapLLKs(refCount_, altCount_), VirtualFunctionShouldNotBeCalled );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPlaf_->buildEmission(0.1), VirtualFunctionShouldNotBeCalled );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPlaf_->samplePaths(), VirtualFunctionShouldNotBeCalled );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPlaf_->addMissCopying(0.1), VirtualFunctionShouldNotBeCalled );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPlaf_->updateLLK(), VirtualFunctionShouldNotBeCalled );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPlaf_->sampleHapIndependently(plaf_), VirtualFunctionShouldNotBeCalled );
 
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPanel_->core ( refCount_, altCount_, plaf_, expectedWsaf_, proportion_, haplotypes_ ) );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPanel_->calcExpectedWsaf(expectedWsaf_, proportion_, haplotypes_ ) );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPanel_->calcHapLLKs(refCount_, altCount_) );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPanel_->buildEmission(0.1) );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPanel_->samplePaths() );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPanel_->addMissCopying(0.1) );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPanel_->updateLLK() );
-        CPPUNIT_ASSERT_NO_THROW ( this->updateHapPanel_->sampleHapIndependently(plaf_) );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPanel_->core ( refCount_, altCount_, plaf_, expectedWsaf_, proportion_, haplotypes_ ), VirtualFunctionShouldNotBeCalled );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPanel_->calcExpectedWsaf(expectedWsaf_, proportion_, haplotypes_ ), VirtualFunctionShouldNotBeCalled );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPanel_->calcHapLLKs(refCount_, altCount_), VirtualFunctionShouldNotBeCalled );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPanel_->buildEmission(0.1), VirtualFunctionShouldNotBeCalled );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPanel_->samplePaths(), VirtualFunctionShouldNotBeCalled );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPanel_->addMissCopying(0.1), VirtualFunctionShouldNotBeCalled );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPanel_->updateLLK(), VirtualFunctionShouldNotBeCalled );
+        CPPUNIT_ASSERT_THROW ( this->updateHapPanel_->sampleHapIndependently(plaf_), VirtualFunctionShouldNotBeCalled );
     }
 
 };

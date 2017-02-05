@@ -90,6 +90,7 @@ void DEploidIO::init() {
     this->setRandomSeedWasSet(false);
     this->setCompressVcf(false);
     this->setInitialPropWasGiven(false);
+    this->setInitialHapWasGiven(false);
     this->initialProp.clear();
     this->setExcludeSites( false );
     this->excludedMarkers = NULL;
@@ -100,6 +101,8 @@ void DEploidIO::init() {
     this->setUsePanel(true);
     this->precision_ = 8;
     this->prefix_ = "pf3k-dEploid";
+    this->setKStrainWasManuallySet(false);
+    this->setKStrainWasSetByHap(false);
     this->setKstrain(5);
     this->nMcmcSample_ = 800;
     this->setDoUpdateProp( true );
@@ -317,7 +320,19 @@ void DEploidIO::parse (){
         } else if ( *argv_i == "-p" ) {
             this->precision_ = readNextInput<size_t>() ;
         } else if ( *argv_i == "-k" ) {
+            this->setKStrainWasManuallySet(true);
             this->setKstrain(readNextInput<size_t>());
+
+            if ( this->kStrainWasSetByHap() && this->kStrain() != this->initialHap[0].size() ){
+                string hint = string(" k = ") + to_string(this->kStrain()) + ", " + this->initialHapFileName_ + " suggests otherwise";
+                throw NumOfPropNotMatchNumStrain(hint);
+            }
+
+            if ( this->initialPropWasGiven() && this->kStrain_ != initialProp.size() ){
+                string hint = string(" k = ") + to_string(kStrain_) + ", flag -initialP suggests otherwise";;
+                throw NumOfPropNotMatchNumStrain(hint);
+            }
+
         } else if ( *argv_i == "-nSample" ) {
             this->nMcmcSample_ = readNextInput<size_t>() ;
         } else if ( *argv_i == "-burn" ) {
@@ -363,11 +378,36 @@ void DEploidIO::parse (){
             if ( this->usePanel() == false ){
                 throw ( FlagsConflict((*argv_i) , "-noPanel") );
             }
-            this->readNextStringto ( this->deconvolutedStrainsFileName_ ) ;
+            if ( this->initialHapWasGiven() == true ){
+                throw ( FlagsConflict((*argv_i) , "-initialHap") );
+            }
+            this->readNextStringto ( this->initialHapFileName_ ) ;
             this->setDoPainting( true );
+            this->readInitialHaps();
         } else if ( *argv_i == "-initialP" ){
             this->readInitialProportions();
             this->setInitialPropWasGiven( true );
+
+            // If the k was set manually, check
+            if ( this->kStrainWasManuallySet() && this->kStrain_ != initialProp.size() ){
+                string hint = string(" k = ") + to_string(kStrain_);
+                throw NumOfPropNotMatchNumStrain(hint);
+            }
+
+            // If the k was set by initial Hap, check
+            if ( this->kStrainWasSetByHap() && this->kStrain() != this->initialProp.size() ){
+                string hint = string(" k = ") + to_string(this->kStrain()) + ", " + this->initialHapFileName_ + " suggests otherwise";
+                throw NumOfPropNotMatchNumStrain(hint);
+            }
+
+            this->setKstrain(this->initialProp.size());
+        } else if ( *argv_i == "-initialHap" ){
+            if ( this->doPainting() == true ){
+                throw ( FlagsConflict((*argv_i) , "-painting") );
+            }
+            this->readNextStringto ( this->initialHapFileName_ ) ;
+            this->setInitialHapWasGiven(true);
+            this->readInitialHaps();
         } else if ( *argv_i == "-seed"){
             this->set_seed( readNextInput<size_t>() );
             this->setRandomSeedWasSet( true );
@@ -396,9 +436,12 @@ void DEploidIO::checkInput(){
         throw FileNameMissing ( "Reference panel" );}
     if ( this->initialPropWasGiven() && ( abs(sumOfVec(initialProp) - 1.0) > 0.000001 )){
         throw SumOfPropNotOne ( to_string(sumOfVec(initialProp)) );}
-    if ( this->initialPropWasGiven() && kStrain_ != initialProp.size() ){
-        string hint = string(" k = ") + to_string(kStrain_);
-        throw NumOfPropNotMatchNumStrain(hint); }
+    if ( this->initialPropWasGiven() ){
+        if ( this->kStrainWasManuallySet() == true ){
+        } else {
+            // set k strain by proportion length
+        }
+    }
 }
 
 
@@ -483,20 +526,40 @@ std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO) {
 }
 
 
+void DEploidIO::readInitialHaps(){
+    assert( this->initialHap.size() == 0 );
+    InitialHaplotypes initialHapToBeRead;
+    initialHapToBeRead.readFromFile(this->initialHapFileName_.c_str());
+
+    assert (this->initialHap.size() == 0 );
+    this->initialHap = initialHapToBeRead.content_;
+
+    if ( this->kStrainWasManuallySet() && this->kStrain()!= initialHapToBeRead.truePanelSize() ){
+        string hint = string(" k = ") + to_string(this->kStrain()) + ", " + this->initialHapFileName_ + " suggests otherwise";
+        throw NumOfPropNotMatchNumStrain(hint);
+    }
+
+    if ( this->kStrainWasSetByProp() && this->kStrain() != initialHapToBeRead.truePanelSize() ){
+        string hint = string(" k = ") + to_string(kStrain_) + ", flag -initialP suggests otherwise";;
+        throw NumOfPropNotMatchNumStrain(hint);
+    }
+
+    this->setKstrain(initialHapToBeRead.truePanelSize());
+    this->setKStrainWasSetByHap(true);
+}
+
+
 void DEploidIO::chromPainting(){
-    dout << "Painting haplotypes in" << this->deconvolutedStrainsFileName_ <<endl;
-    DeconvolutedStrains decovolutedStrainsToBeRead;
-    decovolutedStrainsToBeRead.readFromFile(this->deconvolutedStrainsFileName_.c_str());
+    dout << "Painting haplotypes in" << this->initialHapFileName_ <<endl;
 
     if ( this->initialPropWasGiven() == false ){
         clog << "Initial proportion was not specified. Set even proportions" << endl;
-        double evenProp = 1.0 / (double)decovolutedStrainsToBeRead.truePanelSize();
-        for ( size_t i = 0; i < decovolutedStrainsToBeRead.truePanelSize(); i++){
+        double evenProp = 1.0 / (double)this->kStrain();
+        for ( size_t i = 0; i < this->kStrain(); i++){
             this->initialProp.push_back(evenProp);
         }
     }
 
-    this->setKstrain(this->initialProp.size());
     for ( auto const& value: this->initialProp ){
         this->filnalProp.push_back(value);
     }
@@ -514,15 +577,15 @@ void DEploidIO::chromPainting(){
         //hap.push_back(tmpHap);
     //}
 
-    vector < vector <double>> hap = decovolutedStrainsToBeRead.content_;
+    //vector < vector <double>> hap = decovolutedStrainsToBeRead.content_;
 
     // Make this a separate function
     // calculate expected wsaf
     vector <double> expectedWsaf (this->nLoci_, 0.0);
-    for ( size_t i = 0; i < hap.size(); i++ ){
-        assert( kStrain_ == hap[i].size() );
+    for ( size_t i = 0; i < this->initialHap.size(); i++ ){
+        assert( kStrain_ == this->initialHap[i].size() );
         for ( size_t k = 0; k < this->kStrain_; k++){
-            expectedWsaf[i] += hap[i][k] * filnalProp[k];
+            expectedWsaf[i] += this->initialHap[i][k] * filnalProp[k];
         }
         assert ( expectedWsaf[i] >= 0 );
         //assert ( expectedWsaf[i] <= 1.0 );
@@ -530,14 +593,13 @@ void DEploidIO::chromPainting(){
 
     MersenneTwister tmpRg(this->randomSeed());
 
-
     if ( this->doAllowInbreeding() == true ){
-        this->panel->intializeUpdatePanel(this->panel->truePanelSize()+kStrain_-1);
+        this->panel->initializeUpdatePanel(this->panel->truePanelSize()+kStrain_-1);
     }
 
     for ( size_t tmpk = 0; tmpk < this->kStrain_; tmpk++ ){
         if ( this->doAllowInbreeding() == true ){
-            this->panel->updatePanelWithHaps(this->panel->truePanelSize()+kStrain_-1, tmpk, hap);
+            this->panel->updatePanelWithHaps(this->panel->truePanelSize()+kStrain_-1, tmpk, this->initialHap);
         }
 
         for ( size_t chromi = 0 ; chromi < this->indexOfChromStarts_.size(); chromi++ ){
@@ -549,7 +611,7 @@ void DEploidIO::chromPainting(){
                                       this->altCount_,
                                       this->plaf_,
                                       expectedWsaf,
-                                      this->filnalProp, hap, &tmpRg,
+                                      this->filnalProp, this->initialHap, &tmpRg,
                                       start, length,
                                       this->panel, this->missCopyProb_,
                                       tmpk);
@@ -558,7 +620,7 @@ void DEploidIO::chromPainting(){
                 updatingSingle.setPanelSize(this->panel->inbreedingPanelSize());
             }
 
-            updatingSingle.painting( refCount_, altCount_, expectedWsaf, this->filnalProp, hap);
+            updatingSingle.painting( refCount_, altCount_, expectedWsaf, this->filnalProp, this->initialHap);
             this->writeLastSingleFwdProb( updatingSingle.fwdProbs_, chromi, tmpk );
         }
     }
@@ -579,3 +641,5 @@ void DEploidIO::readPanel(){
     panel->computeRecombProbs( this->averageCentimorganDistance(), this->Ne(), this->useConstRecomb(), this->constRecombProb(), this->forbidCopyFromSame() );
     panel->checkForExceptions( this->nLoci(), this->panelFileName_ );
 }
+
+

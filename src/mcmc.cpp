@@ -91,7 +91,7 @@ void McmcMachinery::initializeMcmcChain( ){
     this->currentLLks_ = calcLLKs( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->currentExpectedWsaf_ , 0, this->currentExpectedWsaf_.size());
 
     if ( this->dEploidIO_->doAllowInbreeding() == true ){
-        this->intializeUpdateReferencePanel(this->panel_->truePanelSize()+kStrain_-1);
+        this->initializeUpdateReferencePanel(this->panel_->truePanelSize()+kStrain_-1);
     }
 
     assert (doutProp());
@@ -104,24 +104,28 @@ void McmcMachinery::initializeMcmcChain( ){
 
 void McmcMachinery::initializeHap(){
     assert( currentHap_.size() == 0);
-    for ( size_t i = 0; i < this->dEploidIO_->plaf_.size(); i++ ){
-        double currentPlaf = this->dEploidIO_->plaf_[i];
-        vector <double> tmpVec;
-        for ( size_t k = 0; k < this->kStrain_; k++){
-            tmpVec.push_back( this->rBernoulli(currentPlaf) );
+    if ( this->dEploidIO_ -> initialHapWasGiven() ){
+        this->currentHap_ = this->dEploidIO_->initialHap;
+    } else {
+        for ( size_t i = 0; i < this->dEploidIO_->plaf_.size(); i++ ){
+            double currentPlaf = this->dEploidIO_->plaf_[i];
+            vector <double> tmpVec;
+            for ( size_t k = 0; k < this->kStrain_; k++){
+                tmpVec.push_back( this->rBernoulli(currentPlaf) );
+            }
+            this->currentHap_.push_back(tmpVec);
         }
-        this->currentHap_.push_back(tmpVec);
     }
-
+    assert(this->currentHap_.size() == this->dEploidIO_->plaf_.size());
 }
 
 
-void McmcMachinery::intializeUpdateReferencePanel(size_t inbreedingPanelSizeSetTo){
+void McmcMachinery::initializeUpdateReferencePanel(size_t inbreedingPanelSizeSetTo){
     if ( this->dEploidIO_->doAllowInbreeding() != true ){
         return;
     }
 
-    this->panel_->intializeUpdatePanel(inbreedingPanelSizeSetTo);
+    this->panel_->initializeUpdatePanel(inbreedingPanelSizeSetTo);
 }
 
 

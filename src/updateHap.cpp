@@ -63,14 +63,14 @@ void UpdateHap::core(vector <double> &refCount,
                            vector <double> &plaf,
                            vector <double> &expectedWsaf,
                            vector <double> &proportion,
-                           vector < vector <double> > &haplotypes ){};
-void UpdateHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes){};
-void UpdateHap::calcHapLLKs( vector <double> &refCount, vector <double> &altCount){};
-void UpdateHap::buildEmission( double missCopyProb ){};
-void UpdateHap::samplePaths(){};
-void UpdateHap::addMissCopying( double missCopyProb ){};
-void UpdateHap::updateLLK(){};
-void UpdateHap::sampleHapIndependently(vector <double> &plaf){};
+                           vector < vector <double> > &haplotypes ){ throw VirtualFunctionShouldNotBeCalled();};
+void UpdateHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes){ throw VirtualFunctionShouldNotBeCalled(); };
+void UpdateHap::calcHapLLKs( vector <double> &refCount, vector <double> &altCount){ throw VirtualFunctionShouldNotBeCalled();};
+void UpdateHap::buildEmission( double missCopyProb ){ throw VirtualFunctionShouldNotBeCalled();};
+void UpdateHap::samplePaths(){ throw VirtualFunctionShouldNotBeCalled();};
+void UpdateHap::addMissCopying( double missCopyProb ){ throw VirtualFunctionShouldNotBeCalled();};
+void UpdateHap::updateLLK(){ throw VirtualFunctionShouldNotBeCalled();};
+void UpdateHap::sampleHapIndependently(vector <double> &plaf){ throw VirtualFunctionShouldNotBeCalled();};
 
 
 UpdateSingleHap::~UpdateSingleHap(){
@@ -355,7 +355,7 @@ void UpdateSingleHap::updateLLK(){
         } else if (this->hap_[i] == 1){
             newLLK[i] = llk1_[i];
         } else {
-            throw("should never get here!");
+            throw ShouldNotBeCalled();
         }
     }
 }
@@ -658,7 +658,7 @@ void UpdatePairHap::samplePaths(){
             colJ = colJ;
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
         } else {
-            throw ("Unknow case ... Should never reach here!");
+            throw ShouldNotBeCalled();
         }
         this->path1_.push_back(this->panel_->content_[contentIndex][rowI]);
         this->path2_.push_back(this->panel_->content_[contentIndex][colJ]);
@@ -702,7 +702,7 @@ void UpdatePairHap::addMissCopying( double missCopyProb ){
             this->hap1_.push_back( 1.0 - this->path1_[i] );
             this->hap2_.push_back( 1.0 - this->path2_[i] );
         } else {
-            throw ("add missing copy should never reach here" );
+            throw ShouldNotBeCalled();
         }
     }
 
@@ -739,7 +739,7 @@ void UpdatePairHap::sampleHapIndependently(vector <double> &plaf){
             this->hap1_.push_back( 1.0 );
             this->hap2_.push_back( 1.0 );
         } else {
-            throw ("add missing copy should never reach here" );
+            throw ShouldNotBeCalled();
         }
         plafIndex++;
     }
@@ -761,7 +761,7 @@ void UpdatePairHap::updateLLK(){
         } else if (this->hap1_[i] == 1 && this->hap2_[i] == 1){
             newLLK[i] = llk11_[i];
         } else {
-            throw("add missing copy, update llk should never reach here");
+            throw ShouldNotBeCalled();
         }
     }
 }

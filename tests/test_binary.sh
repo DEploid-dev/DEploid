@@ -60,6 +60,8 @@ echo "Testing examples"
  # vcf.gz test wouldn't work, due to zlib version is 1.2.3.4 on travis and circle. it is difficult to update.
  #test_dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf.gz -noPanel -o tmp1 || exit 1
  test_dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf -noPanel -o tmp1 -vcfOut || exit 1
+ # The following test takes long time, turn off on travis for now ...
+ #test_dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf -panel data/testData/labStrains.test.panel.txt -o tmp2 -painting tmp1.hap || exit 1
  #test_dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf -panel data/testData/labStrains.test.panel.txt -o tmp1 || exit 1
  #test_dEploid ${sameFlags} -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -noPanel -o tmp1 || exit 1
  #test_dEploid ${sameFlags} -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -panel data/testData/labStrains.test.panel.txt -o tmp1 || exit 1
