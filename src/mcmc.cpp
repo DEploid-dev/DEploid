@@ -31,10 +31,10 @@
 McmcSample::McmcSample(){};
 McmcSample::~McmcSample(){};
 
-McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, Panel *panel, McmcSample *mcmcSample, RandomGenerator* rg_ ){ // initialiseMCMCmachinery
+McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, McmcSample *mcmcSample, RandomGenerator* rg_ ){ // initialiseMCMCmachinery
 
     this->dEploidIO_ = dEploidIO;
-    this->panel_ = panel;
+    this->panel_ = dEploidIO->panel;
     this->mcmcSample_ = mcmcSample;
     this->seed_ = rg_->seed();
 
@@ -90,6 +90,10 @@ void McmcMachinery::initializeMcmcChain( ){
     this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
     this->currentLLks_ = calcLLKs( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->currentExpectedWsaf_ , 0, this->currentExpectedWsaf_.size());
 
+    if ( this->dEploidIO_->doAllowInbreeding() == true ){
+        this->initializeUpdateReferencePanel(this->panel_->truePanelSize()+kStrain_-1);
+    }
+
     assert (doutProp());
     assert (doutLLK());
     dout << "###########################################"<< endl;
@@ -100,14 +104,40 @@ void McmcMachinery::initializeMcmcChain( ){
 
 void McmcMachinery::initializeHap(){
     assert( currentHap_.size() == 0);
-    for ( size_t i = 0; i < this->dEploidIO_->plaf_.size(); i++ ){
-        double currentPlaf = this->dEploidIO_->plaf_[i];
-        vector <double> tmpVec;
-        for ( size_t k = 0; k < this->kStrain_; k++){
-            tmpVec.push_back( this->rBernoulli(currentPlaf) );
+    if ( this->dEploidIO_ -> initialHapWasGiven() ){
+        this->currentHap_ = this->dEploidIO_->initialHap;
+    } else {
+        for ( size_t i = 0; i < this->dEploidIO_->plaf_.size(); i++ ){
+            double currentPlaf = this->dEploidIO_->plaf_[i];
+            vector <double> tmpVec;
+            for ( size_t k = 0; k < this->kStrain_; k++){
+                tmpVec.push_back( this->rBernoulli(currentPlaf) );
+            }
+            this->currentHap_.push_back(tmpVec);
         }
-        this->currentHap_.push_back(tmpVec);
     }
+    assert(this->currentHap_.size() == this->dEploidIO_->plaf_.size());
+}
+
+
+void McmcMachinery::initializeUpdateReferencePanel(size_t inbreedingPanelSizeSetTo){
+    if ( this->dEploidIO_->doAllowInbreeding() != true ){
+        return;
+    }
+
+    this->panel_->initializeUpdatePanel(inbreedingPanelSizeSetTo);
+}
+
+
+void McmcMachinery::updateReferencePanel(size_t inbreedingPanelSizeSetTo, size_t excludedStrain){
+    if ( this->burnIn_ > this->currentMcmcIteration_ ){
+        return;
+    }
+
+    //if ( this->dEploidIO_->doAllowInbreeding() != true ){
+        //return;
+    //}
+    this->panel_->updatePanelWithHaps( inbreedingPanelSizeSetTo, excludedStrain, this->currentHap_);
 }
 
 
@@ -199,6 +229,9 @@ void McmcMachinery::runMcmcChain( bool showProgress ){
     this->mcmcSample_->hap = this->currentHap_;
 
     this->writeLastFwdProb();
+
+    this->dEploidIO_->filnalProp = this->mcmcSample_->proportion.back();
+    this->dEploidIO_->writeMcmcRelated(this->mcmcSample_);
 }
 
 
@@ -307,6 +340,10 @@ void McmcMachinery::updateSingleHap(){
     dout << " Update Single Hap "<<endl;
     this->findUpdatingStrainSingle();
 
+    if ( this->dEploidIO_->doAllowInbreeding() == true ){
+        this->updateReferencePanel(this->panel_->truePanelSize()+kStrain_-1, this->strainIndex_);
+    }
+
     for ( size_t chromi = 0 ; chromi < this->dEploidIO_->indexOfChromStarts_.size(); chromi++ ){
         size_t start = this->dEploidIO_->indexOfChromStarts_[chromi];
         size_t length = this->dEploidIO_->position_[chromi].size();
@@ -319,6 +356,11 @@ void McmcMachinery::updateSingleHap(){
                                   start, length,
                                   this->panel_, this->dEploidIO_->missCopyProb_,
                                   this->strainIndex_);
+
+        if ( this->dEploidIO_->doAllowInbreeding() == true ){
+            updating.setPanelSize(this->panel_->inbreedingPanelSize());
+        }
+
         updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
 
         size_t updateIndex = 0;
@@ -342,7 +384,6 @@ void McmcMachinery::updateSingleHap(){
             this->dEploidIO_->ofstreamExportTmp.close();
         }
     }
-
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
@@ -365,6 +406,7 @@ void McmcMachinery::updatePairHaps(){
                                 this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->forbidCopyFromSame(),
                                 this->strainIndex1_,
                                 this->strainIndex2_);
+
         updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
 
         size_t updateIndex = 0;

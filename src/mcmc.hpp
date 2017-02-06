@@ -67,7 +67,7 @@ class McmcMachinery {
 #endif
   public:
     //McmcMachinery();
-    McmcMachinery( DEploidIO* pdfDeconfIO, Panel *panel, McmcSample *mcmcSample, RandomGenerator* rg_ );
+    McmcMachinery( DEploidIO* pdfDeconfIO, McmcSample *mcmcSample, RandomGenerator* rg_ );
     ~McmcMachinery();
     void runMcmcChain( bool showProgress = true );
 
@@ -139,6 +139,8 @@ class McmcMachinery {
     void recordMcmcMachinery();
     bool recordingMcmcBool_;
     void writeLastFwdProb();
+    void updateReferencePanel(size_t inbreedingPanelSizeSetTo, size_t excludedStrain);
+    void initializeUpdateReferencePanel(size_t inbreedingPanelSizeSetTo);
 
   /* Moves */
     void updateProportion();

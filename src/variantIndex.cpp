@@ -21,7 +21,7 @@
  *
  */
 
-
+#include "exceptions.hpp"
 #include "txtReader.hpp"
 #include <algorithm> // find
 #include <iostream>
@@ -108,4 +108,4 @@ void VariantIndex::init(){
     this->setDoneGetIndexOfChromStarts( false );
 }
 
-
+void VariantIndex::removeMarkers () { throw VirtualFunctionShouldNotBeCalled();}

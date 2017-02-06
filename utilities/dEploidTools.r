@@ -11,8 +11,10 @@ fun.parse <- function( args ){
     excludeFileName = ""
     dEploidPrefix = ""
     excludeBool = FALSE
+    inbreedingBool = FALSE
     ADFieldIndex = 2
     pdfBool = FALSE
+    skip1Bool = FALSE
     arg_i = 1
     while ( arg_i <= length(args) ){
         argv = args[arg_i]
@@ -38,11 +40,15 @@ fun.parse <- function( args ){
         } else if ( argv == "-dEprefix" ){
             arg_i = fun.local.checkAndIncreaseArgI ( )
             dEploidPrefix = args[arg_i]
+        } else if ( argv == "-inbreeding" ){
+            inbreedingBool = TRUE
         } else if ( argv == "-ADFieldIndex" ){
             arg_i = fun.local.checkAndIncreaseArgI ( )
             ADFieldIndex = as.numeric(args[arg_i])
         } else if ( argv == "-pdf" ){
             pdfBool = TRUE
+        } else if ( argv == "-skip1" ){
+            skip1Bool = TRUE
         } else {
             cat ("Unknow flag: ", argv, "\n")
         }
@@ -70,7 +76,9 @@ fun.parse <- function( args ){
                     excludeFileName = excludeFileName,
                     excludeBool = excludeBool,
                     ADFieldIndex = ADFieldIndex,
-                    pdfBool = pdfBool ) )
+                    pdfBool = pdfBool,
+                    inbreedingBool = inbreedingBool,
+                    skip1Bool = skip1Bool) )
 }
 
 
@@ -261,8 +269,16 @@ plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), ex
     obsWSAF = computeObsWSAF ( alt, ref )
     nFigures = length(chromList)
     for ( chromI in chromList ){
-        plot( obsWSAF[coverage$CHROM==chromI], col="red", ylim=c(0,1), main = paste(titlePrefix, chromI, "WSAF"), ylab = "WSAF", cex.axis = 2*nFigures/8, cex.lab = 2*nFigures/8,
-        cex.main = 2*nFigures/6)
+        tmpWSAF = obsWSAF[coverage$CHROM==chromI]
+        plot(tmpWSAF , col="red", ylim=c(0,1), main = paste(titlePrefix, chromI, "WSAF"), ylab = "WSAF",
+            cex.axis = 2*nFigures/8, cex.lab = 2*nFigures/8, cex.main = 2*nFigures/6, xaxt = "n", yaxt = "n")
+        newXaxt = round(seq(1, length(tmpWSAF), length.out = 6))
+        axis(1, at = newXaxt, labels = as.character(newXaxt),
+            cex.axis= 2*nFigures/8)
+        newYaxt = seq(0, 1, length.out = 3)
+        axis(2, at = newYaxt, labels = as.character(newYaxt),
+            cex.axis= 2*nFigures/8)
+
 
         if ( length(expWSAF) > 0 ){
             plotIndex = c()
@@ -292,7 +308,7 @@ fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclu
 
     if ( pdfBool == TRUE ){
         cexSize = 3
-        pdf ( paste ( prefix, ".interpretDEploidFigure.2.pdf", sep = "" ), width = 60, height = 40)
+        pdf ( paste ( prefix, ".interpretDEploidFigure.2.pdf", sep = "" ), width = 45, height = 30)
     } else {
         cexSize = 2.5
         png ( paste ( prefix, ".interpretDEploidFigure.2.png", sep= ""), width = 3500, height = 2000)
@@ -307,15 +323,22 @@ fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclu
 }
 
 
-plot.postProb.ofCase <- function ( inPrefix, outPrefix, case, strainNumber, pdfBool ){
+plot.postProb.ofCase <- function ( inPrefix, outPrefix, case, strainNumber, pdfBool, inbreeding = FALSE  ){
     if ( pdfBool == TRUE ){
         cexSize = 3
-        pdf(paste(outPrefix, ".", case, ".pdf", sep = ""), width = 60, height = 40)
+        if ( inbreeding ){
+            pdf(paste(outPrefix, ".", case, ".inbreeding.pdf", sep = ""), width = 45, height = 30)
+        } else {
+            pdf(paste(outPrefix, ".", case, ".pdf", sep = ""), width = 45, height = 30)
+        }
     } else {
         cexSize = 2.5
-        png(paste(outPrefix, ".", case, ".png", sep = ""), width = 3500, height = 2000)
+        if (inbreeding){
+            png(paste(outPrefix, ".", case, ".inbreeding.png", sep = ""), width = 3500, height = 2000)
+        } else{
+            png(paste(outPrefix, ".", case, ".png", sep = ""), width = 3500, height = 2000)
+        }
     }
-
     obj = read.table( paste(inPrefix, ".", case, sep = ""), header=T)
     chromName = levels(obj$CHROM)
     ncol = ceiling(length(chromName)/2)
@@ -323,16 +346,29 @@ plot.postProb.ofCase <- function ( inPrefix, outPrefix, case, strainNumber, pdfB
     par(mar = c(5,7,7,4))
     nFigures = length(chromName)
     for ( chromI in chromName ){
-        haplotypePainter ( obj[which( chromI == obj$CHROM),c(3:dim(obj)[2])], paste("Strain", strainNumber+1, chromI, "posterior probabilities"), 2*nFigures)
+        if ( inbreeding ){
+            haplotypePainter ( obj[which( chromI == obj$CHROM),c(3:dim(obj)[2])],
+                title = paste("Strain", strainNumber+1, chromI, "inbreeding probabilities"),
+                labelScaling = 2*nFigures,
+                numberOfInbreeding = sum(grepl("I", names(obj))))
+        } else{
+            haplotypePainter ( obj[which( chromI == obj$CHROM),c(3:dim(obj)[2])],
+                title = paste("Strain", strainNumber+1, chromI, "posterior probabilities"),
+                labelScaling = 2*nFigures)
+        }
+
     }
     dev.off()
 }
 
 
-fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "", pdfBool ){
+fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "", pdfBool, inbreeding = FALSE  ){
     strainI = 0
     while ( file.exists(paste(inPrefix, ".single", strainI, sep="")) ){
         plot.postProb.ofCase( inPrefix, outPrefix, paste("single", strainI, sep=""), strainI, pdfBool)
+        if ( inbreeding ){
+            plot.postProb.ofCase( inPrefix, outPrefix, paste("single", strainI, sep=""), strainI, pdfBool, inbreeding = TRUE)
+        }
         strainI = strainI+1
     }
 }

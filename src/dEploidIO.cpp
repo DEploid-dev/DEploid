@@ -26,7 +26,7 @@
 #include <iomanip>      // std::setw
 #include <ctime>
 #include <iterator>
-
+#include "updateHap.hpp"
 
 DEploidIO::DEploidIO(){
     this->init();
@@ -61,6 +61,9 @@ DEploidIO::~DEploidIO(){
         delete this->vcfReaderPtr_;
     }
 
+    if ( this->panel != NULL ){
+        delete panel;
+    }
 }
 
 
@@ -86,23 +89,29 @@ void DEploidIO::init() {
     this->setDoExportRecombProb(false);
     this->setRandomSeedWasSet(false);
     this->setCompressVcf(false);
-    this->initialPropWasGiven_ = false;
+    this->setInitialPropWasGiven(false);
+    this->setInitialHapWasGiven(false);
     this->initialProp.clear();
     this->setExcludeSites( false );
     this->excludedMarkers = NULL;
+    this->panel = NULL;
     this->set_seed( (unsigned)0 );
     this->set_help(false);
     this->setVersion(false);
-    this->set_panel(true);
+    this->setUsePanel(true);
     this->precision_ = 8;
     this->prefix_ = "pf3k-dEploid";
-    this->kStrain_ = 5;
+    this->setKStrainWasManuallySet(false);
+    this->setKStrainWasSetByHap(false);
+    this->setKstrain(5);
     this->nMcmcSample_ = 800;
-    this->setDoUpdateProp ( true );
-    this->setDoUpdatePair ( true );
-    this->setDoUpdateSingle ( true );
+    this->setDoUpdateProp( true );
+    this->setDoUpdatePair( true );
+    this->setDoUpdateSingle( true );
     this->setDoExportPostProb( false );
+    this->setDoPainting( false );
     this->setDoExportSwitchMissCopy ( false );
+    this->setDoAllowInbreeding( false );
     this->mcmcBurn_ = 0.5;
     this->mcmcMachineryRate_ = 5;
     this->missCopyProb_ = 0.01;
@@ -191,6 +200,7 @@ void DEploidIO::finalize(){
         }
         this->altCount_ = alt.info_;
     }
+
     TxtReader plaf;
     plaf.readFromFile(plafFileName_.c_str());
     if ( this->excludeSites() ){
@@ -210,12 +220,14 @@ void DEploidIO::finalize(){
     if ( this->nLoci_ != this->altCount_.size() ){
         throw LociNumberUnequal( this->altFileName_ );
     }
-
     (void)removeFilesWithSameName();
+
+    this->readPanel();
 }
 
 
 void DEploidIO::removeFilesWithSameName(){
+    strExportProp = this->prefix_ + ".prop";
     strExportLLK = this->prefix_ + ".llk";
     strExportHap = this->prefix_ + ".hap";
 
@@ -223,7 +235,6 @@ void DEploidIO::removeFilesWithSameName(){
     if ( compressVcf() ){
         strExportVcf += ".gz";
     }
-    strExportProp = this->prefix_ + ".prop";
     strExportLog =  this->prefix_ + ".log";
     strExportRecombProb = this->prefix_ + ".recomb";
 
@@ -234,11 +245,12 @@ void DEploidIO::removeFilesWithSameName(){
     strExportTwoSwitchTwo   = this->prefix_ + ".twoSwitchTwo";
     strExportTwoMissCopyTwo = this->prefix_ + ".twoMissCopyTwo";
 
-
-    remove(strExportLLK.c_str());
-    remove(strExportHap.c_str());
-    remove(strExportVcf.c_str());
-    remove(strExportProp.c_str());
+    if ( this->doPainting() == false ){
+        remove(strExportLLK.c_str());
+        remove(strExportHap.c_str());
+        remove(strExportVcf.c_str());
+        remove(strExportProp.c_str());
+    }
     remove(strExportLog.c_str());
     remove(strExportRecombProb.c_str());
 
@@ -295,7 +307,10 @@ void DEploidIO::parse (){
             if ( doExportPostProb() ){
                 throw ( FlagsConflict((*argv_i) , "-exportPostProb") );
             }
-            this->set_panel(false);
+            if ( doAllowInbreeding() ){
+                throw ( FlagsConflict((*argv_i) , "-inbreeding") );
+            }
+            this->setUsePanel(false);
             this->setDoExportSwitchMissCopy ( false );
         } else if (*argv_i == "-exclude"){
             this->setExcludeSites( true );
@@ -305,7 +320,19 @@ void DEploidIO::parse (){
         } else if ( *argv_i == "-p" ) {
             this->precision_ = readNextInput<size_t>() ;
         } else if ( *argv_i == "-k" ) {
-            this->kStrain_ = readNextInput<size_t>() ;
+            this->setKStrainWasManuallySet(true);
+            this->setKstrain(readNextInput<size_t>());
+
+            if ( this->kStrainWasSetByHap() && this->kStrain() != this->initialHap[0].size() ){
+                string hint = string(" k = ") + to_string(this->kStrain()) + ", " + this->initialHapFileName_ + " suggests otherwise";
+                throw NumOfPropNotMatchNumStrain(hint);
+            }
+
+            if ( this->initialPropWasGiven() && this->kStrain_ != initialProp.size() ){
+                string hint = string(" k = ") + to_string(kStrain_) + ", flag -initialP suggests otherwise";;
+                throw NumOfPropNotMatchNumStrain(hint);
+            }
+
         } else if ( *argv_i == "-nSample" ) {
             this->nMcmcSample_ = readNextInput<size_t>() ;
         } else if ( *argv_i == "-burn" ) {
@@ -336,14 +363,51 @@ void DEploidIO::parse (){
             this->setDoUpdateSingle( false );
         } else if ( *argv_i == "-forbidUpdatePair" ) {
             this->setDoUpdatePair( false );
+        } else if ( *argv_i == "-inbreeding" ) {
+            if ( this->usePanel() == false ){
+                throw ( FlagsConflict((*argv_i) , "-noPanel") );
+            }
+            this->setDoAllowInbreeding( true );
+            this->setDoExportPostProb( true );
         } else if ( *argv_i == "-exportPostProb" ) {
             if ( this->usePanel() == false ){
                 throw ( FlagsConflict((*argv_i) , "-noPanel") );
             }
             this->setDoExportPostProb( true );
+        } else if ( *argv_i == "-painting" ) {
+            if ( this->usePanel() == false ){
+                throw ( FlagsConflict((*argv_i) , "-noPanel") );
+            }
+            if ( this->initialHapWasGiven() == true ){
+                throw ( FlagsConflict((*argv_i) , "-initialHap") );
+            }
+            this->readNextStringto ( this->initialHapFileName_ ) ;
+            this->setDoPainting( true );
+            this->readInitialHaps();
         } else if ( *argv_i == "-initialP" ){
             this->readInitialProportions();
-            this->initialPropWasGiven_ = true;
+            this->setInitialPropWasGiven( true );
+
+            // If the k was set manually, check
+            if ( this->kStrainWasManuallySet() && this->kStrain_ != initialProp.size() ){
+                string hint = string(" k = ") + to_string(kStrain_);
+                throw NumOfPropNotMatchNumStrain(hint);
+            }
+
+            // If the k was set by initial Hap, check
+            if ( this->kStrainWasSetByHap() && this->kStrain() != this->initialProp.size() ){
+                string hint = string(" k = ") + to_string(this->kStrain()) + ", " + this->initialHapFileName_ + " suggests otherwise";
+                throw NumOfPropNotMatchNumStrain(hint);
+            }
+
+            this->setKstrain(this->initialProp.size());
+        } else if ( *argv_i == "-initialHap" ){
+            if ( this->doPainting() == true ){
+                throw ( FlagsConflict((*argv_i) , "-painting") );
+            }
+            this->readNextStringto ( this->initialHapFileName_ ) ;
+            this->setInitialHapWasGiven(true);
+            this->readInitialHaps();
         } else if ( *argv_i == "-seed"){
             this->set_seed( readNextInput<size_t>() );
             this->setRandomSeedWasSet( true );
@@ -372,8 +436,12 @@ void DEploidIO::checkInput(){
         throw FileNameMissing ( "Reference panel" );}
     if ( this->initialPropWasGiven() && ( abs(sumOfVec(initialProp) - 1.0) > 0.000001 )){
         throw SumOfPropNotOne ( to_string(sumOfVec(initialProp)) );}
-    if ( this->initialPropWasGiven() && kStrain_ != initialProp.size() ){
-        throw NumOfPropNotMatchNumStrain(""); }
+    if ( this->initialPropWasGiven() ){
+        if ( this->kStrainWasManuallySet() == true ){
+        } else {
+            // set k strain by proportion length
+        }
+    }
 }
 
 
@@ -447,6 +515,8 @@ void DEploidIO::printHelp(std::ostream& out){
     out << endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel"<< endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanelExclude -noPanel"<< endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CPanelExclude -panel data/testData/labStrains.test.panel.txt" << endl;
+    out<<"./dEploid_dbg -vcf data/exampleData/PG0390-C.eg.vcf -plaf data/exampleData/labStrains.eg.PLAF.txt -o PG0390-CPanelExclude -panel data/exampleData/labStrains.eg.panel.txt -painting PG0390-CPanel.hap"<<endl;
 }
 
 
@@ -454,3 +524,122 @@ std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO) {
   for (std::string arg : dEploidIO.argv_) stream << " " << arg;
   return stream;
 }
+
+
+void DEploidIO::readInitialHaps(){
+    assert( this->initialHap.size() == 0 );
+    InitialHaplotypes initialHapToBeRead;
+    initialHapToBeRead.readFromFile(this->initialHapFileName_.c_str());
+
+    assert (this->initialHap.size() == 0 );
+    this->initialHap = initialHapToBeRead.content_;
+
+    if ( this->kStrainWasManuallySet() && this->kStrain()!= initialHapToBeRead.truePanelSize() ){
+        string hint = string(" k = ") + to_string(this->kStrain()) + ", " + this->initialHapFileName_ + " suggests otherwise";
+        throw NumOfPropNotMatchNumStrain(hint);
+    }
+
+    if ( this->kStrainWasSetByProp() && this->kStrain() != initialHapToBeRead.truePanelSize() ){
+        string hint = string(" k = ") + to_string(kStrain_) + ", flag -initialP suggests otherwise";;
+        throw NumOfPropNotMatchNumStrain(hint);
+    }
+
+    this->setKstrain(initialHapToBeRead.truePanelSize());
+    this->setKStrainWasSetByHap(true);
+}
+
+
+void DEploidIO::chromPainting(){
+    dout << "Painting haplotypes in" << this->initialHapFileName_ <<endl;
+
+    if ( this->initialPropWasGiven() == false ){
+        clog << "Initial proportion was not specified. Set even proportions" << endl;
+        double evenProp = 1.0 / (double)this->kStrain();
+        for ( size_t i = 0; i < this->kStrain(); i++){
+            this->initialProp.push_back(evenProp);
+        }
+    }
+
+    for ( auto const& value: this->initialProp ){
+        this->filnalProp.push_back(value);
+    }
+
+    // Painting posterior probabilities
+
+    // Export the p'
+    // Make this a separate class
+    //vector < vector <double> > hap;
+    //for ( size_t siteI = 0; siteI < decovolutedStrainsToBeRead.content_.size(); siteI++ ){
+        //vector <double> tmpHap;
+        //for ( size_t tmpk = 0; tmpk < this->kStrain_; tmpk++ ){
+            //tmpHap.push_back(decovolutedStrainsToBeRead.content_[siteI][tmpk]);
+        //}
+        //hap.push_back(tmpHap);
+    //}
+
+    //vector < vector <double>> hap = decovolutedStrainsToBeRead.content_;
+
+    // Make this a separate function
+    // calculate expected wsaf
+    vector <double> expectedWsaf (this->nLoci_, 0.0);
+    for ( size_t i = 0; i < this->initialHap.size(); i++ ){
+        assert( kStrain_ == this->initialHap[i].size() );
+        for ( size_t k = 0; k < this->kStrain_; k++){
+            expectedWsaf[i] += this->initialHap[i][k] * filnalProp[k];
+        }
+        assert ( expectedWsaf[i] >= 0 );
+        //assert ( expectedWsaf[i] <= 1.0 );
+    }
+
+    MersenneTwister tmpRg(this->randomSeed());
+
+    if ( this->doAllowInbreeding() == true ){
+        this->panel->initializeUpdatePanel(this->panel->truePanelSize()+kStrain_-1);
+    }
+
+    for ( size_t tmpk = 0; tmpk < this->kStrain_; tmpk++ ){
+        if ( this->doAllowInbreeding() == true ){
+            this->panel->updatePanelWithHaps(this->panel->truePanelSize()+kStrain_-1, tmpk, this->initialHap);
+        }
+
+        for ( size_t chromi = 0 ; chromi < this->indexOfChromStarts_.size(); chromi++ ){
+            size_t start = this->indexOfChromStarts_[chromi];
+            size_t length = this->position_[chromi].size();
+            dout << "Painting Chrom "<< chromi << " from site "<< start << " to " << start+length << endl;
+
+            UpdateSingleHap updatingSingle( this->refCount_,
+                                      this->altCount_,
+                                      this->plaf_,
+                                      expectedWsaf,
+                                      this->filnalProp, this->initialHap, &tmpRg,
+                                      start, length,
+                                      this->panel, this->missCopyProb_,
+                                      tmpk);
+
+            if ( this->doAllowInbreeding() == true ){
+                updatingSingle.setPanelSize(this->panel->inbreedingPanelSize());
+            }
+
+            updatingSingle.painting( refCount_, altCount_, expectedWsaf, this->filnalProp, this->initialHap);
+            this->writeLastSingleFwdProb( updatingSingle.fwdProbs_, chromi, tmpk );
+        }
+    }
+}
+
+
+void DEploidIO::readPanel(){
+    if ( this->usePanel() == false ){
+        return;
+    }
+
+    panel = new Panel();
+    panel->readFromFile(this->panelFileName_.c_str());
+    if ( this->excludeSites() ){
+        panel->findAndKeepMarkers( this->excludedMarkers );
+    }
+
+    panel->computeRecombProbs( this->averageCentimorganDistance(), this->Ne(), this->useConstRecomb(), this->constRecombProb(), this->forbidCopyFromSame() );
+    panel->checkForExceptions( this->nLoci(), this->panelFileName_ );
+}
+
+

@@ -60,22 +60,22 @@ if [ $? -ne 0 ]; then
 fi
 
 
-cut -f 1 tmp.pair | tail -n+2 > tmpCHROM3
-cut -f 2 tmp.pair | tail -n+2 > tmpPOS3
+#cut -f 1 tmp.pair | tail -n+2 > tmpCHROM3
+#cut -f 2 tmp.pair | tail -n+2 > tmpPOS3
 
-diff trueCHROM tmpCHROM3
-if [ $? -ne 0 ]; then
-  echo ""
-  echo "CHROM unequal"
-  exit 1
-fi
+#diff trueCHROM tmpCHROM3
+#if [ $? -ne 0 ]; then
+  #echo ""
+  #echo "CHROM unequal"
+  #exit 1
+#fi
 
-diff truePOS tmpPOS3
-if [ $? -ne 0 ]; then
-  echo ""
-  echo "POS unequal"
-  exit 1
-fi
+#diff truePOS tmpPOS3
+#if [ $? -ne 0 ]; then
+  #echo ""
+  #echo "POS unequal"
+  #exit 1
+#fi
 
 
 rm tmpCHROM tmpPOS trueCHROM truePOS

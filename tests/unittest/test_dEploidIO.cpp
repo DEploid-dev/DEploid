@@ -27,6 +27,8 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST( testVcfGzHeader );
     CPPUNIT_TEST( testVcfGzNoAD );
     CPPUNIT_TEST( testVcfOutUnSpecified );
+    CPPUNIT_TEST( testDefineK );
+    CPPUNIT_TEST( testChromPainting );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -68,6 +70,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL( dEploidIOptr->averageCentimorganDistance_, 15000.0, epsilon3 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( dEploidIOptr->Ne_ , 10.0, epsilon3 );
         CPPUNIT_ASSERT_EQUAL( dEploidIOptr->doExportVcf(), false );
+        CPPUNIT_ASSERT_EQUAL( dEploidIOptr->doPainting(), false);
         delete dEploidIOptr;
     }
 
@@ -91,9 +94,11 @@ class TestIO : public CppUnit::TestCase {
                          "-plaf", "data/testData/labStrains.test.PLAF.txt",
                          "-panel", "data/testData/labStrains.test.panel.txt",
                          "-o", "tmp1",
+                         "-initialHap", "data/testData/PG0390-C.test.nopanel.hap",
                          "-exclude", "data/testData/labStrains.test.exclude.txt"};
         CPPUNIT_ASSERT_NO_THROW ( DEploidIO(9, argv2) );
         CPPUNIT_ASSERT_NO_THROW ( DEploidIO(11, argv2) );
+        CPPUNIT_ASSERT_NO_THROW ( DEploidIO(13, argv2) );
     }
 
 
@@ -105,7 +110,9 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "data/testData/labStrains.test.panel.txt",
                          "-initialP", "0.1", "0.2", "0.3", "0.4", "-k", "4" };
         CPPUNIT_ASSERT_NO_THROW ( DEploidIO(16, argv1) );
-        CPPUNIT_ASSERT_THROW ( DEploidIO(14, argv1), NumOfPropNotMatchNumStrain );
+        CPPUNIT_ASSERT_NO_THROW ( DEploidIO(14, argv1) );
+        DEploidIO tmp(14, argv1);
+        CPPUNIT_ASSERT_EQUAL ( tmp.kStrain(), (size_t)4 );
 
         char *argv2[] = { "./dEploid",
                          "-ref", "data/testData/PG0390-C.test.ref",
@@ -138,6 +145,22 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "data/testData/labStrains.test.panel.txt",
                          "-initialP"};
         CPPUNIT_ASSERT_THROW ( DEploidIO(10, argv5), NotEnoughArg );
+
+        char *argv6[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                         "-initialP", "0.1", "0.2", "0.3", "0.4", "-k", "5" };
+        CPPUNIT_ASSERT_THROW ( DEploidIO(16, argv6), NumOfPropNotMatchNumStrain );
+
+        char *argv7[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                          "-k", "5", "-initialP", "0.1", "0.2", "0.3", "0.4" };
+        CPPUNIT_ASSERT_THROW ( DEploidIO(16, argv7), NumOfPropNotMatchNumStrain );
     }
 
 
@@ -698,6 +721,24 @@ class TestIO : public CppUnit::TestCase {
                          "-vcf", "data/testData/PG0390-C.test.vcf",
                          "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel", "-z"};
         CPPUNIT_ASSERT_THROW ( DEploidIO(7, argv1), VcfOutUnSpecified );
+    }
+
+    void testChromPainting(){
+        char *argv1[] = { "./dEploid",
+                         "-vcf", "data/testData/PG0390-C.test.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-painting", "data/testData/PG0390-C.test.nopanel.hap",
+                         "-panel", "data/testData/labStrains.test.panel.txt", "-inbreeding"};
+        CPPUNIT_ASSERT_NO_THROW ( DEploidIO(9, argv1));
+        CPPUNIT_ASSERT_NO_THROW ( DEploidIO(10, argv1));
+        DEploidIO dEploidIO(10, argv1);
+        CPPUNIT_ASSERT_EQUAL(dEploidIO.doPainting(), true);
+        CPPUNIT_ASSERT_NO_THROW(dEploidIO.chromPainting());
+
+    }
+
+    void testDefineK(){
+
     }
 };
 

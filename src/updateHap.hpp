@@ -43,7 +43,11 @@ class UpdateHap{
   friend class McmcMachinery;
   friend class UpdateSingleHap;
   friend class UpdatePairHap;
+  friend class DEploidIO;
 
+  public:
+    size_t nPanel() const { return this->nPanel_; }
+  private:
     UpdateHap();
     UpdateHap( vector <double> &refCount,
                vector <double> &altCount,
@@ -66,6 +70,8 @@ class UpdateHap{
 
     size_t kStrain_;
     size_t nPanel_;
+    void setPanelSize ( const size_t setTo ){ this->nPanel_ = setTo; }
+
     vector <double> newLLK;
 
     size_t segmentStartIndex_;
@@ -98,7 +104,8 @@ class UpdateSingleHap : public UpdateHap{
 #endif
  friend class McmcMachinery;
  friend class DEploidIO;
-  public:
+  //public:
+  private:
     UpdateSingleHap ();
     UpdateSingleHap( vector <double> &refCount,
                       vector <double> &altCount,
@@ -113,10 +120,10 @@ class UpdateSingleHap : public UpdateHap{
                       size_t strainIndex );
     ~UpdateSingleHap();
 
-  private:
     vector <size_t> siteOfOneSwitchOne;
     vector <size_t> siteOfOneMissCopyOne;
     vector < vector <double> > fwdProbs_;
+    vector < vector <double> > fwdBwdProbs_;
 
     size_t strainIndex_;
     vector <double> expectedWsaf0_;
@@ -128,17 +135,23 @@ class UpdateSingleHap : public UpdateHap{
     vector <double> hap_;
 
     // Methods
-    void core(vector <double> &refCount,
-                           vector <double> &altCount,
-                           vector <double> &plaf,
-                           vector <double> &expectedWsaf,
-                           vector <double> &proportion,
-                           vector < vector <double> > &haplotypes );
+    void core( vector <double> &refCount,
+               vector <double> &altCount,
+               vector <double> &plaf,
+               vector <double> &expectedWsaf,
+               vector <double> &proportion,
+               vector < vector <double> > &haplotypes );
+    void painting( vector <double> &refCount,
+                   vector <double> &altCount,
+                   vector <double> &expectedWsaf,
+                   vector <double> &proportion,
+                   vector < vector <double> > &haplotypes );
     void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
     void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
     void buildEmission( double missCopyProb );
     void buildEmissionBasicVersion( double missCopyProb );
     void calcFwdProbs();
+    void calcFwdBwdProbs();
     void samplePaths();
     void addMissCopying( double missCopyProb );
     void sampleHapIndependently(vector <double> &plaf);

@@ -43,31 +43,18 @@ int main( int argc, char *argv[] ){
             return EXIT_SUCCESS;
         }
 
-        Panel *panel = NULL; // Move panel to dEploidIO
+        if ( dEploidIO.doPainting() ){
+            dEploidIO.chromPainting();
+        } else{
+            McmcSample * mcmcSample = new McmcSample();
+            MersenneTwister rg(dEploidIO.randomSeed());
 
-        if ( dEploidIO.usePanel() ){
-            panel = new Panel();
-            panel->readFromFile(dEploidIO.panelFileName_.c_str());
-            if ( dEploidIO.excludeSites() ){
-                panel->findAndKeepMarkers( dEploidIO.excludedMarkers );
-            }
-
-            panel->computeRecombProbs( dEploidIO.averageCentimorganDistance(), dEploidIO.Ne(), dEploidIO.useConstRecomb(), dEploidIO.constRecombProb(), dEploidIO.forbidCopyFromSame() );
-            panel->checkForExceptions( dEploidIO.nLoci(), dEploidIO.panelFileName_ );
+            McmcMachinery mcmcMachinery(&dEploidIO, mcmcSample, &rg);
+            mcmcMachinery.runMcmcChain(true);
+            delete mcmcSample;
         }
-
-        McmcSample * mcmcSample = new McmcSample();
-        MersenneTwister rg(dEploidIO.randomSeed());
-
-        McmcMachinery mcmcMachinery(&dEploidIO, panel, mcmcSample, &rg);
-        mcmcMachinery.runMcmcChain(true);
-
-        dEploidIO.write(mcmcSample, panel);
-
-        if ( panel ){
-            delete panel;
-        }
-        delete mcmcSample;
+        // Finishing, write log
+        dEploidIO.wrapUp();
     }
     catch (const exception &e) {
       std::cerr << "Error: " << e.what() << std::endl;

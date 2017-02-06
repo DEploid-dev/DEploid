@@ -24,20 +24,24 @@
 #include "dEploidIO.hpp"
 #include "mcmc.hpp"
 
-void DEploidIO::write( McmcSample * mcmcSample, Panel * panel ){
+void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample){
     this->writeProp( mcmcSample );
     this->writeLLK( mcmcSample );
     this->writeHap( mcmcSample );
     this->writeVcf( mcmcSample );
+}
+
+
+void DEploidIO::wrapUp(){
     this->writeRecombProb( panel );
 
     // Get End time before writing the log
     this->getTime(false);
 
-    this->writeLog ( mcmcSample, &std::cout );
+    this->writeLog (&std::cout );
 
     ofstreamExportTmp.open( strExportLog.c_str(), ios::out | ios::app | ios::binary );
-    this->writeLog ( mcmcSample, &ofstreamExportTmp );
+    this->writeLog (&ofstreamExportTmp );
     ofstreamExportTmp.close();
 }
 
@@ -67,10 +71,17 @@ void DEploidIO::writeRecombProb ( Panel * panel ){
 
 
 
-void DEploidIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
-    (*writeTo) << "#########################################\n";
+void DEploidIO::writeLog ( ostream * writeTo ){
+    size_t nHash = 30 + string(VERSION).size();
+    for ( size_t i = 0; i < nHash; i++){
+        (*writeTo) << "#";
+    }
+    (*writeTo) << "\n";
     (*writeTo) << "#        dEploid "<< setw(10) << VERSION << " log        #\n";
-    (*writeTo) << "#########################################\n";
+    for ( size_t i = 0; i < nHash; i++){
+        (*writeTo) << "#";
+    }
+    (*writeTo) << "\n";
     (*writeTo) << "Program was compiled on: " << compileTime_ << endl;
     (*writeTo) << "dEploid version: " << dEploidGitVersion_ << endl;
     (*writeTo) << "\n";
@@ -82,14 +93,16 @@ void DEploidIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
     if ( altFileName_.size()>0) (*writeTo) << setw(12) << "ALT count: " << altFileName_    << "\n";
     if ( excludeSites() ){ (*writeTo) << setw(12) << "Exclude: " << excludeFileName_    << "\n"; }
     (*writeTo) << "\n";
-    (*writeTo) << "MCMC parameters: "<< "\n";
-    (*writeTo) << setw(19) << " MCMC burn: " << mcmcBurn_ << "\n";
-    (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_ << "\n";
-    (*writeTo) << setw(19) << " MCMC sample rate: " << mcmcMachineryRate_ <<"\n";
-    (*writeTo) << setw(19) << " Random seed: " << this->randomSeed() << "\n";
-    (*writeTo) << setw(19) << " Update Prop: "   << (this->doUpdateProp()  ? "YES":"NO") << "\n";
-    (*writeTo) << setw(19) << " Update Single: " << (this->doUpdateSingle()? "YES":"NO") << "\n";
-    (*writeTo) << setw(19) << " Update Pair: "   << (this->doUpdatePair()  ? "YES":"NO") << "\n";
+    if ( this->doPainting() == false ) {
+        (*writeTo) << "MCMC parameters: "<< "\n";
+        (*writeTo) << setw(19) << " MCMC burn: " << mcmcBurn_ << "\n";
+        (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_ << "\n";
+        (*writeTo) << setw(19) << " MCMC sample rate: " << mcmcMachineryRate_ <<"\n";
+        (*writeTo) << setw(19) << " Random seed: " << this->randomSeed() << "\n";
+        (*writeTo) << setw(19) << " Update Prop: "   << (this->doUpdateProp()  ? "YES":"NO") << "\n";
+        (*writeTo) << setw(19) << " Update Single: " << (this->doUpdateSingle()? "YES":"NO") << "\n";
+        (*writeTo) << setw(19) << " Update Pair: "   << (this->doUpdatePair()  ? "YES":"NO") << "\n";
+    }
     (*writeTo) << "\n";
     (*writeTo) << "Other parameters:"<< "\n";
     if ( forbidCopyFromSame_ ){ (*writeTo) << " Update pair haplotypes move forbid copying from the same strain!!! \n"; }
@@ -109,15 +122,19 @@ void DEploidIO::writeLog ( McmcSample * mcmcSample, ostream * writeTo ){
     (*writeTo) << setw(14) << "End at: "    << endTime_  ;
     (*writeTo) << "\n";
     (*writeTo) << "Output saved to:\n";
-    (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
-    (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
-    (*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
-    if ( doExportVcf() ) { (*writeTo) << setw(14) << "Vcf: "  << strExportVcf  << "\n"; }
+    if ( this->doPainting() ){
+
+    } else {
+        (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
+        (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
+        (*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
+        if ( doExportVcf() ) { (*writeTo) << setw(14) << "Vcf: "  << strExportVcf  << "\n"; }
+    }
     (*writeTo) << "\n";
-    (*writeTo) << "Proportions at the last iteration:\n";
-    for ( size_t ii = 0; ii < mcmcSample->proportion.back().size(); ii++){
-        (*writeTo) << setw(10) << mcmcSample->proportion.back()[ii];
-        (*writeTo) << ((ii < (mcmcSample->proportion.back().size()-1)) ? "\t" : "\n") ;
+    (*writeTo) << "Proportions:\n";
+    for ( size_t ii = 0; ii < this->filnalProp.size(); ii++){
+        (*writeTo) << setw(10) << this->filnalProp[ii];
+        (*writeTo) << ((ii < (this->filnalProp.size()-1)) ? "\t" : "\n") ;
     }
 
 }

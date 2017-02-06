@@ -21,6 +21,7 @@ class TestPanel : public CppUnit::TestCase {
     CPPUNIT_TEST( checkForbidRecomb1 );
     CPPUNIT_TEST( checkForbidRecomb0 );
     CPPUNIT_TEST( testLociNumberUnequal );
+    CPPUNIT_TEST( checkUpdatingReferencePanel);
     CPPUNIT_TEST( checkExamplePanel );
     CPPUNIT_TEST_SUITE_END();
 
@@ -543,6 +544,149 @@ class TestPanel : public CppUnit::TestCase {
 
     }
 
+    void checkUpdatingReferencePanel(){
+        vector < vector<double> >  hapForTesting;
+        hapForTesting.push_back(vector <double> ({0,1,2,4,8}));
+        hapForTesting.push_back(vector <double> ({0,1,2,4,8}));
+        hapForTesting.push_back(vector <double> ({0,1,2,4,8}));
+        hapForTesting.push_back(vector <double> ({0,1,2,4,8}));
+        hapForTesting.push_back(vector <double> ({0,1,2,4,8}));
+        hapForTesting.push_back(vector <double> ({0,1,2,4,8}));
+        hapForTesting.push_back(vector <double> ({0,1,2,4,8}));
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel3_->initializeUpdatePanel(8));
+        for ( size_t i = 0; i < 7; i++){
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i].size(), (size_t)8);
+        }
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel3_->updatePanelWithHaps(8, 1, hapForTesting));
+        for ( size_t i = 0; i < 7; i++){
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][4], (double)0);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][5], (double)2);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][6], (double)4);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][7], (double)8);
+        }
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel3_->updatePanelWithHaps(8, 4, hapForTesting));
+        for ( size_t i = 0; i < 7; i++){
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][4], (double)0);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][5], (double)1);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][6], (double)2);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][7], (double)4);
+        }
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel3_->updatePanelWithHaps(8, 2, hapForTesting));
+        for ( size_t i = 0; i < 7; i++){
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][4], (double)0);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][5], (double)1);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][6], (double)4);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][7], (double)8);
+        }
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel3_->updatePanelWithHaps(8, 0, hapForTesting));
+        for ( size_t i = 0; i < 7; i++){
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][4], (double)1);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][5], (double)2);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][6], (double)4);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][7], (double)8);
+        }
+
+        CPPUNIT_ASSERT_NO_THROW(this->panel3_->updatePanelWithHaps(8, 3, hapForTesting));
+        for ( size_t i = 0; i < 7; i++){
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][4], (double)0);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][5], (double)1);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][6], (double)2);
+            CPPUNIT_ASSERT_EQUAL(this->panel3_->content_[i][7], (double)8);
+        }
+
+    }
+
+};
+
+
+class TestInitialHaplotypes : public CppUnit::TestCase {
+
+    CPPUNIT_TEST_SUITE( TestInitialHaplotypes );
+    CPPUNIT_TEST( testMainConstructor );
+    //CPPUNIT_TEST( testMainConstructor );
+    CPPUNIT_TEST_SUITE_END();
+
+  private:
+    InitialHaplotypes* hap_;
+
+    string hapName_;
+  public:
+    void setUp() {
+        this->hapName_ = "data/testData/PG0390-C.test.nopanel.hap";
+        this->hap_ = new InitialHaplotypes();
+        this->hap_->readFromFile(hapName_.c_str() );
+    }
+
+    void tearDown() {
+        delete hap_;
+    }
+  public:
+    void testMainConstructor(){
+        CPPUNIT_ASSERT_EQUAL(this->hap_->chrom_.size(), (size_t)14);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_.size(), (size_t)14);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_.size(), (size_t)14);
+
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_[0], (size_t)0);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_[1], (size_t)204);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_[2], (size_t)216);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_[3], (size_t)235);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_[4], (size_t)275);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_[5], (size_t)299);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_[6], (size_t)320);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_[7], (size_t)362);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_[8], (size_t)393);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_[9], (size_t)429);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_[10], (size_t)450);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_[11], (size_t)478);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_[12], (size_t)504);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->indexOfChromStarts_[13], (size_t)545);
+
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[0].size(), (size_t)204);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[0][0], (int)93157);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[0][1], (int)94422);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[0][2], (int)94459);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[1].size(), (size_t)12);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[2].size(), (size_t)19);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[3].size(), (size_t)40);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[4].size(), (size_t)24);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[5].size(), (size_t)21);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[5][0], (int)120625);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[5][1], (int)183045);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[5][2], (int)244644);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[6].size(), (size_t)42);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[7].size(), (size_t)31);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[8].size(), (size_t)36);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[9].size(), (size_t)21);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[10].size(), (size_t)28);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[11].size(), (size_t)26);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[12].size(), (size_t)41);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->position_[13].size(), (size_t)49);
+
+        //head -5 data/testData/PG0390-C.test.nopanel.hap | tail -n1
+        //Pf3D7_01_v3	94487	0	0	1	0	0
+
+        CPPUNIT_ASSERT_EQUAL(this->hap_->content_.size(), (size_t)594);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->content_[3][0], 0.0);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->content_[3][1], 0.0);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->content_[3][2], 1.0);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->content_[3][3], 0.0);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->content_[3][4], 0.0);
+
+        //head -195 data/testData/PG0390-C.test.nopanel.hap | tail -n1
+        //Pf3D7_01_v3	319673	1	0	1	0	0
+        CPPUNIT_ASSERT_EQUAL(this->hap_->content_[193][0], 1.0);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->content_[193][1], 0.0);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->content_[193][2], 1.0);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->content_[193][3], 0.0);
+        CPPUNIT_ASSERT_EQUAL(this->hap_->content_[193][4], 0.0);
+    }
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestPanel );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestInitialHaplotypes );

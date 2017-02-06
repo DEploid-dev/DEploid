@@ -43,7 +43,7 @@ UpdateHap::UpdateHap( vector <double> &refCount,
     this->nPanel_ = 0; // Initialize when panel is not given
 
     if ( this->panel_ != NULL ){
-        this->nPanel_ = this->panel_->nPanel_;
+        this->setPanelSize( this->panel_->truePanelSize() );
     }
 
     this->kStrain_ = proportion.size();
@@ -63,14 +63,14 @@ void UpdateHap::core(vector <double> &refCount,
                            vector <double> &plaf,
                            vector <double> &expectedWsaf,
                            vector <double> &proportion,
-                           vector < vector <double> > &haplotypes ){};
-void UpdateHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes){};
-void UpdateHap::calcHapLLKs( vector <double> &refCount, vector <double> &altCount){};
-void UpdateHap::buildEmission( double missCopyProb ){};
-void UpdateHap::samplePaths(){};
-void UpdateHap::addMissCopying( double missCopyProb ){};
-void UpdateHap::updateLLK(){};
-void UpdateHap::sampleHapIndependently(vector <double> &plaf){};
+                           vector < vector <double> > &haplotypes ){ throw VirtualFunctionShouldNotBeCalled();};
+void UpdateHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes){ throw VirtualFunctionShouldNotBeCalled(); };
+void UpdateHap::calcHapLLKs( vector <double> &refCount, vector <double> &altCount){ throw VirtualFunctionShouldNotBeCalled();};
+void UpdateHap::buildEmission( double missCopyProb ){ throw VirtualFunctionShouldNotBeCalled();};
+void UpdateHap::samplePaths(){ throw VirtualFunctionShouldNotBeCalled();};
+void UpdateHap::addMissCopying( double missCopyProb ){ throw VirtualFunctionShouldNotBeCalled();};
+void UpdateHap::updateLLK(){ throw VirtualFunctionShouldNotBeCalled();};
+void UpdateHap::sampleHapIndependently(vector <double> &plaf){ throw VirtualFunctionShouldNotBeCalled();};
 
 
 UpdateSingleHap::~UpdateSingleHap(){
@@ -118,6 +118,64 @@ void UpdateSingleHap::core(vector <double> &refCount,
     this->updateLLK();
 }
 
+
+void UpdateSingleHap::painting( vector <double> &refCount,
+                                vector <double> &altCount,
+                                vector <double> &expectedWsaf,
+                                vector <double> &proportion,
+                                vector < vector <double> > &haplotypes ){
+    this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
+    this->calcHapLLKs(refCount, altCount);
+    this->buildEmission( this->missCopyProb_ );
+    this->calcFwdBwdProbs();
+}
+
+
+void UpdateSingleHap::calcFwdBwdProbs(){
+    this->calcFwdProbs();
+
+    vector <double> bwdLast (this->nPanel_, 0.0);
+    for ( size_t i = 0 ; i < this->nPanel_; i++){
+        //bwdLast[i] = this->emission_[0][this->panel_->content_[hapIndex][i]];
+        //bwdLast[i] = 1.0 / (double)this->nPanel_;
+        bwdLast[i] = 1.0;
+    }
+    (void)normalizeBySum(bwdLast);
+    vector < vector < double > > bwdProbs_;
+    bwdProbs_.push_back(bwdLast);
+
+    size_t hapIndexBack = this->segmentStartIndex_ + this->nLoci_ - 1;
+    for ( size_t j = (this->nLoci_- 1); j > 0; j-- ){
+        double pRecEachHap = this->panel_->pRecEachHap_[hapIndexBack];
+        double pNoRec = this->panel_->pNoRec_[hapIndexBack];
+        //double massFromRec = sumOfVec(bwdProbs_.back()) * pRecEachHap;
+        vector <double> bwdTmp (this->nPanel_, 0.0);
+        for ( size_t i = 0 ; i < this->nPanel_; i++){
+            bwdTmp[i] = 0.0;
+            for ( size_t ii = 0 ; ii < this->nPanel_; ii++){
+                bwdTmp[i] += this->emission_[j][this->panel_->content_[hapIndexBack][ii]] * bwdProbs_.back()[i] * pRecEachHap;
+                if ( i == ii){
+                    bwdTmp[i] += this->emission_[j][this->panel_->content_[hapIndexBack][ii]] * bwdProbs_.back()[i] * pNoRec;
+                }
+            }
+        }
+        (void)normalizeBySum(bwdTmp);
+        bwdProbs_.push_back(bwdTmp);
+        hapIndexBack--;
+    }
+    assert ( bwdProbs_.size() == nLoci_ );
+
+    assert (this->fwdBwdProbs_.size() == 0);
+    for ( size_t j = 0; j < this->nLoci_; j++ ) {
+        vector <double> fwdBwdTmp (this->nPanel_, 0.0);
+        for ( size_t i = 0 ; i < this->nPanel_; i++ ){
+            fwdBwdTmp[i] = this->fwdProbs_[j][i] * bwdProbs_[this->nLoci_-j-1][i];
+        }
+        (void)normalizeBySum(fwdBwdTmp);
+        fwdBwdProbs_.push_back(fwdBwdTmp);
+    }
+    assert (this->fwdBwdProbs_.size() == nLoci_ );
+}
 
 void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes ){
     //expected.WSAF.0 <- bundle$expected.WSAF - (bundle$prop[ws] * bundle$h[,ws]);
@@ -188,6 +246,8 @@ void UpdateSingleHap::calcFwdProbs(){
     (void)normalizeBySum(fwd1st);
     this->fwdProbs_.push_back(fwd1st);
 
+    //double inbreedProb = 0.0;
+
     for ( size_t j = 1; j < this->nLoci_; j++ ){
         double pRecEachHap = this->panel_->pRecEachHap_[hapIndex];
         double pNoRec = this->panel_->pNoRec_[hapIndex];
@@ -197,10 +257,16 @@ void UpdateSingleHap::calcFwdProbs(){
         vector <double> fwdTmp (this->nPanel_, 0.0);
         for ( size_t i = 0 ; i < this->nPanel_; i++){
             fwdTmp[i] = this->emission_[j][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec);
+            //if ( i >= this->panel_->truePanelSize() ){
+                //fwdTmp[i] = this->emission_[j][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec) * inbreedProb;
+            //} else {
+                //fwdTmp[i] = this->emission_[j][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec);
+            //}
         }
         (void)normalizeBySum(fwdTmp);
         this->fwdProbs_.push_back(fwdTmp);
     }
+    assert ( this->fwdProbs_.size() == nLoci_ );
 }
 
 
@@ -289,7 +355,7 @@ void UpdateSingleHap::updateLLK(){
         } else if (this->hap_[i] == 1){
             newLLK[i] = llk1_[i];
         } else {
-            throw("should never get here!");
+            throw ShouldNotBeCalled();
         }
     }
 }
@@ -592,7 +658,7 @@ void UpdatePairHap::samplePaths(){
             colJ = colJ;
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
         } else {
-            throw ("Unknow case ... Should never reach here!");
+            throw ShouldNotBeCalled();
         }
         this->path1_.push_back(this->panel_->content_[contentIndex][rowI]);
         this->path2_.push_back(this->panel_->content_[contentIndex][colJ]);
@@ -636,7 +702,7 @@ void UpdatePairHap::addMissCopying( double missCopyProb ){
             this->hap1_.push_back( 1.0 - this->path1_[i] );
             this->hap2_.push_back( 1.0 - this->path2_[i] );
         } else {
-            throw ("add missing copy should never reach here" );
+            throw ShouldNotBeCalled();
         }
     }
 
@@ -673,7 +739,7 @@ void UpdatePairHap::sampleHapIndependently(vector <double> &plaf){
             this->hap1_.push_back( 1.0 );
             this->hap2_.push_back( 1.0 );
         } else {
-            throw ("add missing copy should never reach here" );
+            throw ShouldNotBeCalled();
         }
         plafIndex++;
     }
@@ -681,7 +747,6 @@ void UpdatePairHap::sampleHapIndependently(vector <double> &plaf){
     assert ( this->hap1_.size() == this->nLoci_ );
     assert ( this->hap2_.size() == this->nLoci_ );
 }
-
 
 
 void UpdatePairHap::updateLLK(){
@@ -696,7 +761,7 @@ void UpdatePairHap::updateLLK(){
         } else if (this->hap1_[i] == 1 && this->hap2_[i] == 1){
             newLLK[i] = llk11_[i];
         } else {
-            throw("add missing copy, update llk should never reach here");
+            throw ShouldNotBeCalled();
         }
     }
 }
