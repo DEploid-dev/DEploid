@@ -155,3 +155,44 @@ vector <double> reshapeMatToVec ( vector < vector <double> > &Mat ){
     }
     return tmp;
 }
+
+
+vector < vector<int> > enumerateBinaryMatrixOfK( int k ){
+    // This function enumerate all possible binary combinations of k elements
+    int ksq = pow(2,k);
+    vector < vector<int> > ret;
+    for ( int i = 0; i < ksq; i++){
+        ret.push_back(convertIntToBinary(i, k));
+    }
+    return ret;
+}
+
+vector<int> convertIntToBinary(int x, size_t len) {
+    vector<int> ret(len);
+    size_t idx = 0;
+    while(x) {
+        ret[idx] = (x&1) ? 1:0;
+        idx++;
+        //cout << "x " <<x<< " idx "<<idx<<" len "<< len<<endl;
+        if ( idx > len ){
+            throw OutOfVectorSize();
+        }
+        x >>= 1;
+    }
+    reverse(ret.begin(),ret.end());
+    //for (size_t i = 0; i < ret.size(); i++){
+            //cout << ret[i] << " ";
+        //}
+        //cout<<endl;
+    return ret;
+}
+
+
+int nchoose2(int n){
+    if ( n < 2 ){
+        throw InvalidInput("Input must be at least 2!");
+    }
+    int ret = n*(n-1)/2;
+    return ret;
+}
+

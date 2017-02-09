@@ -24,6 +24,8 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>    /* min_element, max_element */
+#include <exceptions.hpp>
+
 
 #include "mersenne_twister.hpp"
 #include "global.h"
@@ -78,6 +80,21 @@ vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, 
 double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01, double fac=100 ) ;
 size_t sampleIndexGivenProp ( RandomGenerator* rg, vector <double> proportion );
 vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );
+
+
+vector<int> convertIntToBinary(int x, size_t len);
+vector < vector <int> > enumerateBinaryMatrixOfK(int k);
+
+struct OutOfVectorSize : std::exception{
+
+  explicit OutOfVectorSize(){ }
+  virtual ~OutOfVectorSize() throw() {}
+  virtual const char* what () const noexcept {
+      return string("Out of vector size!").c_str();
+  }
+};
+
+int nchoose2(int n);
 
 
 #endif

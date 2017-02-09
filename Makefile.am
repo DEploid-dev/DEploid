@@ -21,17 +21,18 @@ common_LDADD = -lz
 common_src = src/random/fastfunc.cpp \
 			 src/random/random_generator.cpp \
 			 src/random/mersenne_twister.cpp \
+			 src/ibd.cpp \
 			 src/mcmc.cpp \
 			 src/panel.cpp \
-			 src/dEploidIO.cpp \
 			 src/utility.cpp \
+			 src/dEploidIO.cpp \
 			 src/updateHap.cpp \
 			 src/txtReader.cpp \
-			 src/variantIndex.cpp \
-			 src/export/dEploidIOExport.cpp \
-			 src/export/dEploidIOExportPosteriorProb.cpp \
 			 src/vcfReader.cpp \
-			 src/gzstream/gzstream.cpp
+			 src/variantIndex.cpp \
+			 src/gzstream/gzstream.cpp \
+			 src/export/dEploidIOExport.cpp \
+			 src/export/dEploidIOExportPosteriorProb.cpp
 
 debug_src = src/debug/mcmcDebug.cpp src/debug/vcfReaderDebug.cpp
 
@@ -49,14 +50,16 @@ dEploid_prof_LDADD = $(common_LDADD)
 
 unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_runner.cpp \
-					 tests/unittest/test_panel.cpp \
-					 tests/unittest/test_txtReader.cpp \
-					 tests/unittest/test_dEploidIO.cpp \
-					 tests/unittest/test_updatePairHap.cpp \
-					 tests/unittest/test_updateSingleHap.cpp \
 					 tests/unittest/test_utilities.cpp \
-					 tests/unittest/test_mcmc.cpp \
-					 tests/unittest/test_vcfReader.cpp
+					 tests/unittest/test_ibd.cpp
+
+#					 tests/unittest/test_panel.cpp \
+#					 tests/unittest/test_txtReader.cpp \
+#					 tests/unittest/test_dEploidIO.cpp \
+#					 tests/unittest/test_updatePairHap.cpp \
+#					 tests/unittest/test_updateSingleHap.cpp \
+#					 tests/unittest/test_mcmc.cpp \
+#					 tests/unittest/test_vcfReader.cpp
 
 unit_tests_CXXFLAGS = $(common_flags) -DNDEBUG -DUNITTEST -Wno-write-strings --coverage
 unit_tests_LDADD    = -lcppunit -ldl $(common_LDADD)

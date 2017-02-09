@@ -30,6 +30,7 @@ using namespace std;
 
 int main( int argc, char *argv[] ){
     try {
+
         DEploidIO dEploidIO(argc, argv);
         std::ostream *output = &std::cout;
 
