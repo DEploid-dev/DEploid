@@ -77,14 +77,14 @@ void IBDconfiguration::makePairToEmission(){
     assert(pairToEmission.size() == 0);
     //prs2ems<-array(0, c(nrow(op), k));
     //for ( size_t i = 0; i < this->op.size(); i++ ){
-    for ( vector< vector<int> >::iterator opIt = op.begin(); opIt != op.end(); opIt++ ){
+    for ( vector<int> tmpOp : op ){
         vector <int> tmpRow = makeTmpRow();
         //for ( size_t i = 0 ; i <(*opIt).size(); i++){
             //cout << (*opIt)[i] << " ";
         //}
         //cout<<endl;
 
-        vector <size_t> ii = findWhichIsOne((*opIt));
+        vector <size_t> ii = findWhichIsOne(tmpOp);
         //ii <- which(op[rowI,]==1);
         //cout << ii.size()<<endl;
         //cout << "##############" <<endl;
@@ -139,41 +139,25 @@ vector <size_t> IBDconfiguration::findWhichIsOne(vector <int> tmpOp){
 }
 
 
-bool IBDconfiguration::twoVectorsAreSame(vector<int> vec1, vector<int> vec2){
-    if (vec1.size() != vec2.size()){
-        throw InvalidInput("Input vectors have different length!");
-    }
-
-    bool ret = true;
-    for (size_t i = 0; i < vec1.size(); i++){
-        if (vec1[i] != vec2[i]){
-            ret = false;
-            break;
-        }
-    }
-    return ret;
-}
-
-
 void IBDconfiguration::findUniqueState(){
     assert (states.size() == 0);
-    states.push_back(pairToEmission[0]);
-    for (size_t i = 1; i < this->pairToEmission.size(); i++){
-        bool aNewState = true;
-        for ( vector< vector<int> >::iterator it = states.begin(); it != states.end(); it++ ){
-            if ( twoVectorsAreSame((*it), this->pairToEmission[i]) ){
-                aNewState = false;
-                break;
-            }
-        }
-        if ( aNewState ){
-            states.push_back(this->pairToEmission[i]);
-        }
-    }
-
-    //for (size_t i = 0; i < states.size(); i++){
-        //for (size_t ii = 0 ; ii < states.back().size(); ii++){
-            //cout << states[i][ii]<<" ";
+    //states.push_back(pairToEmission[0]);
+    //for (size_t i = 1; i < this->pairToEmission.size(); i++){
+        //bool aNewState = true;
+        //for ( vector<int> state : states){
+            //if ( twoVectorsAreSame(state, this->pairToEmission[i]) ){
+                //aNewState = false;
+                //break;
+            //}
+        //}
+        //if ( aNewState ){
+            //states.push_back(this->pairToEmission[i]);
+        //}
+    //}
+    states = unique(this->pairToEmission);
+    //for ( vector<int> state : states){
+        //for (int i : state){
+            //cout << i <<" ";
         //}
         //cout <<endl;
     //}
@@ -182,8 +166,8 @@ void IBDconfiguration::findUniqueState(){
 
 void IBDconfiguration::findEffectiveK(){
     assert(effectiveK.size() == 0);
-    for (vector< vector<int> >::iterator it = states.begin(); it != states.end(); it++){
-        set <int> tmpSet ((*it).begin(), (*it).end());
+    for ( vector<int> state : states){
+        set <int> tmpSet (state.begin(), state.end());
         //cout << tmpSet.size() <<endl;
         effectiveK.push_back(tmpSet.size());
     }
@@ -191,7 +175,46 @@ void IBDconfiguration::findEffectiveK(){
 }
 
 
-Hprior::Hprior(IBDconfiguration ibdConfig, size_t nLoci){}
+Hprior::Hprior(IBDconfiguration ibdConfig, vector <double> &plaf){
+    this->nState_ = 0;
+    this->plaf_ = plaf;
+    this->setKstrain(ibdConfig.kStrain());
+    this->setnLoci(this->plaf_.size());
+    vector < vector<int> > hSetBase = enumerateBinaryMatrixOfK(this->kStrain());
+
+
+    size_t stateI = 0;
+    for ( vector<int> state : ibdConfig.states ) {
+        set <int> stateUnique (state.begin(), state.end());
+        assert(stateUnique.size() == ibdConfig$effectiveK);
+        vector < vector<int> > hSetBaseTmp = hSetBase;
+
+        for (int j = 0; j < this->kStrain(); j++){
+            for ( size_t i = 0; i < hSetBase.size(); i++ ){
+                hSetBaseTmp[i][j] = hSetBase[i][state[j]];
+                //hSetBaseTmp[i][j] = hSetBaseTmp[i][state[j]];
+            }
+        }
+
+        vector < vector<int> > hSetBaseTmpUnique = unique(hSetBaseTmp);
+        size_t sizeOfhSetBaseTmpUnique = hSetBaseTmpUnique.size();
+        //h.prior.i<-array(0, c(size.h.set.i, n.loci));
+
+        for ( size_t i = 0; i < sizeOfhSetBaseTmpUnique; i++){
+            int tmpSum = sumOfVec(hSetBaseTmpUnique[i]);
+            vector <double> hPriorTmp (nLoci());
+            for (size_t site = 0; site < nLoci(); site++ ){
+                hPriorTmp[site] = pow(plaf_[site], (double)tmpSum) * pow((1-plaf_[site]),(double)(stateUnique.size()-tmpSum));
+            }
+            priorProb.push_back(hPriorTmp);
+            hSet.push_back(hSetBaseTmpUnique[i]);
+
+            nState_++;
+            stateIdx.push_back(stateI);
+        }
+        stateI++;
+    }
+}
 
 
 Hprior::~Hprior(){}

@@ -23,7 +23,6 @@
 
 #include <vector>
 #include <iostream>
-#include <exceptions.hpp>
 
 
 #ifndef IBD
@@ -36,7 +35,9 @@ using namespace std;
 class IBDconfiguration{
 #ifdef UNITTEST
   friend class TestIBDconfig;
+  friend class TestHprior;
 #endif
+  friend class Hprior;
     IBDconfiguration();
     ~IBDconfiguration();
     IBDconfiguration(int k = 5);
@@ -68,7 +69,7 @@ class Hprior{
   friend class TestHprior;
 #endif
     Hprior();
-    Hprior(IBDconfiguration ibdConfig, size_t nLoci);
+    Hprior(IBDconfiguration ibdConfig, vector <double> &plaf);
     ~Hprior();
 
     int kStrain_;
@@ -76,9 +77,18 @@ class Hprior{
     int kStrain() const {return this->kStrain_;}
 
     size_t nLoci_;
-    void setKstrain(const size_t setTo) {this->nLoci_ = setTo;}
+    void setnLoci(const size_t setTo) {this->nLoci_ = setTo;}
     size_t nLoci() const {return this->nLoci_;}
 
+    vector <double> plaf_;
+    vector < vector <double> > priorProb; // size: nState x nLoci
+    vector < vector <double> > priorProbTrans; // size: nLoci x nState
+
+    vector <size_t> stateIdx; // size: nState
+
+    vector <vector <int> > hSet; // size: nState x kStrain
+    size_t nState_;
+    size_t nState() const {return this->nState_;}
 };
 
 

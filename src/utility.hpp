@@ -68,11 +68,20 @@ vector <T> vecProd ( vector<T> &vecA, vector<T> &vecB ){
 }
 
 
+template <typename T>
+T sumOfVec( vector <T>& array ){
+    T tmp = 0;
+    for (auto const& value: array){
+        tmp += value;
+    }
+    return tmp;
+}
+
 double normal_pdf(double x, double m, double s);
 double min_value( vector <double> x);
 double max_value( vector <double> x);
 vector <double> computeCdf ( vector <double> & dist );
-double sumOfVec( vector <double>& array );
+//double sumOfVec( vector <double>& array );
 double sumOfMat( vector <vector <double> > & matrix );
 void normalizeBySum ( vector <double> & array );
 void normalizeBySumMat ( vector <vector <double> > & matrix );
@@ -95,6 +104,9 @@ struct OutOfVectorSize : std::exception{
 };
 
 int nchoose2(int n);
+
+vector < vector<int> > unique( vector < vector<int> > &mat );
+bool twoVectorsAreSame(vector<int> vec1, vector<int> vec2);
 
 
 #endif

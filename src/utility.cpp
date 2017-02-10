@@ -62,15 +62,6 @@ vector <double> computeCdf ( vector <double> & dist ){
 }
 
 
-double sumOfVec( vector <double>& array ){
-    double tmp = 0.0;
-    for (auto const& value: array){
-        tmp += value;
-    }
-    return tmp;
-}
-
-
 double sumOfMat( vector <vector <double> > & matrix ){
     double tmp = 0.0;
     for (auto const& array: matrix){
@@ -97,7 +88,6 @@ void normalizeBySumMat ( vector <vector <double> > & matrix ){
         }
     }
 }
-
 
 
 vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf, size_t firstIndex, size_t length ){
@@ -196,3 +186,38 @@ int nchoose2(int n){
     return ret;
 }
 
+
+vector < vector<int> > unique( vector < vector<int> > &mat ){
+    vector < vector<int> > ret;
+    ret.push_back(mat[0]);
+    for (size_t i = 1; i < mat.size(); i++){
+        bool aNewState = true;
+        for ( vector<int> state : ret){
+            if ( twoVectorsAreSame(state, mat[i]) ){
+                aNewState = false;
+                break;
+            }
+        }
+        if ( aNewState ){
+            ret.push_back(mat[i]);
+        }
+    }
+
+    return ret;
+}
+
+
+bool twoVectorsAreSame(vector<int> vec1, vector<int> vec2){
+    if (vec1.size() != vec2.size()){
+        throw InvalidInput("Input vectors have different length!");
+    }
+
+    bool ret = true;
+    for (size_t i = 0; i < vec1.size(); i++){
+        if (vec1[i] != vec2[i]){
+            ret = false;
+            break;
+        }
+    }
+    return ret;
+}
