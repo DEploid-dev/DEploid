@@ -186,13 +186,11 @@ Hprior::Hprior(IBDconfiguration ibdConfig, vector <double> &plaf){
     size_t stateI = 0;
     for ( vector<int> state : ibdConfig.states ) {
         set <int> stateUnique (state.begin(), state.end());
-        assert(stateUnique.size() == ibdConfig$effectiveK);
+        assert(stateUnique.size() == ibdConfig.effectiveK[stateI]);
         vector < vector<int> > hSetBaseTmp = hSetBase;
-
-        for (int j = 0; j < this->kStrain(); j++){
+        for (size_t j = 0; j < (size_t)this->kStrain(); j++){
             for ( size_t i = 0; i < hSetBase.size(); i++ ){
                 hSetBaseTmp[i][j] = hSetBase[i][state[j]];
-                //hSetBaseTmp[i][j] = hSetBaseTmp[i][state[j]];
             }
         }
 
