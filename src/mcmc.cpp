@@ -55,7 +55,8 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, McmcSample *mcmcSample, Rando
 
     stdNorm_ = new StandNormalRandomSample(this->seed_);
 
-    this->kStrain_ = this->dEploidIO_->kStrain_;
+    this->setKstrain(this->dEploidIO_->kStrain());
+    //this->kStrain_ = this->dEploidIO_->kStrain_;
     this->nLoci_ = this->dEploidIO_->plaf_.size();
     this->initializeMcmcChain( );
 
@@ -216,14 +217,50 @@ vector <double> McmcMachinery::titre2prop(vector <double> & tmpTitre){
 }
 
 
-void McmcMachinery::runMcmcChain( bool showProgress ){
+//void McmcMachinery::makeLlkSurf(c=1000, err=0.01, p.false=0.001, grid.size=99){
+    //n.site<-length(alt.cts);
+    //p.grid<-1:grid.size/(grid.size+1); # Equal spaced mesh grid for p, from 0.01 to 0.99, spaced by 0.01
+    //llk.apx<-array(0, c(n.site, 2));
+    //e1<-p.grid*(1-err)+(1-p.grid)*err; # adjusted p grid, by taking into account of read error, from 0.0198 to 0.9802, equally spaced by 0.01 * 0.99 - 0.0001
+
+    //for (site in 1:n.site) {
+        //ll1<- lbeta(e1*c+alt.cts[site], (1-e1)*c+(read.depths[site]-alt.cts[site]));
+        //ll2<- -lbeta(e1*c, (1-e1)*c);
+        //ll<-ll1+ll2;
+        //ln<- exp(ll-max(ll));
+        //ln<-ln/sum(ln);
+        //mn<-sum(ln*p.grid); # Compute the posterior, then normalize by the mean?
+        //vr<-sum(ln*p.grid^2)-mn^2;
+        //llk.apx[site,]<-(mn*(1-mn)/vr-1)*c(mn, 1-mn);
+        //vv<-dbeta(p.grid, llk.apx[site,1], llk.apx[site,2]);
+
+        //if (do.plot) {
+            //plot(p.grid, exp(ll-max(ll)), col="black", main=site);
+            //lines(p.grid, vv/max(vv), col="blue");
+            //abline(v=alt.cts[site]/read.depths[site], lty="dotted", col="red");
+            //Sys.sleep(1);
+        //}
+    //}
+    //return(llk.apx);
+//}
+
+
+void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
+    if ( useIBD ){
+        // initialize haplotype prior
+        hprior.buildHprior(this->kStrain(), this->dEploidIO_->plaf_);
+        cout << "hprior size = " << hprior.priorProb.size() << " x " << hprior.priorProb[0].size() << endl;
+        //llk.apx<-make.llk.surf(alt.cts, read.depths, c=100, err=0.01, do.plot=FALSE)
+
+    }
+
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++){
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
         if ( this->currentMcmcIteration_ > 0 && this->currentMcmcIteration_%100 == 0 && showProgress ){
             clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->maxIteration_) << "% completed."<<flush;
         }
-        this->sampleMcmcEvent();
+        this->sampleMcmcEvent(useIBD);
     }
     clog << "\r" << " MCMC step" << setw(4) << 100 << "% completed."<<endl;
     this->mcmcSample_->hap = this->currentHap_;
@@ -231,20 +268,29 @@ void McmcMachinery::runMcmcChain( bool showProgress ){
     this->writeLastFwdProb();
 
     this->dEploidIO_->filnalProp = this->mcmcSample_->proportion.back();
-    this->dEploidIO_->writeMcmcRelated(this->mcmcSample_);
+    this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, useIBD);
+
+    if ( useIBD ){
+        this->dEploidIO_->initialProp = this->mcmcSample_->proportion.back();
+        this->dEploidIO_->initialHap = this->mcmcSample_->hap;
+        this->dEploidIO_->setInitialHapWasGiven(true);
+    }
 }
 
 
-void McmcMachinery::sampleMcmcEvent( ){
+void McmcMachinery::sampleMcmcEvent( bool useIBD ){
     this->recordingMcmcBool_ = ( currentMcmcIteration_ > this->mcmcThresh_ && currentMcmcIteration_ % this->McmcMachineryRate_ == 0 );
-
-    this->eventInt_ = this->mcmcEventRg_->sampleInt(3);
-    if ( (this->eventInt_ == 0) && (this->dEploidIO_->doUpdateProp() == true) ){
-        this->updateProportion();
-    } else if ( (this->eventInt_ == 1) && (this->dEploidIO_->doUpdateSingle() == true) ){
-        this->updateSingleHap();
-    } else if ( (this->eventInt_ == 2) && (this->dEploidIO_->doUpdatePair() == true) ){
-        this->updatePairHaps();
+    if ( useIBD == true ){
+        //sampleMcmcEventIBDstep();
+    } else {
+        this->eventInt_ = this->mcmcEventRg_->sampleInt(3);
+        if ( (this->eventInt_ == 0) && (this->dEploidIO_->doUpdateProp() == true) ){
+            this->updateProportion();
+        } else if ( (this->eventInt_ == 1) && (this->dEploidIO_->doUpdateSingle() == true) ){
+            this->updateSingleHap();
+        } else if ( (this->eventInt_ == 2) && (this->dEploidIO_->doUpdatePair() == true) ){
+            this->updatePairHaps();
+        }
     }
 
     assert(doutLLK());
@@ -253,6 +299,97 @@ void McmcMachinery::sampleMcmcEvent( ){
         this->recordMcmcMachinery();
     }
 }
+
+
+//void McmcMachinery::sampleMcmcEventIBDstep(){
+    //#Calculate state prior given theta (theta is prob IBD)
+    //pr.0<-dbinom(0:(k.max-1), k.max-1, theta.0);
+    //a.prior<-pr.0[ibd.st$k.eff]/a.ct[ibd.st$k.eff];
+    //st.prior<-a.prior[state.idx];
+
+    //#Given current proportions sample allelic and inbreeding states at each site
+    //#Initialise:
+    //v.prior<-st.prior * h.prior[,1];
+    //qs<-h.set %*% t(prop.0); # estimated proportion
+    //qs2<-qs*(1-err)+(1-qs)*err; # adjusted estimated proportion
+    //lk.data<-dbeta(qs2, llk.apx[1,1], llk.apx[1,2], log=T); # likelihood of the proportion
+    //lk.norm<-exp(lk.data-max(lk.data));
+//#    lk.norm[]<-1;
+    //comb<-v.prior*lk.norm;
+    //norm.site[1]<-max(comb);
+    //fm[,1]<-comb/norm.site[1];
+    //f.sum<-sum(fm[,1]);
+    //f.sum.state<-tij %*% fm[,1];
+
+    //for (site in 2:n.loci) {
+
+        //v.norec<-f.sum.state[state.idx];
+        //fm[,site]<-(v.norec*(1-p.rec)+f.sum*p.rec*st.prior)*h.prior[,site];
+
+        //qs<-h.set %*% t(prop.0);
+        //qs2<-qs*(1-err)+(1-qs)*err;
+        //lk.data<-dbeta(qs2, llk.apx[site,1], llk.apx[site,2], log=T);
+        //lk.norm<-exp(lk.data-max(lk.data));
+//#        lk.norm[]<-1;
+
+        //comb<-fm[,site]*lk.norm;
+        //norm.site[site]<-max(comb);
+        //fm[,site]<-comb/norm.site[site];
+
+        //f.sum<-sum(fm[,site]);
+        //f.sum.state<-tij %*% fm[,site];
+    //}
+
+    //#Now sample path given matrix
+    //a.path[n.loci]<-sample(n.state, 1, p=fm[,n.loci]);
+    //for (site in (n.loci-1):1) {
+        //v.norec<-tij[state.idx[a.path[site+1]],] * fm[,site] * (1-p.rec);
+        //v.rec<-fm[,site] * p.rec * st.prior[a.path[site+1]];
+        //a.path[site]<-sample(n.state, 1, p=v.norec+v.rec);
+    //}
+
+    //#Get haplotypes and update LLK for each site
+    //for (site in 1:n.loci) {
+        //h.0[,site]<-h.set[a.path[site],];
+    //}
+    //qs<-prop.0 %*% h.0;
+    //qs2<-qs*(1-err)+(1-qs)*err;
+    //llk.site<-dbeta(qs2, llk.apx[,1], llk.apx[,2], log=T);
+
+    //#Given current haplotypes, sample titres 1 by 1 using MH
+    //for (i in 1:k.max) {
+        //v0<-tit.0[i];
+        //p.old<-prop.0;
+        //tit.0[i]<-tit.0[i]+rnorm(1, 0, scale.t.prop);
+        //prop.0[1,]<-exp(tit.0)/sum(exp(tit.0));
+        //qs<-prop.0 %*% h.0;
+        //qs2<-qs*(1-err)+(1-qs)*err;
+        //vv<-dbeta(qs2, llk.apx[,1], llk.apx[,2], log=T);
+        //rr<-dnorm(tit.0[i],0,1)/dnorm(v0, 0, 1) * exp(sum(vv)-sum(llk.site));
+        //if (runif(1)<rr) {
+            //llk.site[]<-vv;
+            //prop.accpt<-prop.accpt+1;
+        //} else {
+            //tit.0[i]<-v0;
+            //prop.0<-p.old;
+        //}
+    //}
+
+    ////#Now update inbreeding parameter (theta);
+    //s.path<-c(0,state.idx[a.path]);
+    //obs.states<-s.path[which(diff(s.path)!=0)+1];
+    //k.eff.states<-ibd.st$k.eff[obs.states];
+    //sccs<-sum(k.max-k.eff.states);
+    //theta.0<-rbeta(1, sccs+1, sum(k.eff.states-1)+1);
+
+    //if (do.showProcess) {
+        //cat("\nIteration ", it,  "\tProp: ", paste(signif(prop.0,3)), sep=" ");
+        //cat("  Theta = ", signif(theta.0,3));
+    //}
+    //llk.hist = c(llk.hist, sum(llk.site));
+    //prop.hist = rbind(prop.hist, prop.0)
+
+//}
 
 
 vector <double> McmcMachinery::calcExpectedWsaf( vector <double> &proportion ){

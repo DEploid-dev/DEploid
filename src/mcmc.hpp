@@ -30,6 +30,7 @@
 #include "utility.hpp"
 #include "global.h"
 #include "randomSample.hpp"
+#include "ibd.hpp"
 
 #ifndef MCMC
 #define MCMC
@@ -67,9 +68,9 @@ class McmcMachinery {
 #endif
   public:
     //McmcMachinery();
-    McmcMachinery( DEploidIO* pdfDeconfIO, McmcSample *mcmcSample, RandomGenerator* rg_ );
+    McmcMachinery( DEploidIO* dEplioidIO, McmcSample *mcmcSample, RandomGenerator* rg_ );
     ~McmcMachinery();
-    void runMcmcChain( bool showProgress = true );
+    void runMcmcChain( bool showProgress = true, bool useIBD = false );
 
   private:
     McmcSample* mcmcSample_;
@@ -77,6 +78,9 @@ class McmcMachinery {
     DEploidIO* dEploidIO_;
     Panel* panel_;
     size_t kStrain_;
+    void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}
+    size_t kStrain() const { return this->kStrain_;}
+
     size_t nLoci_;
 
     double burnIn_;
@@ -135,12 +139,18 @@ class McmcMachinery {
         cout << endl;
     }
 
-    void sampleMcmcEvent();
+    void sampleMcmcEvent(bool useIBD = false);
+    void sampleMcmcEventIBDstep();
     void recordMcmcMachinery();
     bool recordingMcmcBool_;
     void writeLastFwdProb();
     void updateReferencePanel(size_t inbreedingPanelSizeSetTo, size_t excludedStrain);
     void initializeUpdateReferencePanel(size_t inbreedingPanelSizeSetTo);
+
+   /* IBD */
+    Hprior hprior;
+    vector < vector <double> > llkSurf;
+    //void makeLlkSurf(c=1000, err=0.01, p.false=0.001, grid.size=99);
 
   /* Moves */
     void updateProportion();

@@ -110,6 +110,7 @@ void DEploidIO::init() {
     this->setDoUpdateSingle( true );
     this->setDoExportPostProb( false );
     this->setDoPainting( false );
+    this->setUseIBD( false );
     this->setDoExportSwitchMissCopy ( false );
     this->setDoAllowInbreeding( false );
     this->mcmcBurn_ = 0.5;
@@ -231,6 +232,10 @@ void DEploidIO::removeFilesWithSameName(){
     strExportLLK = this->prefix_ + ".llk";
     strExportHap = this->prefix_ + ".hap";
 
+    strIbdExportProp = this->prefix_ + ".ibd.prop";
+    strIbdExportLLK = this->prefix_ + ".ibd.llk";
+    strIbdExportHap = this->prefix_ + ".ibd.hap";
+
     strExportVcf = this->prefix_ + ".vcf";
     if ( compressVcf() ){
         strExportVcf += ".gz";
@@ -246,6 +251,11 @@ void DEploidIO::removeFilesWithSameName(){
     strExportTwoMissCopyTwo = this->prefix_ + ".twoMissCopyTwo";
 
     if ( this->doPainting() == false ){
+        if (this->useIBD()){
+            remove(strIbdExportProp.c_str());
+            remove(strIbdExportLLK.c_str());
+            remove(strIbdExportHap.c_str());
+        }
         remove(strExportLLK.c_str());
         remove(strExportHap.c_str());
         remove(strExportVcf.c_str());
@@ -384,6 +394,8 @@ void DEploidIO::parse (){
             this->readNextStringto ( this->initialHapFileName_ ) ;
             this->setDoPainting( true );
             this->readInitialHaps();
+        } else if ( *argv_i == "-ibd" ){
+            this->setUseIBD(true);
         } else if ( *argv_i == "-initialP" ){
             this->readInitialProportions();
             this->setInitialPropWasGiven( true );

@@ -87,6 +87,7 @@ class Hprior{
 #ifdef UNITTEST
   friend class TestHprior;
 #endif
+  friend class McmcMachinery;
     Hprior();
     ~Hprior();
 

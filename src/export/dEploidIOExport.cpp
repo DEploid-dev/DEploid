@@ -24,11 +24,13 @@
 #include "dEploidIO.hpp"
 #include "mcmc.hpp"
 
-void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample){
-    this->writeProp( mcmcSample );
-    this->writeLLK( mcmcSample );
-    this->writeHap( mcmcSample );
-    this->writeVcf( mcmcSample );
+void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample, bool useIBD){
+    this->writeProp( mcmcSample, useIBD );
+    this->writeLLK( mcmcSample, useIBD );
+    this->writeHap( mcmcSample, useIBD);
+    if ( useIBD == false ){
+        this->writeVcf( mcmcSample );
+    }
 }
 
 
@@ -140,8 +142,12 @@ void DEploidIO::writeLog ( ostream * writeTo ){
 }
 
 
-void DEploidIO::writeProp( McmcSample * mcmcSample){
-    ofstreamExportTmp.open( strExportProp.c_str(), ios::out | ios::app | ios::binary );
+void DEploidIO::writeProp( McmcSample * mcmcSample, bool useIBD){
+    if ( useIBD ){
+        ofstreamExportTmp.open( strIbdExportProp.c_str(), ios::out | ios::app | ios::binary );
+    } else {
+        ofstreamExportTmp.open( strExportProp.c_str(), ios::out | ios::app | ios::binary );
+    }
     for ( size_t i = 0; i < mcmcSample->proportion.size(); i++){
         for ( size_t ii = 0; ii < mcmcSample->proportion[i].size(); ii++){
             ofstreamExportTmp << setw(10) << mcmcSample->proportion[i][ii];
@@ -152,8 +158,12 @@ void DEploidIO::writeProp( McmcSample * mcmcSample){
 }
 
 
-void DEploidIO::writeLLK( McmcSample * mcmcSample){
-    ofstreamExportTmp.open( strExportLLK.c_str(), ios::out | ios::app | ios::binary );
+void DEploidIO::writeLLK( McmcSample * mcmcSample, bool useIBD){
+    if ( useIBD ){
+        ofstreamExportTmp.open( strIbdExportLLK.c_str(), ios::out | ios::app | ios::binary );
+    } else {
+        ofstreamExportTmp.open( strExportLLK.c_str(), ios::out | ios::app | ios::binary );
+    }
     for ( size_t i = 0; i < mcmcSample->sumLLKs.size(); i++){
         ofstreamExportTmp << mcmcSample->moves[i] << "\t" << mcmcSample->sumLLKs[i] << endl;
     }
@@ -161,9 +171,12 @@ void DEploidIO::writeLLK( McmcSample * mcmcSample){
 }
 
 
-void DEploidIO::writeHap( McmcSample * mcmcSample ){
-    ofstreamExportTmp.open( strExportHap.c_str(), ios::out | ios::app | ios::binary );
-
+void DEploidIO::writeHap( McmcSample * mcmcSample, bool useIBD){
+    if ( useIBD ){
+        ofstreamExportTmp.open( strIbdExportHap.c_str(), ios::out | ios::app | ios::binary );
+    } else {
+        ofstreamExportTmp.open( strExportHap.c_str(), ios::out | ios::app | ios::binary );
+    }
     // HEADER
     ofstreamExportTmp << "CHROM" << "\t" << "POS" << "\t";;
     for ( size_t ii = 0; ii < kStrain_; ii++){

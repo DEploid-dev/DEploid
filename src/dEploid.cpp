@@ -47,11 +47,23 @@ int main( int argc, char *argv[] ){
         if ( dEploidIO.doPainting() ){
             dEploidIO.chromPainting();
         } else{
+
+            if (dEploidIO.useIBD()){ // ibd
+                McmcSample * ibdMcmcSample = new McmcSample();
+                MersenneTwister ibdRg(dEploidIO.randomSeed());
+
+                McmcMachinery ibdMcmcMachinery(&dEploidIO, ibdMcmcSample, &ibdRg);
+                ibdMcmcMachinery.runMcmcChain(true, // show progress
+                                              true);  // use IBD
+                delete ibdMcmcSample;
+            }
+
             McmcSample * mcmcSample = new McmcSample();
             MersenneTwister rg(dEploidIO.randomSeed());
 
             McmcMachinery mcmcMachinery(&dEploidIO, mcmcSample, &rg);
-            mcmcMachinery.runMcmcChain(true);
+            mcmcMachinery.runMcmcChain(true, // show progress
+                                       false); // use IBD
             delete mcmcSample;
         }
         // Finishing, write log
