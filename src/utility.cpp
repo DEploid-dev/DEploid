@@ -145,5 +145,3 @@ vector <double> reshapeMatToVec ( vector < vector <double> > &Mat ){
     }
     return tmp;
 }
-
-

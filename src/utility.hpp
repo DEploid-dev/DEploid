@@ -75,11 +75,11 @@ T sumOfVec( vector <T>& array ){
     return tmp;
 }
 
+
 double normal_pdf(double x, double m, double s);
 double min_value( vector <double> x);
 double max_value( vector <double> x);
 vector <double> computeCdf ( vector <double> & dist );
-//double sumOfVec( vector <double>& array );
 double sumOfMat( vector <vector <double> > & matrix );
 void normalizeBySum ( vector <double> & array );
 void normalizeBySumMat ( vector <vector <double> > & matrix );
