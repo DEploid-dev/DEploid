@@ -20,8 +20,6 @@ class TestUtility : public CppUnit::TestCase {
     CPPUNIT_TEST( testNormalPdf );
     CPPUNIT_TEST( testCalcLLK );
     CPPUNIT_TEST( testCalcLLKs );
-    CPPUNIT_TEST( testConvertIntToBinary );
-    CPPUNIT_TEST( testNchoose2 );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -245,44 +243,6 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL (-0.4088264558, llk3[4], epsilon2) ;
         CPPUNIT_ASSERT_DOUBLES_EQUAL (-26.30680376, llk3[5], epsilon2) ;
         CPPUNIT_ASSERT_DOUBLES_EQUAL (-39.454802987, llk3[6], epsilon2) ;
-    }
-
-    void testConvertIntToBinary(){
-        CPPUNIT_ASSERT_THROW (convertIntToBinary(20, 3), OutOfVectorSize);
-        CPPUNIT_ASSERT_THROW (convertIntToBinary(15, 3), OutOfVectorSize);
-        CPPUNIT_ASSERT_THROW (convertIntToBinary(8, 3), OutOfVectorSize);
-        CPPUNIT_ASSERT_THROW_MESSAGE( "Out of vector size!", convertIntToBinary(8, 3), OutOfVectorSize);
-
-        CPPUNIT_ASSERT_NO_THROW (convertIntToBinary(7, 3));
-
-        vector <int> test1 = convertIntToBinary(3, 4);
-        CPPUNIT_ASSERT_EQUAL (test1.size(), (size_t)4);
-        CPPUNIT_ASSERT_EQUAL (test1[0], (int)0);
-        CPPUNIT_ASSERT_EQUAL (test1[1], (int)0);
-        CPPUNIT_ASSERT_EQUAL (test1[2], (int)1);
-        CPPUNIT_ASSERT_EQUAL (test1[3], (int)1);
-
-        CPPUNIT_ASSERT_NO_THROW(enumerateBinaryMatrixOfK(10));
-        vector < vector <int> > test2 = enumerateBinaryMatrixOfK(4);
-        CPPUNIT_ASSERT_EQUAL (test2.size(), (size_t)16);
-        for (size_t i = 0; i < 16; i++){
-            CPPUNIT_ASSERT_EQUAL (test2[i].size(), (size_t)4);
-            CPPUNIT_ASSERT_EQUAL ((int)(8*test2[i][0] +
-                                        4*test2[i][1] +
-                                        2*test2[i][2] +
-                                        1*test2[i][3]), (int)i);
-        }
-    }
-
-    void testNchoose2(){
-        CPPUNIT_ASSERT_THROW (nchoose2(-1), InvalidInput);
-        CPPUNIT_ASSERT_THROW (nchoose2(0), InvalidInput);
-        CPPUNIT_ASSERT_THROW (nchoose2(1), InvalidInput);
-        CPPUNIT_ASSERT_NO_THROW (nchoose2(2));
-        CPPUNIT_ASSERT_EQUAL (nchoose2(2), (int)1);
-        CPPUNIT_ASSERT_EQUAL (nchoose2(3), (int)3);
-        CPPUNIT_ASSERT_EQUAL (nchoose2(4), (int)6);
-        CPPUNIT_ASSERT_EQUAL (nchoose2(5), (int)10);
     }
 };
 

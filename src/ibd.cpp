@@ -21,13 +21,18 @@
  *
  */
 
+#include <set>
 #include <vector>
 #include <iostream>
 #include "ibd.hpp"
-#include "utility.hpp"
-#include <set>
+#include <algorithm>
+#include <cassert>
+//#include "utility.hpp"
 
-IBDconfiguration::IBDconfiguration(int k){
+IBDconfiguration::IBDconfiguration(){}
+
+
+void IBDconfiguration::buildIBDconfiguration(size_t k){
     this->setKstrain(k);
     this->enumerateOp();
     this->makePairList();
@@ -57,9 +62,9 @@ void IBDconfiguration::makePairList(){
     //#Make a map of pairs to pair value
     assert(pairList.size() == 0);
     //for ( int i = 1; i <= this->kStrain(); i++ ){ // 1-indexed
-    for ( int i = 0; i < this->kStrain(); i++ ){ // 0-indexed
-        for ( int j = i+1; j < this->kStrain(); j++ ){
-            pairList.push_back(vector <size_t> ({(size_t)i, (size_t)j}));
+    for ( size_t i = 0; i < this->kStrain(); i++ ){ // 0-indexed
+        for ( size_t j = i+1; j < this->kStrain(); j++ ){
+            pairList.push_back(vector <size_t> ({i, j}));
         }
     }
     //for (size_t i = 0; i < this->pairList.size(); i++){
@@ -175,13 +180,16 @@ void IBDconfiguration::findEffectiveK(){
 }
 
 
-Hprior::Hprior(IBDconfiguration ibdConfig, vector <double> &plaf){
+Hprior::Hprior(){}
+
+
+void Hprior::buildHprior(size_t kStrain, vector <double> &plaf){
+    ibdConfig.buildIBDconfiguration(kStrain);
     this->nState_ = 0;
     this->plaf_ = plaf;
-    this->setKstrain(ibdConfig.kStrain());
+    this->setKstrain(kStrain);
     this->setnLoci(this->plaf_.size());
     vector < vector<int> > hSetBase = enumerateBinaryMatrixOfK(this->kStrain());
-
 
     size_t stateI = 0;
     for ( vector<int> state : ibdConfig.states ) {
@@ -216,3 +224,81 @@ Hprior::Hprior(IBDconfiguration ibdConfig, vector <double> &plaf){
 
 
 Hprior::~Hprior(){}
+
+
+vector < vector<int> > unique( vector < vector<int> > &mat ){
+    vector < vector<int> > ret;
+    ret.push_back(mat[0]);
+    for (size_t i = 1; i < mat.size(); i++){
+        bool aNewState = true;
+        for ( vector<int> state : ret){
+            if ( twoVectorsAreSame(state, mat[i]) ){
+                aNewState = false;
+                break;
+            }
+        }
+        if ( aNewState ){
+            ret.push_back(mat[i]);
+        }
+    }
+
+    return ret;
+}
+
+
+vector < vector<int> > enumerateBinaryMatrixOfK( size_t k ){
+    // This function enumerate all possible binary combinations of k elements
+    int ksq = pow(2,k);
+    vector < vector<int> > ret;
+    for ( int i = 0; i < ksq; i++){
+        ret.push_back(convertIntToBinary(i, k));
+    }
+    return ret;
+}
+
+
+vector<int> convertIntToBinary(int x, size_t len) {
+    vector<int> ret(len);
+    size_t idx = 0;
+    while(x) {
+        ret[idx] = (x&1) ? 1:0;
+        idx++;
+        //cout << "x " <<x<< " idx "<<idx<<" len "<< len<<endl;
+        if ( idx > len ){
+            throw OutOfVectorSize();
+        }
+        x >>= 1;
+    }
+    reverse(ret.begin(),ret.end());
+    //for (size_t i = 0; i < ret.size(); i++){
+            //cout << ret[i] << " ";
+        //}
+        //cout<<endl;
+    return ret;
+}
+
+
+int nchoose2(int n){
+    if ( n < 2 ){
+        throw InvalidInput("Input must be at least 2!");
+    }
+    int ret = n*(n-1)/2;
+    return ret;
+}
+
+
+bool twoVectorsAreSame(vector<int> vec1, vector<int> vec2){
+    if (vec1.size() != vec2.size()){
+        throw InvalidInput("Input vectors have different length!");
+    }
+
+    bool ret = true;
+    for (size_t i = 0; i < vec1.size(); i++){
+        if (vec1[i] != vec2[i]){
+            ret = false;
+            break;
+        }
+    }
+    return ret;
+}
+

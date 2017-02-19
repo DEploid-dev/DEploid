@@ -23,13 +23,31 @@
 
 #include <vector>
 #include <iostream>
-
+#include <exceptions.hpp>
+#include "utility.hpp"
 
 #ifndef IBD
 #define IBD
 
 using namespace std;
 
+vector < vector<int> > unique( vector < vector<int> > &mat );
+bool twoVectorsAreSame(vector<int> vec1, vector<int> vec2);
+
+
+vector<int> convertIntToBinary(int x, size_t len);
+vector < vector <int> > enumerateBinaryMatrixOfK(size_t k);
+
+struct OutOfVectorSize : std::exception{
+
+  explicit OutOfVectorSize(){ }
+  virtual ~OutOfVectorSize() throw() {}
+  virtual const char* what () const noexcept {
+      return string("Out of vector size!").c_str();
+  }
+};
+
+int nchoose2(int n);
 
 // The IBDconfiguration is used for index, which should be non-negative, use int, any thing below zero should throw.
 class IBDconfiguration{
@@ -40,10 +58,11 @@ class IBDconfiguration{
   friend class Hprior;
     IBDconfiguration();
     ~IBDconfiguration();
-    IBDconfiguration(int k = 5);
-    int kStrain_;
-    void setKstrain(const int setTo) {this->kStrain_ = setTo;}
-    int kStrain() const {return this->kStrain_;}
+
+    void buildIBDconfiguration(size_t k = 5);
+    size_t kStrain_;
+    void setKstrain(const size_t setTo) {this->kStrain_ = setTo;}
+    size_t kStrain() const {return this->kStrain_;}
 
     vector < vector<int> > op;
     vector < vector<int> > pairToEmission;
@@ -69,12 +88,14 @@ class Hprior{
   friend class TestHprior;
 #endif
     Hprior();
-    Hprior(IBDconfiguration ibdConfig, vector <double> &plaf);
     ~Hprior();
 
-    int kStrain_;
-    void setKstrain(const int setTo) {this->kStrain_ = setTo;}
-    int kStrain() const {return this->kStrain_;}
+    void buildHprior(size_t kStrain, vector <double> &plaf);
+
+    IBDconfiguration ibdConfig;
+    size_t kStrain_;
+    void setKstrain(const size_t setTo) {this->kStrain_ = setTo;}
+    size_t kStrain() const {return this->kStrain_;}
 
     size_t nLoci_;
     void setnLoci(const size_t setTo) {this->nLoci_ = setTo;}
@@ -90,6 +111,8 @@ class Hprior{
     size_t nState_;
     size_t nState() const {return this->nState_;}
 };
+
+
 
 
 #endif
