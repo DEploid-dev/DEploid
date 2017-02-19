@@ -45,6 +45,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     CPPUNIT_TEST( testFindUpdatingStrainSingle );
     CPPUNIT_TEST( testFindUpdatingStrainPair );
     CPPUNIT_TEST( testRunMcmcChain );
+    CPPUNIT_TEST( testmakeLlkSurf );
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -301,6 +302,33 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         for ( size_t i = 0; i < 3; i++ ){
             CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.333333, (double)counter[i]/(double)nRepeat , epsilon2);
         }
+    }
+
+    void testmakeLlkSurf(){
+        vector <double> alt ({2, 100, 50, 50, 2, 2});
+        vector <double> ref ({100, 2, 0, 50, 0, 2});
+        //make.llk.surf(c(2,100,50,50,2,2), c(102,102,50,100,2,4), do.plot=FALSE)
+                  //[,1]      [,2]
+        //[1,]  2.401212 93.519595
+        //[2,] 93.519595  2.401212
+        //[3,] 63.893192  1.652452
+        //[4,] 44.554290 44.554290
+        //[5,]  2.995307  1.033050
+        //[6,]  2.855943  2.855943
+        CPPUNIT_ASSERT_NO_THROW(this->mcmcMachinery_->makeLlkSurf(alt, ref));
+        CPPUNIT_ASSERT_EQUAL( this->mcmcMachinery_->llkSurf.size(), (size_t)6 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.401212, this->mcmcMachinery_->llkSurf[0][0], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 93.519595, this->mcmcMachinery_->llkSurf[0][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 93.519595, this->mcmcMachinery_->llkSurf[1][0], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.401212, this->mcmcMachinery_->llkSurf[1][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 63.893192, this->mcmcMachinery_->llkSurf[2][0], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 1.652452, this->mcmcMachinery_->llkSurf[2][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 44.554290, this->mcmcMachinery_->llkSurf[3][0], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 44.554290, this->mcmcMachinery_->llkSurf[3][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.995307, this->mcmcMachinery_->llkSurf[4][0], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 1.033050, this->mcmcMachinery_->llkSurf[4][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.855943, this->mcmcMachinery_->llkSurf[5][0], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.855943, this->mcmcMachinery_->llkSurf[5][1], epsilon2);
     }
 
 };

@@ -56,8 +56,7 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, McmcSample *mcmcSample, Rando
     stdNorm_ = new StandNormalRandomSample(this->seed_);
 
     this->setKstrain(this->dEploidIO_->kStrain());
-    //this->kStrain_ = this->dEploidIO_->kStrain_;
-    this->nLoci_ = this->dEploidIO_->plaf_.size();
+    this->setNLoci(this->dEploidIO_->plaf_.size());
     this->initializeMcmcChain( );
 
 }
@@ -217,32 +216,56 @@ vector <double> McmcMachinery::titre2prop(vector <double> & tmpTitre){
 }
 
 
-//void McmcMachinery::makeLlkSurf(c=1000, err=0.01, p.false=0.001, grid.size=99){
+void McmcMachinery::makeLlkSurf(vector <double> altCount, vector <double> refCount, double scalingConst, double err, size_t gridSize){
     //n.site<-length(alt.cts);
-    //p.grid<-1:grid.size/(grid.size+1); # Equal spaced mesh grid for p, from 0.01 to 0.99, spaced by 0.01
-    //llk.apx<-array(0, c(n.site, 2));
-    //e1<-p.grid*(1-err)+(1-p.grid)*err; # adjusted p grid, by taking into account of read error, from 0.0198 to 0.9802, equally spaced by 0.01 * 0.99 - 0.0001
+    double pGridSpacing = 1.0 / (double)(gridSize+1);
+    vector <double> pGrid;
+    pGrid.push_back(pGridSpacing);
+    for (size_t i = 1; i < gridSize; i++){
+        pGrid.push_back(pGrid.back() + pGridSpacing);
+    }
+    assert(pGrid.size() == gridSize);
 
-    //for (site in 1:n.site) {
-        //ll1<- lbeta(e1*c+alt.cts[site], (1-e1)*c+(read.depths[site]-alt.cts[site]));
-        //ll2<- -lbeta(e1*c, (1-e1)*c);
-        //ll<-ll1+ll2;
-        //ln<- exp(ll-max(ll));
-        //ln<-ln/sum(ln);
+    assert(llkSurf.size() == 0);
+
+    for ( size_t i = 0 ; i < altCount.size(); i++) {
+        double alt = altCount[i];
+        double ref = refCount[i];
+
+        vector <double> ll;
+        for ( double unadjustedP : pGrid ){
+            ll.push_back(calcLLK( ref, alt, unadjustedP, err, scalingConst));
+        }
+
+        double llmax = max_value(ll);
+        vector <double> ln;
+        for ( double lltmp : ll ){
+            ln.push_back(exp(lltmp-llmax));
+        }
+
+        double lnSum = sumOfVec(ln);
+        for (size_t i = 0; i < ln.size(); i++){
+            ln[i] = ln[i]/lnSum;
+        }
+
+        //double mn;
         //mn<-sum(ln*p.grid); # Compute the posterior, then normalize by the mean?
-        //vr<-sum(ln*p.grid^2)-mn^2;
-        //llk.apx[site,]<-(mn*(1-mn)/vr-1)*c(mn, 1-mn);
-        //vv<-dbeta(p.grid, llk.apx[site,1], llk.apx[site,2]);
+        vector <double> tmpVec1 = vecProd(ln, pGrid);
+        double mn = sumOfVec(tmpVec1);
 
-        //if (do.plot) {
-            //plot(p.grid, exp(ll-max(ll)), col="black", main=site);
-            //lines(p.grid, vv/max(vv), col="blue");
-            //abline(v=alt.cts[site]/read.depths[site], lty="dotted", col="red");
-            //Sys.sleep(1);
-        //}
-    //}
-    //return(llk.apx);
-//}
+        //double vr;
+        //vr<-sum(ln*p.grid^2)-mn^2;
+        vector <double> pGridSq = vecProd(pGrid, pGrid);
+        vector <double> tmpVec2 = vecProd(ln, pGridSq);
+        double vr = sumOfVec(tmpVec2) - mn*mn;
+
+        double comm = (mn*(1.0-mn)/vr-1.0);
+        llkSurf.push_back(vector <double> {mn*comm, (1-mn)*comm});
+        //llk.apx[site,]<-(mn*(1-mn)/vr-1)*c(mn, 1-mn);
+
+    }
+    assert(llkSurf.size() == this->nLoci());
+}
 
 
 void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
@@ -251,7 +274,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
         hprior.buildHprior(this->kStrain(), this->dEploidIO_->plaf_);
         cout << "hprior size = " << hprior.priorProb.size() << " x " << hprior.priorProb[0].size() << endl;
         //llk.apx<-make.llk.surf(alt.cts, read.depths, c=100, err=0.01, do.plot=FALSE)
-
+        this->makeLlkSurf(this->dEploidIO_->altCount_, this->dEploidIO_->refCount_);
     }
 
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++){

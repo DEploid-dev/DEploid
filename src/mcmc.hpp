@@ -82,6 +82,8 @@ class McmcMachinery {
     size_t kStrain() const { return this->kStrain_;}
 
     size_t nLoci_;
+    void setNLoci ( const size_t setTo ){ this->nLoci_ = setTo;}
+    size_t nLoci() const { return this->nLoci_; }
 
     double burnIn_;
     size_t maxIteration_;
@@ -150,7 +152,11 @@ class McmcMachinery {
    /* IBD */
     Hprior hprior;
     vector < vector <double> > llkSurf;
-    //void makeLlkSurf(c=1000, err=0.01, p.false=0.001, grid.size=99);
+    void makeLlkSurf(vector <double> altCount,
+                     vector <double> refCount,
+                     double scalingConst = 1000.0,
+                     double err = 0.01,
+                     size_t gridSize=99);
 
   /* Moves */
     void updateProportion();
