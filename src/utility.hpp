@@ -87,6 +87,9 @@ vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, 
 double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01, double fac=100 ) ;
 size_t sampleIndexGivenProp ( RandomGenerator* rg, vector <double> proportion );
 vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );
+double betaPdf(double x, double a, double b);
+double logBetaPdf(double x, double a, double b);
+double binomialPdf(int s, int n, double p);
 
 
 #endif

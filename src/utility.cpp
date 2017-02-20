@@ -25,6 +25,9 @@
 #include "utility.hpp"
 #include <iterator>     // std::distance
 #include <algorithm> // find
+#include "loggammasum.h" // which includes log_gamma.h
+#include "gamma.h"
+
 
 
 double normal_pdf(double x, double m, double s) { // See http://stackoverflow.com/questions/10847007/using-the-gaussian-probability-density-function-in-c
@@ -144,4 +147,37 @@ vector <double> reshapeMatToVec ( vector < vector <double> > &Mat ){
         }
     }
     return tmp;
+}
+
+
+double betaPdf(double x, double a, double b){
+    assert(x>=0 && x<=1);
+    assert(a>=0);
+    assert(b>=0);
+    double p = Maths::Special::Gamma::gamma(a + b) / (Maths::Special::Gamma::gamma(a) * Maths::Special::Gamma::gamma(b));
+    double q = pow(1 - x, b - 1) * pow(x, a - 1);
+    return p * q;
+}
+
+
+double logBetaPdf(double x, double a, double b){
+    assert(x>=0 && x<=1);
+    assert(a>=0);
+    assert(b>=0);
+    double ret = Maths::Special::Gamma::logGammaSum(a, b) -
+                 Maths::Special::Gamma::log_gamma(a) -
+                 Maths::Special::Gamma::log_gamma(b) +
+                 (b-1) * log(1-x) + (a-1) * log(x);
+    return ret;
+}
+
+
+double binomialPdf(int s, int n, double p){
+    assert(p>=0 && p<=1);
+    double ret=1;
+    for ( int i=0; i < n-s; i++ ){
+        ret *= (s+i+0.0)/i;
+    }
+    ret *= pow(p,s)*pow(1-p,n-s);
+    return ret;
 }
