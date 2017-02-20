@@ -86,6 +86,7 @@ class IBDconfiguration{
 class Hprior{
 #ifdef UNITTEST
   friend class TestHprior;
+  friend class TestMcmcMachinery;
 #endif
   friend class McmcMachinery;
     Hprior();
@@ -105,12 +106,16 @@ class Hprior{
     vector <double> plaf_;
     vector < vector <double> > priorProb; // size: nState x nLoci
     vector < vector <double> > priorProbTrans; // size: nLoci x nState
+    void transposePriorProbs();
 
     vector <size_t> stateIdx; // size: nState
 
     vector <vector <int> > hSet; // size: nState x kStrain
     size_t nState_;
     size_t nState() const {return this->nState_;}
+
+    vector < size_t > effectiveK;
+    size_t nPattern() const {return this->effectiveK.size();}
 };
 
 

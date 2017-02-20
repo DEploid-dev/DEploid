@@ -27,7 +27,6 @@
 #include "ibd.hpp"
 #include <algorithm>
 #include <cassert>
-//#include "utility.hpp"
 
 IBDconfiguration::IBDconfiguration(){}
 
@@ -185,6 +184,7 @@ Hprior::Hprior(){}
 
 void Hprior::buildHprior(size_t kStrain, vector <double> &plaf){
     ibdConfig.buildIBDconfiguration(kStrain);
+    this->effectiveK = ibdConfig.effectiveK;
     this->nState_ = 0;
     this->plaf_ = plaf;
     this->setKstrain(kStrain);
@@ -194,7 +194,7 @@ void Hprior::buildHprior(size_t kStrain, vector <double> &plaf){
     size_t stateI = 0;
     for ( vector<int> state : ibdConfig.states ) {
         set <int> stateUnique (state.begin(), state.end());
-        assert(stateUnique.size() == ibdConfig.effectiveK[stateI]);
+        assert(stateUnique.size() == effectiveK[stateI]);
         vector < vector<int> > hSetBaseTmp = hSetBase;
         for (size_t j = 0; j < (size_t)this->kStrain(); j++){
             for ( size_t i = 0; i < hSetBase.size(); i++ ){
@@ -221,6 +221,17 @@ void Hprior::buildHprior(size_t kStrain, vector <double> &plaf){
         stateI++;
     }
 }
+
+void Hprior::transposePriorProbs(){
+    for ( size_t i = 0; i < nLoci(); i++ ){
+        vector <double> priorProbTransTmp(nState());
+        for ( size_t j = 0; j < nState(); j++ ){
+            priorProbTransTmp[j] = priorProbTrans[j][i];
+        }
+        priorProbTrans.push_back(priorProbTransTmp);
+    }
+}
+
 
 
 Hprior::~Hprior(){}
