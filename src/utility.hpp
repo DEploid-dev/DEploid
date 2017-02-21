@@ -110,6 +110,6 @@ vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );
 double betaPdf(double x, double a, double b);
 double logBetaPdf(double x, double a, double b);
 double binomialPdf(int s, int n, double p);
-
-
+//double betaDistConst( double a , double b);
+double rBeta(double alpha, double beta, RandomGenerator* rg);
 #endif

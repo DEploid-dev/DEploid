@@ -194,3 +194,22 @@ double binomialPdf(int s, int n, double p){
     //cout << "pow((1.0-p), (double)(n-s)) = " << pow((1.0-p), (double)(n-s))<<endl;
     return ret;
 }
+
+
+//double betaDistConst( double a , double b){
+    //double ret = Maths::Special::Gamma::gamma(a + b) / (Maths::Special::Gamma::gamma(a) * Maths::Special::Gamma::gamma(b));
+    //return ret;
+//}
+
+
+double rBeta(double alpha, double beta, RandomGenerator* rg){
+    double mxAt = (alpha-1.0)/(alpha+beta-2.0);
+    double mx = betaPdf(mxAt, alpha, beta);
+    double y, u;
+    do {
+        u = rg->sample();
+        y = rg->sample();
+    } while ( u > (betaPdf(y, alpha, beta)/mx));
+
+    return y;
+}

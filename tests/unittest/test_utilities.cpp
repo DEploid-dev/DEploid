@@ -22,6 +22,7 @@ class TestUtility : public CppUnit::TestCase {
     CPPUNIT_TEST( testCalcLLKs );
     CPPUNIT_TEST( testBinomialPdf );
     CPPUNIT_TEST( testLogBetaPdf );
+    CPPUNIT_TEST( testRBeta );
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -250,6 +251,7 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL (-39.454802987, llk3[6], epsilon2) ;
     }
 
+
     void testLogBetaPdf(){
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.442989, betaPdf(.1,.1,.1), epsilon2);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.8142104, logBetaPdf(.1,.1,.1), epsilon2);
@@ -257,10 +259,35 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.2362263, logBetaPdf(.1,.1,.9), epsilon2);
     }
 
+
     void testBinomialPdf(){
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.4444444, binomialPdf(0, 2,  (1.0/3.0)), epsilon4);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.4444444, binomialPdf(1, 2,  (1.0/3.0)), epsilon4);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.111111, binomialPdf((int)2, (int)2, (1.0/3.0)), epsilon4);
+    }
+
+
+    void testRBetaCore(double a, double b){
+        double Ex = 0;
+        double Ex2 = 0;
+        double tmp;
+        for ( size_t i = 0; i < this->nRepeat; i++ ){
+            tmp = rBeta(a, b, rg);
+            Ex += tmp;
+            Ex2 += pow(tmp,2.0);
+        }
+        Ex /= nRepeat;
+        Ex2 /= nRepeat;
+        double mean = a/(a+b);
+        double var = (a*b)/(pow((a+b),2.0) * (a+b+1));
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(mean, Ex, epsilon1);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(var, Ex2-pow(Ex,2.0), epsilon1);
+    }
+
+    void testRBeta(){
+        this->testRBetaCore(4.0, 3.0);
+        this->testRBetaCore(14.0, 31.0);
+        this->testRBetaCore(53.0, 63.0);
     }
 
 };
