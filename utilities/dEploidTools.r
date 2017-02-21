@@ -15,6 +15,7 @@ fun.parse <- function( args ){
     ADFieldIndex = 2
     pdfBool = FALSE
     skip1Bool = FALSE
+    ibdBool = FALSE
     arg_i = 1
     while ( arg_i <= length(args) ){
         argv = args[arg_i]
@@ -49,6 +50,8 @@ fun.parse <- function( args ){
             pdfBool = TRUE
         } else if ( argv == "-skip1" ){
             skip1Bool = TRUE
+        } else if ( argv == "-ibd" ){
+            ibdBool = TRUE
         } else {
             cat ("Unknow flag: ", argv, "\n")
         }
@@ -78,7 +81,8 @@ fun.parse <- function( args ){
                     ADFieldIndex = ADFieldIndex,
                     pdfBool = pdfBool,
                     inbreedingBool = inbreedingBool,
-                    skip1Bool = skip1Bool) )
+                    skip1Bool = skip1Bool,
+                    ibdBool = ibdBool) )
 }
 
 

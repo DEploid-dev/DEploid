@@ -48,7 +48,7 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, McmcSample *mcmcSample, Rando
     //this->propRg_  = new MersenneTwister(this->seed_);
     //this->initialHapRg_ = new MersenneTwister(this->seed_);
     if (useIBD == true) {
-        this->calcMaxIteration( 10 , 10, dEploidIO_->mcmcBurn_ );
+        this->calcMaxIteration( 100 , 10, dEploidIO_->mcmcBurn_ );
     } else {
         this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
     }
@@ -617,6 +617,8 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
         }
     }
 
+
+//this->setTheta(this->propRg_->sample());
     ////#Now update inbreeding parameter (theta);
     //s.path<-c(0,state.idx[a.path]);
     //obs.states<-s.path[which(diff(s.path)!=0)+1];

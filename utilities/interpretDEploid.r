@@ -32,3 +32,14 @@ if ( myInput$skip1Bool == FALSE ){
 fun.interpretDEploid.2 (myCoverageInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool)
 
 fun.interpretDEploid.3 (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool, myInput$inbreedingBool)
+
+if (myInput$ibdBool == TRUE){
+    if ( myInput$skip1Bool == FALSE ){
+        fun.interpretDEploid.1 (myCoverageInfo, myPlafInfo, paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myExcludeInfo, myInput$pdfBool)
+    }
+
+    fun.interpretDEploid.2 (myCoverageInfo, paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myExcludeInfo, myInput$pdfBool)
+
+fun.interpretDEploid.3 (paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myInput$pdfBool, myInput$inbreedingBool)
+
+}
