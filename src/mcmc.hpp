@@ -100,6 +100,7 @@ class McmcMachinery {
     RandomGenerator* mcmcEventRg_;
     RandomGenerator* propRg_;
     RandomGenerator* initialHapRg_;
+    RandomGenerator* ibdRg_;
 
     //std::normal_distribution<double>* initialTitre_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);
     //std::normal_distribution<double>* deltaX_normal_distribution_;// (0, 1/PROP_SCALE);
@@ -142,7 +143,6 @@ class McmcMachinery {
     }
 
     void sampleMcmcEvent(bool useIBD = false);
-    void sampleMcmcEventIBDstep();
     void recordMcmcMachinery();
     bool recordingMcmcBool_;
     void writeLastFwdProb();
@@ -150,6 +150,7 @@ class McmcMachinery {
     void initializeUpdateReferencePanel(size_t inbreedingPanelSizeSetTo);
 
    /* IBD */
+    void initializeIbdEssentials();
     Hprior hprior;
     vector < vector <double> > llkSurf;
     void makeLlkSurf(vector <double> altCount,
@@ -157,6 +158,29 @@ class McmcMachinery {
                      double scalingConst = 1000.0,
                      double err = 0.01,
                      size_t gridSize=99);
+    void sampleMcmcEventIbdStep();
+    void makeIbdTransProbs();
+    void initializePropIBD();
+    double theta_;
+    void setTheta(const double setTo) {this->theta_ = setTo;}
+    double theta() const {return this->theta_;}
+
+    vector <int> uniqueEffectiveKCount;
+    void computeUniqueEffectiveKCount();
+    vector <double> computeStatePrior(double theta);
+
+    vector < vector<double> > ibdTransProbs;
+    vector <size_t> findWhichIsSomething(vector <size_t> tmpOp, size_t something);
+
+    vector <double> computeLlkOfStatesAtSiteI( size_t siteI, double err = 0.01);
+
+    vector < vector <double> > fm;
+    double fSum;
+    vector <double> fSumState;
+    void updateFmAtSiteI(vector <double> & prior,
+                         vector <double> & llk);
+
+    vector <size_t> ibdPath;
 
   /* Moves */
     void updateProportion();

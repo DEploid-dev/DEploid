@@ -175,7 +175,7 @@ void IBDconfiguration::findEffectiveK(){
         //cout << tmpSet.size() <<endl;
         effectiveK.push_back(tmpSet.size());
     }
-    assert(effectiveK.size() == 0);
+    assert(effectiveK.size() == states.size());
 }
 
 
@@ -223,10 +223,11 @@ void Hprior::buildHprior(size_t kStrain, vector <double> &plaf){
 }
 
 void Hprior::transposePriorProbs(){
+    assert(priorProbTrans.size() == 0);
     for ( size_t i = 0; i < nLoci(); i++ ){
         vector <double> priorProbTransTmp(nState());
         for ( size_t j = 0; j < nState(); j++ ){
-            priorProbTransTmp[j] = priorProbTrans[j][i];
+            priorProbTransTmp[j] = priorProb[j][i];
         }
         priorProbTrans.push_back(priorProbTransTmp);
     }
