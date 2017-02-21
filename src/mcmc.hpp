@@ -68,7 +68,7 @@ class McmcMachinery {
 #endif
   public:
     //McmcMachinery();
-    McmcMachinery( DEploidIO* dEplioidIO, McmcSample *mcmcSample, RandomGenerator* rg_ );
+    McmcMachinery( DEploidIO* dEplioidIO, McmcSample *mcmcSample, RandomGenerator* rg_, bool useIBD = false );
     ~McmcMachinery();
     void runMcmcChain( bool showProgress = true, bool useIBD = false );
 
@@ -181,6 +181,9 @@ class McmcMachinery {
                          vector <double> & llk);
 
     vector <size_t> ibdPath;
+    vector <double> computeLlkAtAllSites(double err = 0.01);
+
+    //vector <double> ibdTit;
 
   /* Moves */
     void updateProportion();

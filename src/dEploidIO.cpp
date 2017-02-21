@@ -528,7 +528,8 @@ void DEploidIO::printHelp(std::ostream& out){
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel"<< endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanelExclude -noPanel"<< endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CPanelExclude -panel data/testData/labStrains.test.panel.txt" << endl;
-    out<<"./dEploid_dbg -vcf data/exampleData/PG0390-C.eg.vcf -plaf data/exampleData/labStrains.eg.PLAF.txt -o PG0390-CPanelExclude -panel data/exampleData/labStrains.eg.panel.txt -painting PG0390-CPanel.hap"<<endl;
+    out <<"./dEploid_dbg -vcf data/exampleData/PG0390-C.eg.vcf -plaf data/exampleData/labStrains.eg.PLAF.txt -o PG0390-CPanelExclude -panel data/exampleData/labStrains.eg.panel.txt -painting PG0390-CPanel.hap"<<endl;
+    out << "./dEploid_dbg -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel -k 3 -ibd -nSample 250 -rate 8 -burn 0.67" <<endl;
 }
 
 

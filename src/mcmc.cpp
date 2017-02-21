@@ -31,7 +31,7 @@
 McmcSample::McmcSample(){};
 McmcSample::~McmcSample(){};
 
-McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, McmcSample *mcmcSample, RandomGenerator* rg_ ){ // initialiseMCMCmachinery
+McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, McmcSample *mcmcSample, RandomGenerator* rg_, bool useIBD ){ // initialiseMCMCmachinery
 
     this->dEploidIO_ = dEploidIO;
     this->panel_ = dEploidIO->panel;
@@ -47,9 +47,11 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, McmcSample *mcmcSample, Rando
     //this->mcmcEventRg_ = new MersenneTwister(this->seed_);
     //this->propRg_  = new MersenneTwister(this->seed_);
     //this->initialHapRg_ = new MersenneTwister(this->seed_);
-
-    this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
-
+    if (useIBD == true) {
+        this->calcMaxIteration( 10 , 10, dEploidIO_->mcmcBurn_ );
+    } else {
+        this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
+    }
     this->MN_LOG_TITRE = 0.0;
     this->SD_LOG_TITRE = 3.0;
     this->PROP_SCALE = 40.0;
@@ -414,6 +416,9 @@ void McmcMachinery::initializeIbdEssentials(){
 
     // initialize ibdPath
     this->ibdPath = vector <size_t> (this->nLoci());
+
+    // initialize proportion
+    this->currentTitre_ = vector <double> (this->kStrain());
 }
 
 
@@ -479,6 +484,19 @@ void McmcMachinery::updateFmAtSiteI(vector <double> & prior, vector <double> & l
         }
     }
 
+}
+
+vector <double> McmcMachinery::computeLlkAtAllSites(double err){
+    vector <double > ret;
+    for ( size_t site = 0; site < this->nLoci(); site++ ){
+        double qs = 0;
+        for ( size_t j = 0; j < this->kStrain() ; j++ ){
+            qs += (double)this->currentHap_[site][j] * this->currentProp_[j];
+        }
+        double qs2 = qs*(1-err) + (1-qs)*err ;
+        ret.push_back(logBetaPdf(qs2, this->llkSurf[site][0], this->llkSurf[site][1]));
+    }
+    return ret;
 }
 
 
@@ -577,24 +595,27 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
     //qs2<-qs*(1-err)+(1-qs)*err;
     //llk.site<-dbeta(qs2, llk.apx[,1], llk.apx[,2], log=T);
 
+    vector <double> llkAtAllSites = computeLlkAtAllSites();
+
     ////#Given current haplotypes, sample titres 1 by 1 using MH
-    //for (i in 1:k.max) {
-        //v0<-tit.0[i];
+    for (size_t i = 0; i < kStrain(); i++){
+        double v0 = this->currentTitre_[i];
+        vector <double> oldProp = this->currentProp_;
         //p.old<-prop.0;
-        //tit.0[i]<-tit.0[i]+rnorm(1, 0, scale.t.prop);
-        //prop.0[1,]<-exp(tit.0)/sum(exp(tit.0));
-        //qs<-prop.0 %*% h.0;
-        //qs2<-qs*(1-err)+(1-qs)*err;
-        //vv<-dbeta(qs2, llk.apx[,1], llk.apx[,2], log=T);
-        //rr<-dnorm(tit.0[i],0,1)/dnorm(v0, 0, 1) * exp(sum(vv)-sum(llk.site));
-        //if (runif(1)<rr) {
-            //llk.site[]<-vv;
+        this->currentTitre_[i] += (this->stdNorm_->genReal() * 0.1 + 0.0); // tit.0[i]+rnorm(1, 0, scale.t.prop);
+        this->currentProp_ = this->titre2prop(this->currentTitre_);
+        vector <double> vv = computeLlkAtAllSites();
+        double rr = normal_pdf( this->currentTitre_[i], 0, 1) /
+                    normal_pdf( v0, 0, 1) * exp( sumOfVec(vv) - sumOfVec(llkAtAllSites));
+
+        if ( this->propRg_->sample() < rr) {
+            llkAtAllSites = vv;
             //prop.accpt<-prop.accpt+1;
-        //} else {
-            //tit.0[i]<-v0;
-            //prop.0<-p.old;
-        //}
-    //}
+        } else {
+            this->currentTitre_[i] = v0;
+            this->currentProp_ = oldProp;
+        }
+    }
 
     ////#Now update inbreeding parameter (theta);
     //s.path<-c(0,state.idx[a.path]);
@@ -603,6 +624,13 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
     //sccs<-sum(k.max-k.eff.states);
     //theta.0<-rbeta(1, sccs+1, sum(k.eff.states-1)+1);
 
+    vector <size_t> sPath(1, 0);
+    for (size_t a : ibdPath){
+        sPath.push_back(this->hprior.stateIdx[a]);
+    }
+
+
+    currentLLks_ = llkAtAllSites;
     //llk.hist = c(llk.hist, sum(llk.site));
     //prop.hist = rbind(prop.hist, prop.0)
 
