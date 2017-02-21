@@ -20,6 +20,9 @@ class TestUtility : public CppUnit::TestCase {
     CPPUNIT_TEST( testNormalPdf );
     CPPUNIT_TEST( testCalcLLK );
     CPPUNIT_TEST( testCalcLLKs );
+    CPPUNIT_TEST( testBinomialPdf );
+    CPPUNIT_TEST( testLogBetaPdf );
+
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -30,6 +33,7 @@ class TestUtility : public CppUnit::TestCase {
     double epsilon1;
     double epsilon2;
     double epsilon3;
+    double epsilon4;
     size_t nRepeat;
 
     void testSampleIndexGivenPropCore( vector <double> prop ){
@@ -52,6 +56,7 @@ class TestUtility : public CppUnit::TestCase {
         mat1.push_back( vector <double> ({7.0, 8.0, 9.0}) );
         epsilon1 = 0.001;
         epsilon2 = 0.0000001;
+        epsilon4 = 0.00001;
         epsilon3 = 0.00000000001;
         nRepeat = 1000000;
     }
@@ -244,6 +249,20 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL (-26.30680376, llk3[5], epsilon2) ;
         CPPUNIT_ASSERT_DOUBLES_EQUAL (-39.454802987, llk3[6], epsilon2) ;
     }
+
+    void testLogBetaPdf(){
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.442989, betaPdf(.1,.1,.1), epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.8142104, logBetaPdf(.1,.1,.1), epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.789602, betaPdf(.1,.1,.9), epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.2362263, logBetaPdf(.1,.1,.9), epsilon2);
+    }
+
+    void testBinomialPdf(){
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.4444444, binomialPdf(0, 2,  (1.0/3.0)), epsilon4);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.4444444, binomialPdf(1, 2,  (1.0/3.0)), epsilon4);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.111111, binomialPdf((int)2, (int)2, (1.0/3.0)), epsilon4);
+    }
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestUtility );

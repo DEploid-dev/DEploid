@@ -75,6 +75,25 @@ T sumOfVec( vector <T>& array ){
     return tmp;
 }
 
+/*! \brief Compute factorial of a \return double a! */
+template < class T > T factorial ( T a ){
+    if (a > 1) return (a * factorial (a-1));
+    else       return (1);
+}
+
+/*! \brief Compute a permutations of n \return double */
+template < class T > T n_permu_a ( T n, T a ){
+    if   ( a > 1 ) return (n*n_permu_a(n-1,a-1));
+    else if (a==1) return (n);
+    else           return (1);
+}
+
+/*! \brief Compute n choose k \return double */
+template < class T > T n_choose_k ( T n, T k ){
+    if ( k < ( n/2 ) ) return (n_choose_k(n,n-k));
+    else               return (n_permu_a(n,k)/factorial(k));
+}
+
 
 double normal_pdf(double x, double m, double s);
 double min_value( vector <double> x);
@@ -82,6 +101,7 @@ double max_value( vector <double> x);
 vector <double> computeCdf ( vector <double> & dist );
 double sumOfMat( vector <vector <double> > & matrix );
 void normalizeBySum ( vector <double> & array );
+void normalizeByMax ( vector <double> & array );
 void normalizeBySumMat ( vector <vector <double> > & matrix );
 vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf, size_t firstIndex, size_t length );
 double calcLLK( double ref, double alt, double unadjustedWsaf, double err = 0.01, double fac=100 ) ;

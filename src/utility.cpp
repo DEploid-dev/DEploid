@@ -83,6 +83,15 @@ void normalizeBySum ( vector <double> & array ){
     }
 }
 
+
+void normalizeByMax ( vector <double> & array ){
+    double maxOfArray = max_value(array);
+    for( vector<double>::iterator it = array.begin(); it != array.end(); ++it) {
+        *it /= maxOfArray;
+    }
+}
+
+
 void normalizeBySumMat ( vector <vector <double> > & matrix ){
     double tmpsum = sumOfMat(matrix);
     for( size_t i = 0; i < matrix.size(); i++ ){
@@ -164,7 +173,7 @@ double logBetaPdf(double x, double a, double b){
     assert(x>=0 && x<=1);
     assert(a>=0);
     assert(b>=0);
-    double ret = Maths::Special::Gamma::logGammaSum(a, b) -
+    double ret = Maths::Special::Gamma::log_gamma(a+b) -
                  Maths::Special::Gamma::log_gamma(a) -
                  Maths::Special::Gamma::log_gamma(b) +
                  (b-1) * log(1-x) + (a-1) * log(x);
@@ -173,11 +182,15 @@ double logBetaPdf(double x, double a, double b){
 
 
 double binomialPdf(int s, int n, double p){
+    //cout << "s = "<< s<<endl;
+    //cout << "n = "<< s<<endl;
+    //cout << "p = "<< p<<endl;
     assert(p>=0 && p<=1);
-    double ret=1;
-    for ( int i=0; i < n-s; i++ ){
-        ret *= (s+i+0.0)/i;
-    }
-    ret *= pow(p,s)*pow(1-p,n-s);
+    double ret=n_choose_k(n, s);
+    //cout << "n_choose_k(n, s) = "<<n_choose_k(n, s)<<endl;
+    ret *= pow(p, (double)s);
+    //cout << "pow(p, (double)s) = " << pow(p, (double)s)<<endl;
+    ret *= pow((1.0-p), (double)(n-s));
+    //cout << "pow((1.0-p), (double)(n-s)) = " << pow((1.0-p), (double)(n-s))<<endl;
     return ret;
 }
