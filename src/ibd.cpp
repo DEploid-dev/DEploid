@@ -47,32 +47,17 @@ IBDconfiguration::~IBDconfiguration(){}
 void IBDconfiguration::enumerateOp(){
     //#For each configuration, identify which pairs are IBD
     this->op = enumerateBinaryMatrixOfK(nchoose2(this->kStrain()));
-    //cout << "op->size() = "<< op.size()<<endl;
-    //for ( vector< vector<int> >::iterator opIt = op.begin(); opIt != op.end(); opIt++ ){
-        //for ( size_t i = 0 ; i <(*opIt).size(); i++){
-            //cout << (*opIt)[i] << " ";
-        //}
-        //cout<<endl;
-    //}
 }
 
 
 void IBDconfiguration::makePairList(){
     //#Make a map of pairs to pair value
     assert(pairList.size() == 0);
-    //for ( int i = 1; i <= this->kStrain(); i++ ){ // 1-indexed
     for ( size_t i = 0; i < this->kStrain(); i++ ){ // 0-indexed
         for ( size_t j = i+1; j < this->kStrain(); j++ ){
             pairList.push_back(vector <size_t> ({i, j}));
         }
     }
-    //for (size_t i = 0; i < this->pairList.size(); i++){
-        //for (size_t ii = 0; ii< 2; ii++){
-        //cout<<this->pairList[i][ii]<<" ";
-        //}
-        //cout<<endl;
-    //}
-
     assert(pairList.size() == (size_t)nchoose2(this->kStrain()));
 }
 
@@ -202,15 +187,23 @@ void Hprior::buildHprior(size_t kStrain, vector <double> &plaf){
             }
         }
 
-        vector < vector<int> > hSetBaseTmpUnique = unique(hSetBaseTmp);
+        vector < vector<int> > hSetBaseTmpUnique = unique(hSetBaseTmp); // uu
         size_t sizeOfhSetBaseTmpUnique = hSetBaseTmpUnique.size();
         //h.prior.i<-array(0, c(size.h.set.i, n.loci));
 
         for ( size_t i = 0; i < sizeOfhSetBaseTmpUnique; i++){
-            int tmpSum = sumOfVec(hSetBaseTmpUnique[i]);
+            //vector<int> hSetBaseTmpUniqueSubSet(); // uu[i,a.u,drop=F]
+            int tmpSum = 0;
+            for (int uniqSt : stateUnique){
+                tmpSum += hSetBaseTmpUnique[i][uniqSt];
+            }
+            // sumOfVec(hSetBaseTmpUnique[i]);
+            int tmpDiff = stateUnique.size()-tmpSum;
+            //cout << stateUnique.size() << " " << tmpSum << " " << tmpDiff<< endl;
             vector <double> hPriorTmp (nLoci());
             for (size_t site = 0; site < nLoci(); site++ ){
-                hPriorTmp[site] = pow(plaf_[site], (double)tmpSum) * pow((1-plaf_[site]),(double)(stateUnique.size()-tmpSum));
+                //cout << (1.0-plaf_[site]) << " " << tmpDiff << " " <<pow((1.0-plaf_[site]),(double)tmpDiff) << endl;
+                hPriorTmp[site] = pow(plaf_[site], (double)tmpSum) * pow((1.0-plaf_[site]),(double)tmpDiff);
             }
             priorProb.push_back(hPriorTmp);
             hSet.push_back(hSetBaseTmpUnique[i]);
@@ -222,14 +215,17 @@ void Hprior::buildHprior(size_t kStrain, vector <double> &plaf){
     }
 }
 
+
 void Hprior::transposePriorProbs(){
     assert(priorProbTrans.size() == 0);
     for ( size_t i = 0; i < nLoci(); i++ ){
         vector <double> priorProbTransTmp(nState());
         for ( size_t j = 0; j < nState(); j++ ){
             priorProbTransTmp[j] = priorProb[j][i];
+            cout << priorProb[j][i] << " ";
         }
         priorProbTrans.push_back(priorProbTransTmp);
+        cout << endl;
     }
 }
 

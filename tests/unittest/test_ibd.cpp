@@ -1,6 +1,8 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include "ibd.hpp"
+#include <iomanip>      // std::setw
+
 
 class TestIBDUtility: public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE( TestIBDUtility );
@@ -140,6 +142,8 @@ class TestHprior : public CppUnit::TestCase {
 
     CPPUNIT_TEST_SUITE( TestHprior );
     CPPUNIT_TEST( testMainConstructor );
+    CPPUNIT_TEST( testCheckColSums);
+    CPPUNIT_TEST( testCheckHSetColSums);
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -173,6 +177,51 @@ class TestHprior : public CppUnit::TestCase {
     }
 
 
+    void testCheckColSumsCore(Hprior* hprior){
+            //cout <<endl;
+        //for (vector <double> prob : hprior->priorProb){
+            //for ( double p : prob ){
+                 //cout << setw(10) << p;
+            //}
+            //cout <<endl;
+            ////cout << "i = "<<i<<" tmpSum = "<< tmpSum<<endl;
+            ////CPPUNIT_ASSERT_EQUAL(tmpSum, (double)hprior->nPattern());
+        //}
+
+        for ( size_t i = 0; i < hprior->nLoci(); i++){
+            double tmpSum = 0.0;
+            for (vector <double> prob : hprior->priorProb){
+                tmpSum += prob[i];
+            }
+            //cout << "i = "<<i<<" tmpSum = "<< tmpSum<<endl;
+            CPPUNIT_ASSERT_EQUAL(tmpSum, (double)hprior->nPattern());
+        }
+    }
+
+
+    void testCheckColSums(){
+        this->testCheckColSumsCore(hprior3_);
+        this->testCheckColSumsCore(hprior4_);
+        this->testCheckColSumsCore(hprior5_);
+    }
+
+
+    void computeHSetColSumsCore(Hprior *hprior, int sum){
+        for ( size_t i = 0; i < hprior->kStrain(); i++){
+            int tmpSum = 0;
+            for (vector <int> hRow : hprior->hSet){
+                tmpSum += hRow[i];
+            }
+            CPPUNIT_ASSERT_EQUAL(tmpSum, sum);
+        }
+    }
+
+
+    void testCheckHSetColSums(){
+        this->computeHSetColSumsCore(hprior3_, 11);
+        this->computeHSetColSumsCore(hprior4_, 47);
+        this->computeHSetColSumsCore(hprior5_, 227);
+    }
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestIBDUtility);
