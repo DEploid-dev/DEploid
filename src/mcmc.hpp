@@ -155,7 +155,7 @@ class McmcMachinery {
     vector < vector <double> > llkSurf;
     void makeLlkSurf(vector <double> altCount,
                      vector <double> refCount,
-                     double scalingConst = 1000.0,
+                     double scalingConst = 100.0,
                      double err = 0.01,
                      size_t gridSize=99);
     void sampleMcmcEventIbdStep();
@@ -200,6 +200,7 @@ class McmcMachinery {
   /* Debug */
     bool doutProp();
     bool doutLLK();
+    int acceptUpdate;
 };
 
 #endif

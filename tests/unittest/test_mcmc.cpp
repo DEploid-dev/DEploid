@@ -305,6 +305,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         }
     }
 
+
     void testmakeLlkSurf(){
         vector <double> alt ({2, 100, 50, 50, 2, 2});
         vector <double> ref ({100, 2, 0, 50, 0, 2});
@@ -332,6 +333,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.800135, this->mcmcMachinery_->llkSurf[5][0], epsilon2);
         CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.800135, this->mcmcMachinery_->llkSurf[5][1], epsilon2);
     }
+
 
     void testIbdTransProbs(){
         //k = 3
@@ -361,6 +363,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         }
     }
 
+
     void testComputeUniqueEffectiveKCount(){
         vector <double> tmpPlaf = vector <double> ({0.1, 0.2, 0.3});
         CPPUNIT_ASSERT_NO_THROW(this->mcmcMachinery_->hprior.buildHprior(5, tmpPlaf));
@@ -375,8 +378,6 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL(this->mcmcMachinery_->uniqueEffectiveKCount[3], (int)10);
         CPPUNIT_ASSERT_EQUAL(this->mcmcMachinery_->uniqueEffectiveKCount[4], (int)1);
     }
-
-
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestMcmcMachinery );

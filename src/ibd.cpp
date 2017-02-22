@@ -222,10 +222,10 @@ void Hprior::transposePriorProbs(){
         vector <double> priorProbTransTmp(nState());
         for ( size_t j = 0; j < nState(); j++ ){
             priorProbTransTmp[j] = priorProb[j][i];
-            cout << priorProb[j][i] << " ";
+            //cout << priorProb[j][i] << " ";
         }
         priorProbTrans.push_back(priorProbTransTmp);
-        cout << endl;
+        //cout << endl;
     }
 }
 

@@ -56,7 +56,7 @@ int main( int argc, char *argv[] ){
                 ibdMcmcMachinery.runMcmcChain(true, // show progress
                                               true);  // use IBD
                 delete ibdMcmcSample;
-            }
+            } else{ // remove else
 
             McmcSample * mcmcSample = new McmcSample();
             MersenneTwister rg(dEploidIO.randomSeed());
@@ -65,6 +65,7 @@ int main( int argc, char *argv[] ){
             mcmcMachinery.runMcmcChain(true, // show progress
                                        false); // use IBD
             delete mcmcSample;
+            } // remove else
         }
         // Finishing, write log
         dEploidIO.wrapUp();

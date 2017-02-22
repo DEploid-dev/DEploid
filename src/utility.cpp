@@ -55,8 +55,8 @@ double max_value( vector <double> x){
 vector <double> computeCdf ( vector <double> & dist ){
     vector <double> cdf;
     double cumsum = 0;
-    for (size_t i = 0; i < dist.size(); i++){
-        cumsum += dist[i];
+    for (double p : dist){
+        cumsum += p;
         cdf.push_back( cumsum );
     }
     assert( cdf.size() == dist.size() );
