@@ -304,6 +304,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
         this->dEploidIO_->initialProp = this->mcmcSample_->proportion.back();
         this->dEploidIO_->initialHap = this->mcmcSample_->hap;
         this->dEploidIO_->setInitialHapWasGiven(true);
+        this->dEploidIO_->setDoUpdateProp(false);
     }
 }
 
