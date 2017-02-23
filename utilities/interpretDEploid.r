@@ -3,9 +3,11 @@ rm(list=ls()); dEploidRootDir="/home/joezhu/DEploid"
 # DESCRIPTION:
 #
 # USAGE:
+#    ./interpretDEploid.r -vcf FILE -plaf FILE -dEprefix STRING -o STRING
 #    R --slave "--args -vcf FILE -plaf FILE -dEprefix STRING -o STRING " < utilities/interpretDEploid.r
 #
 # EXAMPLE:
+#    ./interpretDEploid.r -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -dEprefix PG0390-CNopanel -o PG0390-CNopanel
 #    R --slave "--args -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -dEprefix PG0390-CNopanel -o PG0390-CNopanel " < utilities/interpretDEploid.r
 #    R --slave "--args -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -dEprefix PG0390-CNopanelExclude -o PG0390-CNopanelExclude -exclude data/testData/labStrains.test.exclude.txt " < utilities/interpretDEploid.r
 
