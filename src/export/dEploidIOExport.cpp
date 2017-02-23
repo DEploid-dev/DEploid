@@ -101,6 +101,9 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_ << "\n";
         (*writeTo) << setw(19) << " MCMC sample rate: " << mcmcMachineryRate_ <<"\n";
         (*writeTo) << setw(19) << " Random seed: " << this->randomSeed() << "\n";
+        if (this->useIBD()){
+            (*writeTo) << setw(19) << "  IBD Method used: YES" << "\n";
+        }
         (*writeTo) << setw(19) << " Update Prop: "   << (this->doUpdateProp()  ? "YES":"NO") << "\n";
         (*writeTo) << setw(19) << " Update Single: " << (this->doUpdateSingle()? "YES":"NO") << "\n";
         (*writeTo) << setw(19) << " Update Pair: "   << (this->doUpdatePair()  ? "YES":"NO") << "\n";
@@ -125,12 +128,20 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     (*writeTo) << "\n";
     (*writeTo) << "Output saved to:\n";
     if ( this->doPainting() ){
-
+        for ( size_t i = 0; i < kStrain(); i++ ){
+            (*writeTo) << "Posterior probability of strain " << i << ": "<< strExportSingleFwdProbPrefix << i <<endl;
+        }
     } else {
         (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
         (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
         (*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
         if ( doExportVcf() ) { (*writeTo) << setw(14) << "Vcf: "  << strExportVcf  << "\n"; }
+        if (this->useIBD()){
+            (*writeTo) << " IBD method output saved to:\n";
+            (*writeTo) << setw(14) << "Likelihood: "  << strIbdExportProp  << "\n";
+            (*writeTo) << setw(14) << "Proportions: " << strIbdExportProp << "\n";
+            (*writeTo) << setw(14) << "Haplotypes: "  << strIbdExportHap  << "\n";
+        }
     }
     (*writeTo) << "\n";
     (*writeTo) << "Proportions:\n";
