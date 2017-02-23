@@ -60,7 +60,8 @@ int main( int argc, char *argv[] ){
             McmcSample * mcmcSample = new McmcSample();
             MersenneTwister rg(dEploidIO.randomSeed());
 
-            McmcMachinery mcmcMachinery(&dEploidIO, mcmcSample, &rg);
+            McmcMachinery mcmcMachinery(&dEploidIO, mcmcSample, &rg,
+                                        false); // use IBD
             mcmcMachinery.runMcmcChain(true, // show progress
                                        false); // use IBD
             delete mcmcSample;

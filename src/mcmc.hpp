@@ -122,7 +122,7 @@ class McmcMachinery {
   /* Methods */
     void calcMaxIteration( size_t nSample, size_t McmcMachineryRate, double burnIn );
    /* Initialize */
-    void initializeMcmcChain();
+    void initializeMcmcChain(bool useIBD);
     void initializeProp();
     void initializeTitre();
     void initializeHap();
