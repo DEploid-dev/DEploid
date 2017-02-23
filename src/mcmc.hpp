@@ -167,6 +167,7 @@ class McmcMachinery {
     vector <size_t> findWhichIsSomething(vector <size_t> tmpOp, size_t something);
     vector <double> computeLlkOfStatesAtSiteI( size_t siteI, double err = 0.01);
     vector <double> computeLlkAtAllSites(double err = 0.01);
+    vector <double> averageProportion(vector < vector <double> > &proportion );
 
     void initializeIbdEssentials();
     void makeLlkSurf(vector <double> altCount,

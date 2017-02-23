@@ -48,7 +48,7 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, McmcSample *mcmcSample, Rando
     //this->propRg_  = new MersenneTwister(this->seed_);
     //this->initialHapRg_ = new MersenneTwister(this->seed_);
     if (useIBD == true) {
-        this->calcMaxIteration( 40, 1, 0 );
+        this->calcMaxIteration(100, 10, 0.5);
     } else {
         this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
     }
@@ -295,12 +295,26 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
 
     if ( useIBD == true ){
         clog << "Proportion update accept rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
-        this->dEploidIO_->initialProp = this->mcmcSample_->proportion.back();
+        this->dEploidIO_->initialProp = averageProportion(this->mcmcSample_->proportion);
         this->dEploidIO_->setInitialPropWasGiven(true);
         this->dEploidIO_->setDoUpdateProp(false);
         this->dEploidIO_->initialHap = this->mcmcSample_->hap;
         this->dEploidIO_->setInitialHapWasGiven(true);
     }
+}
+
+
+vector <double> McmcMachinery::averageProportion(vector < vector <double> > &proportion ){
+    assert(proportion.size()>0);
+    vector <double> ret(this->kStrain());
+    for ( size_t i = 0; i < kStrain(); i++ ){
+        for (vector <double> p : proportion){
+            ret[i] += p[i];
+        }
+        ret[i] /= (1.0*proportion.size());
+    }
+    (void)normalizeBySum(ret);
+    return ret;
 }
 
 

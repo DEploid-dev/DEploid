@@ -48,12 +48,15 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     CPPUNIT_TEST( testmakeLlkSurf );
     CPPUNIT_TEST( testIbdTransProbs );
     CPPUNIT_TEST( testComputeUniqueEffectiveKCount );
+    CPPUNIT_TEST( testAverageProportion );
     CPPUNIT_TEST_SUITE_END();
 
   private:
     McmcSample* mcmcSample_;
     DEploidIO* dEploidIO_;
     McmcMachinery* mcmcMachinery_;
+    McmcSample* mcmcSampleIbd_;
+    McmcMachinery* mcmcMachineryIbd_;
     MersenneTwister* rg_;
     size_t nRepeat;
     double epsilon1;
@@ -98,9 +101,14 @@ class TestMcmcMachinery: public CppUnit::TestCase {
   public:
     void setUp() {
         mcmcSample_ = new McmcSample();
+        mcmcSampleIbd_ = new McmcSample();
         dEploidIO_ = new DEploidIO();
+        dEploidIO_->altCount_ = vector<double> ({100, 10, 6});
+        dEploidIO_->refCount_ = vector<double> ({9, 10, 106});
+        dEploidIO_->plaf_ = vector<double> ({0.1, .4, .4});
         rg_ = new MersenneTwister(dEploidIO_->randomSeed());
         mcmcMachinery_ = new McmcMachinery(this->dEploidIO_, this->mcmcSample_, this->rg_ );
+        mcmcMachineryIbd_ = new McmcMachinery(this->dEploidIO_, this->mcmcSampleIbd_, this->rg_, true);
         nRepeat = 1000000;
         epsilon1 = 0.01;
         epsilon2 = 0.001;
@@ -112,6 +120,8 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         delete rg_;
         delete mcmcMachinery_;
         delete mcmcSample_;
+        delete mcmcMachineryIbd_;
+        delete mcmcSampleIbd_;
         delete dEploidIO_;
     }
 
@@ -290,8 +300,8 @@ class TestMcmcMachinery: public CppUnit::TestCase {
 
 
     void testRunMcmcChain (){
-        this->mcmcMachinery_->calcMaxIteration(nRepeat, 1, 0.5);
-        this->mcmcMachinery_->runMcmcChain();
+        CPPUNIT_ASSERT_NO_THROW(this->mcmcMachinery_->calcMaxIteration(nRepeat, 1, 0.5));
+        CPPUNIT_ASSERT_NO_THROW(this->mcmcMachinery_->runMcmcChain());
 
         CPPUNIT_ASSERT_EQUAL( nRepeat, this->mcmcMachinery_->mcmcSample_->proportion.size() );
         CPPUNIT_ASSERT_EQUAL( nRepeat, this->mcmcMachinery_->mcmcSample_->sumLLKs.size() );
@@ -303,6 +313,14 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         for ( size_t i = 0; i < 3; i++ ){
             CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.333333, (double)counter[i]/(double)nRepeat , epsilon2);
         }
+
+        // IBD
+        CPPUNIT_ASSERT_NO_THROW(this->mcmcMachineryIbd_->setKstrain(3));
+        CPPUNIT_ASSERT_NO_THROW(this->mcmcMachineryIbd_->calcMaxIteration(100, 1, 0.5));
+        CPPUNIT_ASSERT_NO_THROW(this->mcmcMachineryIbd_->runMcmcChain(true, true));
+
+        CPPUNIT_ASSERT_EQUAL( (size_t)100, this->mcmcMachineryIbd_->mcmcSample_->proportion.size() );
+        CPPUNIT_ASSERT_EQUAL( (size_t)100, this->mcmcMachineryIbd_->mcmcSample_->sumLLKs.size() );
     }
 
 
@@ -377,6 +395,23 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL(this->mcmcMachinery_->uniqueEffectiveKCount[2], (int)25);
         CPPUNIT_ASSERT_EQUAL(this->mcmcMachinery_->uniqueEffectiveKCount[3], (int)10);
         CPPUNIT_ASSERT_EQUAL(this->mcmcMachinery_->uniqueEffectiveKCount[4], (int)1);
+    }
+
+
+    void testAverageProportion(){
+        CPPUNIT_ASSERT_NO_THROW(this->mcmcMachinery_->setKstrain(4));
+        vector < vector <double> > proportionMat;
+        proportionMat.push_back(vector<double> ({0.1, 0.2, 0.3, 0.4}));
+        proportionMat.push_back(vector<double> ({0.11, 0.22, 0.28, 0.39}));
+        proportionMat.push_back(vector<double> ({0.09, 0.21, 0.32, 0.41}));
+        proportionMat.push_back(vector<double> ({0.12, 0.18, 0.29, 0.37}));
+        proportionMat.push_back(vector<double> ({0.08, 0.19, 0.31, 0.43}));
+
+        vector <double> tmp = this->mcmcMachinery_->averageProportion(proportionMat);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.1, tmp[0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.2, tmp[1], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.3, tmp[2], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 0.4, tmp[3], epsilon3);
     }
 };
 
