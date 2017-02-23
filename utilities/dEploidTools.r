@@ -1,3 +1,48 @@
+fun.print.help <- function(){
+    cat("    DEploid R utilities help\n")
+
+    cat("
+          Arguments:
+               -help  --  Help. List the following content.
+            -vcf STR  --  VCF file path.
+            -ref STR  --  File path of reference allele count.
+            -alt STR  --  File path of alternative allele count.
+           -plaf STR  --  File path of population level allele frequencies.
+        -exclude STR  --  File path of sites to be excluded.
+              -o STR  --  Specify the file name prefix of the output.")
+}
+
+fun.print.help.interpret <- function(){
+    fun.print.help()
+    cat("
+       -dEprefix STR  --  Specify DEploid output file prefix.\n")
+    cat("
+          Example:
+          ./dEploid -vcf data/testData/PG0390-C.test.vcf \\
+           -plaf data/testData/labStrains.test.PLAF.txt \\
+           -o PG0390-CNopanel \\
+           -noPanel
+          ./utilities/dataExplore.r \\
+          -vcf data/testData/PG0390-C.test.vcf.gz \\
+          -plaf data/testData/labStrains.test.PLAF.txt \\
+          -o PG0390-CNopanel \\
+          -dEprefix PG0390-CNopanel\n\n")
+
+
+    q(save="no")
+}
+
+fun.print.help.explore <- function(){
+    fun.print.help()
+    cat("\n
+          Example:
+            ./utilities/dataExplore.r \\
+             -vcf data/testData/PG0390-C.test.vcf.gz \\
+             -plaf data/testData/labStrains.test.PLAF.txt \\
+             -o PG0390-C\n\n")
+    q(save="no")
+}
+
 fun.parse <- function( args ){
     fun.local.checkAndIncreaseArgI <- function ( ){
         arg_i = arg_i+1
@@ -16,6 +61,7 @@ fun.parse <- function( args ){
     pdfBool = FALSE
     skip1Bool = FALSE
     ibdBool = FALSE
+    helpBool = FALSE
     arg_i = 1
     while ( arg_i <= length(args) ){
         argv = args[arg_i]
@@ -52,6 +98,8 @@ fun.parse <- function( args ){
             skip1Bool = TRUE
         } else if ( argv == "-ibd" ){
             ibdBool = TRUE
+        } else if ( argv == "-help" ){
+            helpBool = TRUE
         } else {
             cat ("Unknow flag: ", argv, "\n")
         }
@@ -59,14 +107,13 @@ fun.parse <- function( args ){
         arg_i = arg_i + 1
     }
 
+    if (length(args) == 0){
+        helpBool = TRUE
+    }
+
 #    if ( vcfFileName == "" || ( refFileName == "" && altFileName == "") ){
 #        stop ("Vcf File name not specified!")
 #    }
-
-    if ( plafFileName == "" ){
-        stop ("Plaf File name not specified!")
-    }
-
 #    cat ("vcfFileName: ", vcfFileName, "\n")
 #    cat ("plafFileName: ", plafFileName, "\n")
 
@@ -82,7 +129,8 @@ fun.parse <- function( args ){
                     pdfBool = pdfBool,
                     inbreedingBool = inbreedingBool,
                     skip1Bool = skip1Bool,
-                    ibdBool = ibdBool) )
+                    ibdBool = ibdBool,
+                    helpBool = helpBool) )
 }
 
 

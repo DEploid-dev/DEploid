@@ -506,6 +506,7 @@ void DEploidIO::printHelp(std::ostream& out){
         << endl;
     out << setw(20) << "-h or -help"         << "  --  " << "Help. List the following content."<<endl;
     out << setw(20) << "-v or -version"      << "  --  " << "DEploid version."<<endl;
+    out << setw(20) << "-vcf STR"            << "  --  " << "VCF file path."<<endl;
     out << setw(20) << "-ref STR"            << "  --  " << "File path of reference allele count."<<endl;
     out << setw(20) << "-alt STR"            << "  --  " << "File path of alternative allele count."<<endl;
     out << setw(20) << "-plaf STR"           << "  --  " << "File path of population level allele frequencies."<<endl;
@@ -529,7 +530,7 @@ void DEploidIO::printHelp(std::ostream& out){
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanelExclude -noPanel"<< endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CPanelExclude -panel data/testData/labStrains.test.panel.txt" << endl;
     out <<"./dEploid_dbg -vcf data/exampleData/PG0390-C.eg.vcf -plaf data/exampleData/labStrains.eg.PLAF.txt -o PG0390-CPanelExclude -panel data/exampleData/labStrains.eg.panel.txt -painting PG0390-CPanel.hap"<<endl;
-    out << "./dEploid_dbg -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel -k 3 -ibd -nSample 250 -rate 8 -burn 0.67" <<endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel -k 2 -ibd -nSample 250 -rate 8 -burn 0.67" <<endl;
 }
 
 

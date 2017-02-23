@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 rm(list=ls()); dEploidRootDir="/home/joezhu/DEploid"
 # DESCRIPTION:
 #
@@ -19,6 +20,10 @@ args = (commandArgs(TRUE))
 
 myInput = fun.parse ( args )
 
+if (myInput$helpBool){
+    fun.print.help.interpret()
+}
+
 myCoverageInfo = fun.extract.coverage ( myInput )
 
 myPlafInfo = extractPLAF( myInput$plafFileName )
@@ -38,7 +43,7 @@ if (myInput$ibdBool == TRUE){
         fun.interpretDEploid.1 (myCoverageInfo, myPlafInfo, paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myExcludeInfo, myInput$pdfBool)
     }
 
-    fun.interpretDEploid.2 (myCoverageInfo, paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myExcludeInfo, myInput$pdfBool)
+fun.interpretDEploid.2 (myCoverageInfo, paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myExcludeInfo, myInput$pdfBool)
 
 fun.interpretDEploid.3 (paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myInput$pdfBool, myInput$inbreedingBool)
 
