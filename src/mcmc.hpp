@@ -150,9 +150,25 @@ class McmcMachinery {
     void initializeUpdateReferencePanel(size_t inbreedingPanelSizeSetTo);
 
    /* IBD */
-    void initializeIbdEssentials();
+    double theta_;
+    void setTheta(const double setTo) {this->theta_ = setTo;}
+    double theta() const {return this->theta_;}
+
+    double fSum;
     Hprior hprior;
     vector < vector <double> > llkSurf;
+    vector <int> uniqueEffectiveKCount;
+    vector < vector<double> > ibdTransProbs;
+    vector < vector <double> > fm;
+    vector <double> fSumState;
+    vector <size_t> ibdPath;
+
+    vector <double> computeStatePrior(double theta);
+    vector <size_t> findWhichIsSomething(vector <size_t> tmpOp, size_t something);
+    vector <double> computeLlkOfStatesAtSiteI( size_t siteI, double err = 0.01);
+    vector <double> computeLlkAtAllSites(double err = 0.01);
+
+    void initializeIbdEssentials();
     void makeLlkSurf(vector <double> altCount,
                      vector <double> refCount,
                      double scalingConst = 100.0,
@@ -161,29 +177,9 @@ class McmcMachinery {
     void sampleMcmcEventIbdStep();
     void makeIbdTransProbs();
     void initializePropIBD();
-    double theta_;
-    void setTheta(const double setTo) {this->theta_ = setTo;}
-    double theta() const {return this->theta_;}
-
-    vector <int> uniqueEffectiveKCount;
     void computeUniqueEffectiveKCount();
-    vector <double> computeStatePrior(double theta);
-
-    vector < vector<double> > ibdTransProbs;
-    vector <size_t> findWhichIsSomething(vector <size_t> tmpOp, size_t something);
-
-    vector <double> computeLlkOfStatesAtSiteI( size_t siteI, double err = 0.01);
-
-    vector < vector <double> > fm;
-    double fSum;
-    vector <double> fSumState;
     void updateFmAtSiteI(vector <double> & prior,
                          vector <double> & llk);
-
-    vector <size_t> ibdPath;
-    vector <double> computeLlkAtAllSites(double err = 0.01);
-
-    //vector <double> ibdTit;
 
   /* Moves */
     void updateProportion();

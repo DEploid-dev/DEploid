@@ -182,16 +182,10 @@ double logBetaPdf(double x, double a, double b){
 
 
 double binomialPdf(int s, int n, double p){
-    //cout << "s = "<< s<<endl;
-    //cout << "n = "<< s<<endl;
-    //cout << "p = "<< p<<endl;
     assert(p>=0 && p<=1);
     double ret=n_choose_k(n, s);
-    //cout << "n_choose_k(n, s) = "<<n_choose_k(n, s)<<endl;
     ret *= pow(p, (double)s);
-    //cout << "pow(p, (double)s) = " << pow(p, (double)s)<<endl;
     ret *= pow((1.0-p), (double)(n-s));
-    //cout << "pow((1.0-p), (double)(n-s)) = " << pow((1.0-p), (double)(n-s))<<endl;
     return ret;
 }
 
