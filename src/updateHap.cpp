@@ -185,9 +185,15 @@ void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <
     size_t hapIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < expectedWsaf0_.size(); i++ ){
         expectedWsaf0_[i] -= proportion[strainIndex_] * haplotypes[hapIndex][strainIndex_];
-        //dout << expectedWsaf[i] << " " << expectedWsaf0_[i] << endl;
+        //if (expectedWsaf0_[i] <= 0 ){
+            //cout << "i=" << i<<", expectedWsaf0_[i] = "<< expectedWsaf0_[i]<<", proportion[strainIndex_] = "<<proportion[strainIndex_]<<", haplotypes[hapIndex][strainIndex_] = "<<haplotypes[hapIndex][strainIndex_];
+            //cout << ", expectedWsaf[hapIndex] = "<<expectedWsaf[hapIndex]<<endl;
+        //}
         assert (expectedWsaf0_[i] >= 0 );
-        assert (expectedWsaf0_[i] < 1 );
+        //if (expectedWsaf0_[i] >= 1 ){
+            //cout << "i=" << i<<", expectedWsaf0_[i] = "<< expectedWsaf0_[i]<<", proportion[strainIndex_] = "<<proportion[strainIndex_]<<", haplotypes[hapIndex][strainIndex_]"<<haplotypes[hapIndex][strainIndex_] << endl;
+        //}
+        assert (expectedWsaf0_[i] <= 1 );
         hapIndex++;
     }
 

@@ -301,6 +301,9 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
         this->dEploidIO_->initialHap = this->mcmcSample_->hap;
         this->dEploidIO_->setInitialHapWasGiven(true);
     }
+    dout << "###########################################"<< endl;
+    dout << "#            MCMC RUN finished            #"<< endl;
+    dout << "###########################################"<< endl;
 }
 
 
@@ -573,7 +576,8 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
     }
     this->setTheta(rBeta(sccs+1.0, sumOfKeffStates+1.0, this->propRg_));
 
-    currentLLks_ = llkAtAllSites;
+    this->currentLLks_ = llkAtAllSites;
+    this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
 
