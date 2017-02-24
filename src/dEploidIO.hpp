@@ -62,6 +62,7 @@ class DEploidIO{
     // Painting related
     void chromPainting ();
     bool doPainting() const { return this->doPainting_; }
+    bool useIBD() const { return this->useIBD_;}
 
     // Log
     void wrapUp();
@@ -106,6 +107,7 @@ class DEploidIO{
     bool doExportSwitchMissCopy_;
     bool doAllowInbreeding_;
     bool doPainting_;
+    bool useIBD_;
 
     vector <double> initialProp;
     vector <double> filnalProp;
@@ -166,6 +168,10 @@ class DEploidIO{
     string strExportProp;
     string strExportLog;
     string strExportRecombProb;
+
+    string strIbdExportProp;
+    string strIbdExportLLK;
+    string strIbdExportHap;
 
     string strExportSingleFwdProbPrefix;
     string strExportPairFwdProb;
@@ -239,6 +245,7 @@ class DEploidIO{
     bool doAllowInbreeding() const { return this->doAllowInbreeding_; }
 
     void setDoPainting ( const bool setTo ){ this->doPainting_ = setTo; }
+    void setUseIBD( const bool setTo){ this->useIBD_ = setTo; }
 
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
     void setInitialPropWasGiven(const bool setTo){this->initialPropWasGiven_ = setTo; }
@@ -248,16 +255,16 @@ class DEploidIO{
 
     // log and export resutls
     void writeRecombProb ( Panel * panel );
-    void writeLLK (McmcSample * mcmcSample);
-    void writeProp (McmcSample * mcmcSample);
-    void writeHap (McmcSample * mcmcSample);
+    void writeLLK (McmcSample * mcmcSample, bool useIBD = false);
+    void writeProp (McmcSample * mcmcSample, bool useIBD = false);
+    void writeHap (McmcSample * mcmcSample, bool useIBD = false);
     void writeVcf (McmcSample * mcmcSample);
     void writeLastSingleFwdProb( vector < vector <double> >& probabilities, size_t chromIndex, size_t strainIndex  );
     void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
     void writeLog (ostream * writeTo );
 
     Panel *panel;
-    void writeMcmcRelated (McmcSample * mcmcSample);
+    void writeMcmcRelated (McmcSample * mcmcSample, bool useIBD = false);
     void readPanel();
 
     // Panel related

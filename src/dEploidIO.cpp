@@ -110,6 +110,7 @@ void DEploidIO::init() {
     this->setDoUpdateSingle( true );
     this->setDoExportPostProb( false );
     this->setDoPainting( false );
+    this->setUseIBD( false );
     this->setDoExportSwitchMissCopy ( false );
     this->setDoAllowInbreeding( false );
     this->mcmcBurn_ = 0.5;
@@ -231,6 +232,10 @@ void DEploidIO::removeFilesWithSameName(){
     strExportLLK = this->prefix_ + ".llk";
     strExportHap = this->prefix_ + ".hap";
 
+    strIbdExportProp = this->prefix_ + ".ibd.prop";
+    strIbdExportLLK = this->prefix_ + ".ibd.llk";
+    strIbdExportHap = this->prefix_ + ".ibd.hap";
+
     strExportVcf = this->prefix_ + ".vcf";
     if ( compressVcf() ){
         strExportVcf += ".gz";
@@ -246,6 +251,11 @@ void DEploidIO::removeFilesWithSameName(){
     strExportTwoMissCopyTwo = this->prefix_ + ".twoMissCopyTwo";
 
     if ( this->doPainting() == false ){
+        if (this->useIBD()){
+            remove(strIbdExportProp.c_str());
+            remove(strIbdExportLLK.c_str());
+            remove(strIbdExportHap.c_str());
+        }
         remove(strExportLLK.c_str());
         remove(strExportHap.c_str());
         remove(strExportVcf.c_str());
@@ -384,6 +394,8 @@ void DEploidIO::parse (){
             this->readNextStringto ( this->initialHapFileName_ ) ;
             this->setDoPainting( true );
             this->readInitialHaps();
+        } else if ( *argv_i == "-ibd" ){
+            this->setUseIBD(true);
         } else if ( *argv_i == "-initialP" ){
             this->readInitialProportions();
             this->setInitialPropWasGiven( true );
@@ -494,6 +506,7 @@ void DEploidIO::printHelp(std::ostream& out){
         << endl;
     out << setw(20) << "-h or -help"         << "  --  " << "Help. List the following content."<<endl;
     out << setw(20) << "-v or -version"      << "  --  " << "DEploid version."<<endl;
+    out << setw(20) << "-vcf STR"            << "  --  " << "VCF file path."<<endl;
     out << setw(20) << "-ref STR"            << "  --  " << "File path of reference allele count."<<endl;
     out << setw(20) << "-alt STR"            << "  --  " << "File path of alternative allele count."<<endl;
     out << setw(20) << "-plaf STR"           << "  --  " << "File path of population level allele frequencies."<<endl;
@@ -516,7 +529,8 @@ void DEploidIO::printHelp(std::ostream& out){
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel"<< endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanelExclude -noPanel"<< endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CPanelExclude -panel data/testData/labStrains.test.panel.txt" << endl;
-    out<<"./dEploid_dbg -vcf data/exampleData/PG0390-C.eg.vcf -plaf data/exampleData/labStrains.eg.PLAF.txt -o PG0390-CPanelExclude -panel data/exampleData/labStrains.eg.panel.txt -painting PG0390-CPanel.hap"<<endl;
+    out << "./dEploid -vcf data/exampleData/PG0390-C.eg.vcf -plaf data/exampleData/labStrains.eg.PLAF.txt -o PG0390-CPanelExclude -panel data/exampleData/labStrains.eg.panel.txt -painting PG0390-CPanel.hap"<<endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel -k 2 -ibd -nSample 250 -rate 8 -burn 0.67" <<endl;
 }
 
 

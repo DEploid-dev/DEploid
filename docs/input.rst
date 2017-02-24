@@ -70,6 +70,15 @@ Mostly used
 -burn [float]
     MCMC burn rate (default value 0.5).
 
+-ibd\
+    Use IBD segment to infer the proportion, then infer the haplotype.
+
+-painting [*file*]
+    Paint the posterior probability of the given haplotypes.
+
+-inbreeding\
+    Calculate the inbreeding probabilities.
+
 -h , -help
     Help.
 

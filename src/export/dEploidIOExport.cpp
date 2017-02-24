@@ -24,11 +24,13 @@
 #include "dEploidIO.hpp"
 #include "mcmc.hpp"
 
-void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample){
-    this->writeProp( mcmcSample );
-    this->writeLLK( mcmcSample );
-    this->writeHap( mcmcSample );
-    this->writeVcf( mcmcSample );
+void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample, bool useIBD){
+    this->writeProp( mcmcSample, useIBD );
+    this->writeLLK( mcmcSample, useIBD );
+    this->writeHap( mcmcSample, useIBD);
+    if ( useIBD == false ){
+        this->writeVcf( mcmcSample );
+    }
 }
 
 
@@ -99,6 +101,9 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_ << "\n";
         (*writeTo) << setw(19) << " MCMC sample rate: " << mcmcMachineryRate_ <<"\n";
         (*writeTo) << setw(19) << " Random seed: " << this->randomSeed() << "\n";
+        if (this->useIBD()){
+            (*writeTo) << setw(19) << "  IBD Method used: YES" << "\n";
+        }
         (*writeTo) << setw(19) << " Update Prop: "   << (this->doUpdateProp()  ? "YES":"NO") << "\n";
         (*writeTo) << setw(19) << " Update Single: " << (this->doUpdateSingle()? "YES":"NO") << "\n";
         (*writeTo) << setw(19) << " Update Pair: "   << (this->doUpdatePair()  ? "YES":"NO") << "\n";
@@ -123,12 +128,20 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     (*writeTo) << "\n";
     (*writeTo) << "Output saved to:\n";
     if ( this->doPainting() ){
-
+        for ( size_t i = 0; i < kStrain(); i++ ){
+            (*writeTo) << "Posterior probability of strain " << i << ": "<< strExportSingleFwdProbPrefix << i <<endl;
+        }
     } else {
         (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
         (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
         (*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
         if ( doExportVcf() ) { (*writeTo) << setw(14) << "Vcf: "  << strExportVcf  << "\n"; }
+        if (this->useIBD()){
+            (*writeTo) << " IBD method output saved to:\n";
+            (*writeTo) << setw(14) << "Likelihood: "  << strIbdExportProp  << "\n";
+            (*writeTo) << setw(14) << "Proportions: " << strIbdExportProp << "\n";
+            (*writeTo) << setw(14) << "Haplotypes: "  << strIbdExportHap  << "\n";
+        }
     }
     (*writeTo) << "\n";
     (*writeTo) << "Proportions:\n";
@@ -140,8 +153,12 @@ void DEploidIO::writeLog ( ostream * writeTo ){
 }
 
 
-void DEploidIO::writeProp( McmcSample * mcmcSample){
-    ofstreamExportTmp.open( strExportProp.c_str(), ios::out | ios::app | ios::binary );
+void DEploidIO::writeProp( McmcSample * mcmcSample, bool useIBD){
+    if ( useIBD ){
+        ofstreamExportTmp.open( strIbdExportProp.c_str(), ios::out | ios::app | ios::binary );
+    } else {
+        ofstreamExportTmp.open( strExportProp.c_str(), ios::out | ios::app | ios::binary );
+    }
     for ( size_t i = 0; i < mcmcSample->proportion.size(); i++){
         for ( size_t ii = 0; ii < mcmcSample->proportion[i].size(); ii++){
             ofstreamExportTmp << setw(10) << mcmcSample->proportion[i][ii];
@@ -152,8 +169,12 @@ void DEploidIO::writeProp( McmcSample * mcmcSample){
 }
 
 
-void DEploidIO::writeLLK( McmcSample * mcmcSample){
-    ofstreamExportTmp.open( strExportLLK.c_str(), ios::out | ios::app | ios::binary );
+void DEploidIO::writeLLK( McmcSample * mcmcSample, bool useIBD){
+    if ( useIBD ){
+        ofstreamExportTmp.open( strIbdExportLLK.c_str(), ios::out | ios::app | ios::binary );
+    } else {
+        ofstreamExportTmp.open( strExportLLK.c_str(), ios::out | ios::app | ios::binary );
+    }
     for ( size_t i = 0; i < mcmcSample->sumLLKs.size(); i++){
         ofstreamExportTmp << mcmcSample->moves[i] << "\t" << mcmcSample->sumLLKs[i] << endl;
     }
@@ -161,9 +182,12 @@ void DEploidIO::writeLLK( McmcSample * mcmcSample){
 }
 
 
-void DEploidIO::writeHap( McmcSample * mcmcSample ){
-    ofstreamExportTmp.open( strExportHap.c_str(), ios::out | ios::app | ios::binary );
-
+void DEploidIO::writeHap( McmcSample * mcmcSample, bool useIBD){
+    if ( useIBD ){
+        ofstreamExportTmp.open( strIbdExportHap.c_str(), ios::out | ios::app | ios::binary );
+    } else {
+        ofstreamExportTmp.open( strExportHap.c_str(), ios::out | ios::app | ios::binary );
+    }
     // HEADER
     ofstreamExportTmp << "CHROM" << "\t" << "POS" << "\t";;
     for ( size_t ii = 0; ii < kStrain_; ii++){

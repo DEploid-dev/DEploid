@@ -25,6 +25,9 @@
 #include "utility.hpp"
 #include <iterator>     // std::distance
 #include <algorithm> // find
+#include "loggammasum.h" // which includes log_gamma.h
+#include "gamma.h"
+
 
 
 double normal_pdf(double x, double m, double s) { // See http://stackoverflow.com/questions/10847007/using-the-gaussian-probability-density-function-in-c
@@ -52,22 +55,13 @@ double max_value( vector <double> x){
 vector <double> computeCdf ( vector <double> & dist ){
     vector <double> cdf;
     double cumsum = 0;
-    for (size_t i = 0; i < dist.size(); i++){
-        cumsum += dist[i];
+    for (double p : dist){
+        cumsum += p;
         cdf.push_back( cumsum );
     }
     assert( cdf.size() == dist.size() );
     //assert( cdf.back() == 1.0 );
     return cdf;
-}
-
-
-double sumOfVec( vector <double>& array ){
-    double tmp = 0.0;
-    for (auto const& value: array){
-        tmp += value;
-    }
-    return tmp;
 }
 
 
@@ -89,6 +83,15 @@ void normalizeBySum ( vector <double> & array ){
     }
 }
 
+
+void normalizeByMax ( vector <double> & array ){
+    double maxOfArray = max_value(array);
+    for( vector<double>::iterator it = array.begin(); it != array.end(); ++it) {
+        *it /= maxOfArray;
+    }
+}
+
+
 void normalizeBySumMat ( vector <vector <double> > & matrix ){
     double tmpsum = sumOfMat(matrix);
     for( size_t i = 0; i < matrix.size(); i++ ){
@@ -97,7 +100,6 @@ void normalizeBySumMat ( vector <vector <double> > & matrix ){
         }
     }
 }
-
 
 
 vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf, size_t firstIndex, size_t length ){
@@ -154,4 +156,54 @@ vector <double> reshapeMatToVec ( vector < vector <double> > &Mat ){
         }
     }
     return tmp;
+}
+
+
+double betaPdf(double x, double a, double b){
+    assert(x>=0 && x<=1);
+    assert(a>=0);
+    assert(b>=0);
+    double p = Maths::Special::Gamma::gamma(a + b) / (Maths::Special::Gamma::gamma(a) * Maths::Special::Gamma::gamma(b));
+    double q = pow(1 - x, b - 1) * pow(x, a - 1);
+    return p * q;
+}
+
+
+double logBetaPdf(double x, double a, double b){
+    assert(x>=0 && x<=1);
+    assert(a>=0);
+    assert(b>=0);
+    double ret = Maths::Special::Gamma::log_gamma(a+b) -
+                 Maths::Special::Gamma::log_gamma(a) -
+                 Maths::Special::Gamma::log_gamma(b) +
+                 (b-1) * log(1-x) + (a-1) * log(x);
+    return ret;
+}
+
+
+double binomialPdf(int s, int n, double p){
+    assert(p>=0 && p<=1);
+    double ret=n_choose_k(n, s);
+    ret *= pow(p, (double)s);
+    ret *= pow((1.0-p), (double)(n-s));
+    return ret;
+}
+
+
+//double betaDistConst( double a , double b){
+    //double ret = Maths::Special::Gamma::gamma(a + b) / (Maths::Special::Gamma::gamma(a) * Maths::Special::Gamma::gamma(b));
+    //return ret;
+//}
+
+
+double rBeta(double alpha, double beta, RandomGenerator* rg){
+    double mxAt = (alpha-1.0)/(alpha+beta-2.0);
+    double mx = betaPdf(mxAt, alpha, beta);
+    double y, u;
+    do {
+        u = rg->sample();
+        y = rg->sample();
+    } while ( u > (betaPdf(y, alpha, beta)/mx));
+
+    return y;
 }
