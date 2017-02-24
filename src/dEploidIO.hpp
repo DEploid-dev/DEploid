@@ -175,6 +175,8 @@ class DEploidIO{
 
     string strExportSingleFwdProbPrefix;
     string strExportPairFwdProb;
+    string strIbdExportSingleFwdProbPrefix;
+    string strIbdExportPairFwdProb;
 
     string strExportOneSwitchOne;
     string strExportOneMissCopyOne;
@@ -259,7 +261,7 @@ class DEploidIO{
     void writeProp (McmcSample * mcmcSample, bool useIBD = false);
     void writeHap (McmcSample * mcmcSample, bool useIBD = false);
     void writeVcf (McmcSample * mcmcSample);
-    void writeLastSingleFwdProb( vector < vector <double> >& probabilities, size_t chromIndex, size_t strainIndex  );
+    void writeLastSingleFwdProb( vector < vector <double> >& probabilities, size_t chromIndex, size_t strainIndex, bool useIBD );
     void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
     void writeLog (ostream * writeTo );
 

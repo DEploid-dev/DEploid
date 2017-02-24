@@ -145,7 +145,7 @@ class McmcMachinery {
     void sampleMcmcEvent(bool useIBD = false);
     void recordMcmcMachinery();
     bool recordingMcmcBool_;
-    void writeLastFwdProb();
+    void writeLastFwdProb(bool useIBD);
     void updateReferencePanel(size_t inbreedingPanelSizeSetTo, size_t excludedStrain);
     void initializeUpdateReferencePanel(size_t inbreedingPanelSizeSetTo);
 

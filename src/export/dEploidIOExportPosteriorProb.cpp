@@ -25,7 +25,7 @@
 #include "updateHap.hpp"
 #include "mcmc.hpp"
 
-void McmcMachinery::writeLastFwdProb(){
+void McmcMachinery::writeLastFwdProb(bool useIBD){
     if ( this->dEploidIO_ ->doExportPostProb() != true ){
         return;
     }
@@ -52,7 +52,7 @@ void McmcMachinery::writeLastFwdProb(){
             }
 
             updatingSingle.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
-            this->dEploidIO_->writeLastSingleFwdProb( updatingSingle.fwdProbs_, chromi, tmpk );
+            this->dEploidIO_->writeLastSingleFwdProb( updatingSingle.fwdProbs_, chromi, tmpk, useIBD );
         }
         //UpdatePairHap updating( this->dEploidIO_->refCount_,
                                 //this->dEploidIO_->altCount_,
@@ -69,14 +69,15 @@ void McmcMachinery::writeLastFwdProb(){
 }
 
 
-void DEploidIO::writeLastSingleFwdProb( vector < vector <double> >& probabilities, size_t chromIndex, size_t strainIndex ){
+void DEploidIO::writeLastSingleFwdProb( vector < vector <double> >& probabilities, size_t chromIndex, size_t strainIndex, bool useIBD ){
     if ( probabilities.size() == 0 ){
         return;
     }
 
     size_t panelSize = probabilities[0].size();
 
-    string strExportFwdProb = strExportSingleFwdProbPrefix + to_string(strainIndex);
+    string strExportFwdProb = (( useIBD == true ) ? strExportSingleFwdProbPrefix :
+                                                   strIbdExportSingleFwdProbPrefix) + to_string(strainIndex);
     ofstreamExportFwdProb.open( strExportFwdProb.c_str(), ios::out | ios::app | ios::binary );
 
     if ( chromIndex == 0 ){ // Print header

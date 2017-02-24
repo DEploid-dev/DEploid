@@ -288,7 +288,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
     clog << "\r" << " MCMC step" << setw(4) << 100 << "% completed."<<endl;
     this->mcmcSample_->hap = this->currentHap_;
 
-    this->writeLastFwdProb();
+    this->writeLastFwdProb(useIBD);
 
     this->dEploidIO_->filnalProp = this->mcmcSample_->proportion.back();
     this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, useIBD);

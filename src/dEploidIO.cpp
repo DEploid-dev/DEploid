@@ -260,6 +260,23 @@ void DEploidIO::removeFilesWithSameName(){
         remove(strExportHap.c_str());
         remove(strExportVcf.c_str());
         remove(strExportProp.c_str());
+    } else {
+        if (this->useIBD()){
+            strIbdExportSingleFwdProbPrefix = this->prefix_ + ".ibd.single";
+            for ( size_t i = 0; i < this->kStrain_ ; i++ ){
+                string tmpStrExportSingleFwdProb = strIbdExportSingleFwdProbPrefix + to_string(i);
+                remove(tmpStrExportSingleFwdProb.c_str());
+            }
+            strIbdExportPairFwdProb = this->prefix_ + ".ibd.pair";
+            remove(strIbdExportPairFwdProb.c_str());
+        }
+        strExportSingleFwdProbPrefix = this->prefix_ + ".single";
+        for ( size_t i = 0; i < this->kStrain_ ; i++ ){
+            string tmpStrExportSingleFwdProb = strExportSingleFwdProbPrefix + to_string(i);
+            remove(tmpStrExportSingleFwdProb.c_str());
+        }
+        strExportPairFwdProb = this->prefix_ + ".pair";
+        remove(strExportPairFwdProb.c_str());
     }
     remove(strExportLog.c_str());
     remove(strExportRecombProb.c_str());
@@ -271,14 +288,6 @@ void DEploidIO::removeFilesWithSameName(){
     remove(strExportTwoSwitchTwo.c_str());
     remove(strExportTwoMissCopyTwo.c_str());
 
-    strExportSingleFwdProbPrefix = this->prefix_ + ".single";
-    for ( size_t i = 0; i < this->kStrain_ ; i++ ){
-        string tmpStrExportSingleFwdProb = strExportSingleFwdProbPrefix + to_string(i);
-        remove(tmpStrExportSingleFwdProb.c_str());
-    }
-
-    strExportPairFwdProb = this->prefix_ + ".pair";
-    remove(strExportPairFwdProb.c_str());
 
 }
 
@@ -635,7 +644,7 @@ void DEploidIO::chromPainting(){
             }
 
             updatingSingle.painting( refCount_, altCount_, expectedWsaf, this->filnalProp, this->initialHap);
-            this->writeLastSingleFwdProb( updatingSingle.fwdProbs_, chromi, tmpk );
+            this->writeLastSingleFwdProb( updatingSingle.fwdProbs_, chromi, tmpk, false ); // false as not using ibd
         }
     }
 }
