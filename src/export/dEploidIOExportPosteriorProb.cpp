@@ -76,8 +76,8 @@ void DEploidIO::writeLastSingleFwdProb( vector < vector <double> >& probabilitie
 
     size_t panelSize = probabilities[0].size();
 
-    string strExportFwdProb = (( useIBD == true ) ? strExportSingleFwdProbPrefix :
-                                                   strIbdExportSingleFwdProbPrefix) + to_string(strainIndex);
+    string strExportFwdProb = (( useIBD == true ) ? strIbdExportSingleFwdProbPrefix :
+                                                    strExportSingleFwdProbPrefix) + to_string(strainIndex);
     ofstreamExportFwdProb.open( strExportFwdProb.c_str(), ios::out | ios::app | ios::binary );
 
     if ( chromIndex == 0 ){ // Print header
