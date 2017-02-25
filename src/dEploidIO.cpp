@@ -260,7 +260,9 @@ void DEploidIO::removeFilesWithSameName(){
         remove(strExportHap.c_str());
         remove(strExportVcf.c_str());
         remove(strExportProp.c_str());
-    } else {
+    }
+
+    if (this->doPainting() || this->doExportPostProb() ){
         if (this->useIBD()){
             strIbdExportSingleFwdProbPrefix = this->prefix_ + ".ibd.single";
             for ( size_t i = 0; i < this->kStrain_ ; i++ ){
