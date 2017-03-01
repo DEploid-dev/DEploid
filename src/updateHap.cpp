@@ -93,6 +93,8 @@ UpdateSingleHap::UpdateSingleHap( vector <double> &refCount,
                                   size_t strainIndex ):
                 UpdateHap(refCount, altCount, expectedWsaf, plaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel, missCopyProb){
     this->strainIndex_ = strainIndex;
+    siteOfOneSwitchOne = vector <double>(nLoci);
+    siteOfOneMissCopyOne = vector <double>(nLoci);
 }
 
 
@@ -307,7 +309,7 @@ void UpdateSingleHap::samplePaths(){
 
         if ( sampleIndexGivenProp(this->recombRg_, weightOfNoRecAndRec) == (size_t)1 ){ // Switch one
             pathTmp = sampleIndexGivenProp( this->recombLevel2Rg_, previousDist );
-            this->siteOfOneSwitchOne.push_back(j);
+            this->siteOfOneSwitchOne[j] += 1.0;
         }
 
         this->path_.push_back(this->panel_->content_[contentIndex][pathTmp]);
@@ -329,7 +331,7 @@ void UpdateSingleHap::addMissCopying( double missCopyProb ){
         (void)normalizeBySum(sameDiffDist);
         if ( sampleIndexGivenProp( this->missCopyRg_, sameDiffDist) == 1 ){
             this->hap_.push_back( 1 - this->path_[i] ); // differ
-            this->siteOfOneMissCopyOne.push_back(i);
+            this->siteOfOneMissCopyOne[i] += 1.0;
         } else {
             this->hap_.push_back( this->path_[i] ); // same
         }
@@ -389,6 +391,10 @@ UpdatePairHap::UpdatePairHap( vector <double> &refCount,
     this->strainIndex1_ = strainIndex1;
     this->strainIndex2_ = strainIndex2;
     this->forbidCopyFromSame_ = forbidCopyFromSame;
+    siteOfTwoSwitchOne = vector <double> (nLoci);
+    siteOfTwoMissCopyOne = vector <double> (nLoci);
+    siteOfTwoSwitchTwo = vector <double> (nLoci);
+    siteOfTwoMissCopyTwo = vector <double> (nLoci);
 }
 
 
@@ -642,19 +648,19 @@ void UpdatePairHap::samplePaths(){
         size_t tmpCase = sampleIndexGivenProp( this->recombRg_, weightOfFourCases );
 
         if ( tmpCase == (size_t)0 ){ // switching both strains
-            this->siteOfTwoSwitchTwo.push_back(j);
+            this->siteOfTwoSwitchTwo[j] += 1.0;
             tmpPath = sampleMatrixIndex(previousDist);
             rowI = tmpPath[0];
             colJ = tmpPath[1];
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
         } else if ( tmpCase == (size_t)1 ){ // switching second strain
-            this->siteOfTwoSwitchOne.push_back(j);
+            this->siteOfTwoSwitchOne[j] += 0.5;
             rowI = rowI;
             (void)normalizeBySum(rowIdist);
             colJ = sampleIndexGivenProp( this->recombLevel2Rg_, rowIdist );
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
         } else if ( tmpCase == (size_t)2 ){ // switching first strain
-            this->siteOfTwoSwitchOne.push_back(j);
+            this->siteOfTwoSwitchOne[j] += 0.5;
             (void)normalizeBySum(colJdist);
             rowI = sampleIndexGivenProp( this->recombLevel2Rg_, colJdist );
             colJ = colJ;
@@ -696,15 +702,15 @@ void UpdatePairHap::addMissCopying( double missCopyProb ){
             this->hap1_.push_back( this->path1_[i] );
             this->hap2_.push_back( this->path2_[i] );
         } else if ( tmpCase == 1 ){
-            this->siteOfTwoMissCopyOne.push_back(i);
+            this->siteOfTwoMissCopyOne[i] += 0.5;
             this->hap1_.push_back( this->path1_[i] );
             this->hap2_.push_back( 1.0 - this->path2_[i] );
         } else if ( tmpCase == 2 ){
-            this->siteOfTwoMissCopyOne.push_back(i);
+            this->siteOfTwoMissCopyOne[i] += 0.5;
             this->hap1_.push_back( 1.0 - this->path1_[i] );
             this->hap2_.push_back( this->path2_[i] );
         } else if ( tmpCase == 3 ){
-            this->siteOfTwoMissCopyTwo.push_back(i);
+            this->siteOfTwoMissCopyTwo[i] += 1.0;
             this->hap1_.push_back( 1.0 - this->path1_[i] );
             this->hap2_.push_back( 1.0 - this->path2_[i] );
         } else {

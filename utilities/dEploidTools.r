@@ -323,13 +323,13 @@ plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), ex
     for ( chromI in chromList ){
         tmpWSAF = obsWSAF[coverage$CHROM==chromI]
         plot(tmpWSAF , col="red", ylim=c(0,1), main = paste(titlePrefix, chromI, "WSAF"), ylab = "WSAF",
-            cex.axis = 2*nFigures/8, cex.lab = 2*nFigures/8, cex.main = 2*nFigures/6, xaxt = "n", yaxt = "n")
+            cex.axis = 4/nFigures, cex.lab = 4/nFigures, cex.main = 6/nFigures, xaxt = "n", yaxt = "n")
         newXaxt = round(seq(1, length(tmpWSAF), length.out = 6))
         axis(1, at = newXaxt, labels = as.character(newXaxt),
-            cex.axis= 2*nFigures/8)
+            cex.axis= 4/nFigures)
         newYaxt = seq(0, 1, length.out = 3)
         axis(2, at = newYaxt, labels = as.character(newYaxt),
-            cex.axis= 2*nFigures/8)
+            cex.axis= 4/nFigures)
 
 
         if ( length(expWSAF) > 0 ){
@@ -424,3 +424,39 @@ fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "", pdfBool, inbreedi
         strainI = strainI+1
     }
 }
+
+
+plot.ibd.change <- function(changeAt, titlePrefix,nFigures){
+    plot(changeAt , col="red", type="l", ylim=c(0,.5), main = paste(titlePrefix, "IBD change at"), ylab = "Relative frequency",
+        cex.axis = 4/nFigures, cex.lab = 4/nFigures, cex.main = 6/nFigures, xaxt = "n", yaxt = "n")
+    newXaxt = round(seq(1, length(changeAt), length.out = 6))
+    axis(1, at = newXaxt, labels = as.character(newXaxt),
+        cex.axis= 4/nFigures)
+    newYaxt = seq(0, 0.5, length.out = 3)
+    axis(2, at = newYaxt, labels = as.character(newYaxt),
+        cex.axis= 4/nFigures)
+}
+
+
+fun.plot.ibd.change <- function(inPrefix, outPrefix = "", pdfBool){
+    obj = read.table( paste(inPrefix, ".IBDpathChangeAt", sep = ""), header=T)
+    chromName = levels(obj$CHROM)
+    ncol = ceiling(length(chromName)/2)
+    if ( pdfBool == TRUE ){
+        cexSize = 3
+        pdf ( paste ( outPrefix, ".interpretDEploidFigure.ibdChangeAt.pdf", sep = "" ), width = 45, height = 30)
+    } else {
+        cexSize = 2.5
+        png ( paste ( outPrefix, ".interpretDEploidFigure.ibdChangeAt.png", sep= ""), width = 3500, height = 2000)
+    }
+    par(mfrow = c(ncol,length(chromName)/ncol))
+    par(mar = c(5,7,7,4))
+    nFigures = length(chromName)
+    for ( chromI in chromName ){
+        plot.ibd.change ( obj[which( chromI == obj$CHROM),3], chromI, nFigures )
+    }
+    dev.off()
+
+}
+
+
