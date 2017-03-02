@@ -427,7 +427,7 @@ fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "", pdfBool, inbreedi
 
 
 plot.ibd.change <- function(changeAt, titlePrefix,nFigures){
-    plot(changeAt , col="red", type="l", ylim=c(0,.5), main = paste(titlePrefix, "IBD change at"), ylab = "Relative frequency",
+    plot(sqrt(changeAt) , col="red", type="l", ylim=c(0,.5), main = paste("Square root of relative frequency", titlePrefix, "IBD change at"), ylab = "sqrt(f)",
         cex.axis = 3.5, cex.lab = 3.5, cex.main = 4, xaxt = "n", yaxt = "n")
     newXaxt = round(seq(1, length(changeAt), length.out = 6))
     axis(1, at = newXaxt, labels = as.character(newXaxt),
