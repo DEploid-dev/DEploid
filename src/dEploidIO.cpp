@@ -111,7 +111,7 @@ void DEploidIO::init() {
     this->setDoExportPostProb( false );
     this->setDoPainting( false );
     this->setUseIBD( false );
-    this->setDoExportSwitchMissCopy ( false );
+    this->setDoExportSwitchMissCopy ( true );
     this->setDoAllowInbreeding( false );
     this->mcmcBurn_ = 0.5;
     this->mcmcMachineryRate_ = 5;
@@ -235,6 +235,7 @@ void DEploidIO::removeFilesWithSameName(){
     strIbdExportProp = this->prefix_ + ".ibd.prop";
     strIbdExportLLK = this->prefix_ + ".ibd.llk";
     strIbdExportHap = this->prefix_ + ".ibd.hap";
+    strExportIBDpathChangeAt = this->prefix_ + ".ibd.IBDpathChangeAt";
 
     strExportVcf = this->prefix_ + ".vcf";
     if ( compressVcf() ){
@@ -250,11 +251,13 @@ void DEploidIO::removeFilesWithSameName(){
     strExportTwoSwitchTwo   = this->prefix_ + ".twoSwitchTwo";
     strExportTwoMissCopyTwo = this->prefix_ + ".twoMissCopyTwo";
 
+
     if ( this->doPainting() == false ){
         if (this->useIBD()){
             remove(strIbdExportProp.c_str());
             remove(strIbdExportLLK.c_str());
             remove(strIbdExportHap.c_str());
+            remove(strExportIBDpathChangeAt.c_str());
         }
         remove(strExportLLK.c_str());
         remove(strExportHap.c_str());

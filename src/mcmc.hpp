@@ -54,6 +54,14 @@ class McmcSample {
         moves.clear();
     }
 
+    vector <double> IBDpathChangeAt;
+    vector <double> siteOfTwoSwitchOne;
+    vector <double> siteOfTwoMissCopyOne;
+    vector <double> siteOfTwoSwitchTwo;
+    vector <double> siteOfTwoMissCopyTwo;
+    vector <double> siteOfOneSwitchOne;
+    vector <double> siteOfOneMissCopyOne;
+
     vector < vector <double> > proportion;
     vector < vector <double> > hap;
     vector < double > sumLLKs;
@@ -181,6 +189,7 @@ class McmcMachinery {
     void computeUniqueEffectiveKCount();
     void updateFmAtSiteI(vector <double> & prior,
                          vector <double> & llk);
+    void computeAndUpdateTheta();
 
   /* Moves */
     void updateProportion();

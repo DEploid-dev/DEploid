@@ -30,6 +30,14 @@ void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample, bool useIBD){
     this->writeHap( mcmcSample, useIBD);
     if ( useIBD == false ){
         this->writeVcf( mcmcSample );
+        this->writeEventCount(strExportOneSwitchOne, mcmcSample->siteOfOneSwitchOne);
+        this->writeEventCount(strExportOneMissCopyOne, mcmcSample->siteOfOneMissCopyOne);
+        this->writeEventCount(strExportTwoSwitchOne, mcmcSample->siteOfTwoSwitchOne);
+        this->writeEventCount(strExportTwoSwitchTwo, mcmcSample->siteOfTwoSwitchTwo);
+        this->writeEventCount(strExportTwoMissCopyOne, mcmcSample->siteOfTwoMissCopyOne);
+        this->writeEventCount(strExportTwoMissCopyTwo, mcmcSample->siteOfTwoMissCopyTwo);
+    } else {
+        this->writeEventCount(strExportIBDpathChangeAt, mcmcSample->IBDpathChangeAt);
     }
 }
 
@@ -297,3 +305,25 @@ void DEploidIO::writeVcf( McmcSample * mcmcSample ){
         ofstreamExportTmp.close();
     }
 }
+
+
+void DEploidIO::writeEventCount(string fileName, vector<double> eventCount){
+    ofstreamExportTmp.open( fileName.c_str(), ios::out | ios::app | ios::binary );
+
+    // HEADER
+    ofstreamExportTmp << "CHROM" << "\t" << "POS" << "\t" << "EventCount" << endl;
+
+    size_t siteIndex = 0;
+    for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
+        for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
+            ofstreamExportTmp << chrom_[chromI] << "\t"
+                              << (int)position_[chromI][posI] << "\t"
+                              << eventCount[siteIndex] << endl;
+            siteIndex++;
+        }
+    }
+
+    assert(siteIndex == eventCount.size());
+    ofstreamExportTmp.close();
+}
+

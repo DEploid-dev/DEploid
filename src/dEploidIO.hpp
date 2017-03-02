@@ -184,6 +184,7 @@ class DEploidIO{
     string strExportTwoSwitchTwo;
     string strExportTwoMissCopyOne;
     string strExportTwoMissCopyTwo;
+    string strExportIBDpathChangeAt;
 
     ofstream ofstreamExportTmp;
     ofstream ofstreamExportFwdProb;
@@ -264,6 +265,7 @@ class DEploidIO{
     void writeLastSingleFwdProb( vector < vector <double> >& probabilities, size_t chromIndex, size_t strainIndex, bool useIBD );
     void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
     void writeLog (ostream * writeTo );
+    void writeEventCount(string fileName, vector<double> eventCount);
 
     Panel *panel;
     void writeMcmcRelated (McmcSample * mcmcSample, bool useIBD = false);
