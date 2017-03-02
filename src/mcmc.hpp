@@ -189,6 +189,7 @@ class McmcMachinery {
     void computeUniqueEffectiveKCount();
     void updateFmAtSiteI(vector <double> & prior,
                          vector <double> & llk);
+    void computeAndUpdateTheta();
 
   /* Moves */
     void updateProportion();

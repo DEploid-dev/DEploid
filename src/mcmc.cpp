@@ -576,6 +576,14 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
         }
     }
 
+    this->computeAndUpdateTheta();
+
+    this->currentLLks_ = llkAtAllSites;
+    this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
+}
+
+
+void McmcMachinery::computeAndUpdateTheta(){
     vector <size_t> obsState;
     size_t previousState = 0;
     size_t atSiteI = 0;
@@ -597,9 +605,6 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
         sccs += this->kStrain() - this->hprior.effectiveK[obs];
     }
     this->setTheta(rBeta(sccs+1.0, sumOfKeffStates+1.0, this->propRg_));
-
-    this->currentLLks_ = llkAtAllSites;
-    this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
 
@@ -718,20 +723,6 @@ void McmcMachinery::updateSingleHap(){
             updateIndex++;
         }
 
-        //if ( this->dEploidIO_->doExportSwitchMissCopy() ){
-            //this->dEploidIO_->ofstreamExportTmp.open( this->dEploidIO_->strExportOneSwitchOne.c_str(), ios::out | ios::app | ios::binary );
-            //for ( size_t i = 0; i < updating.siteOfOneSwitchOne.size(); i++ ){
-                //this->dEploidIO_->ofstreamExportTmp << this->dEploidIO_->chrom_[chromi] << "\t" << (size_t)this->dEploidIO_->position_[chromi][updating.siteOfOneSwitchOne[i]] << endl;
-            //}
-            //this->dEploidIO_->ofstreamExportTmp.close();
-
-            //this->dEploidIO_->ofstreamExportTmp.open( this->dEploidIO_->strExportOneMissCopyOne.c_str(), ios::out | ios::app | ios::binary );
-            //for ( size_t i = 0; i < updating.siteOfOneMissCopyOne.size(); i++ ){
-                //this->dEploidIO_->ofstreamExportTmp << this->dEploidIO_->chrom_[chromi] << "\t" << (size_t)this->dEploidIO_->position_[chromi][updating.siteOfOneMissCopyOne[i]] << endl;
-            //}
-            //this->dEploidIO_->ofstreamExportTmp.close();
-        //}
-
         for (size_t siteI = 0; siteI< length; siteI++){
             this->mcmcSample_->siteOfOneSwitchOne[start+siteI] += updating.siteOfOneSwitchOne[siteI];
             this->mcmcSample_->siteOfOneMissCopyOne[start+siteI] += updating.siteOfOneMissCopyOne[siteI];
@@ -769,32 +760,6 @@ void McmcMachinery::updatePairHaps(){
             this->currentLLks_[ii] = updating.newLLK[updateIndex];
             updateIndex++;
         }
-
-        //if ( this->dEploidIO_->doExportSwitchMissCopy() ){
-            //this->dEploidIO_->ofstreamExportTmp.open( this->dEploidIO_->strExportTwoSwitchOne.c_str(), ios::out | ios::app | ios::binary );
-            //for ( size_t i = 0; i < updating.siteOfTwoSwitchOne.size(); i++ ){
-                //this->dEploidIO_->ofstreamExportTmp << this->dEploidIO_->chrom_[chromi] << "\t" << (size_t)this->dEploidIO_->position_[chromi][updating.siteOfTwoSwitchOne[i]] << endl;
-            //}
-            //this->dEploidIO_->ofstreamExportTmp.close();
-
-            //this->dEploidIO_->ofstreamExportTmp.open( this->dEploidIO_->strExportTwoMissCopyOne.c_str(), ios::out | ios::app | ios::binary );
-            //for ( size_t i = 0; i < updating.siteOfTwoMissCopyOne.size(); i++ ){
-                //this->dEploidIO_->ofstreamExportTmp << this->dEploidIO_->chrom_[chromi] << "\t" << (size_t)this->dEploidIO_->position_[chromi][updating.siteOfTwoMissCopyOne[i]] << endl;
-            //}
-            //this->dEploidIO_->ofstreamExportTmp.close();
-
-            //this->dEploidIO_->ofstreamExportTmp.open( this->dEploidIO_->strExportTwoSwitchTwo.c_str(), ios::out | ios::app | ios::binary );
-            //for ( size_t i = 0; i < updating.siteOfTwoSwitchTwo.size(); i++ ){
-                //this->dEploidIO_->ofstreamExportTmp << this->dEploidIO_->chrom_[chromi] << "\t" << (size_t)this->dEploidIO_->position_[chromi][updating.siteOfTwoSwitchTwo[i]] << endl;
-            //}
-            //this->dEploidIO_->ofstreamExportTmp.close();
-
-            //this->dEploidIO_->ofstreamExportTmp.open( this->dEploidIO_->strExportTwoMissCopyTwo.c_str(), ios::out | ios::app | ios::binary );
-            //for ( size_t i = 0; i < updating.siteOfTwoMissCopyTwo.size(); i++ ){
-                //this->dEploidIO_->ofstreamExportTmp << this->dEploidIO_->chrom_[chromi] << "\t" << (size_t)this->dEploidIO_->position_[chromi][updating.siteOfTwoMissCopyTwo[i]] << endl;
-            //}
-            //this->dEploidIO_->ofstreamExportTmp.close();
-        //}
 
         for (size_t siteI = 0; siteI< length; siteI++){
             this->mcmcSample_->siteOfTwoSwitchOne[start+siteI] += updating.siteOfTwoSwitchOne[siteI];
