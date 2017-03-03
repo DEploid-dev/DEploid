@@ -427,9 +427,31 @@ fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "", pdfBool, inbreedi
 
 
 plot.ibd.change <- function(changeAt, titlePrefix,nFigures){
-    plot(sqrt(changeAt) , col="red", type="l", ylim=c(0,.5), main = paste("Square root of relative frequency", titlePrefix, "IBD change at"), ylab = "sqrt(f)",
-        cex.axis = 3.5, cex.lab = 3.5, cex.main = 4, xaxt = "n", yaxt = "n")
-    newXaxt = round(seq(1, length(changeAt), length.out = 6))
+    plot(c(0, dim(changeAt)[1]), c(0, 1), type="n", ylim=c(0,.5), main = paste(titlePrefix, "IBD changes, and LS switches at"), ylab = "Frequency",
+        cex.axis = 3.5, cex.lab = 3.5, cex.main = 4, xaxt = "n", yaxt = "n", xlab = "")
+    lines(changeAt$IBDpathChangeAt, col = "red", lty=2, lwd=.5)
+    lines(changeAt$finalIBDpathChangeAt, col = "red", lty=1, lwd=2)
+
+#    lines(changeAt$siteOfTwoSwitchOne, col = "grey", lty=2)
+#    lines(changeAt$finalSiteOfTwoSwitchOne, col = "grey", lty=1)
+
+#    lines(changeAt$siteOfTwoMissCopyOne, col = "cyan", lty=2)
+#    lines(changeAt$finalSiteOfTwoMissCopyOne, col = "cyan", lty=1)
+
+    lines(changeAt$siteOfTwoSwitchTwo, col = "blue", lty=2, lwd=.5)
+    lines(changeAt$finalSiteOfTwoSwitchTwo, col = "blue", lty=1, lwd=2)
+
+#    lines(changeAt$siteOfTwoMissCopyTwo, col = "magenta", lty=2)
+#    lines(changeAt$finalSiteOfTwoMissCopyTwo, col = "magenta", lty=1)
+
+    lines(changeAt$siteOfOneSwitchOne, col = "green", lty=2, lwd=.5)
+    lines(changeAt$finalSiteOfOneSwitchOne, col = "green", lty=1, lwd=2)
+
+#    lines(changeAt$siteOfOneMissCopyOne, col = "yellow", lty=2)
+#    lines(changeAt$finalSiteOfOneMissCopyOne, col = "yellow", lty=1)
+
+
+    newXaxt = round(seq(1, dim(changeAt)[1], length.out = 6))
     axis(1, at = newXaxt, labels = as.character(newXaxt),
         cex.axis= 3.5)
     newYaxt = seq(0, 0.5, length.out = 3)
@@ -438,22 +460,22 @@ plot.ibd.change <- function(changeAt, titlePrefix,nFigures){
 }
 
 
-fun.plot.ibd.change <- function(inPrefix, outPrefix = "", pdfBool){
-    obj = read.table( paste(inPrefix, ".IBDpathChangeAt", sep = ""), header=T)
+fun.interpretDEploid.4 <- function(inPrefix, outPrefix = "", pdfBool){
+    obj = read.table( paste(inPrefix, ".extra", sep = ""), header=T)
     chromName = levels(obj$CHROM)
     ncol = ceiling(length(chromName)/2)
     if ( pdfBool == TRUE ){
         cexSize = 3
-        pdf ( paste ( outPrefix, ".interpretDEploidFigure.ibdChangeAt.pdf", sep = "" ), width = 45, height = 30)
+        pdf ( paste ( outPrefix, ".interpretDEploidFigure.extra.pdf", sep = "" ), width = 45, height = 30)
     } else {
         cexSize = 2.5
-        png ( paste ( outPrefix, ".interpretDEploidFigure.ibdChangeAt.png", sep= ""), width = 3500, height = 2000)
+        png ( paste ( outPrefix, ".interpretDEploidFigure.extra.png", sep= ""), width = 3500, height = 2000)
     }
     par(mfrow = c(ncol,length(chromName)/ncol))
     par(mar = c(5,7,7,4))
     nFigures = length(chromName)
     for ( chromI in chromName ){
-        plot.ibd.change ( obj[which( chromI == obj$CHROM),3], chromI, nFigures )
+        plot.ibd.change ( obj[which( chromI == obj$CHROM),], chromI, nFigures )
     }
     dev.off()
 

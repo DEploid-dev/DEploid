@@ -28,17 +28,31 @@ void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample, bool useIBD){
     this->writeProp( mcmcSample, useIBD );
     this->writeLLK( mcmcSample, useIBD );
     this->writeHap( mcmcSample, useIBD);
+
     if ( useIBD == false ){
         this->writeVcf( mcmcSample );
-        this->writeEventCount(strExportOneSwitchOne, mcmcSample->siteOfOneSwitchOne);
-        this->writeEventCount(strExportOneMissCopyOne, mcmcSample->siteOfOneMissCopyOne);
-        this->writeEventCount(strExportTwoSwitchOne, mcmcSample->siteOfTwoSwitchOne);
-        this->writeEventCount(strExportTwoSwitchTwo, mcmcSample->siteOfTwoSwitchTwo);
-        this->writeEventCount(strExportTwoMissCopyOne, mcmcSample->siteOfTwoMissCopyOne);
-        this->writeEventCount(strExportTwoMissCopyTwo, mcmcSample->siteOfTwoMissCopyTwo);
+        this->siteOfTwoSwitchOne = mcmcSample->siteOfTwoSwitchOne;
+        this->siteOfTwoMissCopyOne = mcmcSample->siteOfTwoMissCopyOne;
+        this->siteOfTwoSwitchTwo = mcmcSample->siteOfTwoSwitchTwo;
+        this->siteOfTwoMissCopyTwo = mcmcSample->siteOfTwoMissCopyTwo;
+        this->siteOfOneSwitchOne = mcmcSample->siteOfOneSwitchOne;
+        this->siteOfOneMissCopyOne = mcmcSample->siteOfOneMissCopyOne;
+
+        this->finalSiteOfTwoSwitchOne = mcmcSample->currentsiteOfTwoSwitchOne;
+        this->finalSiteOfTwoMissCopyOne = mcmcSample->currentsiteOfTwoMissCopyOne;
+        this->finalSiteOfTwoSwitchTwo = mcmcSample->currentsiteOfTwoSwitchTwo;
+        this->finalSiteOfTwoMissCopyTwo = mcmcSample->currentsiteOfTwoMissCopyTwo;
+        this->finalSiteOfOneSwitchOne = mcmcSample->currentsiteOfOneSwitchOne;
+        this->finalSiteOfOneMissCopyOne = mcmcSample->currentsiteOfOneMissCopyOne;
+
+        this->writeEventCount( );
     } else {
-        this->writeEventCount(strExportIBDpathChangeAt, mcmcSample->IBDpathChangeAt);
+        this->IBDpathChangeAt = mcmcSample->IBDpathChangeAt;
+        this->finalIBDpathChangeAt = mcmcSample->currentIBDpathChangeAt;
     }
+
+
+
 }
 
 
@@ -307,23 +321,64 @@ void DEploidIO::writeVcf( McmcSample * mcmcSample ){
 }
 
 
-void DEploidIO::writeEventCount(string fileName, vector<double> eventCount){
-    ofstreamExportTmp.open( fileName.c_str(), ios::out | ios::app | ios::binary );
+void DEploidIO::writeEventCount(){
+    ofstreamExportTmp.open( strExportExtra.c_str(), ios::out | ios::app | ios::binary );
 
     // HEADER
-    ofstreamExportTmp << "CHROM" << "\t" << "POS" << "\t" << "EventCount" << endl;
+    ofstreamExportTmp << "CHROM" << "\t"
+                      << "POS" << "\t"
+                      << "IBDpathChangeAt" << "\t"
+                      << "finalIBDpathChangeAt" << "\t"
+
+                      << "siteOfTwoSwitchOne" << "\t"
+                      << "finalSiteOfTwoSwitchOne" << "\t"
+
+                      << "siteOfTwoMissCopyOne" << "\t"
+                      << "finalSiteOfTwoMissCopyOne" << "\t"
+
+                      << "siteOfTwoSwitchTwo" << "\t"
+                      << "finalSiteOfTwoSwitchTwo" << "\t"
+
+                      << "siteOfTwoMissCopyTwo" << "\t"
+                      << "finalSiteOfTwoMissCopyTwo" << "\t"
+
+                      << "siteOfOneSwitchOne" << "\t"
+                      << "finalSiteOfOneSwitchOne" << "\t"
+
+                      << "siteOfOneMissCopyOne" << "\t"
+                      << "finalSiteOfOneMissCopyOne" << endl;
 
     size_t siteIndex = 0;
     for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
         for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
             ofstreamExportTmp << chrom_[chromI] << "\t"
                               << (int)position_[chromI][posI] << "\t"
-                              << eventCount[siteIndex] << endl;
+
+                              << this->IBDpathChangeAt[siteIndex] << "\t"
+                              << this->finalIBDpathChangeAt[siteIndex] << "\t"
+
+                              << this->siteOfTwoSwitchOne[siteIndex] << "\t"
+                              << this->finalSiteOfTwoSwitchOne[siteIndex] << "\t"
+
+                              << this->siteOfTwoMissCopyOne[siteIndex] << "\t"
+                              << this->finalSiteOfTwoMissCopyOne[siteIndex] << "\t"
+
+                              << this->siteOfTwoSwitchTwo[siteIndex] << "\t"
+                              << this->finalSiteOfTwoSwitchTwo[siteIndex] << "\t"
+
+                              << this->siteOfTwoMissCopyTwo[siteIndex] << "\t"
+                              << this->finalSiteOfTwoMissCopyTwo[siteIndex] << "\t"
+
+                              << this->siteOfOneSwitchOne[siteIndex] << "\t"
+                              << this->finalSiteOfOneSwitchOne[siteIndex] << "\t"
+
+                              << this->siteOfOneMissCopyOne[siteIndex] << "\t"
+                              << this->finalSiteOfOneMissCopyOne[siteIndex] << endl;
             siteIndex++;
         }
     }
 
-    assert(siteIndex == eventCount.size());
+    assert(siteIndex == this->IBDpathChangeAt.size());
     ofstreamExportTmp.close();
 }
 

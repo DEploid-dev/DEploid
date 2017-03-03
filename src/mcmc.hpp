@@ -62,6 +62,13 @@ class McmcSample {
     vector <double> siteOfOneSwitchOne;
     vector <double> siteOfOneMissCopyOne;
 
+    vector <double> currentIBDpathChangeAt;
+    vector <double> currentsiteOfTwoSwitchOne;
+    vector <double> currentsiteOfTwoMissCopyOne;
+    vector <double> currentsiteOfTwoSwitchTwo;
+    vector <double> currentsiteOfTwoMissCopyTwo;
+    vector <double> currentsiteOfOneSwitchOne;
+    vector <double> currentsiteOfOneMissCopyOne;
     vector < vector <double> > proportion;
     vector < vector <double> > hap;
     vector < double > sumLLKs;

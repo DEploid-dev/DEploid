@@ -178,13 +178,7 @@ class DEploidIO{
     string strIbdExportSingleFwdProbPrefix;
     string strIbdExportPairFwdProb;
 
-    string strExportOneSwitchOne;
-    string strExportOneMissCopyOne;
-    string strExportTwoSwitchOne;
-    string strExportTwoSwitchTwo;
-    string strExportTwoMissCopyOne;
-    string strExportTwoMissCopyTwo;
-    string strExportIBDpathChangeAt;
+    string strExportExtra;
 
     ofstream ofstreamExportTmp;
     ofstream ofstreamExportFwdProb;
@@ -265,7 +259,25 @@ class DEploidIO{
     void writeLastSingleFwdProb( vector < vector <double> >& probabilities, size_t chromIndex, size_t strainIndex, bool useIBD );
     void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
     void writeLog (ostream * writeTo );
-    void writeEventCount(string fileName, vector<double> eventCount);
+    void writeEventCount();
+
+    vector <double> IBDpathChangeAt;
+    vector <double> finalIBDpathChangeAt;
+
+    vector <double> siteOfTwoSwitchOne;
+    vector <double> siteOfTwoMissCopyOne;
+    vector <double> siteOfTwoSwitchTwo;
+    vector <double> siteOfTwoMissCopyTwo;
+    vector <double> siteOfOneSwitchOne;
+    vector <double> siteOfOneMissCopyOne;
+
+    vector <double> finalSiteOfTwoSwitchOne;
+    vector <double> finalSiteOfTwoMissCopyOne;
+    vector <double> finalSiteOfTwoSwitchTwo;
+    vector <double> finalSiteOfTwoMissCopyTwo;
+    vector <double> finalSiteOfOneSwitchOne;
+    vector <double> finalSiteOfOneMissCopyOne;
+
 
     Panel *panel;
     void writeMcmcRelated (McmcSample * mcmcSample, bool useIBD = false);

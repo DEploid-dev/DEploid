@@ -99,6 +99,7 @@ void McmcMachinery::initializeMcmcChain(bool useIBD){
     if ( useIBD == true ){
         this->initializeIbdEssentials();
     }
+
     this->mcmcSample_->IBDpathChangeAt = vector <double> (this->nLoci());
     this->mcmcSample_->siteOfTwoSwitchOne = vector <double> (this->nLoci());
     this->mcmcSample_->siteOfTwoMissCopyOne = vector <double> (this->nLoci());
@@ -106,6 +107,14 @@ void McmcMachinery::initializeMcmcChain(bool useIBD){
     this->mcmcSample_->siteOfTwoMissCopyTwo = vector <double> (this->nLoci());
     this->mcmcSample_->siteOfOneSwitchOne = vector <double> (this->nLoci());
     this->mcmcSample_->siteOfOneMissCopyOne = vector <double> (this->nLoci());
+
+    this->mcmcSample_->currentIBDpathChangeAt = vector <double> (this->nLoci());
+    this->mcmcSample_->currentsiteOfTwoSwitchOne = vector <double> (this->nLoci());
+    this->mcmcSample_->currentsiteOfTwoMissCopyOne = vector <double> (this->nLoci());
+    this->mcmcSample_->currentsiteOfTwoSwitchTwo = vector <double> (this->nLoci());
+    this->mcmcSample_->currentsiteOfTwoMissCopyTwo = vector <double> (this->nLoci());
+    this->mcmcSample_->currentsiteOfOneSwitchOne = vector <double> (this->nLoci());
+    this->mcmcSample_->currentsiteOfOneMissCopyOne = vector <double> (this->nLoci());
 
     assert (doutProp());
     assert (doutLLK());
@@ -311,7 +320,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
     this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, useIBD);
 
     if ( useIBD == true ){
-        clog << "Proportion update accept rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
+        clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
         this->dEploidIO_->initialProp = averageProportion(this->mcmcSample_->proportion);
         this->dEploidIO_->setInitialPropWasGiven(true);
         this->dEploidIO_->setDoUpdateProp(false);
@@ -503,7 +512,7 @@ vector <double> McmcMachinery::computeLlkAtAllSites(double err){
 
 void McmcMachinery::sampleMcmcEventIbdStep(){
     this->fm.clear();
-    double pRecomb = 0.01;
+    double pRecomb = 0.01; // This should be parsed in
     double pNoRecomb = 0.99;
     vector <double> statePrior = this->computeStatePrior(this->theta());
     vector <double> vPrior = vecProd(statePrior, this->hprior.priorProbTrans[0]);
@@ -593,6 +602,9 @@ void McmcMachinery::computeAndUpdateTheta(){
         }
         if ( this->hprior.stateIdx[a] != this->hprior.stateIdx[previousState] ){
             this->mcmcSample_->IBDpathChangeAt[atSiteI] += 1.0;
+            this->mcmcSample_->currentIBDpathChangeAt[atSiteI] = 1.0;
+        } else {
+            this->mcmcSample_->currentIBDpathChangeAt[atSiteI] = 0.0;
         }
         previousState = a;
         atSiteI++;
@@ -726,6 +738,8 @@ void McmcMachinery::updateSingleHap(){
         for (size_t siteI = 0; siteI< length; siteI++){
             this->mcmcSample_->siteOfOneSwitchOne[start+siteI] += updating.siteOfOneSwitchOne[siteI];
             this->mcmcSample_->siteOfOneMissCopyOne[start+siteI] += updating.siteOfOneMissCopyOne[siteI];
+            this->mcmcSample_->siteOfOneSwitchOne[start+siteI] = updating.siteOfOneSwitchOne[siteI];
+            this->mcmcSample_->siteOfOneMissCopyOne[start+siteI] = updating.siteOfOneMissCopyOne[siteI];
         }
     }
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
@@ -766,6 +780,11 @@ void McmcMachinery::updatePairHaps(){
             this->mcmcSample_->siteOfTwoMissCopyOne[start+siteI] += updating.siteOfTwoMissCopyOne[siteI];
             this->mcmcSample_->siteOfTwoSwitchTwo[start+siteI] += updating.siteOfTwoSwitchTwo[siteI];
             this->mcmcSample_->siteOfTwoMissCopyTwo[start+siteI] += updating.siteOfTwoMissCopyTwo[siteI];
+            this->mcmcSample_->currentsiteOfTwoSwitchOne[start+siteI] = updating.siteOfTwoSwitchOne[siteI];
+            this->mcmcSample_->currentsiteOfTwoMissCopyOne[start+siteI] = updating.siteOfTwoMissCopyOne[siteI];
+            this->mcmcSample_->currentsiteOfTwoSwitchTwo[start+siteI] = updating.siteOfTwoSwitchTwo[siteI];
+            this->mcmcSample_->currentsiteOfTwoMissCopyTwo[start+siteI] = updating.siteOfTwoMissCopyTwo[siteI];
+
         }
     }
 

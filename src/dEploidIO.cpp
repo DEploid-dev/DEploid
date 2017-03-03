@@ -224,6 +224,22 @@ void DEploidIO::finalize(){
     (void)removeFilesWithSameName();
 
     this->readPanel();
+    IBDpathChangeAt = vector <double>(this->nLoci());
+    finalIBDpathChangeAt = vector <double>(this->nLoci());
+
+    siteOfTwoSwitchOne = vector <double>(this->nLoci());
+    siteOfTwoMissCopyOne = vector <double>(this->nLoci());
+    siteOfTwoSwitchTwo = vector <double>(this->nLoci());
+    siteOfTwoMissCopyTwo = vector <double>(this->nLoci());
+    siteOfOneSwitchOne = vector <double>(this->nLoci());
+    siteOfOneMissCopyOne = vector <double>(this->nLoci());
+
+    finalSiteOfTwoSwitchOne = vector <double>(this->nLoci());
+    finalSiteOfTwoMissCopyOne = vector <double>(this->nLoci());
+    finalSiteOfTwoSwitchTwo = vector <double>(this->nLoci());
+    finalSiteOfTwoMissCopyTwo = vector <double>(this->nLoci());
+    finalSiteOfOneSwitchOne = vector <double>(this->nLoci());
+    finalSiteOfOneMissCopyOne = vector <double>(this->nLoci());
 }
 
 
@@ -235,7 +251,6 @@ void DEploidIO::removeFilesWithSameName(){
     strIbdExportProp = this->prefix_ + ".ibd.prop";
     strIbdExportLLK = this->prefix_ + ".ibd.llk";
     strIbdExportHap = this->prefix_ + ".ibd.hap";
-    strExportIBDpathChangeAt = this->prefix_ + ".ibd.IBDpathChangeAt";
 
     strExportVcf = this->prefix_ + ".vcf";
     if ( compressVcf() ){
@@ -244,20 +259,13 @@ void DEploidIO::removeFilesWithSameName(){
     strExportLog =  this->prefix_ + ".log";
     strExportRecombProb = this->prefix_ + ".recomb";
 
-    strExportOneSwitchOne   = this->prefix_ + ".oneSwitchOne";
-    strExportOneMissCopyOne = this->prefix_ + ".oneMissCopyOne";
-    strExportTwoSwitchOne   = this->prefix_ + ".twoSwitchOne";
-    strExportTwoMissCopyOne = this->prefix_ + ".twoMissCopyOne";
-    strExportTwoSwitchTwo   = this->prefix_ + ".twoSwitchTwo";
-    strExportTwoMissCopyTwo = this->prefix_ + ".twoMissCopyTwo";
-
+    strExportExtra = this->prefix_ + ".extra";
 
     if ( this->doPainting() == false ){
         if (this->useIBD()){
             remove(strIbdExportProp.c_str());
             remove(strIbdExportLLK.c_str());
             remove(strIbdExportHap.c_str());
-            remove(strExportIBDpathChangeAt.c_str());
         }
         remove(strExportLLK.c_str());
         remove(strExportHap.c_str());
@@ -286,14 +294,7 @@ void DEploidIO::removeFilesWithSameName(){
     remove(strExportLog.c_str());
     remove(strExportRecombProb.c_str());
 
-    remove(strExportOneSwitchOne.c_str());
-    remove(strExportOneMissCopyOne.c_str());
-    remove(strExportTwoSwitchOne.c_str());
-    remove(strExportTwoMissCopyOne.c_str());
-    remove(strExportTwoSwitchTwo.c_str());
-    remove(strExportTwoMissCopyTwo.c_str());
-
-
+    remove(strExportExtra.c_str());
 }
 
 
