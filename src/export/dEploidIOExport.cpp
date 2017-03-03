@@ -28,17 +28,17 @@ void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample, bool useIBD){
     this->writeProp( mcmcSample, useIBD );
     this->writeLLK( mcmcSample, useIBD );
     this->writeHap( mcmcSample, useIBD);
+
     if ( useIBD == false ){
         this->writeVcf( mcmcSample );
-        this->writeEventCount(strExportOneSwitchOne, mcmcSample->siteOfOneSwitchOne);
-        this->writeEventCount(strExportOneMissCopyOne, mcmcSample->siteOfOneMissCopyOne);
-        this->writeEventCount(strExportTwoSwitchOne, mcmcSample->siteOfTwoSwitchOne);
-        this->writeEventCount(strExportTwoSwitchTwo, mcmcSample->siteOfTwoSwitchTwo);
-        this->writeEventCount(strExportTwoMissCopyOne, mcmcSample->siteOfTwoMissCopyOne);
-        this->writeEventCount(strExportTwoMissCopyTwo, mcmcSample->siteOfTwoMissCopyTwo);
+        this->writeEventCount( mcmcSample );
     } else {
-        this->writeEventCount(strExportIBDpathChangeAt, mcmcSample->IBDpathChangeAt);
+        this->IBDpathChangeAt = mcmcSample->IBDpathChangeAt;
+        this->finalIBDpathChangeAt = mcmcSample->currentIBDpathChangeAt;
     }
+
+
+
 }
 
 
@@ -307,23 +307,64 @@ void DEploidIO::writeVcf( McmcSample * mcmcSample ){
 }
 
 
-void DEploidIO::writeEventCount(string fileName, vector<double> eventCount){
-    ofstreamExportTmp.open( fileName.c_str(), ios::out | ios::app | ios::binary );
+void DEploidIO::writeEventCount(McmcSample * mcmcSample){
+    ofstreamExportTmp.open( strExportExtra.c_str(), ios::out | ios::app | ios::binary );
 
     // HEADER
-    ofstreamExportTmp << "CHROM" << "\t" << "POS" << "\t" << "EventCount" << endl;
+    ofstreamExportTmp << "CHROM" << "\t"
+                      << "POS" << "\t"
+                      << "IBDpathChangeAt" << "\t"
+                      << "finalIBDpathChangeAt" << "\t"
+
+                      << "siteOfTwoSwitchOne" << "\t"
+                      << "finalSiteOfTwoSwitchOne" << "\t"
+
+                      << "siteOfTwoMissCopyOne" << "\t"
+                      << "finalSiteOfTwoMissCopyOne" << "\t"
+
+                      << "siteOfTwoSwitchTwo" << "\t"
+                      << "finalSiteOfTwoSwitchTwo" << "\t"
+
+                      << "siteOfTwoMissCopyTwo" << "\t"
+                      << "finalSiteOfTwoMissCopyTwo" << "\t"
+
+                      << "siteOfOneSwitchOne" << "\t"
+                      << "finalSiteOfOneSwitchOne" << "\t"
+
+                      << "siteOfOneMissCopyOne" << "\t"
+                      << "finalSiteOfOneMissCopyOne" << endl;
 
     size_t siteIndex = 0;
     for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
         for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
             ofstreamExportTmp << chrom_[chromI] << "\t"
                               << (int)position_[chromI][posI] << "\t"
-                              << eventCount[siteIndex] << endl;
+
+                              << this->IBDpathChangeAt[siteIndex] << "\t"
+                              << this->finalIBDpathChangeAt[siteIndex] << "\t"
+
+                              << mcmcSample->siteOfTwoSwitchOne[siteIndex] << "\t"
+                              << mcmcSample->currentsiteOfTwoSwitchOne[siteIndex] << "\t"
+
+                              << mcmcSample->siteOfTwoMissCopyOne[siteIndex] << "\t"
+                              << mcmcSample->currentsiteOfTwoMissCopyOne[siteIndex] << "\t"
+
+                              << mcmcSample->siteOfTwoSwitchTwo[siteIndex] << "\t"
+                              << mcmcSample->currentsiteOfTwoSwitchTwo[siteIndex] << "\t"
+
+                              << mcmcSample->siteOfTwoMissCopyTwo[siteIndex] << "\t"
+                              << mcmcSample->currentsiteOfTwoMissCopyTwo[siteIndex] << "\t"
+
+                              << mcmcSample->siteOfOneSwitchOne[siteIndex] << "\t"
+                              << mcmcSample->currentsiteOfOneSwitchOne[siteIndex] << "\t"
+
+                              << mcmcSample->siteOfOneMissCopyOne[siteIndex] << "\t"
+                              << mcmcSample->currentsiteOfOneMissCopyOne[siteIndex] << endl;
             siteIndex++;
         }
     }
 
-    assert(siteIndex == eventCount.size());
+    assert(siteIndex == mcmcSample->IBDpathChangeAt.size());
     ofstreamExportTmp.close();
 }
 

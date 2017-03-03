@@ -40,6 +40,8 @@ fun.interpretDEploid.2 (myCoverageInfo, myInput$dEploidPrefix, myInput$outPrefix
 
 fun.interpretDEploid.3 (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool, myInput$inbreedingBool)
 
+fun.interpretDEploid.4 (paste(myInput$dEploidPrefix, sep=""), myInput$outPrefix, myInput$pdfBool)
+
 if (myInput$ibdBool == TRUE){
     if ( myInput$skip1Bool == FALSE ){
         fun.interpretDEploid.1 (myCoverageInfo, myPlafInfo, paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myExcludeInfo, myInput$pdfBool)
@@ -49,5 +51,4 @@ fun.interpretDEploid.2 (myCoverageInfo, paste(myInput$dEploidPrefix, ".ibd", sep
 
 fun.interpretDEploid.3 (paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myInput$pdfBool, myInput$inbreedingBool)
 
-fun.plot.ibd.change (paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myInput$pdfBool)
 }
