@@ -224,6 +224,22 @@ void DEploidIO::finalize(){
     (void)removeFilesWithSameName();
 
     this->readPanel();
+    IBDpathChangeAt = vector <double>(this->nLoci());
+    finalIBDpathChangeAt = vector <double>(this->nLoci());
+
+    siteOfTwoSwitchOne = vector <double>(this->nLoci());
+    siteOfTwoMissCopyOne = vector <double>(this->nLoci());
+    siteOfTwoSwitchTwo = vector <double>(this->nLoci());
+    siteOfTwoMissCopyTwo = vector <double>(this->nLoci());
+    siteOfOneSwitchOne = vector <double>(this->nLoci());
+    siteOfOneMissCopyOne = vector <double>(this->nLoci());
+
+    finalSiteOfTwoSwitchOne = vector <double>(this->nLoci());
+    finalSiteOfTwoMissCopyOne = vector <double>(this->nLoci());
+    finalSiteOfTwoSwitchTwo = vector <double>(this->nLoci());
+    finalSiteOfTwoMissCopyTwo = vector <double>(this->nLoci());
+    finalSiteOfOneSwitchOne = vector <double>(this->nLoci());
+    finalSiteOfOneMissCopyOne = vector <double>(this->nLoci());
 }
 
 
