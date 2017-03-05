@@ -133,9 +133,7 @@ void UpdateSingleHap::painting( vector <double> &refCount,
 }
 
 
-void UpdateSingleHap::calcFwdBwdProbs(){
-    this->calcFwdProbs();
-
+void UpdateSingleHap::calcBwdProbs(){
     vector <double> bwdLast (this->nPanel_, 0.0);
     for ( size_t i = 0 ; i < this->nPanel_; i++){
         //bwdLast[i] = this->emission_[0][this->panel_->content_[hapIndex][i]];
@@ -143,15 +141,16 @@ void UpdateSingleHap::calcFwdBwdProbs(){
         bwdLast[i] = 1.0;
     }
     (void)normalizeBySum(bwdLast);
-    vector < vector < double > > bwdProbs_;
+    assert(bwdProbs_.size() == 0 );
     bwdProbs_.push_back(bwdLast);
 
-    size_t hapIndexBack = this->segmentStartIndex_ + this->nLoci_ - 1;
-    for ( size_t j = (this->nLoci_- 1); j > 0; j-- ){
-        double pRecEachHap = this->panel_->pRecEachHap_[hapIndexBack];
-        double pNoRec = this->panel_->pNoRec_[hapIndexBack];
+    int j = (this->nLoci_- 1);
+    while (j > 0 ){
+        size_t hapIndexBack = this->segmentStartIndex_ + j;
         //double massFromRec = sumOfVec(bwdProbs_.back()) * pRecEachHap;
-        vector <double> bwdTmp (this->nPanel_, 0.0);
+        vector <double> bwdTmp (this->nPanel_, 1.0);
+        double pRecEachHap = this->panel_->pRecEachHap_[hapIndexBack-1];
+        double pNoRec = this->panel_->pNoRec_[hapIndexBack-1];
         for ( size_t i = 0 ; i < this->nPanel_; i++){
             bwdTmp[i] = 0.0;
             for ( size_t ii = 0 ; ii < this->nPanel_; ii++){
@@ -163,9 +162,17 @@ void UpdateSingleHap::calcFwdBwdProbs(){
         }
         (void)normalizeBySum(bwdTmp);
         bwdProbs_.push_back(bwdTmp);
-        hapIndexBack--;
+        j--;
+    }
+    if (bwdProbs_.size() != nLoci_){
+        throw LociNumberUnequal("here");
     }
     assert ( bwdProbs_.size() == nLoci_ );
+}
+
+void UpdateSingleHap::calcFwdBwdProbs(){
+    this->calcFwdProbs();
+    this->calcBwdProbs();
 
     assert (this->fwdBwdProbs_.size() == 0);
     for ( size_t j = 0; j < this->nLoci_; j++ ) {

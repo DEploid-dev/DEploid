@@ -271,6 +271,7 @@ void DEploidIO::removeFilesWithSameName(){
         remove(strExportHap.c_str());
         remove(strExportVcf.c_str());
         remove(strExportProp.c_str());
+        remove(strExportExtra.c_str());
     }
 
     if (this->doPainting() || this->doExportPostProb() ){
@@ -294,7 +295,6 @@ void DEploidIO::removeFilesWithSameName(){
     remove(strExportLog.c_str());
     remove(strExportRecombProb.c_str());
 
-    remove(strExportExtra.c_str());
 }
 
 
@@ -648,9 +648,9 @@ void DEploidIO::chromPainting(){
             if ( this->doAllowInbreeding() == true ){
                 updatingSingle.setPanelSize(this->panel->inbreedingPanelSize());
             }
-
             updatingSingle.painting( refCount_, altCount_, expectedWsaf, this->filnalProp, this->initialHap);
-            this->writeLastSingleFwdProb( updatingSingle.fwdProbs_, chromi, tmpk, false ); // false as not using ibd
+            //this->writeLastSingleFwdProb( updatingSingle.fwdProbs_, chromi, tmpk, false ); // false as not using ibd
+            this->writeLastSingleFwdProb( updatingSingle.fwdBwdProbs_, chromi, tmpk, false ); // false as not using ibd
         }
     }
 }

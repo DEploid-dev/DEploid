@@ -50,6 +50,7 @@ dEploid_prof_LDADD = $(common_LDADD)
 
 unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_runner.cpp \
+					 tests/unittest/test_updateSingleHap.cpp \
 					 tests/unittest/test_utilities.cpp \
 					 tests/unittest/test_ibd.cpp \
 					 tests/unittest/test_panel.cpp \
@@ -57,7 +58,6 @@ unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_dEploidIO.cpp \
 					 tests/unittest/test_mcmc.cpp \
 					 tests/unittest/test_updatePairHap.cpp \
-					 tests/unittest/test_updateSingleHap.cpp \
 					 tests/unittest/test_vcfReader.cpp
 
 unit_tests_CXXFLAGS = $(common_flags) -DNDEBUG -DUNITTEST -Wno-write-strings --coverage

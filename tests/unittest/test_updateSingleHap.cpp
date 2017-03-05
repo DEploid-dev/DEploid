@@ -94,6 +94,7 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
 
     CPPUNIT_TEST_SUITE( TestUpdateSingleHap );
     CPPUNIT_TEST( testMainConstructor );
+    CPPUNIT_TEST(testFwdBwd);
     CPPUNIT_TEST ( testEmissionProb0 );
     CPPUNIT_TEST ( testEmissionBasicVersion0 );
     CPPUNIT_TEST ( testUpdateLLK );
@@ -211,6 +212,65 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
 
     void testMainConstructor(){ }
 
+
+    void printFwdBwdForChecking(){
+        cout <<endl;
+        for ( vector<double> pRow : this->updateSingleHapPanel1_->emission_){
+            for (double p : pRow){
+                cout<<p<< " ";
+            }
+            cout <<endl;
+        }
+
+        cout <<endl;
+        for ( vector<double> pRow : this->updateSingleHapPanel1_->fwdProbs_){
+            for (double p : pRow){
+                cout<<p<< " ";
+            }
+            cout <<endl;
+        }
+
+        cout <<endl;
+        for ( vector<double> pRow : this->updateSingleHapPanel1_->bwdProbs_){
+            for (double p : pRow){
+                cout<<p<< " ";
+            }
+            cout <<endl;
+        }
+        cout <<endl;
+        for ( vector<double> pRow : this->updateSingleHapPanel1_->fwdBwdProbs_){
+            for (double p : pRow){
+                cout<<p<< " ";
+            }
+            cout <<endl;
+        }
+    }
+
+    void testFwdBwd(){
+        CPPUNIT_ASSERT_NO_THROW(this->panel1_->computeRecombProbs( 15000.0, 10.0, true, 0, false));
+
+        this->updateSingleHapPanel1_->segmentStartIndex_ = 0;
+        this->updateSingleHapPanel1_->nLoci_ = 7;
+        this->updateSingleHapPanel1_->strainIndex_ = 0;
+
+        //CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
+        //CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->calcHapLLKs (this->refCount_, this->altCount_) );
+
+        this->updateSingleHapPanel1_->llk0_ = vector <double> (7, log(0.1));
+        this->updateSingleHapPanel1_->llk1_ = vector <double> (7, log(0.9));
+
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->buildEmission ( 0.0 ) );
+        CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->calcFwdBwdProbs() );
+
+        for ( vector<double> pRow : this->updateSingleHapPanel1_->fwdBwdProbs_){
+            size_t idx = 0;
+            for (double p : pRow){
+                CPPUNIT_ASSERT_DOUBLES_EQUAL ( p, this->updateSingleHapPanel1_->fwdBwdProbs_[0][idx] , epsilon3);
+                idx++;
+            }
+        }
+        //this->printFwdBwdForChecking();
+    }
 
     void testEmissionProb0 (){
         double llk0_1 = log(0.05), llk0_2 = log(0.03), llk0_3 = log(0);
