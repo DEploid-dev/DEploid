@@ -152,6 +152,7 @@ class UpdateSingleHap : public UpdateHap{
     void buildEmission( double missCopyProb );
     void buildEmissionBasicVersion( double missCopyProb );
     void calcFwdProbs();
+    void calcBwdProbs();
     void calcFwdBwdProbs();
     void samplePaths();
     void addMissCopying( double missCopyProb );

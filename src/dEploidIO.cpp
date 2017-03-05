@@ -271,6 +271,7 @@ void DEploidIO::removeFilesWithSameName(){
         remove(strExportHap.c_str());
         remove(strExportVcf.c_str());
         remove(strExportProp.c_str());
+        remove(strExportExtra.c_str());
     }
 
     if (this->doPainting() || this->doExportPostProb() ){
@@ -294,7 +295,6 @@ void DEploidIO::removeFilesWithSameName(){
     remove(strExportLog.c_str());
     remove(strExportRecombProb.c_str());
 
-    remove(strExportExtra.c_str());
 }
 
 
