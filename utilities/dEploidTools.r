@@ -461,24 +461,26 @@ plot.ibd.change <- function(changeAt, titlePrefix,nFigures){
 
 
 fun.interpretDEploid.4 <- function(inPrefix, outPrefix = "", pdfBool){
-    obj = read.table( paste(inPrefix, ".extra", sep = ""), header=T)
-    chromName = levels(obj$CHROM)
-    ncol = ceiling(length(chromName)/2)
-    if ( pdfBool == TRUE ){
-        cexSize = 3
-        pdf ( paste ( outPrefix, ".interpretDEploidFigure.extra.pdf", sep = "" ), width = 45, height = 30)
-    } else {
-        cexSize = 2.5
-        png ( paste ( outPrefix, ".interpretDEploidFigure.extra.png", sep= ""), width = 3500, height = 2000)
+    fileName = paste(inPrefix, ".extra", sep = "")
+    if ( file.exists(fileName) ){
+        obj = read.table(fileName , header=T)
+        chromName = levels(obj$CHROM)
+        ncol = ceiling(length(chromName)/2)
+        if ( pdfBool == TRUE ){
+            cexSize = 3
+            pdf ( paste ( outPrefix, ".interpretDEploidFigure.extra.pdf", sep = "" ), width = 45, height = 30)
+        } else {
+            cexSize = 2.5
+            png ( paste ( outPrefix, ".interpretDEploidFigure.extra.png", sep= ""), width = 3500, height = 2000)
+        }
+        par(mfrow = c(ncol,length(chromName)/ncol))
+        par(mar = c(5,7,7,4))
+        nFigures = length(chromName)
+        for ( chromI in chromName ){
+            plot.ibd.change ( obj[which( chromI == obj$CHROM),], chromI, nFigures )
+        }
+        dev.off()
     }
-    par(mfrow = c(ncol,length(chromName)/ncol))
-    par(mar = c(5,7,7,4))
-    nFigures = length(chromName)
-    for ( chromI in chromName ){
-        plot.ibd.change ( obj[which( chromI == obj$CHROM),], chromI, nFigures )
-    }
-    dev.off()
-
 }
 
 
