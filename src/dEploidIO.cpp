@@ -461,7 +461,7 @@ void DEploidIO::checkInput(){
         throw FileNameMissing ( "PLAF" );}
     if ( usePanel() && this->panelFileName_.size() == 0 ){
         throw FileNameMissing ( "Reference panel" );}
-    if ( this->initialPropWasGiven() && ( abs(sumOfVec(initialProp) - 1.0) > 0.000001 )){
+    if ( this->initialPropWasGiven() && ( abs(sumOfVec(initialProp) - 1.0) > 0.00001 )){
         throw SumOfPropNotOne ( to_string(sumOfVec(initialProp)) );}
     if ( this->initialPropWasGiven() ){
         if ( this->kStrainWasManuallySet() == true ){
