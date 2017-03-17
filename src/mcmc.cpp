@@ -27,6 +27,7 @@
 #include <random>
 #include "updateHap.hpp"
 #include <stdio.h>
+#include <limits>       /* std::numeric_limits< double >::min() */
 
 McmcSample::McmcSample(){};
 McmcSample::~McmcSample(){};
@@ -475,7 +476,11 @@ vector <double> McmcMachinery::computeLlkOfStatesAtSiteI( size_t siteI, double e
     double maxllk = max_value(llks);
     vector <double> ret;
     for ( double llk : llks ){
-        ret.push_back( exp(llk-maxllk));
+        double normalized = exp(llk-maxllk);
+        if ( normalized == 0 ){
+            normalized = std::numeric_limits< double >::min();
+        }
+        ret.push_back(normalized);
     }
 
     return ret;
