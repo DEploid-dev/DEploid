@@ -18,8 +18,6 @@ before_script:
 script:
   - make
   - make check
-  - cat test-suite.log
-  - ./unit_tests
   - if [ $TRAVIS_OS_NAME == linux ]; then ./tests/test_binary.sh; fi
   - ./tests/testPOS.sh
   - ./tests/test_binaryVcfVsTxt.sh
