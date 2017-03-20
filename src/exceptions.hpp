@@ -68,6 +68,15 @@ struct InvalidInput : std::exception {
 };
 
 
+struct InvalidK : public InvalidInput{
+  InvalidK( ):InvalidInput( ){
+    this->reason = "k must be at least 2, when using the flag -ibd.";
+    throwMsg = this->reason + this->src;
+  }
+  ~InvalidK() throw() {}
+};
+
+
 struct NotEnoughArg : public InvalidInput{
   NotEnoughArg( string str ):InvalidInput( str ){
     this->reason = "Not enough parameters when parsing option: ";
@@ -75,6 +84,7 @@ struct NotEnoughArg : public InvalidInput{
   }
   ~NotEnoughArg() throw() {}
 };
+
 
 struct VcfOutUnSpecified : public InvalidInput{
   VcfOutUnSpecified( string str ):InvalidInput( str ){

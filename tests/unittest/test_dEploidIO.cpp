@@ -27,7 +27,7 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST( testVcfGzHeader );
     CPPUNIT_TEST( testVcfGzNoAD );
     CPPUNIT_TEST( testVcfOutUnSpecified );
-    CPPUNIT_TEST( testDefineK );
+    CPPUNIT_TEST( testInvalidK );
     CPPUNIT_TEST( testChromPainting );
     CPPUNIT_TEST_SUITE_END();
 
@@ -737,8 +737,20 @@ class TestIO : public CppUnit::TestCase {
 
     }
 
-    void testDefineK(){
+    void testInvalidK(){
+        char *argv1[] = { "./dEploid",
+                         "-vcf", "data/testData/PG0390-C.test.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                         "-k", "1", "-ibd"};
+        CPPUNIT_ASSERT_THROW ( DEploidIO(10, argv1), InvalidK);
 
+        char *argv2[] = { "./dEploid",
+                         "-vcf", "data/testData/PG0390-C.test.vcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                         "-initialP", "1", "-ibd"};
+        CPPUNIT_ASSERT_THROW ( DEploidIO(10, argv2), InvalidK);
     }
 };
 

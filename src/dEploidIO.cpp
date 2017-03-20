@@ -164,6 +164,10 @@ void DEploidIO::reInit() {
 
 
 void DEploidIO::finalize(){
+    if ( this->useIBD() && this->kStrain() == 1){
+        throw InvalidK();
+    }
+
     if ( this->compressVcf() && !this->doExportVcf() ){
         throw VcfOutUnSpecified("");
     }
