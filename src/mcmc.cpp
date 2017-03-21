@@ -233,7 +233,7 @@ vector <double> McmcMachinery::titre2prop(vector <double> & tmpTitre){
     for ( auto const& value: tmpExpTitre ){
         tmpProp.push_back( value/tmpSum );
         assert (tmpProp.back() > 0);
-        assert (tmpProp.back() < 1);
+        assert (tmpProp.back() <= 1);
     }
     return tmpProp;
 }
