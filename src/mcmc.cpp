@@ -752,6 +752,10 @@ void McmcMachinery::updateSingleHap(){
 
 
 void McmcMachinery::updatePairHaps(){
+    if ( this->kStrain() == 1 ){
+        return;
+    }
+
     dout << " Update Pair Hap "<<endl;
     this->findUpdatingStrainPair();
 
