@@ -139,6 +139,10 @@ void Panel::initializeUpdatePanel(size_t inbreedingPanelSizeSetTo){
     dout << "************* Allow inbreeding ************" << endl;
     dout << "** Initialize inbreeding reference panel **" << endl;
 
+    if ( this->truePanelSize() == this->inbreedingPanelSize()){
+        return;
+    }
+
     for ( size_t siteI = 0; siteI < this->content_.size(); siteI++ ){
         for ( size_t panelStrainJ = this->truePanelSize() ; panelStrainJ < this->inbreedingPanelSize(); panelStrainJ++ ){
             this->content_[siteI].push_back( 1 );
@@ -154,6 +158,10 @@ void Panel::updatePanelWithHaps(size_t inbreedingPanelSizeSetTo, size_t excluded
     // If allows inbreeding, update reference panel by including strain haplotypes
     dout << "*************** Allow inbreeding **************" << endl;
     dout << "*** Update reference panel without strain " << excludedStrain << " ***" << endl;
+
+    if ( this->truePanelSize() == this->inbreedingPanelSize()){
+        return;
+    }
 
     for ( size_t siteI = 0; siteI < this->content_.size(); siteI++ ){
         size_t shiftAfter = this->inbreedingPanelSize();
