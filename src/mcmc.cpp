@@ -91,7 +91,7 @@ void McmcMachinery::initializeMcmcChain(bool useIBD){
     this->initializeHap();
     this->initializeProp();
     this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
-    this->currentLLks_ = calcLLKs( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->currentExpectedWsaf_ , 0, this->currentExpectedWsaf_.size());
+    this->currentLLks_ = calcLLKs( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->currentExpectedWsaf_ , 0, this->currentExpectedWsaf_.size(), this->dEploidIO_->scalingFactor());
 
     if ( this->dEploidIO_->doAllowInbreeding() == true ){
         this->initializeUpdateReferencePanel(this->panel_->truePanelSize()+kStrain_-1);
@@ -666,7 +666,7 @@ void McmcMachinery::updateProportion(){
     }
 
     vector <double> tmpExpecedWsaf = calcExpectedWsaf(tmpProp);
-    vector <double> tmpLLKs = calcLLKs (this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, tmpExpecedWsaf, 0, tmpExpecedWsaf.size());
+    vector <double> tmpLLKs = calcLLKs (this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, tmpExpecedWsaf, 0, tmpExpecedWsaf.size(), this->dEploidIO_->scalingFactor());
     double diffLLKs = this->deltaLLKs(tmpLLKs);
     double tmpLogPriorTitre = calcLogPriorTitre( tmpTitre );
     double priorPropRatio = exp(tmpLogPriorTitre - this->currentLogPriorTitre_ );
@@ -724,7 +724,7 @@ void McmcMachinery::updateSingleHap(){
                                   this->currentExpectedWsaf_,
                                   this->currentProp_, this->currentHap_, this->hapRg_,
                                   start, length,
-                                  this->panel_, this->dEploidIO_->missCopyProb_,
+                                  this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
                                   this->strainIndex_);
 
         if ( this->dEploidIO_->doAllowInbreeding() == true ){
@@ -770,7 +770,8 @@ void McmcMachinery::updatePairHaps(){
                                 this->currentExpectedWsaf_,
                                 this->currentProp_, this->currentHap_, this->hapRg_,
                                 start, length,
-                                this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->forbidCopyFromSame(),
+                                this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
+                                this->dEploidIO_->forbidCopyFromSame(),
                                 this->strainIndex1_,
                                 this->strainIndex2_);
 

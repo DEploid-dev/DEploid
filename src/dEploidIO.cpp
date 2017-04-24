@@ -121,6 +121,7 @@ void DEploidIO::init() {
     this->constRecombProb_ = 1.0;
     this->averageCentimorganDistance_ = 15000.0;
     this->Ne_ = 10.0;
+    this->setScalingFactor(100.0);
 
     this->setUseVcf(false);
     this->vcfReaderPtr_ = NULL;
@@ -374,6 +375,8 @@ void DEploidIO::parse (){
             if ( this->missCopyProb_ < 0 || this->missCopyProb_ > 1){
                 throw ( OutOfRange ("-miss", *argv_i) );
             }
+        } else if ( *argv_i == "-c" ) {
+            this->scalingFactor_ = readNextInput<double>() ;
         } else if ( *argv_i == "-recomb" ) {
             this->constRecombProb_ = readNextInput<double>();
             this->useConstRecomb_ = true;
@@ -646,7 +649,7 @@ void DEploidIO::chromPainting(){
                                       expectedWsaf,
                                       this->filnalProp, this->initialHap, &tmpRg,
                                       start, length,
-                                      this->panel, this->missCopyProb_,
+                                      this->panel, this->missCopyProb_, this->scalingFactor(),
                                       tmpk);
 
             if ( this->doAllowInbreeding() == true ){

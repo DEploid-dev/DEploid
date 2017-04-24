@@ -37,7 +37,8 @@ UpdateHap::UpdateHap( vector <double> &refCount,
                       size_t segmentStartIndex,
                       size_t nLoci,
                       Panel* panel,
-                      double missCopyProb){
+                      double missCopyProb,
+                      double scalingFactor){
 
     this->panel_ = panel;
     this->nPanel_ = 0; // Initialize when panel is not given
@@ -48,6 +49,7 @@ UpdateHap::UpdateHap( vector <double> &refCount,
 
     this->kStrain_ = proportion.size();
     this->missCopyProb_ = missCopyProb;
+    this->setScalingFactor(scalingFactor);
     this->recombRg_ = rg;
     this->recombLevel2Rg_ = rg;
     this->missCopyRg_ = rg;
@@ -89,9 +91,9 @@ UpdateSingleHap::UpdateSingleHap( vector <double> &refCount,
                                   RandomGenerator* rg,
                                   size_t segmentStartIndex,
                                   size_t nLoci,
-                                  Panel* panel, double missCopyProb,
+                                  Panel* panel, double missCopyProb, double scalingFactor,
                                   size_t strainIndex ):
-                UpdateHap(refCount, altCount, expectedWsaf, plaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel, missCopyProb){
+                UpdateHap(refCount, altCount, expectedWsaf, plaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel, missCopyProb, scalingFactor){
     this->strainIndex_ = strainIndex;
     siteOfOneSwitchOne = vector <double>(nLoci);
     siteOfOneMissCopyOne = vector <double>(nLoci);
@@ -287,8 +289,8 @@ void UpdateSingleHap::calcFwdProbs(){
 
 void UpdateSingleHap::calcHapLLKs( vector <double> &refCount,
                                    vector <double> &altCount){
-    this->llk0_ = calcLLKs( refCount, altCount, expectedWsaf0_, this->segmentStartIndex_, this->nLoci_ );
-    this->llk1_ = calcLLKs( refCount, altCount, expectedWsaf1_, this->segmentStartIndex_, this->nLoci_ );
+    this->llk0_ = calcLLKs( refCount, altCount, expectedWsaf0_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
+    this->llk1_ = calcLLKs( refCount, altCount, expectedWsaf1_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
     assert( this->llk0_.size() == this->nLoci_ );
     assert( this->llk1_.size() == this->nLoci_ );
 }
@@ -391,10 +393,11 @@ UpdatePairHap::UpdatePairHap( vector <double> &refCount,
                               RandomGenerator* rg,
                               size_t segmentStartIndex,
                               size_t nLoci,
-                              Panel* panel, double missCopyProb, bool forbidCopyFromSame,
+                              Panel* panel, double missCopyProb, double scalingFactor,
+                              bool forbidCopyFromSame,
                               size_t strainIndex1,
                               size_t strainIndex2 ):
-                UpdateHap(refCount, altCount, plaf, expectedWsaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel, missCopyProb){
+                UpdateHap(refCount, altCount, plaf, expectedWsaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel, missCopyProb, scalingFactor){
     this->strainIndex1_ = strainIndex1;
     this->strainIndex2_ = strainIndex2;
     this->forbidCopyFromSame_ = forbidCopyFromSame;
@@ -461,10 +464,10 @@ void UpdatePairHap:: calcExpectedWsaf( vector <double> & expectedWsaf, vector <d
 
 
 void UpdatePairHap:: calcHapLLKs( vector <double> &refCount, vector <double> &altCount){
-    this->llk00_ = calcLLKs( refCount, altCount, expectedWsaf00_, this->segmentStartIndex_, this->nLoci_ );
-    this->llk10_ = calcLLKs( refCount, altCount, expectedWsaf10_, this->segmentStartIndex_, this->nLoci_ );
-    this->llk01_ = calcLLKs( refCount, altCount, expectedWsaf01_, this->segmentStartIndex_, this->nLoci_ );
-    this->llk11_ = calcLLKs( refCount, altCount, expectedWsaf11_, this->segmentStartIndex_, this->nLoci_ );
+    this->llk00_ = calcLLKs( refCount, altCount, expectedWsaf00_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
+    this->llk10_ = calcLLKs( refCount, altCount, expectedWsaf10_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
+    this->llk01_ = calcLLKs( refCount, altCount, expectedWsaf01_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
+    this->llk11_ = calcLLKs( refCount, altCount, expectedWsaf11_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
     assert( this->llk00_.size() == this->nLoci_ );
     assert( this->llk10_.size() == this->nLoci_ );
     assert( this->llk01_.size() == this->nLoci_ );

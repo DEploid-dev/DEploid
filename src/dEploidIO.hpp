@@ -154,6 +154,7 @@ class DEploidIO{
     double averageCentimorganDistance_;// = 15000.0,
     double Ne_;// = 10.0
     double constRecombProb_;
+    double scalingFactor_; // 100.0
 
     std::vector<std::string> argv_;
     std::vector<std::string>::iterator argv_i;
@@ -300,6 +301,8 @@ class DEploidIO{
     size_t nMcmcSample() const { return this->nMcmcSample_; }
     double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
     double Ne() const { return this->Ne_; }
+    double scalingFactor() const {return this->scalingFactor_; }
+    void setScalingFactor ( const double setTo ){ this->scalingFactor_ = setTo; }
     double constRecombProb() const { return this->constRecombProb_; }
     bool useConstRecomb() const { return this->useConstRecomb_; }
 

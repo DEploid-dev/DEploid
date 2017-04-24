@@ -136,6 +136,7 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     (*writeTo) << setw(20) << " Miss copy prob: "   << this->missCopyProb_ << "\n";
     (*writeTo) << setw(20) << " Avrg Cent Morgan: " << this->averageCentimorganDistance_ << "\n";
     (*writeTo) << setw(20) << " Ne: "               << this->Ne_ << "\n";
+    (*writeTo) << setw(20) << " ScalingFactor: "    << this->scalingFactor() << "\n";
     if ( this->initialPropWasGiven() ){
         (*writeTo) << setw(20) << " Initial prob: " ;
         for ( size_t i = 0; i < this->initialProp.size(); i++ ){
