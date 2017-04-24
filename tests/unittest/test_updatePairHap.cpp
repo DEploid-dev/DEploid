@@ -40,6 +40,7 @@ class TestUpdatePairHap : public CppUnit::TestCase {
     double epsilon2;
     double epsilon3;
     size_t nRepeat;
+    double scalingFactor_;
 
   public:
     void setUp(){
@@ -72,6 +73,7 @@ class TestUpdatePairHap : public CppUnit::TestCase {
 
         this->nLoci_ = 0;
         this->forbidCopyFromSame_ = true;
+        this->scalingFactor_ = 100.0;
 
         this->updatePairHapPlaf_ = new UpdatePairHap( refCount_,
                                           altCount_,
@@ -83,7 +85,8 @@ class TestUpdatePairHap : public CppUnit::TestCase {
                                           segmentStartIndex_,
                                           nLoci_,
                                           NULL,
-                                          missCopyProb_, forbidCopyFromSame_,
+                                          missCopyProb_, scalingFactor_,
+                                          forbidCopyFromSame_,
                                           strainIndex1_, strainIndex2_ );
 
         this->updatePairHapPanel1_ = new UpdatePairHap( refCount_,
@@ -96,7 +99,8 @@ class TestUpdatePairHap : public CppUnit::TestCase {
                                           segmentStartIndex_,
                                           nLoci_,
                                           panel1_,
-                                          missCopyProb_, forbidCopyFromSame_,
+                                          missCopyProb_, scalingFactor_,
+                                          forbidCopyFromSame_,
                                           strainIndex1_, strainIndex2_ );
 
         this->updatePairHapPanel2_ = new UpdatePairHap( refCount_,
@@ -109,7 +113,8 @@ class TestUpdatePairHap : public CppUnit::TestCase {
                                           segmentStartIndex_,
                                           nLoci_,
                                           panel2_,
-                                          missCopyProb_, forbidCopyFromSame_,
+                                          missCopyProb_, scalingFactor_,
+                                          forbidCopyFromSame_,
                                           strainIndex1_, strainIndex2_ );
     }
 
