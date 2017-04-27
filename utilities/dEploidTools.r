@@ -235,28 +235,76 @@ fun.getWSAF.corr <- function( obsWSAF, expWSAF, dicLogFileName ){
 }
 
 
-fun.dataExplore <- function (coverage, PLAF, prefix = "", pdfBool) {
+fun.find.more <- function (outliers.idx, window.size = 10){
+    idx.out = c()
+    for ( i in 1:length(outliers.idx)){
+        near.outliers.idx = which(((outliers.idx[i] - window.size) < outliers.idx) & (outliers.idx < (outliers.idx[i] + window.size)))
+        idx.len = length(near.outliers.idx)
+        if ( length(near.outliers.idx)>1 ){
+            idx.out = c(idx.out, outliers.idx[near.outliers.idx[1]]:outliers.idx[near.outliers.idx[idx.len]])
+        } else{
+            idx.out = c(idx.out, outliers.idx[near.outliers.idx[1]])
+        }
+    }
+    return(unique(idx.out))
+}
+
+
+plot.total.coverage <- function(ref, alt, chroms, cex.lab = 1, cex.main = 1, cex.axis = 1,  threshold){
+    totalDepth = ref + alt
+    x = 1:length(totalDepth)
+    tmpQ = quantile(totalDepth, threshold)
+    tmpIdx = which((totalDepth > tmpQ ))
+    potentialOutliers = fun.find.more(tmpIdx)
+
+    chromCol = (as.numeric(chroms) %% 2 )
+    chromCol[chromCol==1] = NA
+    chromCol[chromCol==0] = 8
+    plot(x, totalDepth, type="n", cex.axis = cex.axis, cex.lab = cex.lab, cex.main = cex.main, ylab="Coverage depth", xlab="SNP index", main = "Coverage across the sequence")
+    rect(x[-1],
+         0,
+         x[-length(x)],
+         max(totalDepth)*1.5, col = chromCol, border = "transparent")
+    points(x, totalDepth, pch = 16)
+    abline(h = tmpQ, col = "red")
+    points(x[potentialOutliers], totalDepth[potentialOutliers], col = "red", pch = "x", cex = 2)
+    return (potentialOutliers)
+}
+
+
+fun.dataExplore <- function (coverage, PLAF, prefix = "", pdfBool, threshold = 0.995) {
 #    PLAF = plafInfo$PLAF
     ref = coverage$refCount
     alt = coverage$altCount
 
     if ( pdfBool == TRUE ){
         cexSize = 3
-        pdf ( paste ( prefix, "altVsRefAndWSAFvsPLAF.pdf", sep = "" ), width = 30, height = 10)
+        pdf ( paste ( prefix, "altVsRefAndWSAFvsPLAF.pdf", sep = "" ), width = 30, height = 20)
     } else {
         cexSize = 2.5
-        png ( paste ( prefix, "altVsRefAndWSAFvsPLAF.png", sep = "" ), width = 1800, height = 600)
+        png ( paste ( prefix, "altVsRefAndWSAFvsPLAF.png", sep = "" ), width = 1800, height = 1200)
     }
-    par(mar = c(5,7,7,4))
-    par( mfrow = c(1,3) )
 
-    plotAltVsRef ( ref, alt, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    layout(matrix(c(1,1,1,2,3,4), 2, 3, byrow = TRUE))
+
+    par(mar = c(5,7,7,4))
+#    par( mfrow = c(1,3) )
+
+    badGuys = plot.total.coverage(ref, alt, coverage$CHROM, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize, threshold)
+
+    if ( length(badGuys) > 0 ){
+        CHROM = coverage$CHROM[badGuys]
+        POS = coverage$POS[badGuys]
+        write.table(data.frame(CHROM, POS), file = paste(prefix, "PotentialOutliers.txt", sep=""), sep = "\t", quote = F, row.names = F)
+    }
+
+    plotAltVsRef ( ref, alt, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize, potentialOutliers = badGuys )
 
     obsWSAF = computeObsWSAF ( alt, ref )
 
     histWSAF ( obsWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
 
-    plotWSAFvsPLAF ( PLAF, obsWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    plotWSAFvsPLAF ( PLAF, obsWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize, potentialOutliers = badGuys  )
 
     dev.off()
 }
