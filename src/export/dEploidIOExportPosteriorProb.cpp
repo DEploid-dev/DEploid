@@ -45,7 +45,7 @@ void McmcMachinery::writeLastFwdProb(bool useIBD){
                                       this->currentExpectedWsaf_,
                                       this->currentProp_, this->currentHap_, this->hapRg_,
                                       start, length,
-                                      this->panel_, this->dEploidIO_->missCopyProb_,
+                                      this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
                                       tmpk);
             if ( this->dEploidIO_->doAllowInbreeding() == true ){
                 updatingSingle.setPanelSize(this->panel_->inbreedingPanelSize());

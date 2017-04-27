@@ -36,6 +36,8 @@ class TestUtility : public CppUnit::TestCase {
     double epsilon3;
     double epsilon4;
     size_t nRepeat;
+    double err_;
+    double scalingFactor_;
 
     void testSampleIndexGivenPropCore( vector <double> prop ){
         vector <int> counter ( prop.size(), 0 );
@@ -60,6 +62,8 @@ class TestUtility : public CppUnit::TestCase {
         epsilon4 = 0.00001;
         epsilon3 = 0.00000000001;
         nRepeat = 1000000;
+        err_ = 0.01;
+        scalingFactor_ = 100.0;
     }
 
 
@@ -208,21 +212,21 @@ class TestUtility : public CppUnit::TestCase {
 
 
     void testCalcLLK(){
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, calcLLK(0, 0, 0.0), epsilon2) ;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, calcLLK(0, 0, 1.0), epsilon2) ;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, calcLLK(0, 0, 0.5), epsilon2) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, calcLLK(0, 0, 0.0, this->err_, this->scalingFactor_), epsilon2) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, calcLLK(0, 0, 1.0, this->err_, this->scalingFactor_), epsilon2) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, calcLLK(0, 0, 0.5, this->err_, this->scalingFactor_), epsilon2) ;
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (-0.09622803, calcLLK(10, 0, 0.0), epsilon2) ;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (-31.38367782, calcLLK(10, 0, 1.0), epsilon2) ;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (-6.520005876, calcLLK(10, 0, 0.5), epsilon2) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-0.09622803, calcLLK(10, 0, 0.0, this->err_, this->scalingFactor_), epsilon2) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-31.38367782, calcLLK(10, 0, 1.0, this->err_, this->scalingFactor_), epsilon2) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-6.520005876, calcLLK(10, 0, 0.5, this->err_, this->scalingFactor_), epsilon2) ;
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (-92.39749823, calcLLK(0, 50, 0.0), epsilon2) ;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (-0.4088264558, calcLLK(0, 50, 1.0), epsilon2) ;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (-26.30680376, calcLLK(0, 50, 0.5), epsilon2) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-92.39749823, calcLLK(0, 50, 0.0, this->err_, this->scalingFactor_), epsilon2) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-0.4088264558, calcLLK(0, 50, 1.0, this->err_, this->scalingFactor_), epsilon2) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-26.30680376, calcLLK(0, 50, 0.5, this->err_, this->scalingFactor_), epsilon2) ;
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (-39.454802987, calcLLK(11, 13, 0.0), epsilon2) ;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (-82.7561739077, calcLLK(41, 2, 1.0), epsilon2) ;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL (-71.6257227, calcLLK(23, 99, 0.5), epsilon2) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-39.454802987, calcLLK(11, 13, 0.0, this->err_, this->scalingFactor_), epsilon2) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-82.7561739077, calcLLK(41, 2, 1.0, this->err_, this->scalingFactor_), epsilon2) ;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL (-71.6257227, calcLLK(23, 99, 0.5, this->err_, this->scalingFactor_), epsilon2) ;
     }
 
 
@@ -231,17 +235,17 @@ class TestUtility : public CppUnit::TestCase {
         vector <double> alt ({ 0, 0, 0, 0, 0, 0, 50, 50, 50, 13, 2, 99});
         vector <double> wsaf ({.0, 1.0, .5, .0, 1.0, .5, .0, 1.0, .5, .0, 1.0, .5 });
 
-        vector <double> llk1 = calcLLKs( ref, alt, wsaf, 0, 3 );
+        vector <double> llk1 = calcLLKs( ref, alt, wsaf, 0, 3, this->scalingFactor_ );
         CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, llk1[0], epsilon2) ;
         CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, llk1[0], epsilon2) ;
         CPPUNIT_ASSERT_DOUBLES_EQUAL (0.0, llk1[0], epsilon2) ;
 
-        vector <double> llk2 = calcLLKs( ref, alt, wsaf, 6, 3 );
+        vector <double> llk2 = calcLLKs( ref, alt, wsaf, 6, 3, this->scalingFactor_ );
         CPPUNIT_ASSERT_DOUBLES_EQUAL (-92.39749823, llk2[0], epsilon2) ;
         CPPUNIT_ASSERT_DOUBLES_EQUAL (-0.4088264558, llk2[1], epsilon2) ;
         CPPUNIT_ASSERT_DOUBLES_EQUAL (-26.30680376, llk2[2], epsilon2) ;
 
-        vector <double> llk3 = calcLLKs( ref, alt, wsaf, 3, 7 );
+        vector <double> llk3 = calcLLKs( ref, alt, wsaf, 3, 7, this->scalingFactor_ );
         CPPUNIT_ASSERT_DOUBLES_EQUAL (-0.09622803, llk3[0], epsilon2) ;
         CPPUNIT_ASSERT_DOUBLES_EQUAL (-31.38367782, llk3[1], epsilon2) ;
         CPPUNIT_ASSERT_DOUBLES_EQUAL (-6.520005876, llk3[2], epsilon2) ;

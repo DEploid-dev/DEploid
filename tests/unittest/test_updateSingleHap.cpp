@@ -24,6 +24,7 @@ class TestUpdateHap : public CppUnit::TestCase {
     size_t nLoci_;
     Panel* panel_;
     double missCopyProb_;
+    double scalingFactor_;
 
   public:
     void setUp(){
@@ -39,7 +40,7 @@ class TestUpdateHap : public CppUnit::TestCase {
                                           rg_,
                                           segmentStartIndex_,
                                           nLoci_,
-                                          NULL, missCopyProb_ );
+                                          NULL, missCopyProb_, scalingFactor_);
 
         this->updateHapPanel_ = new UpdateHap( refCount_,
                                           altCount_,
@@ -50,7 +51,7 @@ class TestUpdateHap : public CppUnit::TestCase {
                                           rg_,
                                           segmentStartIndex_,
                                           nLoci_,
-                                          panel_, missCopyProb_ );
+                                          panel_, missCopyProb_, scalingFactor_);
     }
 
 
@@ -121,6 +122,7 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
     Panel* panel1_;
     Panel* panel2_;
     double missCopyProb_;
+    double scalingFactor_;
     size_t strainIndex_;
     double epsilon1;
     double epsilon2;
@@ -158,6 +160,7 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
         this->panel2_->buildExamplePanel2();
 
         this->nLoci_ = 0;
+        this->scalingFactor_ = 100.0;
 
         this->updateSingleHapPlaf_ = new UpdateSingleHap( refCount_,
                                           altCount_,
@@ -170,6 +173,7 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
                                           nLoci_,
                                           NULL,
                                           missCopyProb_,
+                                          scalingFactor_,
                                           strainIndex_ );
 
         this->updateSingleHapPanel1_ = new UpdateSingleHap( refCount_,
@@ -183,6 +187,7 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
                                           nLoci_,
                                           panel1_,
                                           missCopyProb_,
+                                          scalingFactor_,
                                           strainIndex_ );
 
         this->updateSingleHapPanel2_ = new UpdateSingleHap( refCount_,
@@ -196,6 +201,7 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
                                           nLoci_,
                                           panel2_,
                                           missCopyProb_,
+                                          scalingFactor_,
                                           strainIndex_ );
 }
 

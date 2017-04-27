@@ -59,7 +59,8 @@ class UpdateHap{
                size_t segmentStartIndex,
                size_t nLoci,
                Panel* panel,
-               double missCopyProb );
+               double missCopyProb,
+               double scalingFactor);
     virtual ~UpdateHap();
 
     Panel* panel_;
@@ -78,6 +79,9 @@ class UpdateHap{
     size_t nLoci_;
 
     vector < vector <double> > emission_;
+    double scalingFactor_;
+    double scalingFactor() const {return this->scalingFactor_; }
+    void setScalingFactor ( const double setTo ){ this->scalingFactor_ = setTo; }
 
     // Methods
     virtual void core(vector <double> &refCount,
@@ -117,6 +121,7 @@ class UpdateSingleHap : public UpdateHap{
                       size_t segmentStartIndex,
                       size_t nLoci,
                       Panel* panel, double missCopyProb,
+                      double scalingFactor,
                       size_t strainIndex );
     ~UpdateSingleHap();
 
@@ -178,7 +183,8 @@ class UpdatePairHap : public UpdateHap{
                       RandomGenerator* rg,
                       size_t segmentStartIndex,
                       size_t nLoci,
-                      Panel* panel, double missCopyProb, bool forbidCopyFromSame,
+                      Panel* panel, double missCopyProb,
+                      double scalingFactor, bool forbidCopyFromSame,
                       size_t strainIndex1,
                       size_t strainIndex2 );
     ~UpdatePairHap();

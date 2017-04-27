@@ -102,7 +102,7 @@ void normalizeBySumMat ( vector <vector <double> > & matrix ){
 }
 
 
-vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf, size_t firstIndex, size_t length ){
+vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf, size_t firstIndex, size_t length, double fac, double err){
     assert ( expectedWsaf.size() == length );
     vector <double> tmpLLKs (length, 0.0);
     size_t index = firstIndex;
@@ -111,7 +111,9 @@ vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, 
         //assert (expectedWsaf[i] <= 1);
         tmpLLKs[i] = calcLLK( refCount[index],
                               altCount[index],
-                              expectedWsaf[i]);
+                              expectedWsaf[i],
+                              err,
+                              fac);
         index++;
     }
     return tmpLLKs;
