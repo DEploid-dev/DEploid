@@ -181,7 +181,7 @@ plotProportions <- function (proportions, title = "Components",
 #' plotAltVsRef( PG0390CoverageVcf$refCount, PG0390CoverageVcf$altCount )
 #'
 plotAltVsRef <- function ( ref, alt, title = "Alt vs Ref",
-                    exclude.ref = c(), exclude.alt = c(),
+                    exclude.ref = c(), exclude.alt = c(), potentialOutliers = c(),
                     cex.lab = 1, cex.main = 1, cex.axis = 1 ){
     cr <- colorRampPalette(colors = c("#de2d26", "#2b8cbe"))
     colors <- cr(31)
@@ -201,6 +201,10 @@ plotAltVsRef <- function ( ref, alt, title = "Alt vs Ref",
 
     abline(h = 150, untf = FALSE, lty = 2)
     abline(v = 150, untf = FALSE, lty = 2)
+
+    if ( length(potentialOutliers) > 0 ){
+        points(ref[potentialOutliers], alt[potentialOutliers], col="black", pch="x", cex = 2)
+    }
 }
 
 
@@ -292,7 +296,7 @@ histWSAF <- function ( obsWSAF, exclusive = TRUE,
 #' plaf = extractPLAF(plafFile)
 #' plotWSAFvsPLAF(plaf, obsWSAF)
 #'
-plotWSAFvsPLAF <- function ( plaf, obsWSAF, expWSAF = c(),
+plotWSAFvsPLAF <- function ( plaf, obsWSAF, expWSAF = c(), potentialOutliers = c(),
                       title = "WSAF vs PLAF",
                       cex.lab = 1, cex.main = 1, cex.axis = 1 ){
     plot ( plaf, obsWSAF, cex = 0.5, xlim = c(0, 1), ylim = c(0, 1),
@@ -300,6 +304,9 @@ plotWSAFvsPLAF <- function ( plaf, obsWSAF, expWSAF = c(),
         cex.lab = cex.lab, cex.main = cex.main, cex.axis = cex.axis)
     if ( length(expWSAF) > 0 ){
         points ( plaf, expWSAF, cex = 0.5, col = "blue")
+    }
+    if ( length(potentialOutliers) > 0 ){
+        points(plaf[potentialOutliers], obsWSAF[potentialOutliers], col="black", pch="x", cex = 2)
     }
 }
 
