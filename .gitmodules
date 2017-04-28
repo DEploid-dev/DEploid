@@ -1,0 +1,3 @@
+[submodule "DEploid.wiki"]
+	path = DEploid.wiki
+	url = https://github.com/mcveanlab/DEploid.wiki.git

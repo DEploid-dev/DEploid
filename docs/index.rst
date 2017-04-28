@@ -17,8 +17,8 @@ DEploid
    input
    output
    example
-   bug-report
-   citation
+   Bug-report
+   Citing-DEploid
 ..    cppdocument
 
 
