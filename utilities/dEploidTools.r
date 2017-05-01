@@ -63,6 +63,8 @@ fun.parse <- function( args ){
     ibdBool = FALSE
     helpBool = FALSE
     arg_i = 1
+    filter.window = 10
+    filter.threshold = 0.995
     while ( arg_i <= length(args) ){
         argv = args[arg_i]
         if ( argv == "-vcf" ){
@@ -92,6 +94,20 @@ fun.parse <- function( args ){
         } else if ( argv == "-ADFieldIndex" ){
             arg_i = fun.local.checkAndIncreaseArgI ( )
             ADFieldIndex = as.numeric(args[arg_i])
+        } else if ( argv == "-filter.threshold" ){
+            arg_i = fun.local.checkAndIncreaseArgI ( )
+            filter.threshold = as.numeric(args[arg_i])
+            # check range
+            if ( filter.threshold < 0 | filter.threshold > 1){
+                stop(paste("filter.threshold out of range [0, 1]:", filter.threshold))
+            }
+        } else if ( argv == "-filter.window" ){
+            arg_i = fun.local.checkAndIncreaseArgI ( )
+            filter.window = as.numeric(args[arg_i])
+            # check range
+            if ( filter.window < 0 ){
+                stop(paste("filter.window cannot be negative:", filter.window))
+            }
         } else if ( argv == "-pdf" ){
             pdfBool = TRUE
         } else if ( argv == "-skip1" ){
@@ -101,7 +117,7 @@ fun.parse <- function( args ){
         } else if ( argv == "-help" ){
             helpBool = TRUE
         } else {
-            cat ("Unknow flag: ", argv, "\n")
+            stop(paste("Unknown flag:", argv))
         }
 
         arg_i = arg_i + 1
@@ -130,7 +146,9 @@ fun.parse <- function( args ){
                     inbreedingBool = inbreedingBool,
                     skip1Bool = skip1Bool,
                     ibdBool = ibdBool,
-                    helpBool = helpBool) )
+                    helpBool = helpBool,
+                    filter.threshold = filter.threshold,
+                    filter.window = filter.window) )
 }
 
 
@@ -235,7 +253,7 @@ fun.getWSAF.corr <- function( obsWSAF, expWSAF, dicLogFileName ){
 }
 
 
-fun.find.more <- function (outliers.idx, window.size = 10){
+fun.find.more <- function (outliers.idx, window.size){
     idx.out = c()
     for ( i in 1:length(outliers.idx)){
         near.outliers.idx = which(((outliers.idx[i] - window.size) < outliers.idx) & (outliers.idx < (outliers.idx[i] + window.size)))
@@ -250,12 +268,12 @@ fun.find.more <- function (outliers.idx, window.size = 10){
 }
 
 
-plot.total.coverage <- function(ref, alt, chroms, cex.lab = 1, cex.main = 1, cex.axis = 1,  threshold){
+plot.total.coverage <- function(ref, alt, chroms, cex.lab = 1, cex.main = 1, cex.axis = 1,  threshold, window.size){
     totalDepth = ref + alt
     x = 1:length(totalDepth)
     tmpQ = quantile(totalDepth, threshold)
     tmpIdx = which((totalDepth > tmpQ ))
-    potentialOutliers = fun.find.more(tmpIdx)
+    potentialOutliers = fun.find.more(tmpIdx, window.size)
 
     chromCol = (as.numeric(chroms) %% 2 )
     chromCol[chromCol==1] = NA
@@ -272,7 +290,7 @@ plot.total.coverage <- function(ref, alt, chroms, cex.lab = 1, cex.main = 1, cex
 }
 
 
-fun.dataExplore <- function (coverage, PLAF, prefix = "", pdfBool, threshold = 0.995) {
+fun.dataExplore <- function (coverage, PLAF, prefix = "", pdfBool, threshold = 0.995, window.size = 10) {
 #    PLAF = plafInfo$PLAF
     ref = coverage$refCount
     alt = coverage$altCount
@@ -286,11 +304,9 @@ fun.dataExplore <- function (coverage, PLAF, prefix = "", pdfBool, threshold = 0
     }
 
     layout(matrix(c(1,1,1,2,3,4), 2, 3, byrow = TRUE))
-
     par(mar = c(5,7,7,4))
-#    par( mfrow = c(1,3) )
 
-    badGuys = plot.total.coverage(ref, alt, coverage$CHROM, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize, threshold)
+    badGuys = plot.total.coverage(ref, alt, coverage$CHROM, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize, threshold, window.size)
 
     if ( length(badGuys) > 0 ){
         CHROM = coverage$CHROM[badGuys]
