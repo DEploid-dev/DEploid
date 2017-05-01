@@ -101,7 +101,7 @@ fun.parse <- function( args ){
         } else if ( argv == "-help" ){
             helpBool = TRUE
         } else {
-            cat ("Unknow flag: ", argv, "\n")
+            stop(paste("Unknown flag:", argv))
         }
 
         arg_i = arg_i + 1
