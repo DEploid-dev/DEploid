@@ -62,10 +62,10 @@ void DEploidIO::wrapUp(){
     // Get End time before writing the log
     this->getTime(false);
 
-    this->writeLog (&std::cout );
+    this->writeLog (&std::cout);
 
     ofstreamExportTmp.open( strExportLog.c_str(), ios::out | ios::app | ios::binary );
-    this->writeLog (&ofstreamExportTmp );
+    this->writeLog (&ofstreamExportTmp);
     ofstreamExportTmp.close();
 }
 
@@ -129,8 +129,8 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         (*writeTo) << setw(19) << " Update Prop: "   << (this->doUpdateProp()  ? "YES":"NO") << "\n";
         (*writeTo) << setw(19) << " Update Single: " << (this->doUpdateSingle()? "YES":"NO") << "\n";
         (*writeTo) << setw(19) << " Update Pair: "   << (this->doUpdatePair()  ? "YES":"NO") << "\n";
+        (*writeTo) << "\n";
     }
-    (*writeTo) << "\n";
     (*writeTo) << "Other parameters:"<< "\n";
     if ( forbidCopyFromSame_ ){ (*writeTo) << " Update pair haplotypes move forbid copying from the same strain!!! \n"; }
     (*writeTo) << setw(20) << " Miss copy prob: "   << this->missCopyProb_ << "\n";
@@ -144,6 +144,14 @@ void DEploidIO::writeLog ( ostream * writeTo ){
                        << ( ( i != (this->kStrain_-1) ) ? " " : "\n" );
         }
     }
+    (*writeTo) << "\n";
+    (*writeTo) << "MCMC diagnostic:"<< "\n";
+    (*writeTo) << setw(19) << " Max_llks: " << maxLLKs_ << "\n";
+    (*writeTo) << setw(19) << " Mean_theta_llks: " << meanThetallks_ << "\n";
+    (*writeTo) << setw(19) << " Mean_llks: " << meanllks_ << "\n";
+    (*writeTo) << setw(19) << " Stdv_llks: " << stdvllks_ << "\n";
+    (*writeTo) << setw(19) << " DIC_by_Dtheta: " << dicByTheta_ << "\n";
+    (*writeTo) << setw(19) << " DIC_by_varD: " << dicByVar_ << "\n";
     (*writeTo) << "\n";
     (*writeTo) << "Run time:\n";
     (*writeTo) << setw(14) << "Start at: "  << startingTime_  ;

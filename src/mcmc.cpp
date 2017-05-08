@@ -174,6 +174,7 @@ void McmcMachinery::initializeExpectedWsaf(){
     assert( this->currentExpectedWsaf_.size() == 0);
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
     assert( this->currentExpectedWsaf_.size() == this->nLoci_ );
+    this->cumExpectedWsaf_ = this->currentExpectedWsaf_;
 }
 
 
@@ -318,6 +319,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
         this->mcmcSample_->siteOfOneSwitchOne[atSiteI] /= (double)this->maxIteration_;
         this->mcmcSample_->siteOfOneMissCopyOne[atSiteI] /= (double)this->maxIteration_;
     }
+
     this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, useIBD);
 
     if ( useIBD == true ){
@@ -328,11 +330,52 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
         this->dEploidIO_->initialHap = this->mcmcSample_->hap;
         this->dEploidIO_->setInitialHapWasGiven(true);
     }
+
+    this->computeDiagnostics();
+
     dout << "###########################################"<< endl;
     dout << "#            MCMC RUN finished            #"<< endl;
     dout << "###########################################"<< endl;
 }
 
+
+void McmcMachinery::computeDiagnostics(){
+    // average cumulate expectedWSAF
+    for ( size_t i = 0; i < this->cumExpectedWsaf_.size(); i++){
+        this->cumExpectedWsaf_[i] /= this->dEploidIO_->nMcmcSample_;
+    }
+    vector <double> tmpLLKs1 = calcLLKs (this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->cumExpectedWsaf_, 0, this->cumExpectedWsaf_.size(), this->dEploidIO_->scalingFactor());
+    this->dEploidIO_->setmeanThetallks( sumOfVec(tmpLLKs1) );
+
+    vector <double> wsaf_vec;
+    for ( size_t i = 0; i < nLoci(); i++){
+        double wsaf = this->dEploidIO_->altCount_[i] / (this->dEploidIO_->refCount_[i] + this->dEploidIO_->altCount_[i] + 0.00000000000001);
+        double adjustedWsaf = wsaf*(1-0.01) + (1-wsaf)*0.01;
+        wsaf_vec.push_back(adjustedWsaf);
+        //llkOfData.push_back( logBetaPdf(adjustedWsaf, this->llkSurf[i][0], this->llkSurf[i][1]));
+    }
+    vector <double> tmpLLKs = calcLLKs (this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, wsaf_vec, 0, wsaf_vec.size(), this->dEploidIO_->scalingFactor());
+    this->dEploidIO_->setmaxLLKs( sumOfVec(tmpLLKs) );
+
+    double sum = std::accumulate(this->mcmcSample_->sumLLKs.begin(), this->mcmcSample_->sumLLKs.end(), 0.0);
+    double mean = sum / this->mcmcSample_->sumLLKs.size();
+    double sq_sum = std::inner_product(this->mcmcSample_->sumLLKs.begin(), this->mcmcSample_->sumLLKs.end(), this->mcmcSample_->sumLLKs.begin(), 0.0);
+    double varLLKs = sq_sum / this->mcmcSample_->sumLLKs.size() - mean * mean;
+    double stdev = std::sqrt(varLLKs);
+    this->dEploidIO_->setmeanllks(mean);
+    this->dEploidIO_->setstdvllks(stdev);
+
+    double dicByVar = (-2*mean) + 4*varLLKs/2;
+    this->dEploidIO_->setdicByVar(dicByVar);
+     //return (  mean(-2*tmpllk) + var(-2*tmpllk)/2 )# D_bar + 1/2 var (D_theta), where D_theta = -2*tmpllk, and D_bar = mean(D_theta)
+
+    double dicWSAFBar = -2 * sumOfVec(tmpLLKs1);
+    double dicByTheta = (-2*mean) + (-2*mean) - dicWSAFBar;
+    this->dEploidIO_->setdicByTheta(dicByTheta);
+    //DIC.WSAF.bar = -2 * sum(thetallk)
+    //return (  mean(-2*tmpllk) + (mean(-2*tmpllk) - DIC.WSAF.bar) ) # D_bar + pD, where pD = D_bar - D_theta, and D_bar = mean(D_theta)
+
+}
 
 vector <double> McmcMachinery::averageProportion(vector < vector <double> > &proportion ){
     assert(proportion.size()>0);
@@ -645,6 +688,11 @@ void McmcMachinery::recordMcmcMachinery(){
     this->mcmcSample_->proportion.push_back(this->currentProp_);
     this->mcmcSample_->sumLLKs.push_back(sumOfVec(this->currentLLks_));
     this->mcmcSample_->moves.push_back(this->eventInt_);
+
+    // Cumulate expectedWSAF for computing the mean expectedWSAF
+    for ( size_t i = 0; i < this->cumExpectedWsaf_.size(); i++){
+        this->cumExpectedWsaf_[i] += this->currentExpectedWsaf_[i];
+    }
 }
 
 

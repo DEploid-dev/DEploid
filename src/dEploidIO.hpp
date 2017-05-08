@@ -159,6 +159,19 @@ class DEploidIO{
     std::vector<std::string> argv_;
     std::vector<std::string>::iterator argv_i;
 
+    // Diagnostics
+    double maxLLKs_;
+    void setmaxLLKs ( const double setTo ){ this->maxLLKs_ = setTo; }
+    double meanThetallks_;
+    void setmeanThetallks ( const double setTo ){ this->meanThetallks_ = setTo; }
+    double meanllks_;
+    void setmeanllks ( const double setTo ){ this->meanllks_ = setTo; }
+    double stdvllks_;
+    void setstdvllks ( const double setTo ){ this->stdvllks_ = setTo; }
+    double dicByTheta_;
+    void setdicByTheta ( const double setTo ){ this->dicByTheta_ = setTo; }
+    double dicByVar_;
+    void setdicByVar ( const double setTo ){ this->dicByVar_ = setTo; }
 
     // Output stream
     string dEploidGitVersion_;

@@ -133,6 +133,7 @@ class McmcMachinery {
     vector <double> currentLLks_;
     vector < vector <double> > currentHap_;
     vector < double > currentExpectedWsaf_;
+    vector < double > cumExpectedWsaf_;
 
   /* Methods */
     void calcMaxIteration( size_t nSample, size_t McmcMachineryRate, double burnIn );
@@ -163,6 +164,7 @@ class McmcMachinery {
     void writeLastFwdProb(bool useIBD);
     void updateReferencePanel(size_t inbreedingPanelSizeSetTo, size_t excludedStrain);
     void initializeUpdateReferencePanel(size_t inbreedingPanelSizeSetTo);
+    void computeDiagnostics();
 
    /* IBD */
     double theta_;
