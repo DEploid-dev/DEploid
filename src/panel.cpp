@@ -50,7 +50,7 @@ void Panel::checkForExceptions( size_t nLoci, string panelFileName ){
 }
 
 
-void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame ){
+void Panel::computeRecombProbs( double averageCentimorganDistance, double G, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame ){
     assert(pRec_.size() == 0 );
     assert(pRecEachHap_.size() == 0 );
     assert(pNoRec_.size() == 0 );
@@ -66,7 +66,8 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double Ne, bo
     for ( size_t i = 0; i < this->position_.size(); i++){
         for ( size_t j = 1; j < this->position_[i].size(); j++){
             geneticDistance = (double)(this->position_[i][j] - this->position_[i][j-1])/averageMorganDistance ;
-            rho = geneticDistance * 2 * Ne;
+            //rho = geneticDistance * 2 * Ne;
+            rho = geneticDistance * G;
 
             double pRecTmp = ( useConstRecomb ) ? constRecombProb : 1.0 - exp(-rho);
             this->pRec_.push_back( pRecTmp );
