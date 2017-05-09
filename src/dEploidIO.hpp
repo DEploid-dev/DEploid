@@ -303,6 +303,9 @@ class DEploidIO{
     double parameterG_;
     void setParameterG ( const double setTo ) { this->parameterG_ = setTo; }
     double parameterG() const { return this->parameterG_; }
+    double parameterSigma_;
+    void setParameterSigma ( const double setTo ) { this->parameterSigma_ = setTo; }
+    double parameterSigma() const { return this->parameterSigma_; }
 
     size_t nLoci() const { return this->nLoci_; }
     void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}
