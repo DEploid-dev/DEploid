@@ -54,7 +54,7 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, McmcSample *mcmcSample, Rando
         this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
     }
     this->MN_LOG_TITRE = 0.0;
-    this->SD_LOG_TITRE = 3.0;
+    this->SD_LOG_TITRE = this->dEploidIO_->parameterSigma();
     this->PROP_SCALE = 40.0;
 
     stdNorm_ = new StandNormalRandomSample(this->seed_);

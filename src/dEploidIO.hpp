@@ -152,7 +152,7 @@ class DEploidIO{
     // Parameters
     double missCopyProb_;
     double averageCentimorganDistance_;// = 15000.0,
-    double Ne_;// = 10.0
+    //double Ne_;// = 10.0
     double constRecombProb_;
     double scalingFactor_; // 100.0
 
@@ -300,7 +300,12 @@ class DEploidIO{
     // Panel related
     bool usePanel() const { return usePanel_; }
     string panelFileName_;
-
+    double parameterG_;
+    void setParameterG ( const double setTo ) { this->parameterG_ = setTo; }
+    double parameterG() const { return this->parameterG_; }
+    double parameterSigma_;
+    void setParameterSigma ( const double setTo ) { this->parameterSigma_ = setTo; }
+    double parameterSigma() const { return this->parameterSigma_; }
 
     size_t nLoci() const { return this->nLoci_; }
     void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}
@@ -313,7 +318,7 @@ class DEploidIO{
     bool kStrainWasSetByProp() const { return this->kStrainWasSetByProp_; }
     size_t nMcmcSample() const { return this->nMcmcSample_; }
     double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
-    double Ne() const { return this->Ne_; }
+    //double Ne() const { return this->Ne_; }
     double scalingFactor() const {return this->scalingFactor_; }
     void setScalingFactor ( const double setTo ){ this->scalingFactor_ = setTo; }
     double constRecombProb() const { return this->constRecombProb_; }

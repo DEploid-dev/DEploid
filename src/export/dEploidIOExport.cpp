@@ -135,7 +135,8 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     if ( forbidCopyFromSame_ ){ (*writeTo) << " Update pair haplotypes move forbid copying from the same strain!!! \n"; }
     (*writeTo) << setw(20) << " Miss copy prob: "   << this->missCopyProb_ << "\n";
     (*writeTo) << setw(20) << " Avrg Cent Morgan: " << this->averageCentimorganDistance_ << "\n";
-    (*writeTo) << setw(20) << " Ne: "               << this->Ne_ << "\n";
+    (*writeTo) << setw(20) << " G: "               << this->parameterG() << "\n";
+    (*writeTo) << setw(20) << " sigma: "               << this->parameterSigma() << "\n";
     (*writeTo) << setw(20) << " ScalingFactor: "    << this->scalingFactor() << "\n";
     if ( this->initialPropWasGiven() ){
         (*writeTo) << setw(20) << " Initial prob: " ;

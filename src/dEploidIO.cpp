@@ -120,8 +120,9 @@ void DEploidIO::init() {
     this->setForbidCopyFromSame( false );
     this->constRecombProb_ = 1.0;
     this->averageCentimorganDistance_ = 15000.0;
-    this->Ne_ = 10.0;
     this->setScalingFactor(100.0);
+    this->setParameterG(20.0);
+    this->setParameterSigma(5.5);
 
     this->setUseVcf(false);
     this->vcfReaderPtr_ = NULL;
@@ -377,6 +378,10 @@ void DEploidIO::parse (){
             }
         } else if ( *argv_i == "-c" ) {
             this->scalingFactor_ = readNextInput<double>() ;
+        } else if ( *argv_i == "-G" ) {
+            this->setParameterG(readNextInput<double>());
+        } else if ( *argv_i == "-sigma" ) {
+            this->setParameterSigma(readNextInput<double>());
         } else if ( *argv_i == "-recomb" ) {
             this->constRecombProb_ = readNextInput<double>();
             this->useConstRecomb_ = true;
@@ -674,7 +679,7 @@ void DEploidIO::readPanel(){
         panel->findAndKeepMarkers( this->excludedMarkers );
     }
 
-    panel->computeRecombProbs( this->averageCentimorganDistance(), this->Ne(), this->useConstRecomb(), this->constRecombProb(), this->forbidCopyFromSame() );
+    panel->computeRecombProbs( this->averageCentimorganDistance(), this->parameterG(), this->useConstRecomb(), this->constRecombProb(), this->forbidCopyFromSame() );
     panel->checkForExceptions( this->nLoci(), this->panelFileName_ );
 }
 

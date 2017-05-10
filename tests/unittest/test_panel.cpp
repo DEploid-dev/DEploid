@@ -40,7 +40,7 @@ class TestPanel : public CppUnit::TestCase {
         // in R: panel = read.csv("clonalPanel.csv", header = T)
         this->panel1_ = new Panel();
         this->panel1_->readFromFile(panelName_.c_str() );
-        this->panel1_->computeRecombProbs( 15000.0, 10.0, false, 0, false); // forbid copy from same = false by default!
+        this->panel1_->computeRecombProbs( 15000.0, 20.0, false, 0, false); // forbid copy from same = false by default!
 
         this->panel2_ = new Panel();
         this->panel2_->readFromFile( panelName_.c_str() );
@@ -304,7 +304,7 @@ class TestPanel : public CppUnit::TestCase {
 
 
     void checkForbid(){
-        this->panel2_->computeRecombProbs( 15000.0, 10.0, false, 0, true); // forbid copy from same = false by default!
+        this->panel2_->computeRecombProbs( 15000.0, 20.0, false, 0, true); // forbid copy from same = false by default!
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.016725220801029/4.0, this->panel2_->pRecEachHap_[0], epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.000493211664453042/4.0, this->panel2_->pRecEachHap_[1], epsilon3);
@@ -336,7 +336,7 @@ class TestPanel : public CppUnit::TestCase {
 
 
     void checkRecomb1(){
-        this->panel2_->computeRecombProbs( 15000.0, 10.0, true, 1, false); // forbid copy from same = false by default!
+        this->panel2_->computeRecombProbs( 15000.0, 20.0, true, 1, false); // forbid copy from same = false by default!
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel2_->pRecEachHap_[0], epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, this->panel2_->pRecEachHap_[1], epsilon3);
@@ -462,7 +462,7 @@ class TestPanel : public CppUnit::TestCase {
     }
 
     void checkExamplePanel(){
-        CPPUNIT_ASSERT_NO_THROW ( this->panel3_->computeRecombProbs( 15000.0, 10.0, false, 0, false) ); // forbid copy from same = false by default!
+        CPPUNIT_ASSERT_NO_THROW ( this->panel3_->computeRecombProbs( 15000.0, 20.0, false, 0, false) ); // forbid copy from same = false by default!
         CPPUNIT_ASSERT_NO_THROW ( this->panel3_->checkForExceptions(7, "Panel 3") );
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.016725220801029, this->panel3_->pRec_[0], epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.000493211664453042, this->panel3_->pRec_[1], epsilon3);
@@ -499,7 +499,7 @@ class TestPanel : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL((1-0.00151884538507896)*(1-0.00151884538507896), this->panel3_->pNoRecNoRec_[4], epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, this->panel3_->pNoRecNoRec_[6], epsilon3);
 
-        CPPUNIT_ASSERT_NO_THROW ( this->panel4_->computeRecombProbs( 15000.0, 10.0, false, 0, false) ); // forbid copy from same = false by default!
+        CPPUNIT_ASSERT_NO_THROW ( this->panel4_->computeRecombProbs( 15000.0, 20.0, false, 0, false) ); // forbid copy from same = false by default!
         CPPUNIT_ASSERT_NO_THROW ( this->panel4_->checkForExceptions(7, "Panel 4") );
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, this->panel4_->pRec_[0], epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.000493211664453042, this->panel4_->pRec_[1], epsilon3);

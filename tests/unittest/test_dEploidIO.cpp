@@ -68,7 +68,8 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL( dEploidIOptr->forbidCopyFromSame() , false );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( dEploidIOptr->constRecombProb_ , 1.0, epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL( dEploidIOptr->averageCentimorganDistance_, 15000.0, epsilon3 );
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( dEploidIOptr->Ne_ , 10.0, epsilon3 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( dEploidIOptr->parameterG() , 20.0, epsilon3 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( dEploidIOptr->parameterSigma() , 5.5, epsilon3 );
         CPPUNIT_ASSERT_EQUAL( dEploidIOptr->doExportVcf(), false );
         CPPUNIT_ASSERT_EQUAL( dEploidIOptr->doPainting(), false);
         delete dEploidIOptr;
