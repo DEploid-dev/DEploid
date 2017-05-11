@@ -92,6 +92,7 @@ void McmcMachinery::initializeMcmcChain(bool useIBD){
     this->initializeProp();
     this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
     this->currentLLks_ = calcLLKs( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->currentExpectedWsaf_ , 0, this->currentExpectedWsaf_.size(), this->dEploidIO_->scalingFactor());
+    this->acceptUpdate = 0;
 
     if ( this->dEploidIO_->doAllowInbreeding() == true ){
         this->initializeUpdateReferencePanel(this->panel_->truePanelSize()+kStrain_-1);
@@ -340,6 +341,9 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
 
 
 void McmcMachinery::computeDiagnostics(){
+    //clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
+    this->dEploidIO_->setacceptRatio(acceptUpdate / (1.0*this->maxIteration_));
+
     // average cumulate expectedWSAF
     for ( size_t i = 0; i < this->cumExpectedWsaf_.size(); i++){
         this->cumExpectedWsaf_[i] /= this->dEploidIO_->nMcmcSample_;
@@ -476,7 +480,6 @@ vector <double> McmcMachinery::computeStatePrior( double theta ){
 
 
 void McmcMachinery::initializeIbdEssentials(){
-    acceptUpdate = 0;
     // initialize haplotype prior
     this->hprior.buildHprior(this->kStrain(), this->dEploidIO_->plaf_);
     this->hprior.transposePriorProbs();
@@ -727,6 +730,7 @@ void McmcMachinery::updateProportion(){
     }
 
     dout << "(successed) " << endl;
+    this->acceptUpdate++;
 
     this->currentExpectedWsaf_ = tmpExpecedWsaf;
     this->currentLLks_ = tmpLLKs;
