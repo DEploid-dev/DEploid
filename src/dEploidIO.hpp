@@ -172,6 +172,8 @@ class DEploidIO{
     void setdicByTheta ( const double setTo ){ this->dicByTheta_ = setTo; }
     double dicByVar_;
     void setdicByVar ( const double setTo ){ this->dicByVar_ = setTo; }
+    double acceptRatio_;
+    void setacceptRatio ( const double setTo ){ this->acceptRatio_ = setTo; }
 
     // Output stream
     string dEploidGitVersion_;
