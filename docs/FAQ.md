@@ -13,7 +13,7 @@ utilities/dataExplore.r -vcf data/exampleData/PG0415-C.eg.vcf.gz \
 
 ![PG0415_data](_static/PG0415-CaltVsRefAndWSAFvsPLAF.png "PG0415-C data explore")
 
-We observe a small number of heterozygous sites with high coverage, which can potentially mislead our model to over-fit the data with additional strains
+We observe a small number of heterozygous sites with high coverage (marked as crosses above), which can potentially mislead our model to over-fit the data with additional strains.
 
 ```bash
 ./dEploid -vcf data/exampleData/PG0415-C.eg.vcf.gz \
@@ -28,8 +28,7 @@ utilities/interpretDEploid.r -vcf data/exampleData/PG0415-C.eg.vcf.gz \
 ```
 ![PG0415_noFilter](_static/PG0415-CNopanel.interpretDEploidFigure.1.png "PG0415-C deconvolution without filtering")
 
-
-After filtering,
+The data exploration utility `utilities/dataExplore.r` identifies a list of potential outliers. After filtering,
 
 ```bash
 ./dEploid -vcf data/exampleData/PG0415-C.eg.vcf.gz \
