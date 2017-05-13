@@ -17,6 +17,7 @@ DEploid
    input
    output
    example
+   FAQ
    Bug-report
    Citing-DEploid
 ..    cppdocument
