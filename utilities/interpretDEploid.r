@@ -40,6 +40,10 @@ fun.interpretDEploid.2 (myCoverageInfo, myInput$dEploidPrefix, myInput$outPrefix
 
 fun.interpretDEploid.3 (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool, myInput$inbreedingBool)
 
+if (myInput$ringBool == TRUE){
+    fun.interpretDEploid.3.ring (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool, myInput$inbreedingBool)
+}
+
 fun.interpretDEploid.4 (paste(myInput$dEploidPrefix, sep=""), myInput$outPrefix, myInput$pdfBool)
 
 if (myInput$ibdBool == TRUE){

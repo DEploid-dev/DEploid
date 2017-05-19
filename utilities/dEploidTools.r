@@ -62,6 +62,7 @@ fun.parse <- function( args ){
     skip1Bool = FALSE
     ibdBool = FALSE
     helpBool = FALSE
+    ringBool = FALSE
     arg_i = 1
     filter.window = 10
     filter.threshold = 0.995
@@ -116,6 +117,8 @@ fun.parse <- function( args ){
             ibdBool = TRUE
         } else if ( argv == "-help" ){
             helpBool = TRUE
+        } else if ( argv == "-ring" ){
+            ringBool = TRUE
         } else {
             stop(paste("Unknown flag:", argv))
         }
@@ -148,7 +151,8 @@ fun.parse <- function( args ){
                     ibdBool = ibdBool,
                     helpBool = helpBool,
                     filter.threshold = filter.threshold,
-                    filter.window = filter.window) )
+                    filter.window = filter.window,
+                    ringBool = ringBool) )
 }
 
 
@@ -487,6 +491,71 @@ fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "", pdfBool, inbreedi
         }
         strainI = strainI+1
     }
+}
+
+
+fun.interpretDEploid.3.ring <- function ( inPrefix, outPrefix = "", pdfBool, inbreeding = FALSE  ){
+    if ( pdfBool == TRUE ){
+        cexSize = 3
+        pdf(paste(outPrefix, ".ring.pdf", sep = ""), width = 45, height = 45)
+    } else {
+        cexSize = 2.5
+        png(paste(outPrefix, ".ring.png", sep = ""), width = 3500, height = 3500)
+    }
+
+    prop = read.table(paste(inPrefix, ".prop", sep=""), header=F)
+    lastProp = prop[dim(prop)[1],]
+
+    orderedProp = sort.int(as.numeric(lastProp), index.return=T, decreasing=T)
+    orderedProp.p = orderedProp$x
+    myOrder = orderedProp$ix-1
+
+    myOrder = myOrder[orderedProp.p>0.01]
+    orderedProp.p = orderedProp.p[orderedProp.p>0.01]
+
+    first = myOrder[1]
+    idx = 1
+    for ( strain in myOrder ){
+        readFrom = paste(inPrefix, ".single", strain, sep = "")
+        cat("Loading from ", readFrom, " ")
+        probs = read.table(readFrom, header=T)
+
+        if ( strain == first ){
+            circlize::circos.initialize(factor=probs$CHROM, xlim = cbind(1, table(probs$CHROM)))
+            circlize::circos.trackPlotRegion(factor = probs$CHROM, ylim=c(0,1), track.height = 0.1, bg.border = NA,
+                panel.fun=function(x,y){
+                    name = circlize::get.cell.meta.data("sector.index")
+                    xlim = circlize::get.cell.meta.data("xlim")
+                    ylim = circlize::get.cell.meta.data("ylim")
+                    circlize::circos.text(mean(xlim), 0.9, name, cex = 4, facing = "inside")
+                    circlize::circos.axis(h = "bottom", labels.cex=3, direction = "outside", major.at=xlim, minor.ticks=1, labels.away.percentage = 0.15)
+                }
+            )
+        }
+
+        circlize::circos.trackPlotRegion(factor = probs$CHROM, ylim=c(0,1), track.height = 0.4*orderedProp.p[idx],
+            panel.fun=function(x,y){
+                name = circlize::get.cell.meta.data("sector.index")
+                xlim = circlize::get.cell.meta.data("xlim")
+                ylim = circlize::get.cell.meta.data("ylim")
+                cat(".")
+                chromRegion = probs[probs$CHROM==name,]
+                nSnp = dim(chromRegion)[1]
+                nhap = dim(chromRegion)[2] - 2
+                rainbowColorBin <- 16
+                rainbowColors = rainbow(rainbowColorBin)
+                cumProb = rep(0, nSnp)
+                for ( i in 1:nhap ){
+                    circlize::circos.rect(0:(nSnp-1), cumProb, 1:nSnp, cumProb + chromRegion[,i+2], col=rainbowColors[i], border=NA)
+                    cumProb = cumProb + chromRegion[,i+2]
+                }
+            }
+        )
+        cat("\n")
+        idx = idx+1
+    }
+    circlize::circos.clear();
+    dev.off()
 }
 
 
