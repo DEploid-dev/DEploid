@@ -15,6 +15,7 @@ if (!exists("dEploidRootDir")){
     print("dEploidRootDir undefined, try make dEploid again!")
 }
 
+library(methods)
 source(paste(dEploidRootDir, "/utilities/dEploidTools.r", sep=""))
 source(paste(dEploidRootDir, "/utilities/DEploidR.R", sep=""))
 
@@ -41,6 +42,7 @@ fun.interpretDEploid.2 (myCoverageInfo, myInput$dEploidPrefix, myInput$outPrefix
 fun.interpretDEploid.3 (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool, myInput$inbreedingBool)
 
 if (myInput$ringBool == TRUE){
+    fun.interpretDEploid.2 (myCoverageInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool, myInput$ringBool)
     fun.interpretDEploid.3.ring (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool, myInput$inbreedingBool)
 }
 

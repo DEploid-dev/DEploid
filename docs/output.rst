@@ -43,10 +43,10 @@ Example 1
     $ ./dEploid -vcf data/exampleData/PG0390-C.eg.vcf.gz \
     -plaf data/exampleData/labStrains.eg.PLAF.txt \
     -noPanel -o PG0390-CNopanel -seed 1
-    $ R --slave "--args -vcf data/exampleData/PG0390-C.eg.vcf.gz
-    -plaf data/exampleData/labStrains.eg.PLAF.txt
-    -dEprefix PG0390-CNopanel
-    -o PG0390-CNopanel " < utilities/interpretDEploid.r
+    $ utilities/interpretDEploid.r -vcf data/exampleData/PG0390-C.eg.vcf.gz \
+    -plaf data/exampleData/labStrains.eg.PLAF.txt \
+    -dEprefix PG0390-CNopanel \
+    -o PG0390-CNopanel -ring
 
 .. image:: _static/PG0390-CNopanel.interpretDEploidFigure.1.png
    :width: 1024px

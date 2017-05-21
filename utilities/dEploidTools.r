@@ -382,6 +382,40 @@ fun.interpretDEploid.1 <- function (coverage, PLAF, dEploidPrefix, prefix = "", 
 }
 
 
+plot.wsaf.vs.index.ring <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), exclude, titlePrefix = "" ){
+
+    fun.ring.plot.initialize (coverage$CHROM)
+
+    chromCol = (as.numeric(1:length(levels(coverage$CHROM)) %% 2 ))
+    chromCol[chromCol==1] = NA
+    chromCol[chromCol==0] = 8
+
+    circlize::circos.trackPlotRegion(factor = coverage$CHROM, ylim=c(0,1), track.height = 0.18, bg.col = chromCol, panel.fun=function(x,y){
+        name = circlize::get.cell.meta.data("sector.index")
+        xlim = circlize::get.cell.meta.data("xlim")
+        ylim = circlize::get.cell.meta.data("ylim")
+        chromRegion = coverage[coverage$CHROM==name,]
+
+        ref = chromRegion$refCount
+        alt = chromRegion$altCount
+        obsWSAF = computeObsWSAF ( alt, ref )
+
+        nSnp = dim(chromRegion)[1]
+
+        circlize::circos.points(1:length(obsWSAF), obsWSAF, col="red", pch = 16)
+        if (exclude$excludeBool){
+            tmpCoveragePos = coverage$POS[coverage$CHROM==name]
+            tmpExcludePos = exclude$excludeTable$POS[exclude$excludeTable$CHROM==name]
+            excludeLogic = ( tmpCoveragePos %in% tmpExcludePos )
+            plotIndex = which(!excludeLogic)
+        } else {
+            plotIndex = c(1:nSnp)
+        }
+        circlize::circos.points(plotIndex, expWSAF[expWSAFChrom == name], col="blue", pch = 16)
+    })
+}
+
+
 plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), exclude, titlePrefix = "" ){
     chromList = levels(coverage$CHROM)
     ref = coverage$refCount
@@ -417,7 +451,7 @@ plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), ex
 }
 
 
-fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclude, pdfBool ){
+fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclude, pdfBool, ringBool = FALSE ){
     dEploidOutput = fun.dEploidPrefix ( dEploidPrefix )
     tmpProp = read.table(dEploidOutput$propFileName, header=F)
     prop = as.numeric(tmpProp[dim(tmpProp)[1],])
@@ -426,20 +460,34 @@ fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclu
     hap = as.matrix(hapInfo[,-c(1,2)])
     expWSAF = hap %*%prop
 
-    if ( pdfBool == TRUE ){
-        cexSize = 3
-        pdf ( paste ( prefix, ".interpretDEploidFigure.2.pdf", sep = "" ), width = 45, height = 30)
-    } else {
-        cexSize = 2.5
-        png ( paste ( prefix, ".interpretDEploidFigure.2.png", sep= ""), width = 3500, height = 2000)
-    }
-    chromName = levels(coverage$CHROM)
-    ncol = ceiling(length(chromName)/2)
-    par(mar = c(5,7,7,4))
-    par(mfrow = c(ncol,length(chromName)/ncol))
-    plot.wsaf.vs.index ( coverage, expWSAF, hapChrom, exclude )
-    dev.off()
+    if ( ringBool ){
+        if ( pdfBool == TRUE ){
+            cexSize = 3
+            pdf ( paste ( prefix, ".interpretDEploidFigure.2.ring.pdf", sep = "" ), width = 45, height = 45)
+        } else {
+            cexSize = 2.5
+            png ( paste ( prefix, ".interpretDEploidFigure.2.ring.png", sep= ""), width = 3500, height = 3500)
+        }
+        plot.wsaf.vs.index.ring ( coverage, expWSAF, hapChrom, exclude )
 
+        circlize::circos.clear();
+        dev.off()
+
+    } else {
+        if ( pdfBool == TRUE ){
+            cexSize = 3
+            pdf ( paste ( prefix, ".interpretDEploidFigure.2.pdf", sep = "" ), width = 45, height = 30)
+        } else {
+            cexSize = 2.5
+            png ( paste ( prefix, ".interpretDEploidFigure.2.png", sep= ""), width = 3500, height = 2000)
+        }
+        chromName = levels(coverage$CHROM)
+        ncol = ceiling(length(chromName)/2)
+        par(mar = c(5,7,7,4))
+        par(mfrow = c(ncol,length(chromName)/ncol))
+        plot.wsaf.vs.index ( coverage, expWSAF, hapChrom, exclude )
+        dev.off()
+    }
 }
 
 
@@ -517,20 +565,15 @@ fun.interpretDEploid.3.ring <- function ( inPrefix, outPrefix = "", pdfBool, inb
     idx = 1
     for ( strain in myOrder ){
         readFrom = paste(inPrefix, ".single", strain, sep = "")
+        if ( !file.exists(readFrom) ){
+            next
+        }
+
         cat("Loading from ", readFrom, " ")
         probs = read.table(readFrom, header=T)
 
         if ( strain == first ){
-            circlize::circos.initialize(factor=probs$CHROM, xlim = cbind(1, table(probs$CHROM)))
-            circlize::circos.trackPlotRegion(factor = probs$CHROM, ylim=c(0,1), track.height = 0.1, bg.border = NA,
-                panel.fun=function(x,y){
-                    name = circlize::get.cell.meta.data("sector.index")
-                    xlim = circlize::get.cell.meta.data("xlim")
-                    ylim = circlize::get.cell.meta.data("ylim")
-                    circlize::circos.text(mean(xlim), 0.9, name, cex = 4, facing = "inside")
-                    circlize::circos.axis(h = "bottom", labels.cex=3, direction = "outside", major.at=xlim, minor.ticks=1, labels.away.percentage = 0.15)
-                }
-            )
+            fun.ring.plot.initialize(probs$CHROM)
         }
 
         circlize::circos.trackPlotRegion(factor = probs$CHROM, ylim=c(0,1), track.height = 0.4*orderedProp.p[idx],
@@ -617,3 +660,16 @@ fun.interpretDEploid.4 <- function(inPrefix, outPrefix = "", pdfBool){
 }
 
 
+fun.ring.plot.initialize <- function(chrom, name.suffix = ""){
+    circlize::circos.initialize(factor=chrom, xlim = cbind(1, table(chrom)))
+    circlize::circos.trackPlotRegion(factor = chrom, ylim=c(0,1), track.height = 0.1, bg.border = NA,
+        panel.fun=function(x,y){
+            name = circlize::get.cell.meta.data("sector.index")
+            xlim = circlize::get.cell.meta.data("xlim")
+            ylim = circlize::get.cell.meta.data("ylim")
+            circlize::circos.text(mean(xlim), 0.9, paste(name, name.suffix), cex = 4, facing = "inside")
+            circlize::circos.axis(h = "bottom", labels.cex=3, direction = "outside", major.at=xlim, minor.ticks=1, labels.away.percentage = 0.15)
+        }
+    )
+
+}
