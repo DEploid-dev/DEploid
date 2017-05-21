@@ -44,8 +44,6 @@ if (myInput$ringBool == TRUE){
     fun.interpretDEploid.3.ring (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool, myInput$inbreedingBool)
 }
 
-fun.interpretDEploid.4 (paste(myInput$dEploidPrefix, sep=""), myInput$outPrefix, myInput$pdfBool)
-
 if (myInput$ibdBool == TRUE){
     if ( myInput$skip1Bool == FALSE ){
         fun.interpretDEploid.1 (myCoverageInfo, myPlafInfo, paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myExcludeInfo, myInput$pdfBool)
