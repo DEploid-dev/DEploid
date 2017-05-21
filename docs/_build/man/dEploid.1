@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "DEPLOID" "1" "April 28, 2017" "v0.4-beta" "DEploid"
+.TH "DEPLOID" "1" "May 22, 2017" "v0.5-beta" "DEploid"
 .SH NAME
 dEploid \- 
 .
@@ -489,9 +489,9 @@ Use our data exploration tools to investigate the data.
 .sp
 .nf
 .ft C
-$ R \-\-slave "\-\-args \-vcf data/exampleData/PG0390\-C.eg.vcf.gz
- \-plaf data/exampleData/labStrains.eg.PLAF.txt
- \-o PG0390\-C " < utilities/dataExplore.r
+$ utilities/dataExplore.r \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
+ \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+ \-o PG0390\-C
 .ft P
 .fi
 .UNINDENT
@@ -500,9 +500,11 @@ $ R \-\-slave "\-\-args \-vcf data/exampleData/PG0390\-C.eg.vcf.gz
 [image]
 .INDENT 0.0
 .IP \(bu 2
+Figure on the top plot total allele counts across all markers. We use the threshold (red line) to identify markers with extremely high allele counts. Red crosses indicate markers that are filtered out.
+.IP \(bu 2
 Figure on the left plots the alternative allele count against the reference allele count. As \fIP. falciparum\fP genomes are haploid, in clonal samples, one woule expect to see either alternative or reference allele at any sites. Heterozygous sites are indications of mixed infection.
 .IP \(bu 2
-Figure in the middle is the histogram of the allele frequency within sample.
+Figure in the middle is the histogram of the allele frequency within sample. Note that we exclude markers with WSAF strictly equal to 0s and 1s in the histogram.
 .IP \(bu 2
 Figure on the right show allele frequency within sample, compare against the population average.
 .UNINDENT
@@ -540,10 +542,10 @@ When flag \fB\-exportPostProb\fP is turned on, posterior probabilities of the fi
 $ ./dEploid \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
 \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
 \-noPanel \-o PG0390\-CNopanel \-seed 1
-$ R \-\-slave "\-\-args \-vcf data/exampleData/PG0390\-C.eg.vcf.gz
-\-plaf data/exampleData/labStrains.eg.PLAF.txt
-\-dEprefix PG0390\-CNopanel
-\-o PG0390\-CNopanel " < utilities/interpretDEploid.r
+$ utilities/interpretDEploid.r \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
+\-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+\-dEprefix PG0390\-CNopanel \e
+\-o PG0390\-CNopanel \-ring
 .ft P
 .fi
 .UNINDENT
@@ -582,19 +584,15 @@ $ ./dEploid \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
 \-o PG0390\-CPanel \e
 \-painting PG0390\-CPanel.hap \e
 \-initialP 0.8 0 0.2 \-k 3
-$ R \-\-slave "\-\-args \-vcf data/exampleData/PG0390\-C.eg.vcf.gz
-\-plaf data/exampleData/labStrains.eg.PLAF.txt
-\-dEprefix PG0390\-CPanel
-\-o PG0390\-CPanel " < utilities/interpretDEploid.r
+$ utilities/interpretDEploid.r \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
+\-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+\-dEprefix PG0390\-CPanel \e
+\-o PG0390\-CPanel \-ring
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
-[image: PG0390fwdBwd0]
-[image]
-[image: PG0390fwdBwd1]
-[image]
-[image: PG0390fwdBwd2]
+[image: PG0390fwdBwdRing]
 [image]
 .SS Example 3
 .sp
@@ -628,23 +626,17 @@ $ ./dEploid \-ref data/exampleData/PD0577\-C_ref.trim.txt \e
 \-o PD0577\-CPanel \e
 \-painting PD0577\-CPanel.hap \e
 \-k 3 \-inbreeding \-initialP 0.25 0.5 0.25
-$ R \-\-slave "\-\-args \-ref data/exampleData/PD0577\-C_ref.trim.txt
-\-alt data/exampleData/PD0577\-C_alt.trim.txt
-\-plaf data/exampleData/asia\-1_PLAF.trim.txt
+$ utilities/interpretDEploid.r \-ref data/exampleData/PD0577\-C_ref.trim.txt \e
+\-alt data/exampleData/PD0577\-C_alt.trim.txt \e
+\-plaf data/exampleData/asia\-1_PLAF.trim.txt \e
 \-o PD0577\-CPanel \e
-\-dEprefix PD0577\-CPanel
-\-inbreeding" < utilities/interpretDEploid.r
+\-dEprefix PD0577\-CPanel \e
+\-inbreeding \-ring
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
-[image: PD0577wsaf]
-[image]
-[image: PD0577fwdBwd0inbreeding]
-[image]
-[image: PD0577fwdBwd1inbreeding]
-[image]
-[image: PD0577fwdBwd2inbreeding]
+[image: PD0577inbreeding]
 [image]
 .SH EXAMPLE
 .INDENT 0.0
@@ -654,6 +646,97 @@ $ R \-\-slave "\-\-args \-ref data/exampleData/PD0577\-C_ref.trim.txt
 Full example of working pipeline will be provided with the \fIPf3k\fP pilot paper.
 .UNINDENT
 .UNINDENT
+.SH FREQUENTLY ASKED QUESTIONS
+.SS Data filtering
+.sp
+Data filtering is an important step for deconvolution.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+utilities/dataExplore.r \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-o PG0415\-C
+
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+[image: PG0415_data]
+[image]
+
+.sp
+We observe a small number of heterozygous sites with high coverage (marked as crosses above), which can potentially mislead our model to over\-fit the data with additional strains.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+\&./dEploid \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-noPanel \-o PG0415\-CNopanel \-seed 2
+
+initialProp=$( cat PG0415\-CNopanel.prop | tail \-1 | sed \-e "s/\et/ /g" )
+\&./dEploid \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-panel data/exampleData/labStrains.eg.panel.txt \e
+    \-o PG0415\-CNopanel \e
+    \-initialP ${initialProp} \e
+    \-painting PG0415\-CNopanel.hap
+
+utilities/interpretDEploid.r \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-dEprefix PG0415\-CNopanel \e
+    \-o PG0415\-CNopanel \e
+    \-ring
+
+
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+[image: PG0415_noFilter]
+[image]
+
+.sp
+The data exploration utility \fButilities/dataExplore.r\fP identifies a list of potential outliers. After filtering,
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+\&./dEploid \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-noPanel \-o PG0415\-CNopanel.filtered \-seed 2 \e
+    \-exclude PG0415\-CPotentialOutliers.txt
+
+initialProp=$( cat PG0415\-CNopanel.filtered.prop | tail \-1 | sed \-e "s/\et/ /g" )
+\&./dEploid \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-panel data/exampleData/labStrains.eg.panel.txt \e
+    \-exclude PG0415\-CPotentialOutliers.txt \e
+    \-o PG0415\-CNopanel.filtered \e
+    \-initialP ${initialProp} \e
+    \-painting PG0415\-CNopanel.filtered.hap
+
+utilities/interpretDEploid.r \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-dEprefix PG0415\-CNopanel.filtered \e
+    \-o PG0415\-CNopanel.filtered \e
+    \-exclude PG0415\-CPotentialOutliers.txt \e
+    \-ring
+
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+[image: PG0415_filtered]
+[image]
+
 .SH REPORTING BUGS
 .sp
 If you encounter any problem when using \fBdEploid\fP, please file a short bug report by using the \fI\%issue tracker\fP
