@@ -125,7 +125,7 @@ void DEploidIO::init() {
     this->averageCentimorganDistance_ = 15000.0;
     this->setScalingFactor(100.0);
     this->setParameterG(20.0);
-    this->setParameterSigma(5.5);
+    this->setParameterSigma(5.0);
 
     this->setUseVcf(false);
     this->vcfReaderPtr_ = NULL;
