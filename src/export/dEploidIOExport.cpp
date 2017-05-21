@@ -45,7 +45,7 @@ void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample, bool useIBD){
         this->finalSiteOfOneSwitchOne = mcmcSample->currentsiteOfOneSwitchOne;
         this->finalSiteOfOneMissCopyOne = mcmcSample->currentsiteOfOneMissCopyOne;
 
-        this->writeEventCount( );
+        //this->writeEventCount( );
     } else {
         this->IBDpathChangeAt = mcmcSample->IBDpathChangeAt;
         this->finalIBDpathChangeAt = mcmcSample->currentIBDpathChangeAt;
