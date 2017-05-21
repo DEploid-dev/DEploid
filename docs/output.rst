@@ -82,22 +82,14 @@ Example 2
     -o PG0390-CPanel \
     -painting PG0390-CPanel.hap \
     -initialP 0.8 0 0.2 -k 3
-    $ R --slave "--args -vcf data/exampleData/PG0390-C.eg.vcf.gz
-    -plaf data/exampleData/labStrains.eg.PLAF.txt
-    -dEprefix PG0390-CPanel
-    -o PG0390-CPanel " < utilities/interpretDEploid.r
+    $ utilities/interpretDEploid.r -vcf data/exampleData/PG0390-C.eg.vcf.gz \
+    -plaf data/exampleData/labStrains.eg.PLAF.txt \
+    -dEprefix PG0390-CPanel \
+    -o PG0390-CPanel -ring
 
-.. image:: _static/PG0390-CPanel.single0.png
+.. image:: _static/PG0390-CPanel.ring.png
    :width: 1024px
-   :alt: PG0390fwdBwd0
-
-.. image:: _static/PG0390-CPanel.single1.png
-   :width: 1024px
-   :alt: PG0390fwdBwd1
-
-.. image:: _static/PG0390-CPanel.single2.png
-   :width: 1024px
-   :alt: PG0390fwdBwd2
+   :alt: PG0390fwdBwdRing
 
 Example 3
 *********
