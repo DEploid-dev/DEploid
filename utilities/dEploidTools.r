@@ -383,14 +383,11 @@ fun.interpretDEploid.1 <- function (coverage, PLAF, dEploidPrefix, prefix = "", 
 
 
 plot.wsaf.vs.index.ring <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), exclude, titlePrefix = "" ){
-
-    fun.ring.plot.initialize (coverage$CHROM)
-
     chromCol = (as.numeric(1:length(levels(coverage$CHROM)) %% 2 ))
     chromCol[chromCol==1] = NA
     chromCol[chromCol==0] = 8
 
-    circlize::circos.trackPlotRegion(factor = coverage$CHROM, ylim=c(0,1), track.height = 0.18, bg.col = chromCol, panel.fun=function(x,y){
+    circlize::circos.trackPlotRegion(factor = expWSAFChrom, ylim=c(0,1), track.height = 0.18, bg.col = chromCol, panel.fun=function(x,y){
         name = circlize::get.cell.meta.data("sector.index")
         xlim = circlize::get.cell.meta.data("xlim")
         ylim = circlize::get.cell.meta.data("ylim")
@@ -402,7 +399,6 @@ plot.wsaf.vs.index.ring <- function ( coverage, expWSAF = c(), expWSAFChrom = c(
 
         nSnp = dim(chromRegion)[1]
 
-        circlize::circos.points(1:length(obsWSAF), obsWSAF, col="red", pch = 16)
         if (exclude$excludeBool){
             tmpCoveragePos = coverage$POS[coverage$CHROM==name]
             tmpExcludePos = exclude$excludeTable$POS[exclude$excludeTable$CHROM==name]
@@ -411,6 +407,7 @@ plot.wsaf.vs.index.ring <- function ( coverage, expWSAF = c(), expWSAFChrom = c(
         } else {
             plotIndex = c(1:nSnp)
         }
+        circlize::circos.points(plotIndex, obsWSAF[plotIndex], col="red", pch = 16)
         circlize::circos.points(plotIndex, expWSAF[expWSAFChrom == name], col="blue", pch = 16)
     })
 }
@@ -468,6 +465,7 @@ fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclu
             cexSize = 2.5
             png ( paste ( prefix, ".interpretDEploidFigure.2.ring.png", sep= ""), width = 3500, height = 3500)
         }
+        fun.ring.plot.initialize (hapInfo$CHROM)
         plot.wsaf.vs.index.ring ( coverage, expWSAF, hapChrom, exclude )
 
         circlize::circos.clear();
@@ -542,19 +540,29 @@ fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "", pdfBool, inbreedi
 }
 
 
-fun.interpretDEploid.3.ring <- function ( inPrefix, outPrefix = "", pdfBool, inbreeding = FALSE  ){
+fun.interpretDEploid.3.ring <- function (inPrefix, outPrefix = "", pdfBool, inbreeding = FALSE, coverage, exclude ){
     if ( pdfBool == TRUE ){
         cexSize = 3
-        pdf(paste(outPrefix, ".ring.pdf", sep = ""), width = 45, height = 45)
+        if ( inbreeding ){
+            pdf(paste(outPrefix, ".inbreeding.ring.pdf", sep = ""), width = 45, height = 45)
+        } else {
+            pdf(paste(outPrefix, ".ring.pdf", sep = ""), width = 45, height = 45)
+        }
     } else {
         cexSize = 2.5
-        png(paste(outPrefix, ".ring.png", sep = ""), width = 3500, height = 3500)
+        if (inbreeding){
+            png(paste(outPrefix, ".inbreeding.ring.png", sep = ""), width = 3500, height = 3500)
+        } else{
+            png(paste(outPrefix, ".ring.png", sep = ""), width = 3500, height = 3500)
+        }
     }
 
-    prop = read.table(paste(inPrefix, ".prop", sep=""), header=F)
-    lastProp = prop[dim(prop)[1],]
+    dEploidOutput = fun.dEploidPrefix ( inPrefix )
+    tmpProp = read.table(dEploidOutput$propFileName, header=F)
 
-    orderedProp = sort.int(as.numeric(lastProp), index.return=T, decreasing=T)
+    lastProp = as.numeric(tmpProp[dim(tmpProp)[1],])
+
+    orderedProp = sort.int(lastProp, index.return=T, decreasing=T)
     orderedProp.p = orderedProp$x
     myOrder = orderedProp$ix-1
 
@@ -574,6 +582,15 @@ fun.interpretDEploid.3.ring <- function ( inPrefix, outPrefix = "", pdfBool, inb
 
         if ( strain == first ){
             fun.ring.plot.initialize(probs$CHROM)
+            if ( inbreeding ){
+                hapInfo = read.table(dEploidOutput$hapFileName, header=T)
+                hapChrom = hapInfo[,1]
+                hap = as.matrix(hapInfo[,-c(1,2)])
+                expWSAF = hap %*% lastProp
+
+                plot.wsaf.vs.index.ring ( coverage, expWSAF, hapChrom, exclude )
+
+            }
         }
 
         circlize::circos.trackPlotRegion(factor = probs$CHROM, ylim=c(0,1), track.height = 0.4*orderedProp.p[idx],
@@ -583,10 +600,18 @@ fun.interpretDEploid.3.ring <- function ( inPrefix, outPrefix = "", pdfBool, inb
                 ylim = circlize::get.cell.meta.data("ylim")
                 cat(".")
                 chromRegion = probs[probs$CHROM==name,]
+                if ( inbreeding == T ){
+                    numberOfInbreeding = sum(grepl("I", names(probs)))
+                    panelSize <- dim(probs)[2]-2-numberOfInbreeding
+                    rainbowColors <- c(rep("#46a8e1", panelSize),
+                                       rep("#f34747", numberOfInbreeding))
+                } else {
+                    rainbowColorBin <- 16
+                    rainbowColors = rainbow(rainbowColorBin)
+
+                }
                 nSnp = dim(chromRegion)[1]
                 nhap = dim(chromRegion)[2] - 2
-                rainbowColorBin <- 16
-                rainbowColors = rainbow(rainbowColorBin)
                 cumProb = rep(0, nSnp)
                 for ( i in 1:nhap ){
                     circlize::circos.rect(0:(nSnp-1), cumProb, 1:nSnp, cumProb + chromRegion[,i+2], col=rainbowColors[i], border=NA)
