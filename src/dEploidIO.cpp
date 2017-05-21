@@ -263,7 +263,7 @@ void DEploidIO::removeFilesWithSameName(){
     if ( compressVcf() ){
         strExportVcf += ".gz";
     }
-    strExportLog =  this->prefix_ + ".log";
+    strExportLog =  this->prefix_ + ((this->doPainting()) ? ".painting":"") + ".log";
     strExportRecombProb = this->prefix_ + ".recomb";
 
     strExportExtra = this->prefix_ + ".extra";
