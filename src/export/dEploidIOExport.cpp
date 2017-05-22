@@ -2,7 +2,9 @@
  * dEploid is used for deconvoluting Plasmodium falciparum genome from
  * mix-infected patient sample.
  *
- * Copyright (C) 2016, Sha (Joe) Zhu, Jacob Almagro and Prof. Gil McVean
+ * Copyright (C) 2016-2017 University of Oxford
+ *
+ * Author: Sha (Joe) Zhu
  *
  * This file is part of dEploid.
  *
@@ -45,7 +47,7 @@ void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample, bool useIBD){
         this->finalSiteOfOneSwitchOne = mcmcSample->currentsiteOfOneSwitchOne;
         this->finalSiteOfOneMissCopyOne = mcmcSample->currentsiteOfOneMissCopyOne;
 
-        this->writeEventCount( );
+        //this->writeEventCount( );
     } else {
         this->IBDpathChangeAt = mcmcSample->IBDpathChangeAt;
         this->finalIBDpathChangeAt = mcmcSample->currentIBDpathChangeAt;
@@ -146,15 +148,17 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         }
     }
     (*writeTo) << "\n";
-    (*writeTo) << "MCMC diagnostic:"<< "\n";
-    (*writeTo) << setw(19) << " Accept_ratio: " << acceptRatio_ << "\n";
-    (*writeTo) << setw(19) << " Max_llks: " << maxLLKs_ << "\n";
-    (*writeTo) << setw(19) << " Mean_theta_llks: " << meanThetallks_ << "\n";
-    (*writeTo) << setw(19) << " Mean_llks: " << meanllks_ << "\n";
-    (*writeTo) << setw(19) << " Stdv_llks: " << stdvllks_ << "\n";
-    (*writeTo) << setw(19) << " DIC_by_Dtheta: " << dicByTheta_ << "\n";
-    (*writeTo) << setw(19) << " DIC_by_varD: " << dicByVar_ << "\n";
-    (*writeTo) << "\n";
+    if ( this->doPainting() == false ) {
+        (*writeTo) << "MCMC diagnostic:"<< "\n";
+        (*writeTo) << setw(19) << " Accept_ratio: " << acceptRatio_ << "\n";
+        (*writeTo) << setw(19) << " Max_llks: " << maxLLKs_ << "\n";
+        (*writeTo) << setw(19) << " Mean_theta_llks: " << meanThetallks_ << "\n";
+        (*writeTo) << setw(19) << " Mean_llks: " << meanllks_ << "\n";
+        (*writeTo) << setw(19) << " Stdv_llks: " << stdvllks_ << "\n";
+        (*writeTo) << setw(19) << " DIC_by_Dtheta: " << dicByTheta_ << "\n";
+        (*writeTo) << setw(19) << " DIC_by_varD: " << dicByVar_ << "\n";
+        (*writeTo) << "\n";
+    }
     (*writeTo) << "Run time:\n";
     (*writeTo) << setw(14) << "Start at: "  << startingTime_  ;
     (*writeTo) << setw(14) << "End at: "    << endTime_  ;

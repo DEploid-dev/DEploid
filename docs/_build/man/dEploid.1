@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "DEPLOID" "1" "November 25, 2016" "v0.3-release" "DEploid"
+.TH "DEPLOID" "1" "May 22, 2017" "v0.5-beta" "DEploid"
 .SH NAME
 dEploid \- 
 .
@@ -325,6 +325,15 @@ MCMC sample rate (default value 5).
 .B \-burn [float]
 MCMC burn rate (default value 0.5).
 .TP
+.B \-ibd
+Use IBD segment to infer the proportion, then infer the haplotype.
+.TP
+.B \-painting [\fIfile\fP]
+Paint the posterior probability of the given haplotypes.
+.TP
+.B \-inbreeding
+Calculate the inbreeding probabilities.
+.TP
 .B \-h , \-help
 Help.
 .TP
@@ -480,9 +489,9 @@ Use our data exploration tools to investigate the data.
 .sp
 .nf
 .ft C
-$ R \-\-slave "\-\-args \-vcf data/exampleData/PG0390\-C.eg.vcf.gz
- \-plaf data/exampleData/labStrains.eg.PLAF.txt
- \-o PG0390\-C " < utilities/dataExplore.r
+$ utilities/dataExplore.r \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
+ \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+ \-o PG0390\-C
 .ft P
 .fi
 .UNINDENT
@@ -491,9 +500,11 @@ $ R \-\-slave "\-\-args \-vcf data/exampleData/PG0390\-C.eg.vcf.gz
 [image]
 .INDENT 0.0
 .IP \(bu 2
+Figure on the top plot total allele counts across all markers. We use the threshold (red line) to identify markers with extremely high allele counts. Red crosses indicate markers that are filtered out.
+.IP \(bu 2
 Figure on the left plots the alternative allele count against the reference allele count. As \fIP. falciparum\fP genomes are haploid, in clonal samples, one woule expect to see either alternative or reference allele at any sites. Heterozygous sites are indications of mixed infection.
 .IP \(bu 2
-Figure in the middle is the histogram of the allele frequency within sample.
+Figure in the middle is the histogram of the allele frequency within sample. Note that we exclude markers with WSAF strictly equal to 0s and 1s in the histogram.
 .IP \(bu 2
 Figure on the right show allele frequency within sample, compare against the population average.
 .UNINDENT
@@ -522,6 +533,7 @@ When flag \fB\-vcfOut\fP is turned on, haplotypes are saved at the final iterati
 When flag \fB\-exportPostProb\fP is turned on, posterior probabilities of the final iteration of strain [i].
 .UNINDENT
 .SS Example of output interpretion
+.SS Example 1
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -529,11 +541,11 @@ When flag \fB\-exportPostProb\fP is turned on, posterior probabilities of the fi
 .ft C
 $ ./dEploid \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
 \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
-\-noPanel \-o PG0390\-CNopanel
-$ R \-\-slave "\-\-args \-vcf data/exampleData/PG0390\-C.eg.vcf.gz
-\-plaf data/exampleData/labStrains.eg.PLAF.txt
-\-dEprefix PG0390\-CNopanel
-\-o PG0390\-CNopanel " < utilities/interpretDEploid.r
+\-noPanel \-o PG0390\-CNopanel \-seed 1
+$ utilities/interpretDEploid.r \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
+\-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+\-dEprefix PG0390\-CNopanel \e
+\-o PG0390\-CNopanel \-ring
 .ft P
 .fi
 .UNINDENT
@@ -554,6 +566,78 @@ The right figure shows changes in MCMC likelihood .
 [image]
 .sp
 This panel figure shows all allele frequencies within sample across all 14 chromosomes. Expected and observed WSAF are marked in blue and red respectively.
+.SS Example 2
+.sp
+\fBdEploid\fP can take its output haplotypes, and calculate the posterior probability of each deconvoluted strain with the reference panel. In this example, the reference panel includes four lab strains: 3D7 (red), Dd2 (dark orange), HB3 (orange) and 7G8 (yellow).
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ ./dEploid \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
+\-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+\-panel data/exampleData/labStrains.eg.panel.txt \e
+\-o PG0390\-CPanel \-seed 1 \-k 3
+$ ./dEploid \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
+\-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+\-panel data/exampleData/labStrains.eg.panel.txt \e
+\-o PG0390\-CPanel \e
+\-painting PG0390\-CPanel.hap \e
+\-initialP 0.8 0 0.2 \-k 3
+$ utilities/interpretDEploid.r \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
+\-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+\-dEprefix PG0390\-CPanel \e
+\-o PG0390\-CPanel \-ring
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+[image: PG0390fwdBwdRing]
+[image]
+.SS Example 3
+.sp
+In addition to lab mixed samples, here we show example of \fBdEploid\fP deconvolute field sample PD0577\-C.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ ./dEploid \-ref data/exampleData/PD0577\-C_ref.trim.txt \e
+\-alt data/exampleData/PD0577\-C_alt.trim.txt \e
+\-plaf data/exampleData/asia\-1_PLAF.trim.txt \e
+\-panel data/exampleData/asia\-1_panel.trim.txt \e
+\-o PD0577\-CPanel \e
+\-k 3 \-seed 1484961470
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Use \fBdEploid\fP to calculate the inbreeding probabilities: inbreeding (red) and outbreeding (blue).
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ ./dEploid \-ref data/exampleData/PD0577\-C_ref.trim.txt \e
+\-alt data/exampleData/PD0577\-C_alt.trim.txt \e
+\-plaf data/exampleData/asia\-1_PLAF.trim.txt \e
+\-panel data/exampleData/asia\-1_panel.trim.txt \e
+\-o PD0577\-CPanel \e
+\-painting PD0577\-CPanel.hap \e
+\-k 3 \-inbreeding \-initialP 0.25 0.5 0.25
+$ utilities/interpretDEploid.r \-ref data/exampleData/PD0577\-C_ref.trim.txt \e
+\-alt data/exampleData/PD0577\-C_alt.trim.txt \e
+\-plaf data/exampleData/asia\-1_PLAF.trim.txt \e
+\-o PD0577\-CPanel \e
+\-dEprefix PD0577\-CPanel \e
+\-inbreeding \-ring
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+[image: PD0577inbreeding]
+[image]
 .SH EXAMPLE
 .INDENT 0.0
 .INDENT 3.5
@@ -562,6 +646,97 @@ This panel figure shows all allele frequencies within sample across all 14 chrom
 Full example of working pipeline will be provided with the \fIPf3k\fP pilot paper.
 .UNINDENT
 .UNINDENT
+.SH FREQUENTLY ASKED QUESTIONS
+.SS Data filtering
+.sp
+Data filtering is an important step for deconvolution.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+utilities/dataExplore.r \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-o PG0415\-C
+
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+[image: PG0415_data]
+[image]
+
+.sp
+We observe a small number of heterozygous sites with high coverage (marked as crosses above), which can potentially mislead our model to over\-fit the data with additional strains.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+\&./dEploid \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-noPanel \-o PG0415\-CNopanel \-seed 2
+
+initialProp=$( cat PG0415\-CNopanel.prop | tail \-1 | sed \-e "s/\et/ /g" )
+\&./dEploid \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-panel data/exampleData/labStrains.eg.panel.txt \e
+    \-o PG0415\-CNopanel \e
+    \-initialP ${initialProp} \e
+    \-painting PG0415\-CNopanel.hap
+
+utilities/interpretDEploid.r \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-dEprefix PG0415\-CNopanel \e
+    \-o PG0415\-CNopanel \e
+    \-ring
+
+
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+[image: PG0415_noFilter]
+[image]
+
+.sp
+The data exploration utility \fButilities/dataExplore.r\fP identifies a list of potential outliers. After filtering,
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+\&./dEploid \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-noPanel \-o PG0415\-CNopanel.filtered \-seed 2 \e
+    \-exclude PG0415\-CPotentialOutliers.txt
+
+initialProp=$( cat PG0415\-CNopanel.filtered.prop | tail \-1 | sed \-e "s/\et/ /g" )
+\&./dEploid \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-panel data/exampleData/labStrains.eg.panel.txt \e
+    \-exclude PG0415\-CPotentialOutliers.txt \e
+    \-o PG0415\-CNopanel.filtered \e
+    \-initialP ${initialProp} \e
+    \-painting PG0415\-CNopanel.filtered.hap
+
+utilities/interpretDEploid.r \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-dEprefix PG0415\-CNopanel.filtered \e
+    \-o PG0415\-CNopanel.filtered \e
+    \-exclude PG0415\-CPotentialOutliers.txt \e
+    \-ring
+
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+[image: PG0415_filtered]
+[image]
+
 .SH REPORTING BUGS
 .sp
 If you encounter any problem when using \fBdEploid\fP, please file a short bug report by using the \fI\%issue tracker\fP
@@ -574,7 +749,27 @@ Thank you!
 .sp
 If you use \fBdEploid\fP in your work, please cite the program:
 .sp
-PLACEHOLDER FOR APP NOTE
+Zhu, J. S. J. A. Garcia G. McVean. (2017) Deconvolution of multiple infections in \fIPlasmodium falciparum\fP from high throughput sequencing data. \fIbioRxiv\fP 099499. doi: https://doi.org/10.1101/099499
+.sp
+Bibtex record::
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+@article {Zhu099499,
+author = {Zhu, Sha Joe and Almagro\-Garcia, Jacob and McVean, Gil},
+title = {Deconvolution of multiple infections in {{\eem Plasmodium falciparum}} from high throughput sequencing data},
+year = {2017},
+doi = {10.1101/099499},
+publisher = {Cold Spring Harbor Labs Journals},
+URL = {http://www.biorxiv.org/content/early/2017/01/10/099499},
+journal = {bioRxiv}
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .SH AUTHOR
 Sha (Joe) Zhu
 .SH COPYRIGHT

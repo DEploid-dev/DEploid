@@ -43,10 +43,10 @@ Example 1
     $ ./dEploid -vcf data/exampleData/PG0390-C.eg.vcf.gz \
     -plaf data/exampleData/labStrains.eg.PLAF.txt \
     -noPanel -o PG0390-CNopanel -seed 1
-    $ R --slave "--args -vcf data/exampleData/PG0390-C.eg.vcf.gz
-    -plaf data/exampleData/labStrains.eg.PLAF.txt
-    -dEprefix PG0390-CNopanel
-    -o PG0390-CNopanel " < utilities/interpretDEploid.r
+    $ utilities/interpretDEploid.r -vcf data/exampleData/PG0390-C.eg.vcf.gz \
+    -plaf data/exampleData/labStrains.eg.PLAF.txt \
+    -dEprefix PG0390-CNopanel \
+    -o PG0390-CNopanel -ring
 
 .. image:: _static/PG0390-CNopanel.interpretDEploidFigure.1.png
    :width: 1024px
@@ -82,22 +82,14 @@ Example 2
     -o PG0390-CPanel \
     -painting PG0390-CPanel.hap \
     -initialP 0.8 0 0.2 -k 3
-    $ R --slave "--args -vcf data/exampleData/PG0390-C.eg.vcf.gz
-    -plaf data/exampleData/labStrains.eg.PLAF.txt
-    -dEprefix PG0390-CPanel
-    -o PG0390-CPanel " < utilities/interpretDEploid.r
+    $ utilities/interpretDEploid.r -vcf data/exampleData/PG0390-C.eg.vcf.gz \
+    -plaf data/exampleData/labStrains.eg.PLAF.txt \
+    -dEprefix PG0390-CPanel \
+    -o PG0390-CPanel -ring
 
-.. image:: _static/PG0390-CPanel.single0.png
+.. image:: _static/PG0390-CPanel.ring.png
    :width: 1024px
-   :alt: PG0390fwdBwd0
-
-.. image:: _static/PG0390-CPanel.single1.png
-   :width: 1024px
-   :alt: PG0390fwdBwd1
-
-.. image:: _static/PG0390-CPanel.single2.png
-   :width: 1024px
-   :alt: PG0390fwdBwd2
+   :alt: PG0390fwdBwdRing
 
 Example 3
 *********
@@ -125,25 +117,13 @@ Use ``dEploid`` to calculate the inbreeding probabilities: inbreeding (red) and 
     -o PD0577-CPanel \
     -painting PD0577-CPanel.hap \
     -k 3 -inbreeding -initialP 0.25 0.5 0.25
-    $ R --slave "--args -ref data/exampleData/PD0577-C_ref.trim.txt
-    -alt data/exampleData/PD0577-C_alt.trim.txt
-    -plaf data/exampleData/asia-1_PLAF.trim.txt
+    $ utilities/interpretDEploid.r -ref data/exampleData/PD0577-C_ref.trim.txt \
+    -alt data/exampleData/PD0577-C_alt.trim.txt \
+    -plaf data/exampleData/asia-1_PLAF.trim.txt \
     -o PD0577-CPanel \
-    -dEprefix PD0577-CPanel
-    -inbreeding" < utilities/interpretDEploid.r
+    -dEprefix PD0577-CPanel \
+    -inbreeding -ring
 
-.. image:: _static/PD0577-CPanel.interpretDEploidFigure.2.png
+.. image:: _static/PD0577-CPanel.inbreeding.ring.png
    :width: 1024px
-   :alt: PD0577wsaf
-
-.. image:: _static/PD0577-CPanel.single0.inbreeding.png
-   :width: 1024px
-   :alt: PD0577fwdBwd0inbreeding
-
-.. image:: _static/PD0577-CPanel.single1.inbreeding.png
-   :width: 1024px
-   :alt: PD0577fwdBwd1inbreeding
-
-.. image:: _static/PD0577-CPanel.single2.inbreeding.png
-   :width: 1024px
-   :alt: PD0577fwdBwd2inbreeding
+   :alt: PD0577inbreeding

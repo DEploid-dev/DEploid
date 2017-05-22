@@ -2,7 +2,9 @@
  * dEploid is used for deconvoluting Plasmodium falciparum genome from
  * mix-infected patient sample.
  *
- * Copyright (C) 2016, Sha (Joe) Zhu, Jacob Almagro and Prof. Gil McVean
+ * Copyright (C) 2016-2017 University of Oxford
+ *
+ * Author: Sha (Joe) Zhu
  *
  * This file is part of dEploid.
  *
@@ -123,7 +125,7 @@ void DEploidIO::init() {
     this->averageCentimorganDistance_ = 15000.0;
     this->setScalingFactor(100.0);
     this->setParameterG(20.0);
-    this->setParameterSigma(5.5);
+    this->setParameterSigma(5.0);
 
     this->setUseVcf(false);
     this->vcfReaderPtr_ = NULL;
@@ -263,7 +265,7 @@ void DEploidIO::removeFilesWithSameName(){
     if ( compressVcf() ){
         strExportVcf += ".gz";
     }
-    strExportLog =  this->prefix_ + ".log";
+    strExportLog =  this->prefix_ + ((this->doPainting()) ? ".painting":"") + ".log";
     strExportRecombProb = this->prefix_ + ".recomb";
 
     strExportExtra = this->prefix_ + ".extra";
