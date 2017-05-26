@@ -30,9 +30,10 @@
 #include "txtReader.hpp"
 
 void TxtReader::readFromFileBase(const char inchar[]){
+    fileName = string (inchar);
     tmpChromInex_ = -1;
 
-    ifstream in_file( inchar );
+    ifstream in_file(inchar);
     string tmp_line;
     if ( in_file.good() ){
         getline ( in_file, tmp_line ); // skip the first line, which is the header
@@ -63,7 +64,7 @@ void TxtReader::readFromFileBase(const char inchar[]){
             getline ( in_file, tmp_line );
         }
     } else {
-        throw InvalidInputFile( string (inchar) );
+        throw InvalidInputFile(fileName);
 
     }
     in_file.close();
@@ -106,7 +107,14 @@ void TxtReader::extractChrom( string & tmp_str ){
 
 
 void TxtReader::extractPOS( string & tmp_str ){
-    this->tmpPosition_.push_back(stoi(tmp_str.c_str(), NULL));
+    int ret;
+    try {
+        ret = stoi(tmp_str.c_str(), NULL);
+    } catch ( const std::exception &e ){
+        cerr << "Check input file: " << fileName << endl;
+        throw BadConversion(tmp_str);
+    }
+    this->tmpPosition_.push_back(ret);
 }
 
 
