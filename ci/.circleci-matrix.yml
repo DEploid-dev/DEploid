@@ -1,0 +1,8 @@
+env:
+    - GCCVERSION=4.7
+    - GCCVERSION=4.9
+    - GCCVERSION=4.8
+    - GCCVERSION=4.6
+
+command:
+    - ./configure CXX=/usr/bin/g++-${GCCVERSION}

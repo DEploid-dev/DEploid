@@ -7,15 +7,18 @@ dependencies:
   pre:
     - sudo apt-get update
   override:
+    - curl -fsSL https://git.io/vHGMF | bash
     - sudo apt-get install libcppunit-dev
     - sudo apt-get install valgrind
     #- sudo apt-get install zlib1g-dbg
     #- sudo apt-get install python-pip
     #- pip install --user cpp-coveralls
+  post:
+    - ./bootstrap
+    - CIRCLE_NODE_TOTAL=4 circleci-matrix --config /home/ubuntu/DEploid/ci/.circleci-matrix.yml
 
 test:
   override:
-    - ./bootstrap
     - make
     - make check
     #- valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
