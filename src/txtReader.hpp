@@ -28,6 +28,7 @@
 #define TXTREADER
 
 #include "variantIndex.hpp"
+#include "exceptions.hpp"
 
 class TxtReader : public VariantIndex {
 #ifdef UNITTEST
@@ -59,6 +60,7 @@ class TxtReader : public VariantIndex {
     void extractChrom( string & tmp_str );
     void extractPOS ( string & tmp_str );
     void reshapeContentToInfo();
+    string fileName;
 
   public: // move the following to private
     TxtReader (){};

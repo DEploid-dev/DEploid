@@ -106,6 +106,15 @@ struct WrongType : public InvalidInput{
 };
 
 
+struct BadConversion : public InvalidInput{
+  BadConversion( string str ):InvalidInput( str ){
+    this->reason = "Bad conversion: ";
+    throwMsg = this->reason + this->src + ", int expected.";
+  }
+  ~BadConversion() throw() {}
+};
+
+
 struct InvalidInputFile : public InvalidInput{
   InvalidInputFile( string str ):InvalidInput( str ){
     this->reason = "Invalid input file: ";
