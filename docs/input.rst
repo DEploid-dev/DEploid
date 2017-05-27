@@ -143,6 +143,36 @@ You may also try
     Output precision (default value 8).
 
 
+R utilities
+-----------
+
+Flags **-vcf**, **-plaf**, **-ref**, **-alt**, **-exclude**, **-o** usage are the same as ``DEploid``. Additionally, we have the following flags:
+
+-dEprefix [string]
+    Prefix of ``DEploid`` output.
+
+-inbreeding\
+    Painting haplotype inbreeding posterior probabilities.
+
+-ADFieldIndex\
+    The index of ``AD`` field (2 by default).
+
+-filter.threshold [float]
+    Filtering threshold (0.995 by default).
+
+-filter.window [int]
+    Filtering window (10 by default).
+
+-pdf\
+    Produce figures in pdf rather than png.
+
+-ibd\
+    Produce figures for IBD process.
+
+-ring\
+    Produce circular genome plots for WSAF and haplotype posterior painting probabilities.
+
+
 .. _sec-eg:
 
 ***************************
