@@ -296,7 +296,7 @@ void McmcMachinery::initializePropIBD(){
 }
 
 
-void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
+void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ){
 
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++){
         dout << endl;
@@ -323,7 +323,9 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
         this->mcmcSample_->siteOfOneMissCopyOne[atSiteI] /= (double)this->maxIteration_;
     }
 
-    this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, useIBD);
+    if ( notInR ){
+        this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, useIBD);
+    }
 
     if ( useIBD == true ){
         clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;

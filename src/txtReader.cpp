@@ -111,8 +111,7 @@ void TxtReader::extractPOS( string & tmp_str ){
     try {
         ret = stoi(tmp_str.c_str(), NULL);
     } catch ( const std::exception &e ){
-        cerr << "Check input file: " << fileName << endl;
-        throw BadConversion(tmp_str);
+        throw BadConversion(tmp_str, fileName);
     }
     this->tmpPosition_.push_back(ret);
 }
