@@ -302,11 +302,15 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ){
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
         if ( this->currentMcmcIteration_ > 0 && this->currentMcmcIteration_%100 == 0 && showProgress ){
-            clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->maxIteration_) << "% completed."<<flush;
+            #ifndef RBUILD
+                clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->maxIteration_) << "% completed."<<flush;
+            #endif
         }
         this->sampleMcmcEvent(useIBD);
     }
-    clog << "\r" << " MCMC step" << setw(4) << 100 << "% completed."<<endl;
+    #ifndef RBUILD
+        clog << "\r" << " MCMC step" << setw(4) << 100 << "% completed."<<endl;
+    #endif
     this->mcmcSample_->hap = this->currentHap_;
 
     this->writeLastFwdProb(useIBD);
