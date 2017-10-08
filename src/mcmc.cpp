@@ -289,10 +289,15 @@ void McmcMachinery::makeLlkSurf(vector <double> altCount, vector <double> refCou
 
 void McmcMachinery::initializePropIBD(){
     //#Initialise titres and convert to proportions
-    this->currentTitre_ = vector <double> (this->kStrain(), 0.0);
+    this->initializeTitre();
     this->currentProp_ = ( this->dEploidIO_ -> initialPropWasGiven()) ?
-                          this->dEploidIO_ ->initialProp :
-                          vector <double> (this->kStrain(), 1.0/(double)kStrain());
+                          this->dEploidIO_ ->initialProp:
+                          this->titre2prop( this->currentTitre_ );
+
+    //this->currentTitre_ = vector <double> (this->kStrain(), 0.0);
+    //this->currentProp_ = ( this->dEploidIO_ -> initialPropWasGiven()) ?
+                          //this->dEploidIO_ ->initialProp :
+                          //vector <double> (this->kStrain(), 1.0/(double)kStrain());
 }
 
 
@@ -623,7 +628,8 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
     for (size_t i = 0; i < kStrain(); i++){
         double v0 = this->currentTitre_[i];
         vector <double> oldProp = this->currentProp_;
-        this->currentTitre_[i] += (this->stdNorm_->genReal() * 0.1 + 0.0); // tit.0[i]+rnorm(1, 0, scale.t.prop);
+        //this->currentTitre_[i] += (this->stdNorm_->genReal() * 0.1 + 0.0); // tit.0[i]+rnorm(1, 0, scale.t.prop);
+        this->currentTitre_[i] += (this->stdNorm_->genReal() * SD_LOG_TITRE* 1.0/PROP_SCALE + 0.0); // tit.0[i]+rnorm(1, 0, scale.t.prop);
         this->currentProp_ = this->titre2prop(this->currentTitre_);
         vector <double> vv = computeLlkAtAllSites();
         double rr = normal_pdf( this->currentTitre_[i], 0, 1) /
