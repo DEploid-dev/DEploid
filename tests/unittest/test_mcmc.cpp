@@ -231,7 +231,8 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         x2 /= nRepeat;
         double sd = sqrt(x2 - pow(x, 2.0));
         CPPUNIT_ASSERT( this->mcmcMachinery_->MN_LOG_TITRE - 0.01 <= x && x <= this->mcmcMachinery_->MN_LOG_TITRE + 0.01 );
-        CPPUNIT_ASSERT( 1.0/(this->mcmcMachinery_->PROP_SCALE)  - 0.01 <= sd && sd <= 1.0/(this->mcmcMachinery_->PROP_SCALE)  + 0.01 );
+        CPPUNIT_ASSERT( this->mcmcMachinery_->SD_LOG_TITRE /(this->mcmcMachinery_->PROP_SCALE)  - 0.01 <= sd &&
+            sd <= this->mcmcMachinery_->SD_LOG_TITRE/this->mcmcMachinery_->PROP_SCALE + 0.01 );
     }
 
 

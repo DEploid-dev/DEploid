@@ -190,6 +190,7 @@ class DEploidIO{
     string strIbdExportProp;
     string strIbdExportLLK;
     string strIbdExportHap;
+    string strIbdExportProbs;
 
     string strExportSingleFwdProbPrefix;
     string strExportPairFwdProb;
