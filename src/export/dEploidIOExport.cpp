@@ -144,7 +144,7 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         if ( doExportVcf() ) { (*writeTo) << setw(14) << "Vcf: "  << strExportVcf  << "\n"; }
         if (this->useIBD()){
             (*writeTo) << " IBD method output saved to:\n";
-            (*writeTo) << setw(14) << "Likelihood: "  << strIbdExportProp  << "\n";
+            (*writeTo) << setw(14) << "Likelihood: "  << strIbdExportLLK  << "\n";
             (*writeTo) << setw(14) << "Proportions: " << strIbdExportProp << "\n";
             (*writeTo) << setw(14) << "Haplotypes: "  << strIbdExportHap  << "\n";
         }
