@@ -32,7 +32,8 @@ common_src = src/random/fastfunc.cpp \
 			 src/variantIndex.cpp \
 			 src/gzstream/gzstream.cpp \
 			 src/export/dEploidIOExport.cpp \
-			 src/export/dEploidIOExportPosteriorProb.cpp
+			 src/export/dEploidIOExportPosteriorProb.cpp \
+			 src/export/writeMcmcRelated.cpp
 
 debug_src = src/debug/mcmcDebug.cpp src/debug/vcfReaderDebug.cpp
 

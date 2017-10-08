@@ -301,17 +301,21 @@ void McmcMachinery::initializePropIBD(){
 }
 
 
-void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
+void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ){
 
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++){
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
         if ( this->currentMcmcIteration_ > 0 && this->currentMcmcIteration_%100 == 0 && showProgress ){
-            clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->maxIteration_) << "% completed."<<flush;
+            #ifndef RBUILD
+                clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->maxIteration_) << "% completed."<<flush;
+            #endif
         }
         this->sampleMcmcEvent(useIBD);
     }
-    clog << "\r" << " MCMC step" << setw(4) << 100 << "% completed."<<endl;
+    #ifndef RBUILD
+        clog << "\r" << " MCMC step" << setw(4) << 100 << "% completed."<<endl;
+    #endif
     this->mcmcSample_->hap = this->currentHap_;
 
     this->writeLastFwdProb(useIBD);
@@ -328,7 +332,9 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD ){
         this->mcmcSample_->siteOfOneMissCopyOne[atSiteI] /= (double)this->maxIteration_;
     }
 
-    this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, useIBD);
+    if ( notInR ){
+        this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, useIBD);
+    }
 
     if ( useIBD == true ){
         clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;

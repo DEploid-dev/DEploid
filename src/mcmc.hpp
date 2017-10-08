@@ -87,7 +87,7 @@ class McmcMachinery {
     //McmcMachinery();
     McmcMachinery( DEploidIO* dEplioidIO, McmcSample *mcmcSample, RandomGenerator* rg_, bool useIBD = false );
     ~McmcMachinery();
-    void runMcmcChain( bool showProgress = true, bool useIBD = false );
+    void runMcmcChain( bool showProgress = true, bool useIBD = false, bool notInR = true );
 
   private:
     McmcSample* mcmcSample_;

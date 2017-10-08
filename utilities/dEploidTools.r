@@ -63,9 +63,12 @@ fun.parse <- function( args ){
     ibdBool = FALSE
     helpBool = FALSE
     ringBool = FALSE
+    ringDecreasingOrder = TRUE
+    transformP = FALSE
     arg_i = 1
     filter.window = 10
     filter.threshold = 0.995
+    trackHeight = 0.6
     while ( arg_i <= length(args) ){
         argv = args[arg_i]
         if ( argv == "-vcf" ){
@@ -119,6 +122,18 @@ fun.parse <- function( args ){
             helpBool = TRUE
         } else if ( argv == "-ring" ){
             ringBool = TRUE
+        } else if ( argv == "-reverseRing" ){
+            ringBool = TRUE
+            ringDecreasingOrder = FALSE
+        } else if ( argv == "-trackHeight" ){
+            arg_i = fun.local.checkAndIncreaseArgI ( )
+            trackHeight = as.numeric(args[arg_i])
+            # check range
+            if ( trackHeight < 0 | trackHeight > 1){
+                stop(paste("trackHeight out of range [0, 1]:", trackHeight))
+            }
+        } else if ( argv == "-transformP" ){
+            transformP = TRUE
         } else {
             stop(paste("Unknown flag:", argv))
         }
@@ -152,7 +167,10 @@ fun.parse <- function( args ){
                     helpBool = helpBool,
                     filter.threshold = filter.threshold,
                     filter.window = filter.window,
-                    ringBool = ringBool) )
+                    ringBool = ringBool,
+                    ringDecreasingOrder = ringDecreasingOrder,
+                    trackHeight = trackHeight,
+                    transformP = transformP) )
 }
 
 
@@ -540,7 +558,7 @@ fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "", pdfBool, inbreedi
 }
 
 
-fun.interpretDEploid.3.ring <- function (inPrefix, outPrefix = "", pdfBool, inbreeding = FALSE, coverage, exclude ){
+fun.interpretDEploid.3.ring <- function (inPrefix, outPrefix = "", pdfBool, inbreeding = FALSE, coverage, exclude, ringDecreasingOrder, trackHeight = 0.8, transformP = FALSE ){
     if ( pdfBool == TRUE ){
         cexSize = 3
         if ( inbreeding ){
@@ -562,12 +580,18 @@ fun.interpretDEploid.3.ring <- function (inPrefix, outPrefix = "", pdfBool, inbr
 
     lastProp = as.numeric(tmpProp[dim(tmpProp)[1],])
 
-    orderedProp = sort.int(lastProp, index.return=T, decreasing=T)
+    orderedProp = sort.int(lastProp, index.return=T, decreasing=ringDecreasingOrder)
     orderedProp.p = orderedProp$x
     myOrder = orderedProp$ix-1
 
     myOrder = myOrder[orderedProp.p>0.01]
     orderedProp.p = orderedProp.p[orderedProp.p>0.01]
+
+    if (transformP){
+        orderedProp.p = orderedProp.p %*% (diag(rep(1,length(orderedProp.p)))+1)
+        orderedProp.p = orderedProp.p/sum(orderedProp.p)
+        print(orderedProp.p)
+    }
 
     first = myOrder[1]
     idx = 1
@@ -593,7 +617,7 @@ fun.interpretDEploid.3.ring <- function (inPrefix, outPrefix = "", pdfBool, inbr
             }
         }
 
-        circlize::circos.trackPlotRegion(factor = probs$CHROM, ylim=c(0,1), track.height = 0.4*orderedProp.p[idx],
+        circlize::circos.trackPlotRegion(factor = probs$CHROM, ylim=c(0,1), track.height = trackHeight*orderedProp.p[idx],
             panel.fun=function(x,y){
                 name = circlize::get.cell.meta.data("sector.index")
                 xlim = circlize::get.cell.meta.data("xlim")
@@ -611,6 +635,7 @@ fun.interpretDEploid.3.ring <- function (inPrefix, outPrefix = "", pdfBool, inbr
 
                 }
                 nSnp = dim(chromRegion)[1]
+                print(nSnp)
                 nhap = dim(chromRegion)[2] - 2
                 cumProb = rep(0, nSnp)
                 for ( i in 1:nhap ){

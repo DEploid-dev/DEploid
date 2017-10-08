@@ -107,9 +107,9 @@ struct WrongType : public InvalidInput{
 
 
 struct BadConversion : public InvalidInput{
-  BadConversion( string str ):InvalidInput( str ){
+  BadConversion( string str1, string str2 ):InvalidInput( str1 ){
     this->reason = "Bad conversion: ";
-    throwMsg = this->reason + this->src + ", int expected.";
+    throwMsg = this->reason + this->src + ", int expected. Check input file" + str2;
   }
   ~BadConversion() throw() {}
 };

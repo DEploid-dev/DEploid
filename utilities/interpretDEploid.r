@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-rm(list=ls()); dEploidRootDir="/home/joezhu/DEploid"
+rm(list=ls()); dEploidRootDir="/home/joezhu/DEploid-r/.DEploid"
 # DESCRIPTION:
 #
 # USAGE:
@@ -43,7 +43,7 @@ fun.interpretDEploid.3 (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBoo
 
 if (myInput$ringBool == TRUE){
     fun.interpretDEploid.2 (myCoverageInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool, myInput$ringBool)
-    fun.interpretDEploid.3.ring (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool, myInput$inbreedingBool, myCoverageInfo, myExcludeInfo)
+    fun.interpretDEploid.3.ring (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool, myInput$inbreedingBool, myCoverageInfo, myExcludeInfo, myInput$ringDecreasingOrder, myInput$trackHeight, myInput$transformP)
 }
 
 if (myInput$ibdBool == TRUE){
