@@ -47,6 +47,7 @@ class VariantIndex {
  friend class TxtReader;
  friend class ExcludeMarker;
  friend class Panel;
+ friend class IBDrecombProbs;
  friend class VcfReader;
 
   private:

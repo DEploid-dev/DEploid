@@ -185,6 +185,30 @@ void Panel::updatePanelWithHaps(size_t inbreedingPanelSizeSetTo, size_t excluded
 }
 
 
+void IBDrecombProbs::computeRecombProbs( double averageCentimorganDistance, double G, bool useConstRecomb, double constRecombProb ){
+    assert(pRec_.size() == 0 );
+    assert(pNoRec_.size() == 0 );
+    double averageMorganDistance = averageCentimorganDistance * 100;
+    double geneticDistance;
+    double rho;
+    for ( size_t i = 0; i < this->position_.size(); i++){
+        for ( size_t j = 1; j < this->position_[i].size(); j++){
+            geneticDistance = (double)(this->position_[i][j] - this->position_[i][j-1])/averageMorganDistance ;
+            //rho = geneticDistance * 2 * Ne;
+            rho = geneticDistance * G;
+            double pRecTmp = ( useConstRecomb ) ? constRecombProb : 1.0 - exp(-rho);
+            this->pRec_.push_back( pRecTmp );
+            double pNoRecTmp = 1.0 - pRecTmp;
+            this->pNoRec_.push_back( pNoRecTmp );
+        }
+        this->pRec_.push_back(1.0);
+        this->pNoRec_.push_back(0.0);
+    }
+    assert(pRec_.size() == this->nLoci_ );
+    assert(pNoRec_.size() == this->nLoci_ );
+}
+
+
 
 //vector<vector<double>> outtrans(out[0].size(),
                                     //vector<double>(out.size()));

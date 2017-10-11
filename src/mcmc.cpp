@@ -289,7 +289,7 @@ void McmcMachinery::makeLlkSurf(vector <double> altCount, vector <double> refCou
 
 void McmcMachinery::initializePropIBD(){
     //#Initialise titres and convert to proportions
-    this->initializeTitre();
+    //this->initializeTitre();
     this->currentProp_ = ( this->dEploidIO_ -> initialPropWasGiven()) ?
                           this->dEploidIO_ ->initialProp:
                           this->titre2prop( this->currentTitre_ );
@@ -337,6 +337,15 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ){
     }
 
     if ( useIBD == true ){
+        // TODO now do the painting part!!!
+cout << fm.size() << endl;
+for (size_t fm_i = 0; fm_i < fm.size(); fm_i++){
+    for (size_t fm_ij = 0; fm_ij < fm[fm_i].size(); fm_ij++){
+        cout << fm[fm_i][fm_ij] << " ";
+    }
+    cout<< endl;
+
+    }
         clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
         this->dEploidIO_->initialProp = averageProportion(this->mcmcSample_->proportion);
         this->dEploidIO_->setInitialPropWasGiven(true);
@@ -518,6 +527,13 @@ void McmcMachinery::initializeIbdEssentials(){
 
     // initialize ibdPath
     this->ibdPath = vector <size_t> (this->nLoci());
+
+    // initialize recombination probabilities;
+    this->ibdRecombProbs = IBDrecombProbs(this->dEploidIO_->position_, this->dEploidIO_->nLoci_);
+    this->ibdRecombProbs.computeRecombProbs( this->dEploidIO_->averageCentimorganDistance(),
+                                             this->dEploidIO_->parameterG(),
+                                             this->dEploidIO_->useConstRecomb(),
+                                             this->dEploidIO_->constRecombProb());
 }
 
 
@@ -574,11 +590,8 @@ vector <double> McmcMachinery::computeLlkAtAllSites(double err){
 }
 
 
-void McmcMachinery::sampleMcmcEventIbdStep(){
+void McmcMachinery::ibdBuildPathProbabilities(vector <double> statePrior){
     this->fm.clear();
-    double pRecomb = 0.01; // This should be parsed in
-    double pNoRecomb = 0.99;
-    vector <double> statePrior = this->computeStatePrior(this->theta());
     vector <double> vPrior = vecProd(statePrior, this->hprior.priorProbTrans[0]);
 
     vector <double> lk = computeLlkOfStatesAtSiteI(0);
@@ -590,14 +603,16 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
         }
 
         for ( size_t i = 0; i < hprior.nState(); i++ ){
-            vPrior[i] = (vNoRec[i] * pNoRecomb + fSum * pRecomb * statePrior[i]) * hprior.priorProbTrans[siteI][i];
+            vPrior[i] = (vNoRec[i] * this->ibdRecombProbs.pNoRec_[siteI] + fSum * this->ibdRecombProbs.pRec_[siteI] * statePrior[i]) * hprior.priorProbTrans[siteI][i];
         }
 
         lk = computeLlkOfStatesAtSiteI(siteI);
         this->updateFmAtSiteI(vPrior, lk);
     }
+}
 
-    ////#Now sample path given matrix
+
+void McmcMachinery::ibdSamplePath(vector <double> statePrior){
     int lociIdx = this->nLoci()-1;
     vector <double> tmpProp = fm[lociIdx];
     (void)normalizeBySum(tmpProp);
@@ -612,7 +627,7 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
         assert(vRecomb.size() == this->hprior.nState());
         vector <double> prop (this->hprior.nState());
         for ( size_t i = 0; i < prop.size(); i++){
-            prop[i] = vNoRecomb[i]*pNoRecomb + vRecomb[i]*pRecomb*statePrior[ibdPath[lociIdx+1]];
+            prop[i] = vNoRecomb[i]*this->ibdRecombProbs.pNoRec_[lociIdx] + vRecomb[i]*this->ibdRecombProbs.pRec_[lociIdx]*statePrior[ibdPath[lociIdx+1]];
         }
         tmpProp = prop;
         (void)normalizeBySum(tmpProp);
@@ -620,17 +635,40 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
         assert( ibdPath[lociIdx] < this->hprior.nState() );
         assert( ibdPath[lociIdx] >= 0 );
     }
+}
+
+
+void McmcMachinery::sampleMcmcEventIbdStep(){
+    vector <double> statePrior = this->computeStatePrior(this->theta());
+    // First building the path likelihood
+    this->ibdBuildPathProbabilities(statePrior);
+
+    ////#Now sample path given matrix
+    this->ibdSamplePath(statePrior);
 
     //#Get haplotypes and update LLK for each site
+    this->ibdUpdateHaplotypesFromPrior();
+    vector <double> llkAtAllSites = computeLlkAtAllSites();
+    ////#Given current haplotypes, sample titres 1 by 1 using MH
+    this->ibdUpdateProportionGivenHap(llkAtAllSites);
+    // Compute new theta after all proportion and haplotypes are up to date.
+    this->computeAndUpdateTheta();
+
+    this->currentLLks_ = llkAtAllSites;
+    this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
+}
+
+
+void McmcMachinery::ibdUpdateHaplotypesFromPrior(){
     for (size_t i = 0; i < this->nLoci(); i++){
         for ( size_t j = 0; j < kStrain(); j++){
             this->currentHap_[i][j] = (double)this->hprior.hSet[ibdPath[i]][j];
         }
     }
+}
 
-    vector <double> llkAtAllSites = computeLlkAtAllSites();
 
-    ////#Given current haplotypes, sample titres 1 by 1 using MH
+void McmcMachinery::ibdUpdateProportionGivenHap(vector <double> &llkAtAllSites){
     for (size_t i = 0; i < kStrain(); i++){
         double v0 = this->currentTitre_[i];
         vector <double> oldProp = this->currentProp_;
@@ -649,11 +687,6 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
             this->currentProp_ = oldProp;
         }
     }
-
-    this->computeAndUpdateTheta();
-
-    this->currentLLks_ = llkAtAllSites;
-    this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
 

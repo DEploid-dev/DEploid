@@ -89,4 +89,22 @@ class InitialHaplotypes: public Panel{
     ~InitialHaplotypes(){}
 };
 
+
+class IBDrecombProbs: public VariantIndex{
+ friend class McmcMachinery;
+  private:
+    vector < double > pRec_;
+    vector < double > pNoRec_; // = 1.0 - pRec;
+
+    void computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb );
+
+  public:
+    IBDrecombProbs():VariantIndex(){};
+    IBDrecombProbs(vector < vector < int> > position, size_t nLoci){
+        this->position_ = position;
+        this->nLoci_ = nLoci;
+    }
+    ~IBDrecombProbs(){}
+};
+
 #endif

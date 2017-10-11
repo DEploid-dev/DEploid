@@ -94,6 +94,7 @@ class McmcMachinery {
   /* Variables */
     DEploidIO* dEploidIO_;
     Panel* panel_;
+    IBDrecombProbs ibdRecombProbs;
     size_t kStrain_;
     void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}
     size_t kStrain() const { return this->kStrain_;}
@@ -198,9 +199,13 @@ class McmcMachinery {
     void sampleMcmcEventIbdStep();
     void makeIbdTransProbs();
     void initializePropIBD();
+    void ibdBuildPathProbabilities(vector <double> statePrior);
+    void ibdSamplePath(vector <double> statePrior);
     void computeUniqueEffectiveKCount();
     void updateFmAtSiteI(vector <double> & prior,
                          vector <double> & llk);
+    void ibdUpdateHaplotypesFromPrior();
+    void ibdUpdateProportionGivenHap(vector <double> &llkAtAllSites);
     void computeAndUpdateTheta();
 
   /* Moves */
