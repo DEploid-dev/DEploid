@@ -121,7 +121,7 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         (*writeTo) << "MCMC diagnostic:"<< "\n";
         (*writeTo) << setw(19) << " Accept_ratio: " << acceptRatio_ << "\n";
         (*writeTo) << setw(19) << " Max_llks: " << maxLLKs_ << "\n";
-        (*writeTo) << setw(19) << " Mean_theta_llks: " << meanThetallks_ << "\n";
+        (*writeTo) << setw(19) << " Final_theta_llks: " << meanThetallks_ << "\n";
         (*writeTo) << setw(19) << " Mean_llks: " << meanllks_ << "\n";
         (*writeTo) << setw(19) << " Stdv_llks: " << stdvllks_ << "\n";
         (*writeTo) << setw(19) << " DIC_by_Dtheta: " << dicByTheta_ << "\n";
