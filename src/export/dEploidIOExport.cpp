@@ -226,30 +226,21 @@ void DEploidIO::writeEventCount(){
 }
 
 
-void DEploidIO::writeIBDpostProb(vector < vector <double> > & reshapedProbs){
+void DEploidIO::writeIBDpostProb(vector < vector <double> > & reshapedProbs, vector <string> header){
     ofstreamExportTmp.open( strIbdExportProbs.c_str(), ios::out | ios::app | ios::binary );
-    //for (size_t fm_i = 0; fm_i < fm.size(); fm_i++){
-        //ofstreamExportTmp <<
-
-    //}
+    ofstreamExportTmp << "CHROM" << "\t" << "POS" << "\t";
+    for (string tmp : header){
+        ofstreamExportTmp << tmp << ((tmp!=header[header.size()-1])?"\t":"\n");
+    }
 
     size_t siteIndex = 0;
     for ( size_t chromIndex = 0; chromIndex < position_.size(); chromIndex++){
         for ( size_t posI = 0; posI < position_[chromIndex].size(); posI++){
             ofstreamExportTmp << chrom_[chromIndex] << "\t" << (int)position_[chromIndex][posI] << "\t";
-            //assert(stateIdx.size() == fm[siteIndex].size());
-            //size_t previousStateIdx = 0;
-            //double cumProb = 0;
             for (size_t ij = 0; ij < reshapedProbs[siteIndex].size(); ij++){
-                //cumProb += fm[siteIndex][fm_ij];
-                //if (previousStateIdx != stateIdx[fm_ij]){
-                    //previousStateIdx++;
-                    ofstreamExportTmp << reshapedProbs[siteIndex][ij] << "\t";
-                    //cumProb = 0;
-                //}
+                ofstreamExportTmp << reshapedProbs[siteIndex][ij] << "\t";
             }
             ofstreamExportTmp << endl;
-
             siteIndex++;
         }
     }

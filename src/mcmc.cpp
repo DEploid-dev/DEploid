@@ -338,7 +338,8 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ){
 
     if ( useIBD == true ){
         vector < vector <double> > reshapedProbs = this->reshapeFm(fm, hprior.stateIdx);
-        this->dEploidIO_->writeIBDpostProb(reshapedProbs);
+        //vector <string> header = ;
+        this->dEploidIO_->writeIBDpostProb(reshapedProbs, getIBDprobsHeader());
         clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
         this->dEploidIO_->initialProp = averageProportion(this->mcmcSample_->proportion);
         this->dEploidIO_->setInitialPropWasGiven(true);
@@ -352,6 +353,22 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ){
     dout << "###########################################"<< endl;
     dout << "#            MCMC RUN finished            #"<< endl;
     dout << "###########################################"<< endl;
+}
+
+
+vector <string> McmcMachinery::getIBDprobsHeader(){
+    vector <string> ret;
+    for (size_t i = 0; i < hprior.ibdConfig.states.size(); i++){
+        string tmp;
+        for (size_t j = 0; j < hprior.ibdConfig.states[i].size(); j++){
+            stringstream tmp_ss;
+            tmp_ss << hprior.ibdConfig.states[i][j];
+            tmp += tmp_ss.str() + ((j < (hprior.ibdConfig.states[i].size()-1)) ? "-":"");
+        }
+        cout <<tmp<< endl;
+        ret.push_back(tmp);
+    }
+    return ret;
 }
 
 
@@ -468,21 +485,9 @@ vector <size_t> McmcMachinery::findWhichIsSomething(vector <size_t> tmpOp, size_
 
 
 void McmcMachinery::makeIbdTransProbs(){
-    size_t nPattern = hprior.nPattern();
-    for (size_t i = 0; i < hprior.ibdConfig.states.size(); i++){
-        for (size_t j = 0; j < hprior.ibdConfig.states[i].size(); j++){
-            cout << hprior.ibdConfig.states[i][j]<<"-";
-        }
-        cout << endl;
-
-    }
-    cout << "nPattern"<<nPattern << endl;
-    size_t nState = hprior.nState();
-    cout << "nState"<<nState << endl;
     assert(ibdTransProbs.size() == 0);
-
-    for ( size_t i = 0; i < nPattern; i++ ){
-        vector <double> transProbRow(nState);
+    for ( size_t i = 0; i < hprior.nPattern(); i++ ){
+        vector <double> transProbRow(hprior.nState());
         vector <size_t> wi = findWhichIsSomething(hprior.stateIdx, i);
         for (size_t wii : wi){
             transProbRow[wii] = 1;

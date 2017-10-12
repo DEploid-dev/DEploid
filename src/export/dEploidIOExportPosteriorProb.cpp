@@ -83,7 +83,7 @@ void DEploidIO::writeLastSingleFwdProb( vector < vector <double> >& probabilitie
     ofstreamExportFwdProb.open( strExportFwdProb.c_str(), ios::out | ios::app | ios::binary );
 
     if ( chromIndex == 0 ){ // Print header
-        ofstreamExportFwdProb << "CHROM" << "\t" << "POS" << "\t";;
+        ofstreamExportFwdProb << "CHROM" << "\t" << "POS" << "\t";
         for ( size_t ii = 0; ii < probabilities[0].size(); ii++){
             if (this->doAllowInbreeding() == true){
                 if ( ii <= (panelSize - this->kStrain()) ){
