@@ -58,6 +58,7 @@ class IBDconfiguration{
   friend class TestHprior;
 #endif
   friend class Hprior;
+  friend class McmcMachinery;
     IBDconfiguration();
     ~IBDconfiguration();
 

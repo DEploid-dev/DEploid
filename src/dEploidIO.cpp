@@ -260,6 +260,7 @@ void DEploidIO::removeFilesWithSameName(){
     strIbdExportProp = this->prefix_ + ".ibd.prop";
     strIbdExportLLK = this->prefix_ + ".ibd.llk";
     strIbdExportHap = this->prefix_ + ".ibd.hap";
+    strIbdExportProbs = this->prefix_ + ".ibd.probs";
 
     strExportVcf = this->prefix_ + ".vcf";
     if ( compressVcf() ){
@@ -275,6 +276,7 @@ void DEploidIO::removeFilesWithSameName(){
             remove(strIbdExportProp.c_str());
             remove(strIbdExportLLK.c_str());
             remove(strIbdExportHap.c_str());
+            remove(strIbdExportProbs.c_str());
         }
         remove(strExportLLK.c_str());
         remove(strExportHap.c_str());

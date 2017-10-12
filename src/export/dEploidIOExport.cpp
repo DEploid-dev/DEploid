@@ -151,6 +151,7 @@ void DEploidIO::writeLog ( ostream * writeTo ){
             (*writeTo) << setw(14) << "Likelihood: "  << strIbdExportLLK  << "\n";
             (*writeTo) << setw(14) << "Proportions: " << strIbdExportProp << "\n";
             (*writeTo) << setw(14) << "Haplotypes: "  << strIbdExportHap  << "\n";
+            (*writeTo) << setw(14) << "State probs: "  << strIbdExportProbs  << "\n";
         }
     }
     (*writeTo) << "\n";
@@ -161,9 +162,6 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     }
 
 }
-
-
-
 
 
 void DEploidIO::writeEventCount(){
@@ -227,3 +225,34 @@ void DEploidIO::writeEventCount(){
     ofstreamExportTmp.close();
 }
 
+
+void DEploidIO::writeIBDpostProb(vector < vector <double> > & reshapedProbs){
+    ofstreamExportTmp.open( strIbdExportProbs.c_str(), ios::out | ios::app | ios::binary );
+    //for (size_t fm_i = 0; fm_i < fm.size(); fm_i++){
+        //ofstreamExportTmp <<
+
+    //}
+
+    size_t siteIndex = 0;
+    for ( size_t chromIndex = 0; chromIndex < position_.size(); chromIndex++){
+        for ( size_t posI = 0; posI < position_[chromIndex].size(); posI++){
+            ofstreamExportTmp << chrom_[chromIndex] << "\t" << (int)position_[chromIndex][posI] << "\t";
+            //assert(stateIdx.size() == fm[siteIndex].size());
+            //size_t previousStateIdx = 0;
+            //double cumProb = 0;
+            for (size_t ij = 0; ij < reshapedProbs[siteIndex].size(); ij++){
+                //cumProb += fm[siteIndex][fm_ij];
+                //if (previousStateIdx != stateIdx[fm_ij]){
+                    //previousStateIdx++;
+                    ofstreamExportTmp << reshapedProbs[siteIndex][ij] << "\t";
+                    //cumProb = 0;
+                //}
+            }
+            ofstreamExportTmp << endl;
+
+            siteIndex++;
+        }
+    }
+    ofstreamExportTmp.close();
+    assert(siteIndex == nLoci());
+}

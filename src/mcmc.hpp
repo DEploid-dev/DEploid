@@ -190,13 +190,13 @@ class McmcMachinery {
     vector <double> computeLlkAtAllSites(double err = 0.01);
     vector <double> averageProportion(vector < vector <double> > &proportion );
 
-    void initializeIbdEssentials();
+    void ibdInitializeEssentials();
     void makeLlkSurf(vector <double> altCount,
                      vector <double> refCount,
                      double scalingConst = 100.0,
                      double err = 0.01,
                      size_t gridSize=99);
-    void sampleMcmcEventIbdStep();
+    void ibdSampleMcmcEventStep();
     void makeIbdTransProbs();
     void initializePropIBD();
     void ibdBuildPathProbabilities(vector <double> statePrior);
@@ -207,6 +207,7 @@ class McmcMachinery {
     void ibdUpdateHaplotypesFromPrior();
     void ibdUpdateProportionGivenHap(vector <double> &llkAtAllSites);
     void computeAndUpdateTheta();
+    vector < vector <double> > reshapeFm(vector < vector <double> > &fm, vector <size_t> stateIdx);
 
   /* Moves */
     void updateProportion();
