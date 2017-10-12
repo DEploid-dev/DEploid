@@ -106,6 +106,12 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         dEploidIO_->altCount_ = vector<double> ({100, 10, 6});
         dEploidIO_->refCount_ = vector<double> ({9, 10, 106});
         dEploidIO_->plaf_ = vector<double> ({0.1, .4, .4});
+        vector < vector <int> > testPosition;
+        testPosition.push_back(vector<int> ({200, 3000}));
+        testPosition.push_back(vector<int> ({300}));
+        dEploidIO_->position_ = testPosition;
+        dEploidIO_->nLoci_ = 3;
+        dEploidIO_->chrom_ = vector <string> ({"chrom1", "chrom2"});
         rg_ = new MersenneTwister(dEploidIO_->randomSeed());
         mcmcMachinery_ = new McmcMachinery(this->dEploidIO_, this->mcmcSample_, this->rg_ );
         mcmcMachineryIbd_ = new McmcMachinery(this->dEploidIO_, this->mcmcSampleIbd_, this->rg_, true);

@@ -337,9 +337,9 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ){
     }
 
     if ( useIBD == true ){
-        vector < vector <double> > reshapedProbs = this->reshapeFm(fm, hprior.stateIdx);
+        vector < vector <double> > reshapedProbs = this->reshapeFm(hprior.stateIdx);
         this->dEploidIO_->ibdProbsHeader = getIBDprobsHeader();
-        this->dEploidIO_->ibdProbsIntegrated = getIBDprobsIntegrated();
+        this->dEploidIO_->ibdProbsIntegrated = getIBDprobsIntegrated(reshapedProbs);
         this->dEploidIO_->writeIBDpostProb(reshapedProbs, this->dEploidIO_->ibdProbsHeader);
         clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
         this->dEploidIO_->initialProp = averageProportion(this->mcmcSample_->proportion);
@@ -357,11 +357,11 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ){
 }
 
 
-vector <double> McmcMachinery::getIBDprobsIntegrated(){
+vector <double> McmcMachinery::getIBDprobsIntegrated(vector < vector <double> > &prob){
     vector <double> ret(this->hprior.ibdConfig.states.size());
     for (size_t i = 0; i < hprior.ibdConfig.states.size(); i++){
         for ( size_t siteIndex = 0; siteIndex < this->dEploidIO_->nLoci(); siteIndex++ ){
-            ret[i] += fm[siteIndex][i];
+            ret[i] += prob[siteIndex][i];
         }
     }
     normalizeBySum(ret);
@@ -384,14 +384,14 @@ vector <string> McmcMachinery::getIBDprobsHeader(){
 }
 
 
-vector < vector <double> > McmcMachinery::reshapeFm(vector < vector <double> > &fm, vector <size_t> stateIdx){
+vector < vector <double> > McmcMachinery::reshapeFm(vector <size_t> stateIdx){
     vector < vector <double> > ret;
-    for ( size_t siteIndex = 0; siteIndex < fm.size(); siteIndex++){
+    for ( size_t siteIndex = 0; siteIndex < this->fm.size(); siteIndex++){
         size_t previousStateIdx = 0;
         vector <double> tmpRow;
         double cumProb = 0;
-        for (size_t fm_ij = 0; fm_ij < fm[siteIndex].size(); fm_ij++){
-            cumProb += fm[siteIndex][fm_ij];
+        for (size_t fm_ij = 0; fm_ij < this->fm[siteIndex].size(); fm_ij++){
+            cumProb += this->fm[siteIndex][fm_ij];
             if (previousStateIdx != stateIdx[fm_ij]){
                 previousStateIdx++;
                 tmpRow.push_back(cumProb);
@@ -642,7 +642,6 @@ void McmcMachinery::ibdBuildPathProbabilities(vector <double> statePrior){
         for ( size_t stateIdxTmp : hprior.stateIdx ){
             vNoRec.push_back(this->fSumState[stateIdxTmp]);
         }
-
         for ( size_t i = 0; i < hprior.nState(); i++ ){
             vPrior[i] = (vNoRec[i] * this->ibdRecombProbs.pNoRec_[siteI] + fSum * this->ibdRecombProbs.pRec_[siteI] * statePrior[i]) * hprior.priorProbTrans[siteI][i];
         }

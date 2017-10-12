@@ -231,23 +231,35 @@ void DEploidIO::writeEventCount(){
 
 
 void DEploidIO::writeIBDpostProb(vector < vector <double> > & reshapedProbs, vector <string> header){
-    ofstreamExportTmp.open( strIbdExportProbs.c_str(), ios::out | ios::app | ios::binary );
-    ofstreamExportTmp << "CHROM" << "\t" << "POS" << "\t";
+    ostream * writeTo;
+    #ifdef UNITTEST
+        writeTo = &std::cout;
+    #endif
+
+    #ifndef UNITTEST
+        ofstreamExportTmp.open( strIbdExportProbs.c_str(), ios::out | ios::app | ios::binary );
+        writeTo = &ofstreamExportTmp;
+    #endif
+
+    (*writeTo) << "CHROM" << "\t" << "POS" << "\t";
     for (string tmp : header){
-        ofstreamExportTmp << tmp << ((tmp!=header[header.size()-1])?"\t":"\n");
+        (*writeTo) << tmp << ((tmp!=header[header.size()-1])?"\t":"\n");
     }
 
     size_t siteIndex = 0;
     for ( size_t chromIndex = 0; chromIndex < position_.size(); chromIndex++){
         for ( size_t posI = 0; posI < position_[chromIndex].size(); posI++){
-            ofstreamExportTmp << chrom_[chromIndex] << "\t" << (int)position_[chromIndex][posI] << "\t";
+            (*writeTo) << chrom_[chromIndex] << "\t" << (int)position_[chromIndex][posI] << "\t";
             for (size_t ij = 0; ij < reshapedProbs[siteIndex].size(); ij++){
-                ofstreamExportTmp << reshapedProbs[siteIndex][ij] << "\t";
+                (*writeTo) << reshapedProbs[siteIndex][ij] << "\t";
             }
-            ofstreamExportTmp << endl;
+            (*writeTo) << endl;
             siteIndex++;
         }
     }
-    ofstreamExportTmp.close();
     assert(siteIndex == nLoci());
+
+    #ifndef UNITTEST
+        ofstreamExportTmp.close();
+    #endif
 }

@@ -207,9 +207,9 @@ class McmcMachinery {
     void ibdUpdateHaplotypesFromPrior();
     void ibdUpdateProportionGivenHap(vector <double> &llkAtAllSites);
     void computeAndUpdateTheta();
-    vector < vector <double> > reshapeFm(vector < vector <double> > &fm, vector <size_t> stateIdx);
+    vector < vector <double> > reshapeFm(vector <size_t> stateIdx);
     vector <string> getIBDprobsHeader();
-    vector <double> getIBDprobsIntegrated();
+    vector <double> getIBDprobsIntegrated(vector < vector <double> > &prob);
 
   /* Moves */
     void updateProportion();
