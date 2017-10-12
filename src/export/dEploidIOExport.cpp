@@ -151,7 +151,11 @@ void DEploidIO::writeLog ( ostream * writeTo ){
             (*writeTo) << setw(14) << "Likelihood: "  << strIbdExportLLK  << "\n";
             (*writeTo) << setw(14) << "Proportions: " << strIbdExportProp << "\n";
             (*writeTo) << setw(14) << "Haplotypes: "  << strIbdExportHap  << "\n";
-            (*writeTo) << setw(14) << "State probs: "  << strIbdExportProbs  << "\n";
+            (*writeTo) << setw(14) << "State probs: "  << strIbdExportProbs  << "\n\n";
+            (*writeTo) << " IBD probabilities:\n";
+            for ( size_t stateI = 0; stateI < this->ibdProbsHeader.size(); stateI++ ){
+                (*writeTo) << setw(14) << this->ibdProbsHeader[stateI] << ": " << this->ibdProbsIntegrated[stateI] << "\n";
+            }
         }
     }
     (*writeTo) << "\n";

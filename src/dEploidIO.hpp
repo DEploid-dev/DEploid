@@ -272,6 +272,8 @@ class DEploidIO{
     // log and export resutls
     void writeRecombProb ( Panel * panel );
     void writeIBDpostProb(vector < vector <double> > & reshapedProbs, vector <string> header);
+    vector <string> ibdProbsHeader;
+    vector <double> ibdProbsIntegrated;
 
     void writeLLK (McmcSample * mcmcSample, bool useIBD = false);
     void writeProp (McmcSample * mcmcSample, bool useIBD = false);

@@ -209,6 +209,7 @@ class McmcMachinery {
     void computeAndUpdateTheta();
     vector < vector <double> > reshapeFm(vector < vector <double> > &fm, vector <size_t> stateIdx);
     vector <string> getIBDprobsHeader();
+    vector <double> getIBDprobsIntegrated();
 
   /* Moves */
     void updateProportion();
