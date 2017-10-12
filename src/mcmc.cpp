@@ -56,7 +56,7 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, McmcSample *mcmcSample, Rando
         this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
     }
     this->MN_LOG_TITRE = 0.0;
-    this->SD_LOG_TITRE = this->dEploidIO_->parameterSigma();
+    this->SD_LOG_TITRE = (useIBD == true) ? this->dEploidIO_->ibdSigma() : this->dEploidIO_->parameterSigma();
     this->PROP_SCALE = 40.0;
 
     stdNorm_ = new StandNormalRandomSample(this->seed_);
@@ -101,7 +101,7 @@ void McmcMachinery::initializeMcmcChain(bool useIBD){
     }
 
     if ( useIBD == true ){
-        this->initializeIbdEssentials();
+        this->ibdInitializeEssentials();
     }
 
     this->mcmcSample_->IBDpathChangeAt = vector <double> (this->nLoci());
@@ -289,7 +289,7 @@ void McmcMachinery::makeLlkSurf(vector <double> altCount, vector <double> refCou
 
 void McmcMachinery::initializePropIBD(){
     //#Initialise titres and convert to proportions
-    this->initializeTitre();
+    //this->initializeTitre();
     this->currentProp_ = ( this->dEploidIO_ -> initialPropWasGiven()) ?
                           this->dEploidIO_ ->initialProp:
                           this->titre2prop( this->currentTitre_ );
@@ -337,6 +337,10 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ){
     }
 
     if ( useIBD == true ){
+        vector < vector <double> > reshapedProbs = this->reshapeFm(hprior.stateIdx);
+        this->dEploidIO_->ibdProbsHeader = getIBDprobsHeader();
+        this->dEploidIO_->ibdProbsIntegrated = getIBDprobsIntegrated(reshapedProbs);
+        this->dEploidIO_->writeIBDpostProb(reshapedProbs, this->dEploidIO_->ibdProbsHeader);
         clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
         this->dEploidIO_->initialProp = averageProportion(this->mcmcSample_->proportion);
         this->dEploidIO_->setInitialPropWasGiven(true);
@@ -350,6 +354,55 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ){
     dout << "###########################################"<< endl;
     dout << "#            MCMC RUN finished            #"<< endl;
     dout << "###########################################"<< endl;
+}
+
+
+vector <double> McmcMachinery::getIBDprobsIntegrated(vector < vector <double> > &prob){
+    vector <double> ret(this->hprior.ibdConfig.states.size());
+    for (size_t i = 0; i < hprior.ibdConfig.states.size(); i++){
+        for ( size_t siteIndex = 0; siteIndex < this->dEploidIO_->nLoci(); siteIndex++ ){
+            ret[i] += prob[siteIndex][i];
+        }
+    }
+    normalizeBySum(ret);
+    return ret;
+}
+
+
+vector <string> McmcMachinery::getIBDprobsHeader(){
+    vector <string> ret;
+    for (size_t i = 0; i < hprior.ibdConfig.states.size(); i++){
+        string tmp;
+        for (size_t j = 0; j < hprior.ibdConfig.states[i].size(); j++){
+            stringstream tmp_ss;
+            tmp_ss << hprior.ibdConfig.states[i][j];
+            tmp += tmp_ss.str() + ((j < (hprior.ibdConfig.states[i].size()-1)) ? "-":"");
+        }
+        ret.push_back(tmp);
+    }
+    return ret;
+}
+
+
+vector < vector <double> > McmcMachinery::reshapeFm(vector <size_t> stateIdx){
+    vector < vector <double> > ret;
+    for ( size_t siteIndex = 0; siteIndex < this->fm.size(); siteIndex++){
+        size_t previousStateIdx = 0;
+        vector <double> tmpRow;
+        double cumProb = 0;
+        for (size_t fm_ij = 0; fm_ij < this->fm[siteIndex].size(); fm_ij++){
+            cumProb += this->fm[siteIndex][fm_ij];
+            if (previousStateIdx != stateIdx[fm_ij]){
+                previousStateIdx++;
+                tmpRow.push_back(cumProb);
+                cumProb = 0;
+            }
+        }
+        tmpRow.push_back(cumProb);
+        normalizeBySum(tmpRow);
+        ret.push_back(tmpRow);
+    }
+    return ret;
 }
 
 
@@ -411,7 +464,7 @@ vector <double> McmcMachinery::averageProportion(vector < vector <double> > &pro
 void McmcMachinery::sampleMcmcEvent( bool useIBD ){
     this->recordingMcmcBool_ = ( currentMcmcIteration_ > this->mcmcThresh_ && currentMcmcIteration_ % this->McmcMachineryRate_ == 0 );
     if ( useIBD == true ){
-        sampleMcmcEventIbdStep();
+        ibdSampleMcmcEventStep();
         assert(doutProp());
     } else {
         this->eventInt_ = this->mcmcEventRg_->sampleInt(3);
@@ -444,12 +497,9 @@ vector <size_t> McmcMachinery::findWhichIsSomething(vector <size_t> tmpOp, size_
 
 
 void McmcMachinery::makeIbdTransProbs(){
-    size_t nPattern = hprior.nPattern();
-    size_t nState = hprior.nState();
     assert(ibdTransProbs.size() == 0);
-
-    for ( size_t i = 0; i < nPattern; i++ ){
-        vector <double> transProbRow(nState);
+    for ( size_t i = 0; i < hprior.nPattern(); i++ ){
+        vector <double> transProbRow(hprior.nState());
         vector <size_t> wi = findWhichIsSomething(hprior.stateIdx, i);
         for (size_t wii : wi){
             transProbRow[wii] = 1;
@@ -492,7 +542,7 @@ vector <double> McmcMachinery::computeStatePrior( double theta ){
 }
 
 
-void McmcMachinery::initializeIbdEssentials(){
+void McmcMachinery::ibdInitializeEssentials(){
     // initialize haplotype prior
     this->hprior.buildHprior(this->kStrain(), this->dEploidIO_->plaf_);
     this->hprior.transposePriorProbs();
@@ -518,6 +568,13 @@ void McmcMachinery::initializeIbdEssentials(){
 
     // initialize ibdPath
     this->ibdPath = vector <size_t> (this->nLoci());
+
+    // initialize recombination probabilities;
+    this->ibdRecombProbs = IBDrecombProbs(this->dEploidIO_->position_, this->dEploidIO_->nLoci_);
+    this->ibdRecombProbs.computeRecombProbs( this->dEploidIO_->averageCentimorganDistance(),
+                                             this->dEploidIO_->parameterG(),
+                                             this->dEploidIO_->useConstRecomb(),
+                                             this->dEploidIO_->constRecombProb());
 }
 
 
@@ -574,11 +631,8 @@ vector <double> McmcMachinery::computeLlkAtAllSites(double err){
 }
 
 
-void McmcMachinery::sampleMcmcEventIbdStep(){
+void McmcMachinery::ibdBuildPathProbabilities(vector <double> statePrior){
     this->fm.clear();
-    double pRecomb = 0.01; // This should be parsed in
-    double pNoRecomb = 0.99;
-    vector <double> statePrior = this->computeStatePrior(this->theta());
     vector <double> vPrior = vecProd(statePrior, this->hprior.priorProbTrans[0]);
 
     vector <double> lk = computeLlkOfStatesAtSiteI(0);
@@ -588,16 +642,17 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
         for ( size_t stateIdxTmp : hprior.stateIdx ){
             vNoRec.push_back(this->fSumState[stateIdxTmp]);
         }
-
         for ( size_t i = 0; i < hprior.nState(); i++ ){
-            vPrior[i] = (vNoRec[i] * pNoRecomb + fSum * pRecomb * statePrior[i]) * hprior.priorProbTrans[siteI][i];
+            vPrior[i] = (vNoRec[i] * this->ibdRecombProbs.pNoRec_[siteI] + fSum * this->ibdRecombProbs.pRec_[siteI] * statePrior[i]) * hprior.priorProbTrans[siteI][i];
         }
 
         lk = computeLlkOfStatesAtSiteI(siteI);
         this->updateFmAtSiteI(vPrior, lk);
     }
+}
 
-    ////#Now sample path given matrix
+
+void McmcMachinery::ibdSamplePath(vector <double> statePrior){
     int lociIdx = this->nLoci()-1;
     vector <double> tmpProp = fm[lociIdx];
     (void)normalizeBySum(tmpProp);
@@ -612,7 +667,7 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
         assert(vRecomb.size() == this->hprior.nState());
         vector <double> prop (this->hprior.nState());
         for ( size_t i = 0; i < prop.size(); i++){
-            prop[i] = vNoRecomb[i]*pNoRecomb + vRecomb[i]*pRecomb*statePrior[ibdPath[lociIdx+1]];
+            prop[i] = vNoRecomb[i]*this->ibdRecombProbs.pNoRec_[lociIdx] + vRecomb[i]*this->ibdRecombProbs.pRec_[lociIdx]*statePrior[ibdPath[lociIdx+1]];
         }
         tmpProp = prop;
         (void)normalizeBySum(tmpProp);
@@ -620,17 +675,40 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
         assert( ibdPath[lociIdx] < this->hprior.nState() );
         assert( ibdPath[lociIdx] >= 0 );
     }
+}
+
+
+void McmcMachinery::ibdSampleMcmcEventStep(){
+    vector <double> statePrior = this->computeStatePrior(this->theta());
+    // First building the path likelihood
+    this->ibdBuildPathProbabilities(statePrior);
+
+    ////#Now sample path given matrix
+    this->ibdSamplePath(statePrior);
 
     //#Get haplotypes and update LLK for each site
+    this->ibdUpdateHaplotypesFromPrior();
+    vector <double> llkAtAllSites = computeLlkAtAllSites();
+    ////#Given current haplotypes, sample titres 1 by 1 using MH
+    this->ibdUpdateProportionGivenHap(llkAtAllSites);
+    // Compute new theta after all proportion and haplotypes are up to date.
+    this->computeAndUpdateTheta();
+
+    this->currentLLks_ = llkAtAllSites;
+    this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
+}
+
+
+void McmcMachinery::ibdUpdateHaplotypesFromPrior(){
     for (size_t i = 0; i < this->nLoci(); i++){
         for ( size_t j = 0; j < kStrain(); j++){
             this->currentHap_[i][j] = (double)this->hprior.hSet[ibdPath[i]][j];
         }
     }
+}
 
-    vector <double> llkAtAllSites = computeLlkAtAllSites();
 
-    ////#Given current haplotypes, sample titres 1 by 1 using MH
+void McmcMachinery::ibdUpdateProportionGivenHap(vector <double> &llkAtAllSites){
     for (size_t i = 0; i < kStrain(); i++){
         double v0 = this->currentTitre_[i];
         vector <double> oldProp = this->currentProp_;
@@ -649,11 +727,6 @@ void McmcMachinery::sampleMcmcEventIbdStep(){
             this->currentProp_ = oldProp;
         }
     }
-
-    this->computeAndUpdateTheta();
-
-    this->currentLLks_ = llkAtAllSites;
-    this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
 

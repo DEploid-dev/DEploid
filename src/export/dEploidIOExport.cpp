@@ -107,7 +107,11 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     (*writeTo) << setw(20) << " Miss copy prob: "   << this->missCopyProb_ << "\n";
     (*writeTo) << setw(20) << " Avrg Cent Morgan: " << this->averageCentimorganDistance_ << "\n";
     (*writeTo) << setw(20) << " G: "               << this->parameterG() << "\n";
+    if (this->useIBD()){
+    (*writeTo) << setw(20) << " IBD sigma: "               << this->ibdSigma() << "\n";
+    } else {
     (*writeTo) << setw(20) << " sigma: "               << this->parameterSigma() << "\n";
+    }
     (*writeTo) << setw(20) << " ScalingFactor: "    << this->scalingFactor() << "\n";
     if ( this->initialPropWasGiven() ){
         (*writeTo) << setw(20) << " Initial prob: " ;
@@ -121,7 +125,7 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         (*writeTo) << "MCMC diagnostic:"<< "\n";
         (*writeTo) << setw(19) << " Accept_ratio: " << acceptRatio_ << "\n";
         (*writeTo) << setw(19) << " Max_llks: " << maxLLKs_ << "\n";
-        (*writeTo) << setw(19) << " Mean_theta_llks: " << meanThetallks_ << "\n";
+        (*writeTo) << setw(19) << " Final_theta_llks: " << meanThetallks_ << "\n";
         (*writeTo) << setw(19) << " Mean_llks: " << meanllks_ << "\n";
         (*writeTo) << setw(19) << " Stdv_llks: " << stdvllks_ << "\n";
         (*writeTo) << setw(19) << " DIC_by_Dtheta: " << dicByTheta_ << "\n";
@@ -147,6 +151,11 @@ void DEploidIO::writeLog ( ostream * writeTo ){
             (*writeTo) << setw(14) << "Likelihood: "  << strIbdExportLLK  << "\n";
             (*writeTo) << setw(14) << "Proportions: " << strIbdExportProp << "\n";
             (*writeTo) << setw(14) << "Haplotypes: "  << strIbdExportHap  << "\n";
+            (*writeTo) << setw(14) << "State probs: "  << strIbdExportProbs  << "\n\n";
+            (*writeTo) << " IBD probabilities:\n";
+            for ( size_t stateI = 0; stateI < this->ibdProbsHeader.size(); stateI++ ){
+                (*writeTo) << setw(14) << this->ibdProbsHeader[stateI] << ": " << this->ibdProbsIntegrated[stateI] << "\n";
+            }
         }
     }
     (*writeTo) << "\n";
@@ -157,9 +166,6 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     }
 
 }
-
-
-
 
 
 void DEploidIO::writeEventCount(){
@@ -223,3 +229,37 @@ void DEploidIO::writeEventCount(){
     ofstreamExportTmp.close();
 }
 
+
+void DEploidIO::writeIBDpostProb(vector < vector <double> > & reshapedProbs, vector <string> header){
+    ostream * writeTo;
+    #ifdef UNITTEST
+        writeTo = &std::cout;
+    #endif
+
+    #ifndef UNITTEST
+        ofstreamExportTmp.open( strIbdExportProbs.c_str(), ios::out | ios::app | ios::binary );
+        writeTo = &ofstreamExportTmp;
+    #endif
+
+    (*writeTo) << "CHROM" << "\t" << "POS" << "\t";
+    for (string tmp : header){
+        (*writeTo) << tmp << ((tmp!=header[header.size()-1])?"\t":"\n");
+    }
+
+    size_t siteIndex = 0;
+    for ( size_t chromIndex = 0; chromIndex < position_.size(); chromIndex++){
+        for ( size_t posI = 0; posI < position_[chromIndex].size(); posI++){
+            (*writeTo) << chrom_[chromIndex] << "\t" << (int)position_[chromIndex][posI] << "\t";
+            for (size_t ij = 0; ij < reshapedProbs[siteIndex].size(); ij++){
+                (*writeTo) << reshapedProbs[siteIndex][ij] << "\t";
+            }
+            (*writeTo) << endl;
+            siteIndex++;
+        }
+    }
+    assert(siteIndex == nLoci());
+
+    #ifndef UNITTEST
+        ofstreamExportTmp.close();
+    #endif
+}

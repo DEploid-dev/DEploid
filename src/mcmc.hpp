@@ -94,6 +94,7 @@ class McmcMachinery {
   /* Variables */
     DEploidIO* dEploidIO_;
     Panel* panel_;
+    IBDrecombProbs ibdRecombProbs;
     size_t kStrain_;
     void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}
     size_t kStrain() const { return this->kStrain_;}
@@ -189,19 +190,26 @@ class McmcMachinery {
     vector <double> computeLlkAtAllSites(double err = 0.01);
     vector <double> averageProportion(vector < vector <double> > &proportion );
 
-    void initializeIbdEssentials();
+    void ibdInitializeEssentials();
     void makeLlkSurf(vector <double> altCount,
                      vector <double> refCount,
                      double scalingConst = 100.0,
                      double err = 0.01,
                      size_t gridSize=99);
-    void sampleMcmcEventIbdStep();
+    void ibdSampleMcmcEventStep();
     void makeIbdTransProbs();
     void initializePropIBD();
+    void ibdBuildPathProbabilities(vector <double> statePrior);
+    void ibdSamplePath(vector <double> statePrior);
     void computeUniqueEffectiveKCount();
     void updateFmAtSiteI(vector <double> & prior,
                          vector <double> & llk);
+    void ibdUpdateHaplotypesFromPrior();
+    void ibdUpdateProportionGivenHap(vector <double> &llkAtAllSites);
     void computeAndUpdateTheta();
+    vector < vector <double> > reshapeFm(vector <size_t> stateIdx);
+    vector <string> getIBDprobsHeader();
+    vector <double> getIBDprobsIntegrated(vector < vector <double> > &prob);
 
   /* Moves */
     void updateProportion();

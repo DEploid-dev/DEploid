@@ -271,6 +271,10 @@ class DEploidIO{
 
     // log and export resutls
     void writeRecombProb ( Panel * panel );
+    void writeIBDpostProb(vector < vector <double> > & reshapedProbs, vector <string> header);
+    vector <string> ibdProbsHeader;
+    vector <double> ibdProbsIntegrated;
+
     void writeLLK (McmcSample * mcmcSample, bool useIBD = false);
     void writeProp (McmcSample * mcmcSample, bool useIBD = false);
     void writeHap (McmcSample * mcmcSample, bool useIBD = false);
@@ -311,6 +315,9 @@ class DEploidIO{
     double parameterSigma_;
     void setParameterSigma ( const double setTo ) { this->parameterSigma_ = setTo; }
     double parameterSigma() const { return this->parameterSigma_; }
+    double ibdSigma_;
+    void setIBDSigma ( const double setTo ){ this->ibdSigma_ = setTo; }
+    double ibdSigma() const {return this->ibdSigma_;}
 
     size_t nLoci() const { return this->nLoci_; }
     void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}

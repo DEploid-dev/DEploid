@@ -126,7 +126,7 @@ void DEploidIO::init() {
     this->setScalingFactor(100.0);
     this->setParameterG(20.0);
     this->setParameterSigma(5.0);
-
+    this->setIBDSigma(20.0);
     this->setUseVcf(false);
     this->vcfReaderPtr_ = NULL;
     this->setDoExportVcf(false);
@@ -260,6 +260,7 @@ void DEploidIO::removeFilesWithSameName(){
     strIbdExportProp = this->prefix_ + ".ibd.prop";
     strIbdExportLLK = this->prefix_ + ".ibd.llk";
     strIbdExportHap = this->prefix_ + ".ibd.hap";
+    strIbdExportProbs = this->prefix_ + ".ibd.probs";
 
     strExportVcf = this->prefix_ + ".vcf";
     if ( compressVcf() ){
@@ -275,6 +276,7 @@ void DEploidIO::removeFilesWithSameName(){
             remove(strIbdExportProp.c_str());
             remove(strIbdExportLLK.c_str());
             remove(strIbdExportHap.c_str());
+            remove(strIbdExportProbs.c_str());
         }
         remove(strExportLLK.c_str());
         remove(strExportHap.c_str());
@@ -385,6 +387,8 @@ void DEploidIO::parse (){
             this->setParameterG(readNextInput<double>());
         } else if ( *argv_i == "-sigma" ) {
             this->setParameterSigma(readNextInput<double>());
+        } else if ( *argv_i == "-ibdSigma" ) {
+            this->setIBDSigma(readNextInput<double>());
         } else if ( *argv_i == "-recomb" ) {
             this->constRecombProb_ = readNextInput<double>();
             this->useConstRecomb_ = true;
