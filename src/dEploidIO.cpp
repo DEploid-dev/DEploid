@@ -276,13 +276,13 @@ void DEploidIO::removeFilesWithSameName(){
             remove(strIbdExportProp.c_str());
             remove(strIbdExportLLK.c_str());
             remove(strIbdExportHap.c_str());
-            remove(strIbdExportProbs.c_str());
         }
         remove(strExportLLK.c_str());
         remove(strExportHap.c_str());
         remove(strExportVcf.c_str());
         remove(strExportProp.c_str());
         remove(strExportExtra.c_str());
+        remove(strIbdExportProbs.c_str());
     }
 
     if (this->doPainting() || this->doExportPostProb() ){
