@@ -33,6 +33,7 @@
 #include "exceptions.hpp"
 #include "panel.hpp"
 #include "vcfReader.hpp"
+#include "mersenne_twister.hpp" // This is because paintIBD needs rg, need to redo this
 
 
 #ifndef PARAM
@@ -53,6 +54,7 @@ class DEploidIO{
  friend class RMcmcSample;
   public:
     DEploidIO();
+    DEploidIO(const DEploidIO &currentDEploidIO);
     DEploidIO(const std::string &arg);
     DEploidIO(int argc, char *argv[]);
     ~DEploidIO ();
@@ -72,6 +74,8 @@ class DEploidIO{
 
     friend std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO);
     size_t randomSeed() const { return randomSeed_;}
+
+    void paintIBD( vector < vector <double> > &haps, RandomGenerator* rg_);
 
   private:
     void core();
@@ -112,7 +116,7 @@ class DEploidIO{
     bool useIBD_;
 
     vector <double> initialProp;
-    vector <double> filnalProp;
+    vector <double> finalProp;
     vector < vector <double> > initialHap;
     vector <string> chrom_;
     vector < size_t > indexOfChromStarts_;
@@ -343,6 +347,8 @@ class DEploidIO{
 
     bool forbidCopyFromSame() const { return this->forbidCopyFromSame_; }
     void setForbidCopyFromSame(const bool forbid){ this->forbidCopyFromSame_ = forbid; }
+
+
 };
 
 #endif

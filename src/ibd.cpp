@@ -177,7 +177,6 @@ void Hprior::buildHprior(size_t kStrain, vector <double> &plaf){
     this->setKstrain(kStrain);
     this->setnLoci(this->plaf_.size());
     vector < vector<int> > hSetBase = enumerateBinaryMatrixOfK(this->kStrain());
-
     size_t stateI = 0;
     for ( vector<int> state : ibdConfig.states ) {
         set <int> stateUnique (state.begin(), state.end());

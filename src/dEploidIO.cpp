@@ -276,13 +276,13 @@ void DEploidIO::removeFilesWithSameName(){
             remove(strIbdExportProp.c_str());
             remove(strIbdExportLLK.c_str());
             remove(strIbdExportHap.c_str());
-            remove(strIbdExportProbs.c_str());
         }
         remove(strExportLLK.c_str());
         remove(strExportHap.c_str());
         remove(strExportVcf.c_str());
         remove(strExportProp.c_str());
         remove(strExportExtra.c_str());
+        remove(strIbdExportProbs.c_str());
     }
 
     if (this->doPainting() || this->doExportPostProb() ){
@@ -609,7 +609,7 @@ void DEploidIO::chromPainting(){
     }
 
     for ( auto const& value: this->initialProp ){
-        this->filnalProp.push_back(value);
+        this->finalProp.push_back(value);
     }
 
     // Painting posterior probabilities
@@ -633,7 +633,7 @@ void DEploidIO::chromPainting(){
     for ( size_t i = 0; i < this->initialHap.size(); i++ ){
         assert( kStrain_ == this->initialHap[i].size() );
         for ( size_t k = 0; k < this->kStrain_; k++){
-            expectedWsaf[i] += this->initialHap[i][k] * filnalProp[k];
+            expectedWsaf[i] += this->initialHap[i][k] * finalProp[k];
         }
         assert ( expectedWsaf[i] >= 0 );
         //assert ( expectedWsaf[i] <= 1.0 );
@@ -659,7 +659,7 @@ void DEploidIO::chromPainting(){
                                       this->altCount_,
                                       this->plaf_,
                                       expectedWsaf,
-                                      this->filnalProp, this->initialHap, &tmpRg,
+                                      this->finalProp, this->initialHap, &tmpRg,
                                       start, length,
                                       this->panel, this->missCopyProb_, this->scalingFactor(),
                                       tmpk);
@@ -667,7 +667,7 @@ void DEploidIO::chromPainting(){
             if ( this->doAllowInbreeding() == true ){
                 updatingSingle.setPanelSize(this->panel->inbreedingPanelSize());
             }
-            updatingSingle.painting( refCount_, altCount_, expectedWsaf, this->filnalProp, this->initialHap);
+            updatingSingle.painting( refCount_, altCount_, expectedWsaf, this->finalProp, this->initialHap);
             //this->writeLastSingleFwdProb( updatingSingle.fwdProbs_, chromi, tmpk, false ); // false as not using ibd
             this->writeLastSingleFwdProb( updatingSingle.fwdBwdProbs_, chromi, tmpk, false ); // false as not using ibd
         }
@@ -689,5 +689,14 @@ void DEploidIO::readPanel(){
     panel->computeRecombProbs( this->averageCentimorganDistance(), this->parameterG(), this->useConstRecomb(), this->constRecombProb(), this->forbidCopyFromSame() );
     panel->checkForExceptions( this->nLoci(), this->panelFileName_ );
 }
+
+
+DEploidIO::DEploidIO(const DEploidIO &currentDEploidIO){
+    // This is not working! to be improved
+    cout << this->refCount_.size() << endl;
+    this->refCount_ = currentDEploidIO.refCount_;
+    cout << this->refCount_.size() << endl;
+}
+
 
 

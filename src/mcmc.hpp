@@ -83,6 +83,7 @@ class McmcMachinery {
 #ifdef UNITTEST
   friend class TestMcmcMachinery;
 #endif
+  friend class DEploidIO;
   public:
     //McmcMachinery();
     McmcMachinery( DEploidIO* dEplioidIO, McmcSample *mcmcSample, RandomGenerator* rg_, bool useIBD = false );
@@ -210,6 +211,8 @@ class McmcMachinery {
     vector < vector <double> > reshapeFm(vector <size_t> stateIdx);
     vector <string> getIBDprobsHeader();
     vector <double> getIBDprobsIntegrated(vector < vector <double> > &prob);
+    void buildPathProbabilityForPainting();
+
 
   /* Moves */
     void updateProportion();

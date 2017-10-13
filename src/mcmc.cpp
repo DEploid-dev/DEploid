@@ -320,7 +320,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ){
 
     this->writeLastFwdProb(useIBD);
 
-    this->dEploidIO_->filnalProp = this->mcmcSample_->proportion.back();
+    this->dEploidIO_->finalProp = this->mcmcSample_->proportion.back();
 
     for (size_t atSiteI = 0; atSiteI < nLoci(); atSiteI++ ){
         this->mcmcSample_->IBDpathChangeAt[atSiteI] /= (double)this->maxIteration_;
@@ -337,10 +337,10 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ){
     }
 
     if ( useIBD == true ){
-        vector < vector <double> > reshapedProbs = this->reshapeFm(hprior.stateIdx);
-        this->dEploidIO_->ibdProbsHeader = getIBDprobsHeader();
-        this->dEploidIO_->ibdProbsIntegrated = getIBDprobsIntegrated(reshapedProbs);
-        this->dEploidIO_->writeIBDpostProb(reshapedProbs, this->dEploidIO_->ibdProbsHeader);
+        //vector < vector <double> > reshapedProbs = this->reshapeFm(hprior.stateIdx);
+        //this->dEploidIO_->ibdProbsHeader = getIBDprobsHeader();
+        //this->dEploidIO_->ibdProbsIntegrated = getIBDprobsIntegrated(reshapedProbs);
+        //this->dEploidIO_->writeIBDpostProb(reshapedProbs, this->dEploidIO_->ibdProbsHeader);
         clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
         this->dEploidIO_->initialProp = averageProportion(this->mcmcSample_->proportion);
         this->dEploidIO_->setInitialPropWasGiven(true);
@@ -675,6 +675,13 @@ void McmcMachinery::ibdSamplePath(vector <double> statePrior){
         assert( ibdPath[lociIdx] < this->hprior.nState() );
         assert( ibdPath[lociIdx] >= 0 );
     }
+}
+
+
+void McmcMachinery::buildPathProbabilityForPainting(){
+    vector <double> statePrior = this->computeStatePrior(this->theta());
+    // First building the path likelihood
+    this->ibdBuildPathProbabilities(statePrior);
 }
 
 

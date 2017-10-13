@@ -558,6 +558,34 @@ fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "", pdfBool, inbreedi
 }
 
 
+fun.interpretDEploid.4 <- function ( inPrefix, outPrefix = "", pdfBool ){
+    inFile = paste(inPrefix, ".ibd.probs", sep = "")
+    if (!file.exists(inFile)){
+        return
+    }
+
+    if ( pdfBool == TRUE ){
+        cexSize = 3
+        pdf(paste(outPrefix, ".ibd.probs.pdf", sep = ""), width = 45, height = 30)
+    } else {
+        cexSize = 2.5
+        png(paste(outPrefix, ".ibd.probs.png", sep = ""), width = 3500, height = 2000)
+    }
+    obj = read.table(inFile , header=T)
+    chromName = levels(obj$CHROM)
+    ncol = ceiling(length(chromName)/2)
+    par(mfrow = c(ncol,length(chromName)/ncol))
+    par(mar = c(5,7,7,4))
+    nFigures = length(chromName)
+    for ( chromI in chromName ){
+        haplotypePainter ( obj[which( chromI == obj$CHROM),c(3:dim(obj)[2])],
+            title = paste("IBD probabilities of", chromI),
+            labelScaling = 2*nFigures)
+    }
+    dev.off()
+}
+
+
 fun.interpretDEploid.3.ring <- function (inPrefix, outPrefix = "", pdfBool, inbreeding = FALSE, coverage, exclude, ringDecreasingOrder, trackHeight = 0.8, transformP = FALSE ){
     if ( pdfBool == TRUE ){
         cexSize = 3
@@ -686,28 +714,28 @@ plot.ibd.change <- function(changeAt, titlePrefix,nFigures){
 }
 
 
-fun.interpretDEploid.4 <- function(inPrefix, outPrefix = "", pdfBool){
-    fileName = paste(inPrefix, ".extra", sep = "")
-    if ( file.exists(fileName) ){
-        obj = read.table(fileName , header=T)
-        chromName = levels(obj$CHROM)
-        ncol = ceiling(length(chromName)/2)
-        if ( pdfBool == TRUE ){
-            cexSize = 3
-            pdf ( paste ( outPrefix, ".interpretDEploidFigure.extra.pdf", sep = "" ), width = 45, height = 30)
-        } else {
-            cexSize = 2.5
-            png ( paste ( outPrefix, ".interpretDEploidFigure.extra.png", sep= ""), width = 3500, height = 2000)
-        }
-        par(mfrow = c(ncol,length(chromName)/ncol))
-        par(mar = c(5,7,7,4))
-        nFigures = length(chromName)
-        for ( chromI in chromName ){
-            plot.ibd.change ( obj[which( chromI == obj$CHROM),], chromI, nFigures )
-        }
-        dev.off()
-    }
-}
+#fun.interpretDEploid.4 <- function(inPrefix, outPrefix = "", pdfBool){
+#    fileName = paste(inPrefix, ".extra", sep = "")
+#    if ( file.exists(fileName) ){
+#        obj = read.table(fileName , header=T)
+#        chromName = levels(obj$CHROM)
+#        ncol = ceiling(length(chromName)/2)
+#        if ( pdfBool == TRUE ){
+#            cexSize = 3
+#            pdf ( paste ( outPrefix, ".interpretDEploidFigure.extra.pdf", sep = "" ), width = 45, height = 30)
+#        } else {
+#            cexSize = 2.5
+#            png ( paste ( outPrefix, ".interpretDEploidFigure.extra.png", sep= ""), width = 3500, height = 2000)
+#        }
+#        par(mfrow = c(ncol,length(chromName)/ncol))
+#        par(mar = c(5,7,7,4))
+#        nFigures = length(chromName)
+#        for ( chromI in chromName ){
+#            plot.ibd.change ( obj[which( chromI == obj$CHROM),], chromI, nFigures )
+#        }
+#        dev.off()
+#    }
+#}
 
 
 fun.ring.plot.initialize <- function(chrom, name.suffix = ""){
