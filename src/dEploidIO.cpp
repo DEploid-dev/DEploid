@@ -106,7 +106,7 @@ void DEploidIO::init() {
     this->setKStrainWasManuallySet(false);
     this->setKStrainWasSetByHap(false);
     this->setKStrainWasSetByProp(false);
-    this->setKstrain(5);
+    this->setKstrain(4);
     this->nMcmcSample_ = 800;
     this->setDoUpdateProp( true );
     this->setDoUpdatePair( true );
