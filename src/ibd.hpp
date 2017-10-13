@@ -92,6 +92,7 @@ class Hprior{
   friend class TestMcmcMachinery;
 #endif
   friend class McmcMachinery;
+  friend class DEploidIO;
     Hprior();
     ~Hprior();
 

@@ -151,7 +151,9 @@ void DEploidIO::writeLog ( ostream * writeTo ){
             (*writeTo) << setw(14) << "Likelihood: "  << strIbdExportLLK  << "\n";
             (*writeTo) << setw(14) << "Proportions: " << strIbdExportProp << "\n";
             (*writeTo) << setw(14) << "Haplotypes: "  << strIbdExportHap  << "\n";
-            (*writeTo) << setw(14) << "State probs: "  << strIbdExportProbs  << "\n\n";
+        }
+        if (this->ibdProbsIntegrated.size()>1){
+            (*writeTo) << setw(14) << "IBD probs: "  << strIbdExportProbs  << "\n\n";
             (*writeTo) << " IBD probabilities:\n";
             for ( size_t stateI = 0; stateI < this->ibdProbsHeader.size(); stateI++ ){
                 (*writeTo) << setw(14) << this->ibdProbsHeader[stateI] << ": " << this->ibdProbsIntegrated[stateI] << "\n";
@@ -160,9 +162,9 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     }
     (*writeTo) << "\n";
     (*writeTo) << "Proportions:\n";
-    for ( size_t ii = 0; ii < this->filnalProp.size(); ii++){
-        (*writeTo) << setw(10) << this->filnalProp[ii];
-        (*writeTo) << ((ii < (this->filnalProp.size()-1)) ? "\t" : "\n") ;
+    for ( size_t ii = 0; ii < this->finalProp.size(); ii++){
+        (*writeTo) << setw(10) << this->finalProp[ii];
+        (*writeTo) << ((ii < (this->finalProp.size()-1)) ? "\t" : "\n") ;
     }
 
 }

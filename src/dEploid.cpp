@@ -66,6 +66,8 @@ int main( int argc, char *argv[] ){
                                         false); // use IBD
             mcmcMachinery.runMcmcChain(true, // show progress
                                        false); // use IBD
+
+            dEploidIO.paintIBD(mcmcSample->hap, &rg);
             delete mcmcSample;
         }
         // Finishing, write log
@@ -76,3 +78,46 @@ int main( int argc, char *argv[] ){
       return EXIT_FAILURE;
     }
 }
+
+
+
+void DEploidIO::paintIBD( vector < vector <double> > &haps, RandomGenerator* rg_){
+    vector <double> goodProp;
+    vector <size_t> goodStrainIdx;
+    for ( size_t i = 0; i < this->finalProp.size(); i++){
+        if (this->finalProp[i] > 0.01){
+            goodProp.push_back(this->finalProp[i]);
+            goodStrainIdx.push_back(i);
+        }
+    }
+
+    if (goodProp.size() == 1){
+        return;
+    }
+
+    DEploidIO tmpDEploidIO; // (*this);
+    //DEploidIO tmpDEploidIO(*this);
+    tmpDEploidIO.setKstrain(goodProp.size());
+    tmpDEploidIO.setInitialPropWasGiven(true);
+    tmpDEploidIO.initialProp = goodProp;
+    tmpDEploidIO.finalProp = goodProp;
+    tmpDEploidIO.refCount_ = this->refCount_;
+    tmpDEploidIO.altCount_ = this->altCount_;
+    tmpDEploidIO.plaf_ = this->plaf_;
+    tmpDEploidIO.nLoci_= this->nLoci();
+    tmpDEploidIO.position_ = this->position_;
+    tmpDEploidIO.chrom_ = this->chrom_;
+    //tmpDEploidIO.writeLog (&std::cout);
+
+    McmcSample * tmpMcmcSample = new McmcSample();
+    McmcMachinery tmpIBDmcmc(&tmpDEploidIO, tmpMcmcSample, rg_, true);
+    tmpIBDmcmc.buildPathProbabilityForPainting();
+
+    vector < vector <double> > reshapedProbs = tmpIBDmcmc.reshapeFm(tmpIBDmcmc.hprior.stateIdx);
+    this->ibdProbsHeader = tmpIBDmcmc.getIBDprobsHeader();
+    this->ibdProbsIntegrated = tmpIBDmcmc.getIBDprobsIntegrated(reshapedProbs);
+    this->writeIBDpostProb(reshapedProbs, this->ibdProbsHeader);
+
+    delete tmpMcmcSample;
+}
+
