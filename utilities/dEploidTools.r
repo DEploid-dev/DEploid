@@ -561,7 +561,8 @@ fun.interpretDEploid.3 <- function ( inPrefix, outPrefix = "", pdfBool, inbreedi
 fun.interpretDEploid.4 <- function ( inPrefix, outPrefix = "", pdfBool ){
     inFile = paste(inPrefix, ".ibd.probs", sep = "")
     if (!file.exists(inFile)){
-        return
+        print("In file not exist")
+	return()
     }
 
     if ( pdfBool == TRUE ){
