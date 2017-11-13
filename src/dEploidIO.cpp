@@ -699,4 +699,21 @@ DEploidIO::DEploidIO(const DEploidIO &currentDEploidIO){
 }
 
 
+void DEploidIO::getIBDprobsIntegrated(vector < vector <double> > &prob){
+    if (prob.size() !=  this->nLoci()){
+        throw InvalidInput("Invalid probabilities! Check size!");
+    }
 
+    assert(this->ibdProbsIntegrated.size() == 0);
+
+    for (size_t i = 0; i < prob[0].size(); i++){
+        this->ibdProbsIntegrated.push_back(0.0);
+    }
+
+    for ( size_t siteIndex = 0; siteIndex < this->nLoci(); siteIndex++ ){
+        for (size_t i = 0; i < prob[siteIndex].size(); i++){
+            this->ibdProbsIntegrated[i] += prob[siteIndex][i];
+        }
+    }
+    normalizeBySum(this->ibdProbsIntegrated);
+}

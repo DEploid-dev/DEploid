@@ -114,7 +114,7 @@ void DEploidIO::paintIBD(){
 
     vector < vector <double> > reshapedProbs = tmpIBDmcmc.reshapeFm(tmpIBDmcmc.hprior.stateIdx);
     this->ibdProbsHeader = tmpIBDmcmc.getIBDprobsHeader();
-    this->ibdProbsIntegrated = tmpIBDmcmc.getIBDprobsIntegrated(reshapedProbs);
+    this->getIBDprobsIntegrated(reshapedProbs);
     this->writeIBDpostProb(reshapedProbs, this->ibdProbsHeader);
 
     delete tmpMcmcSample;

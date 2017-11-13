@@ -224,6 +224,33 @@ class TestHprior : public CppUnit::TestCase {
     }
 };
 
+
+class TestIBDpath : public CppUnit::TestCase {
+
+    CPPUNIT_TEST_SUITE( TestIBDpath );
+    CPPUNIT_TEST( testMainConstructor );
+    CPPUNIT_TEST_SUITE_END();
+
+  private:
+    Hprior* ibdPath_;
+
+  public:
+    void setUp() {
+        ibdPath_ = new IBDpath;
+    }
+
+
+    void tearDown() {
+        delete ibdPath_;
+    }
+
+    void testMainConstructor(){
+
+    }
+
+};
+
 CPPUNIT_TEST_SUITE_REGISTRATION(TestIBDUtility);
 CPPUNIT_TEST_SUITE_REGISTRATION(TestIBDconfig);
 CPPUNIT_TEST_SUITE_REGISTRATION(TestHprior);
+CPPUNIT_TEST_SUITE_REGISTRATION(TestIBDpath);

@@ -358,30 +358,8 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ){
 }
 
 
-vector <double> McmcMachinery::getIBDprobsIntegrated(vector < vector <double> > &prob){
-    vector <double> ret(this->hprior.ibdConfig.states.size());
-    for (size_t i = 0; i < hprior.ibdConfig.states.size(); i++){
-        for ( size_t siteIndex = 0; siteIndex < this->dEploidIO_->nLoci(); siteIndex++ ){
-            ret[i] += prob[siteIndex][i];
-        }
-    }
-    normalizeBySum(ret);
-    return ret;
-}
-
-
 vector <string> McmcMachinery::getIBDprobsHeader(){
-    vector <string> ret;
-    for (size_t i = 0; i < hprior.ibdConfig.states.size(); i++){
-        string tmp;
-        for (size_t j = 0; j < hprior.ibdConfig.states[i].size(); j++){
-            stringstream tmp_ss;
-            tmp_ss << hprior.ibdConfig.states[i][j];
-            tmp += tmp_ss.str() + ((j < (hprior.ibdConfig.states[i].size()-1)) ? "-":"");
-        }
-        ret.push_back(tmp);
-    }
-    return ret;
+    return this->hprior.getIBDconfigureHeader();
 }
 
 

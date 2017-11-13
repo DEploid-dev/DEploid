@@ -166,6 +166,21 @@ void IBDconfiguration::findEffectiveK(){
 }
 
 
+vector <string> IBDconfiguration::getIBDconfigureHeader(){
+    vector <string> ret;
+    for (size_t i = 0; i < this->states.size(); i++){
+        string tmp;
+        for (size_t j = 0; j < this->states[i].size(); j++){
+            stringstream tmp_ss;
+            tmp_ss << this->states[i][j];
+            tmp += tmp_ss.str() + ((j < (this->states[i].size()-1)) ? "-":"");
+        }
+        ret.push_back(tmp);
+    }
+    return ret;
+}
+
+
 Hprior::Hprior(){}
 
 
@@ -230,6 +245,10 @@ void Hprior::transposePriorProbs(){
     }
 }
 
+
+vector <string> Hprior::getIBDconfigureHeader(){
+    return this->ibdConfig.getIBDconfigureHeader();
+}
 
 
 Hprior::~Hprior(){}
@@ -310,4 +329,5 @@ bool twoVectorsAreSame(vector<int> vec1, vector<int> vec2){
     }
     return ret;
 }
+
 

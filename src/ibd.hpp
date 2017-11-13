@@ -26,6 +26,7 @@
 #include <vector>
 #include <iostream>
 #include <exceptions.hpp>
+#include <sstream>
 #include "utility.hpp"
 
 #ifndef IBD
@@ -79,14 +80,17 @@ class IBDconfiguration{
     vector <int> makeTmpRow();
     vector <size_t> findWhichIsOne(vector <int> tmpOp);
     bool twoVectorsAreSame(vector<int> vec1, vector<int> vec2);
+    vector <string> getIBDconfigureHeader();
 };
 
 
 class Hprior{
 #ifdef UNITTEST
   friend class TestHprior;
-  friend class TestMcmcMachinery;
+  //friend class TestMcmcMachinery;
+  friend class TestIBDpath;
 #endif
+  friend class IBDpath;
   friend class McmcMachinery;
   friend class DEploidIO;
     Hprior();
@@ -116,9 +120,18 @@ class Hprior{
 
     vector < size_t > effectiveK;
     size_t nPattern() const {return this->effectiveK.size();}
+    vector <string> getIBDconfigureHeader();
 };
 
 
+class IBDpath{
+#ifdef UNITTEST
+  friend class TestIBDpath;
+#endif
+  friend class McmcMachinery;
+    IBDpath();
+    ~IBDpath();
 
+};
 
 #endif

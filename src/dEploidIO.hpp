@@ -67,6 +67,7 @@ class DEploidIO{
     bool doPainting() const { return this->doPainting_; }
     bool useIBD() const { return this->useIBD_;}
     void paintIBD();
+    void getIBDprobsIntegrated(vector < vector <double> > &prob);
 
     // Log
     void wrapUp();
