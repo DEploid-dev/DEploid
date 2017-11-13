@@ -23,13 +23,13 @@
  *
  */
 
+#include <random>
+#include <stdio.h>
+#include <limits>       // std::numeric_limits< double >::min()
+#include <math.h>       // ceil
+#include "updateHap.hpp"
 #include "mcmc.hpp"
 #include "utility.hpp"
-#include <math.h>       /* ceil */
-#include <random>
-#include "updateHap.hpp"
-#include <stdio.h>
-#include <limits>       /* std::numeric_limits< double >::min() */
 
 McmcSample::McmcSample(){};
 McmcSample::~McmcSample(){};
@@ -631,7 +631,56 @@ vector <double> McmcMachinery::computeLlkAtAllSites(double err){
 }
 
 
-void McmcMachinery::ibdBuildPathProbabilities(vector <double> statePrior){
+void McmcMachinery::combineFwdBwd(){
+//post = exp(log(fmNomalized) + log(bwdNormalized))
+}
+
+
+void McmcMachinery::buildPathProbabilityForPainting(){
+    vector <double> statePrior = this->computeStatePrior(this->theta());
+    // First building the path likelihood
+    this->computeIbdPathFwdProb(statePrior);
+    //this->computeIbdPathBwdProb();
+    //this->combineFwdBwd();
+}
+
+
+void McmcMachinery::computeIbdPathBwdProb(){
+//# assuming each ibd state has equal probabilities, transform it into ibd configurations
+//bwd<-array(0, c(n.state, n.loci));
+
+//tmpBw = (a.prior * 1/table(state.idx)) %*% tij
+//bwd[,n.loci] = tmpBw/sum(tmpBw)
+//print("compute backward")
+//#n.state.cases = rep(1,n.state)%*% t(tij)
+//for ( site in n.loci:2 ){
+    //qs<-h.set %*% t(prop.0);
+    //qs2<-qs*(1-err)+(1-qs)*err;
+    //lk.data<-dbeta(qs2, llk.apx[site,1], llk.apx[site,2], log=T);
+    //lk.norm<-exp(lk.data-max(lk.data));
+//#        lk.norm[]<-1;
+
+    //b.sum.state = tij %*% bwd[,site]
+    //v.norec = b.sum.state[state.idx]
+    //tmpBw = array(0, c(n.state,1))
+
+    //for ( st in c(1:n.state) ){
+        //tmpBw[st] = sum(lk.norm * bwd[,site] * p.rec )
+
+    //}
+    //tmpBw = tmpBw * st.prior + lk.norm * (1-p.rec) * v.norec
+
+    //tmpBw = tmpBw * h.prior[,site]
+    //bwd[,(site-1)] = tmpBw/sum(tmpBw)
+
+//}
+
+//bwdNormalized <- normalize (bwd)
+
+
+}
+
+void McmcMachinery::computeIbdPathFwdProb(vector <double> statePrior){
     this->fm.clear();
     vector <double> vPrior = vecProd(statePrior, this->hprior.priorProbTrans[0]);
 
@@ -678,17 +727,10 @@ void McmcMachinery::ibdSamplePath(vector <double> statePrior){
 }
 
 
-void McmcMachinery::buildPathProbabilityForPainting(){
-    vector <double> statePrior = this->computeStatePrior(this->theta());
-    // First building the path likelihood
-    this->ibdBuildPathProbabilities(statePrior);
-}
-
-
 void McmcMachinery::ibdSampleMcmcEventStep(){
     vector <double> statePrior = this->computeStatePrior(this->theta());
     // First building the path likelihood
-    this->ibdBuildPathProbabilities(statePrior);
+    this->computeIbdPathFwdProb(statePrior);
 
     ////#Now sample path given matrix
     this->ibdSamplePath(statePrior);

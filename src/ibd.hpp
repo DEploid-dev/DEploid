@@ -33,23 +33,19 @@
 
 using namespace std;
 
-vector < vector<int> > unique( vector < vector<int> > &mat );
+int nchoose2(int n);
 bool twoVectorsAreSame(vector<int> vec1, vector<int> vec2);
-
-
+vector < vector<int> > unique( vector < vector<int> > &mat );
 vector<int> convertIntToBinary(int x, size_t len);
 vector < vector <int> > enumerateBinaryMatrixOfK(size_t k);
 
 struct OutOfVectorSize : std::exception{
-
   explicit OutOfVectorSize(){ }
   virtual ~OutOfVectorSize() throw() {}
   virtual const char* what () const noexcept {
       return string("Out of vector size!").c_str();
   }
 };
-
-int nchoose2(int n);
 
 // The IBDconfiguration is used for index, which should be non-negative, use int, any thing below zero should throw.
 class IBDconfiguration{

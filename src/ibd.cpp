@@ -26,9 +26,9 @@
 #include <set>
 #include <vector>
 #include <iostream>
-#include "ibd.hpp"
 #include <algorithm>
 #include <cassert>
+#include "ibd.hpp"
 
 IBDconfiguration::IBDconfiguration(){}
 

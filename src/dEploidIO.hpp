@@ -23,12 +23,12 @@
  *
  */
 
-#include <stdlib.h>     /* strtol, strtod */
-#include <fstream>
-#include <stdexcept> // std::invalid_argument
 #include <vector>
-#include <iostream> // std::cout
-#include <sstream>      // std::stringstream
+#include <fstream>
+#include <stdlib.h>             // strtol, strtod
+#include <stdexcept>            // std::invalid_argument
+#include <iostream>             // std::cout
+#include <sstream>              // std::stringstream
 #include "global.h"
 #include "exceptions.hpp"
 #include "panel.hpp"
@@ -67,15 +67,13 @@ class DEploidIO{
     void chromPainting ();
     bool doPainting() const { return this->doPainting_; }
     bool useIBD() const { return this->useIBD_;}
+    void paintIBD();
 
     // Log
     void wrapUp();
-    bool randomSeedWasSet() const {return this->randomSeedWasSet_; }
-
     friend std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO);
-    size_t randomSeed() const { return randomSeed_;}
 
-    void paintIBD( vector < vector <double> > &haps, RandomGenerator* rg_);
+    size_t randomSeed() const { return randomSeed_;}
 
   private:
     void core();
@@ -89,8 +87,8 @@ class DEploidIO{
     string initialHapFileName_;
     string prefix_;
     size_t randomSeed_;
-    bool randomSeedWasSet_;
-    void setRandomSeedWasSet(const bool random){ this->randomSeedWasSet_ = random; }
+    bool randomSeedWasGiven_;
+    void setrandomSeedWasGiven(const bool random){ this->randomSeedWasGiven_ = random; }
 
 
     bool initialPropWasGiven_;
@@ -272,6 +270,8 @@ class DEploidIO{
 
     bool initialHapWasGiven() const { return initialHapWasGiven_; }
     void setInitialHapWasGiven(const bool setTo){ this->initialHapWasGiven_ = setTo; }
+
+    bool randomSeedWasGiven() const {return this->randomSeedWasGiven_; }
 
     // log and export resutls
     void writeRecombProb ( Panel * panel );

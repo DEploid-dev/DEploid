@@ -200,7 +200,7 @@ class McmcMachinery {
     void ibdSampleMcmcEventStep();
     void makeIbdTransProbs();
     void initializePropIBD();
-    void ibdBuildPathProbabilities(vector <double> statePrior);
+    void computeIbdPathFwdProb(vector <double> statePrior);
     void ibdSamplePath(vector <double> statePrior);
     void computeUniqueEffectiveKCount();
     void updateFmAtSiteI(vector <double> & prior,
@@ -211,7 +211,10 @@ class McmcMachinery {
     vector < vector <double> > reshapeFm(vector <size_t> stateIdx);
     vector <string> getIBDprobsHeader();
     vector <double> getIBDprobsIntegrated(vector < vector <double> > &prob);
+    // For painting IBD
     void buildPathProbabilityForPainting();
+    void computeIbdPathBwdProb();
+    void combineFwdBwd();
 
 
   /* Moves */

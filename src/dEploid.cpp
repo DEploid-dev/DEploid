@@ -25,7 +25,6 @@
 
 #include <iostream> // std::cout
 #include "mcmc.hpp"
-#include "panel.hpp"
 #include "dEploidIO.hpp"
 
 using namespace std;
@@ -67,7 +66,7 @@ int main( int argc, char *argv[] ){
             mcmcMachinery.runMcmcChain(true, // show progress
                                        false); // use IBD
 
-            dEploidIO.paintIBD(mcmcSample->hap, &rg);
+            dEploidIO.paintIBD();
             delete mcmcSample;
         }
         // Finishing, write log
@@ -81,7 +80,7 @@ int main( int argc, char *argv[] ){
 
 
 
-void DEploidIO::paintIBD( vector < vector <double> > &haps, RandomGenerator* rg_){
+void DEploidIO::paintIBD(){
     vector <double> goodProp;
     vector <size_t> goodStrainIdx;
     for ( size_t i = 0; i < this->finalProp.size(); i++){
@@ -96,7 +95,6 @@ void DEploidIO::paintIBD( vector < vector <double> > &haps, RandomGenerator* rg_
     }
 
     DEploidIO tmpDEploidIO; // (*this);
-    //DEploidIO tmpDEploidIO(*this);
     tmpDEploidIO.setKstrain(goodProp.size());
     tmpDEploidIO.setInitialPropWasGiven(true);
     tmpDEploidIO.initialProp = goodProp;
@@ -109,8 +107,9 @@ void DEploidIO::paintIBD( vector < vector <double> > &haps, RandomGenerator* rg_
     tmpDEploidIO.chrom_ = this->chrom_;
     //tmpDEploidIO.writeLog (&std::cout);
 
+    MersenneTwister tmpRg(this->randomSeed());
     McmcSample * tmpMcmcSample = new McmcSample();
-    McmcMachinery tmpIBDmcmc(&tmpDEploidIO, tmpMcmcSample, rg_, true);
+    McmcMachinery tmpIBDmcmc(&tmpDEploidIO, tmpMcmcSample, &tmpRg, true);
     tmpIBDmcmc.buildPathProbabilityForPainting();
 
     vector < vector <double> > reshapedProbs = tmpIBDmcmc.reshapeFm(tmpIBDmcmc.hprior.stateIdx);

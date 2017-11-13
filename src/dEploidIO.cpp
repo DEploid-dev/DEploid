@@ -22,13 +22,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "dEploidIO.hpp"
-#include "utility.hpp"  // normailize by sum
-#include <cassert>       // assert
-#include <iomanip>      // std::setw
 #include <ctime>
 #include <iterator>
-#include "updateHap.hpp"
+#include <cassert>        // assert
+#include <iomanip>        // std::setw
+#include "utility.hpp"    // normailize by sum
+#include "updateHap.hpp"  // chromPainting
+#include "dEploidIO.hpp"
 
 DEploidIO::DEploidIO(){
     this->init();
@@ -89,7 +89,7 @@ void DEploidIO::core() {
 
 void DEploidIO::init() {
     this->setDoExportRecombProb(false);
-    this->setRandomSeedWasSet(false);
+    this->setrandomSeedWasGiven(false);
     this->setCompressVcf(false);
     this->setInitialPropWasGiven(false);
     this->setInitialHapWasGiven(false);
@@ -177,7 +177,7 @@ void DEploidIO::finalize(){
         throw VcfOutUnSpecified("");
     }
 
-    if ( !this->randomSeedWasSet_ ){
+    if ( !this->randomSeedWasGiven_ ){
         this->set_seed( (unsigned)(time(0)) );
     }
 
@@ -456,7 +456,7 @@ void DEploidIO::parse (){
             this->readInitialHaps();
         } else if ( *argv_i == "-seed"){
             this->set_seed( readNextInput<size_t>() );
-            this->setRandomSeedWasSet( true );
+            this->setrandomSeedWasGiven( true );
         } else if ( *argv_i == "-z" ){
             this->setCompressVcf(true);
         } else if ( *argv_i == "-h" || *argv_i == "-help"){
