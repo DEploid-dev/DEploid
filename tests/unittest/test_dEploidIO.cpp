@@ -44,7 +44,7 @@ class TestIO : public CppUnit::TestCase {
 
     void testInitialization(){
         DEploidIO* dEploidIOptr = new DEploidIO ();
-        CPPUNIT_ASSERT_EQUAL( dEploidIOptr->randomSeedWasSet(), false );
+        CPPUNIT_ASSERT_EQUAL( dEploidIOptr->randomSeedWasGiven(), false );
         CPPUNIT_ASSERT_EQUAL( dEploidIOptr->doExportRecombProb(), false );
         CPPUNIT_ASSERT_EQUAL( dEploidIOptr->compressVcf(), false );
         CPPUNIT_ASSERT_EQUAL( dEploidIOptr->initialPropWasGiven(), false );

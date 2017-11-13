@@ -1,5 +1,5 @@
 #!/bin/bash
-previousVersion="0.4-release"
+previousVersion="0.5-beta"
 previousVersionTag=v${previousVersion}
 wget --no-check-certificate https://github.com/mcveanlab/DEploid/archive/${previousVersionTag}.tar.gz -o /dev/null
 tar -xf ${previousVersionTag}.tar.gz
@@ -20,7 +20,7 @@ fi
 echo ${PWD}
 
 
-sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -noPanel -ibd -seed 1 -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -vcfOut"
+sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -noPanel -ibd -seed 1 -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -vcfOut -k 2"
 ./dEploid ${sameFlags} -o current
 ./DEploid-${previousVersion}/dEploid ${sameFlags} -o previous
 
