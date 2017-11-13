@@ -232,7 +232,7 @@ class TestIBDpath : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE_END();
 
   private:
-    Hprior* ibdPath_;
+    IBDpath* ibdPath_;
 
   public:
     void setUp() {
