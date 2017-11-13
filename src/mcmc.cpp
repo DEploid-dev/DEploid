@@ -545,8 +545,8 @@ void McmcMachinery::ibdInitializeEssentials(){
     // initialize fm
     this->fSumState = vector <double> (this->hprior.nPattern());
 
-    // initialize ibdPath
-    this->ibdPath = vector <size_t> (this->nLoci());
+    // initialize ibdConfigurePath
+    this->ibdConfigurePath = vector <size_t> (this->nLoci());
 
     // initialize recombination probabilities;
     this->ibdRecombProbs = IBDrecombProbs(this->dEploidIO_->position_, this->dEploidIO_->nLoci_);
@@ -684,24 +684,24 @@ void McmcMachinery::ibdSamplePath(vector <double> statePrior){
     int lociIdx = this->nLoci()-1;
     vector <double> tmpProp = fm[lociIdx];
     (void)normalizeBySum(tmpProp);
-    ibdPath[lociIdx] = sampleIndexGivenProp(this->ibdRg_, tmpProp);
+    ibdConfigurePath[lociIdx] = sampleIndexGivenProp(this->ibdRg_, tmpProp);
 
     assert(this->fm.size() == nLoci());
     while ( lociIdx > 0 ){
         lociIdx--;
-        vector <double> vNoRecomb = vecProd(this->ibdTransProbs[this->hprior.stateIdx[ibdPath[lociIdx+1]]], fm[lociIdx]);
+        vector <double> vNoRecomb = vecProd(this->ibdTransProbs[this->hprior.stateIdx[ibdConfigurePath[lociIdx+1]]], fm[lociIdx]);
         assert(vNoRecomb.size() == this->hprior.nState());
         vector <double> vRecomb = fm[lociIdx];
         assert(vRecomb.size() == this->hprior.nState());
         vector <double> prop (this->hprior.nState());
         for ( size_t i = 0; i < prop.size(); i++){
-            prop[i] = vNoRecomb[i]*this->ibdRecombProbs.pNoRec_[lociIdx] + vRecomb[i]*this->ibdRecombProbs.pRec_[lociIdx]*statePrior[ibdPath[lociIdx+1]];
+            prop[i] = vNoRecomb[i]*this->ibdRecombProbs.pNoRec_[lociIdx] + vRecomb[i]*this->ibdRecombProbs.pRec_[lociIdx]*statePrior[ibdConfigurePath[lociIdx+1]];
         }
         tmpProp = prop;
         (void)normalizeBySum(tmpProp);
-        ibdPath[lociIdx] = sampleIndexGivenProp(this->ibdRg_, tmpProp);
-        assert( ibdPath[lociIdx] < this->hprior.nState() );
-        assert( ibdPath[lociIdx] >= 0 );
+        ibdConfigurePath[lociIdx] = sampleIndexGivenProp(this->ibdRg_, tmpProp);
+        assert( ibdConfigurePath[lociIdx] < this->hprior.nState() );
+        assert( ibdConfigurePath[lociIdx] >= 0 );
     }
 }
 
@@ -730,7 +730,7 @@ void McmcMachinery::ibdSampleMcmcEventStep(){
 void McmcMachinery::ibdUpdateHaplotypesFromPrior(){
     for (size_t i = 0; i < this->nLoci(); i++){
         for ( size_t j = 0; j < kStrain(); j++){
-            this->currentHap_[i][j] = (double)this->hprior.hSet[ibdPath[i]][j];
+            this->currentHap_[i][j] = (double)this->hprior.hSet[ibdConfigurePath[i]][j];
         }
     }
 }
@@ -762,7 +762,7 @@ void McmcMachinery::computeAndUpdateTheta(){
     vector <size_t> obsState;
     size_t previousState = 0;
     size_t atSiteI = 0;
-    for (size_t a : ibdPath){
+    for (size_t a : ibdConfigurePath){
         if ( a != previousState ){
             obsState.push_back(a);
         }

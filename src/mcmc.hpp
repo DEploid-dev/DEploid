@@ -176,12 +176,13 @@ class McmcMachinery {
 
     double fSum;
     Hprior hprior;
+    //IBDpath ibdPath;
     vector < vector <double> > llkSurf;
     vector <int> uniqueEffectiveKCount;
     vector < vector<double> > ibdTransProbs;
     vector < vector <double> > fm;
     vector <double> fSumState;
-    vector <size_t> ibdPath;
+    vector <size_t> ibdConfigurePath;
 
     vector <double> computeStatePrior(double theta);
     vector <size_t> findWhichIsSomething(vector <size_t> tmpOp, size_t something);
