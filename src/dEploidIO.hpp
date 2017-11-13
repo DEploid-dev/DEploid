@@ -33,7 +33,6 @@
 #include "exceptions.hpp"
 #include "panel.hpp"
 #include "vcfReader.hpp"
-#include "mersenne_twister.hpp" // This is because paintIBD needs rg, need to redo this
 
 
 #ifndef PARAM
