@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <limits>       // std::numeric_limits< double >::min()
 #include <math.h>       // ceil
+#include "global.h"     // dout
 #include "updateHap.hpp"
 #include "mcmc.hpp"
 #include "utility.hpp"

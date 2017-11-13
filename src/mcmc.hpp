@@ -29,9 +29,7 @@
 #include "mersenne_twister.hpp"
 #include "dEploidIO.hpp"
 #include "panel.hpp"
-#include "utility.hpp"
-#include "global.h"
-#include "randomSample.hpp"
+#include "randomSample.hpp"   // src/codeCogs/randomSample.hpp
 #include "ibd.hpp"
 
 #ifndef MCMC
