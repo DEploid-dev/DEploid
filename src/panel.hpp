@@ -91,7 +91,7 @@ class InitialHaplotypes: public Panel{
 
 
 class IBDrecombProbs: public VariantIndex{
- friend class McmcMachinery;
+ friend class IBDpath;
   private:
     vector < double > pRec_;
     vector < double > pNoRec_; // = 1.0 - pRec;

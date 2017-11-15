@@ -54,7 +54,6 @@ class McmcSample {
         moves.clear();
     }
 
-    vector <double> IBDpathChangeAt;
     vector <double> siteOfTwoSwitchOne;
     vector <double> siteOfTwoMissCopyOne;
     vector <double> siteOfTwoSwitchTwo;
@@ -62,7 +61,6 @@ class McmcSample {
     vector <double> siteOfOneSwitchOne;
     vector <double> siteOfOneMissCopyOne;
 
-    vector <double> currentIBDpathChangeAt;
     vector <double> currentsiteOfTwoSwitchOne;
     vector <double> currentsiteOfTwoMissCopyOne;
     vector <double> currentsiteOfTwoSwitchTwo;
@@ -93,7 +91,6 @@ class McmcMachinery {
   /* Variables */
     DEploidIO* dEploidIO_;
     Panel* panel_;
-    IBDrecombProbs ibdRecombProbs;
     size_t kStrain_;
     void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}
     size_t kStrain() const { return this->kStrain_;}
@@ -117,7 +114,6 @@ class McmcMachinery {
     RandomGenerator* mcmcEventRg_;
     RandomGenerator* propRg_;
     RandomGenerator* initialHapRg_;
-    RandomGenerator* ibdRg_;
 
     //std::normal_distribution<double>* initialTitre_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);
     //std::normal_distribution<double>* deltaX_normal_distribution_;// (0, 1/PROP_SCALE);
@@ -170,23 +166,8 @@ class McmcMachinery {
     void computeDiagnostics();
 
    /* IBD */
-    double theta_;
-    void setTheta(const double setTo) {this->theta_ = setTo;}
-    double theta() const {return this->theta_;}
+    IBDpath ibdPath;
 
-    double fSum;
-    Hprior hprior;
-    //IBDpath ibdPath;
-    vector < vector <double> > llkSurf;
-    vector <int> uniqueEffectiveKCount;
-    vector < vector<double> > ibdTransProbs;
-    vector < vector <double> > fm;
-    vector <double> fSumState;
-    vector <size_t> ibdConfigurePath;
-
-    vector <double> computeStatePrior(double theta);
-    vector <size_t> findWhichIsSomething(vector <size_t> tmpOp, size_t something);
-    vector <double> computeLlkOfStatesAtSiteI( size_t siteI, double err = 0.01);
     vector <double> computeLlkAtAllSites(double err = 0.01);
     vector <double> averageProportion(vector < vector <double> > &proportion );
 
@@ -197,23 +178,11 @@ class McmcMachinery {
                      double err = 0.01,
                      size_t gridSize=99);
     void ibdSampleMcmcEventStep();
-    void makeIbdTransProbs();
     void initializePropIBD();
-    void computeIbdPathFwdProb(vector <double> statePrior);
     void ibdSamplePath(vector <double> statePrior);
-    void computeUniqueEffectiveKCount();
-    void updateFmAtSiteI(vector <double> & prior,
-                         vector <double> & llk);
     void ibdUpdateHaplotypesFromPrior();
     void ibdUpdateProportionGivenHap(vector <double> &llkAtAllSites);
-    void computeAndUpdateTheta();
-    vector < vector <double> > reshapeFm(vector <size_t> stateIdx);
-    vector <string> getIBDprobsHeader();
-    vector <double> getIBDprobsIntegrated(vector < vector <double> > &prob);
-    // For painting IBD
-    void buildPathProbabilityForPainting();
-    void computeIbdPathBwdProb();
-    void combineFwdBwd();
+    //vector <double> getIBDprobsIntegrated(vector < vector <double> > &prob);
 
 
   /* Moves */

@@ -20,17 +20,17 @@ fi
 echo ${PWD}
 
 
-sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -noPanel -ibd -seed 1 -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -vcfOut -k 2"
-./dEploid ${sameFlags} -o current
-./DEploid-${previousVersion}/dEploid ${sameFlags} -o previous
+#sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -noPanel -ibd -seed 1 -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -vcfOut -k 2"
+#./dEploid ${sameFlags} -o current
+#./DEploid-${previousVersion}/dEploid ${sameFlags} -o previous
 
-diff current.prop previous.prop
-if [ $? -ne 0 ]; then
-  echo ""
-  echo "Proportion unequal"
-  exit 1
-fi
+#diff current.prop previous.prop
+#if [ $? -ne 0 ]; then
+  #echo ""
+  #echo "Proportion unequal"
+  #exit 1
+#fi
 
 
-echo ${PWD}
-rm -r "${previousVersionTag}".tar.gz DEploid-${previousVersion} current* previous*
+#echo ${PWD}
+#rm -r "${previousVersionTag}".tar.gz DEploid-${previousVersion} current* previous*

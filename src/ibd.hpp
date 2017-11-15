@@ -28,6 +28,8 @@
 #include <exceptions.hpp>
 #include <sstream>
 #include "utility.hpp"
+#include "mersenne_twister.hpp"
+#include "dEploidIO.hpp"
 
 #ifndef IBD
 #define IBD
@@ -87,7 +89,7 @@ class IBDconfiguration{
 class Hprior{
 #ifdef UNITTEST
   friend class TestHprior;
-  //friend class TestMcmcMachinery;
+  friend class TestMcmcMachinery;
   friend class TestIBDpath;
 #endif
   friend class IBDpath;
@@ -129,8 +131,67 @@ class IBDpath{
   friend class TestIBDpath;
 #endif
   friend class McmcMachinery;
+  friend class DEploidIO;
+    RandomGenerator* ibdRg_;
+
+    double fSum;
+    Hprior hprior;
+    IBDrecombProbs ibdRecombProbs;
+    vector < vector<double> > ibdTransProbs;
+    vector < vector <double> > fm;
+    vector <double> fSumState;
+    vector <size_t> ibdConfigurePath;
+
+
     IBDpath();
+
     ~IBDpath();
+
+    size_t kStrain_;
+    void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}
+    size_t kStrain() const { return this->kStrain_;}
+
+    size_t nLoci_;
+    void setNLoci ( const size_t setTo ){ this->nLoci_ = setTo;}
+    size_t nLoci() const { return this->nLoci_; }
+
+    double theta_;
+    void setTheta(const double setTo) {this->theta_ = setTo;}
+    double theta() const {return this->theta_;}
+
+    vector <double> currentIBDpathChangeAt;
+
+    vector < vector <double> > llkSurf;
+    vector <int> uniqueEffectiveKCount;
+
+    vector <double> IBDpathChangeAt;
+    // Methods
+    void computeAndUpdateTheta();
+    void updateFmAtSiteI(vector <double> & prior,
+                         vector <double> & llk);
+    void ibdSamplePath(vector <double> statePrior);
+    void makeIbdTransProbs();
+    vector <double> computeStatePrior(double theta);
+    void makeLlkSurf(vector <double> altCount,
+                     vector <double> refCount,
+                     double scalingConst = 100.0,
+                     double err = 0.01,
+                     size_t gridSize=99);
+    void computeUniqueEffectiveKCount();
+    vector <double> computeLlkOfStatesAtSiteI(vector<double> proportion, size_t siteI, double err = 0.01);
+    vector <size_t> findWhichIsSomething(vector <size_t> tmpOp, size_t something);
+
+    // For painting IBD
+    void buildPathProbabilityForPainting(vector <double> proportion);
+    void computeIbdPathFwdProb(vector <double> proportion, vector <double> statePrior);
+    void computeIbdPathBwdProb();
+    void combineFwdBwd();
+
+
+public:
+    vector <string> getIBDprobsHeader();
+    void init(DEploidIO &dEploidIO, RandomGenerator* rg);
+    vector < vector <double> > reshapeFm(vector <size_t> stateIdx);
 
 };
 

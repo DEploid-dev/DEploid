@@ -229,25 +229,123 @@ class TestIBDpath : public CppUnit::TestCase {
 
     CPPUNIT_TEST_SUITE( TestIBDpath );
     CPPUNIT_TEST( testMainConstructor );
+    CPPUNIT_TEST( testmakeLlkSurf );
+    CPPUNIT_TEST( testIbdTransProbs );
+    CPPUNIT_TEST( testComputeUniqueEffectiveKCount );
     CPPUNIT_TEST_SUITE_END();
 
   private:
     IBDpath* ibdPath_;
+    IBDpath* ibdPath2_;
+    DEploidIO* dEploidIO_;
+    MersenneTwister* rg_;
+    double epsilon2;
 
   public:
     void setUp() {
+        dEploidIO_ = new DEploidIO();
+        dEploidIO_->altCount_ = vector<double> ({2, 100, 50, 50, 2, 2});
+        dEploidIO_->refCount_ = vector<double> ({100, 2, 0, 50, 0, 2});
+        dEploidIO_->setKstrain(3);
+        dEploidIO_->plaf_ = vector<double> ({0.1, .4, .4, .3, .2, .5});
+        vector < vector <int> > testPosition;
+        testPosition.push_back(vector<int> ({200, 3000}));
+        testPosition.push_back(vector<int> ({300}));
+        testPosition.push_back(vector<int> ({300, 400, 500}));
+        dEploidIO_->position_ = testPosition;
+        dEploidIO_->nLoci_ = 6;
+        dEploidIO_->chrom_ = vector <string> ({"chrom1", "chrom2"});
+        rg_ = new MersenneTwister(dEploidIO_->randomSeed());
+        epsilon2 = 0.001;
         ibdPath_ = new IBDpath;
+        this->ibdPath_->init(*dEploidIO_, rg_);
+        dEploidIO_->setKstrain(5);
+        ibdPath2_ = new IBDpath;
+        this->ibdPath2_->init(*dEploidIO_, rg_);
     }
 
 
     void tearDown() {
         delete ibdPath_;
+        delete ibdPath2_;
+        delete rg_;
+        delete dEploidIO_;
     }
 
     void testMainConstructor(){
 
     }
 
+    void testmakeLlkSurf(){
+        //> make.llk.surf(c(2,100,50,50,2,2), c(102,102,50,100,2,4), do.plot=FALSE)
+                  //[,1]      [,2]
+        //[1,]  2.149687 62.602446
+        //[2,] 62.602446  2.149687
+        //[3,] 50.250071  1.507423
+        //[4,] 24.735000 24.735000
+        //[5,]  2.968471  1.029853
+        //[6,]  2.800135  2.800135
+
+        CPPUNIT_ASSERT_EQUAL( this->ibdPath_->llkSurf.size(), (size_t)6 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.149687, this->ibdPath_->llkSurf[0][0], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 62.602446, this->ibdPath_->llkSurf[0][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 62.602446, this->ibdPath_->llkSurf[1][0], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.149687, this->ibdPath_->llkSurf[1][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 50.250071, this->ibdPath_->llkSurf[2][0], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 1.507423, this->ibdPath_->llkSurf[2][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 24.735000, this->ibdPath_->llkSurf[3][0], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 24.735000, this->ibdPath_->llkSurf[3][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.968471, this->ibdPath_->llkSurf[4][0], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 1.029853, this->ibdPath_->llkSurf[4][1], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.800135, this->ibdPath_->llkSurf[5][0], epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.800135, this->ibdPath_->llkSurf[5][1], epsilon2);
+    }
+
+
+    void testIbdTransProbs(){
+        //k = 3
+        //> tij
+             //[,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14]
+        //[1,]    1    1    1    1    1    1    1    1    0     0     0     0     0     0
+        //[2,]    0    0    0    0    0    0    0    0    1     1     1     1     0     0
+        //[3,]    0    0    0    0    0    0    0    0    0     0     0     0     1     1
+        //[4,]    0    0    0    0    0    0    0    0    0     0     0     0     0     0
+        //[5,]    0    0    0    0    0    0    0    0    0     0     0     0     0     0
+             //[,15] [,16] [,17] [,18] [,19] [,20] [,21] [,22]
+        //[1,]     0     0     0     0     0     0     0     0
+        //[2,]     0     0     0     0     0     0     0     0
+        //[3,]     1     1     0     0     0     0     0     0
+        //[4,]     0     0     1     1     1     1     0     0
+        //[5,]     0     0     0     0     0     0     1     1
+        //vector <double> tmpPlaf = vector <double> ({0.1, 0.2, 0.3});
+        //CPPUNIT_ASSERT_NO_THROW(this->ibdPath_->hprior.buildHprior(3, tmpPlaf));
+        CPPUNIT_ASSERT_EQUAL(this->ibdPath_->hprior.nPattern(), (size_t)5);
+        CPPUNIT_ASSERT_EQUAL(this->ibdPath_->hprior.nState(), (size_t)22);
+
+        //CPPUNIT_ASSERT_NO_THROW(this->ibdPath_->makeIbdTransProbs());
+        CPPUNIT_ASSERT_EQUAL((size_t)5, this->ibdPath_->ibdTransProbs.size());
+        double tmpValue = sumOfMat(this->ibdPath_->ibdTransProbs);
+        CPPUNIT_ASSERT_EQUAL((double)22.0, tmpValue);
+        for ( size_t i =  0; i < 22; i++){
+            CPPUNIT_ASSERT_EQUAL(this->ibdPath_->ibdTransProbs[this->ibdPath_->hprior.stateIdx[i]][i], (double)1.0);
+        }
+    }
+
+
+    void testComputeUniqueEffectiveKCount(){
+        //vector <double> tmpPlaf = vector <double> ({0.1, 0.2, 0.3});
+        //CPPUNIT_ASSERT_NO_THROW(this->ibdPath_->hprior.buildHprior(5, tmpPlaf));
+        CPPUNIT_ASSERT_NO_THROW(this->ibdPath2_->computeUniqueEffectiveKCount());
+        CPPUNIT_ASSERT_EQUAL(this->ibdPath2_->uniqueEffectiveKCount.size(), (size_t)5);
+        //> table(make.ibd.mat.joe(5)$k.eff)
+        //1  2  3  4  5
+        //1 15 25 10  1
+        CPPUNIT_ASSERT_EQUAL(this->ibdPath2_->uniqueEffectiveKCount[0], (int)1);
+        CPPUNIT_ASSERT_EQUAL(this->ibdPath2_->uniqueEffectiveKCount[1], (int)15);
+        CPPUNIT_ASSERT_EQUAL(this->ibdPath2_->uniqueEffectiveKCount[2], (int)25);
+        CPPUNIT_ASSERT_EQUAL(this->ibdPath2_->uniqueEffectiveKCount[3], (int)10);
+        CPPUNIT_ASSERT_EQUAL(this->ibdPath2_->uniqueEffectiveKCount[4], (int)1);
+    }
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestIBDUtility);

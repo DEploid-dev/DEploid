@@ -48,9 +48,11 @@ class DEploidIO{
 #ifdef UNITTEST
  friend class TestIO;
  friend class TestMcmcMachinery;
+ friend class TestIBDpath;
 #endif
  friend class McmcMachinery;
  friend class RMcmcSample;
+ friend class IBDpath;
   public:
     DEploidIO();
     DEploidIO(const DEploidIO &currentDEploidIO);
@@ -323,6 +325,7 @@ class DEploidIO{
     void setIBDSigma ( const double setTo ){ this->ibdSigma_ = setTo; }
     double ibdSigma() const {return this->ibdSigma_;}
 
+    void setNLoci ( const size_t setTo ){ this->nLoci_ = setTo;}
     size_t nLoci() const { return this->nLoci_; }
     void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}
     size_t kStrain() const { return this->kStrain_;}

@@ -29,6 +29,7 @@
 #include "utility.hpp"    // normailize by sum
 #include "updateHap.hpp"  // chromPainting
 #include "dEploidIO.hpp"
+#include "ibd.hpp"
 
 DEploidIO::DEploidIO(){
     this->init();
@@ -717,3 +718,45 @@ void DEploidIO::getIBDprobsIntegrated(vector < vector <double> > &prob){
     }
     normalizeBySum(this->ibdProbsIntegrated);
 }
+
+
+
+void DEploidIO::paintIBD(){
+    vector <double> goodProp;
+    vector <size_t> goodStrainIdx;
+    for ( size_t i = 0; i < this->finalProp.size(); i++){
+        if (this->finalProp[i] > 0.01){
+            goodProp.push_back(this->finalProp[i]);
+            goodStrainIdx.push_back(i);
+        }
+    }
+
+    if (goodProp.size() == 1){
+        return;
+    }
+
+    DEploidIO tmpDEploidIO; // (*this);
+    tmpDEploidIO.setKstrain(goodProp.size());
+    cout << tmpDEploidIO.kStrain() << endl;
+    tmpDEploidIO.setInitialPropWasGiven(true);
+    tmpDEploidIO.initialProp = goodProp;
+    tmpDEploidIO.finalProp = goodProp;
+    tmpDEploidIO.refCount_ = this->refCount_;
+    tmpDEploidIO.altCount_ = this->altCount_;
+    tmpDEploidIO.plaf_ = this->plaf_;
+    tmpDEploidIO.nLoci_= this->nLoci();
+    tmpDEploidIO.position_ = this->position_;
+    tmpDEploidIO.chrom_ = this->chrom_;
+    //tmpDEploidIO.writeLog (&std::cout);
+
+    MersenneTwister tmpRg(this->randomSeed());
+    IBDpath tmpIBDpath;
+    tmpIBDpath.init(tmpDEploidIO, &tmpRg);
+    tmpIBDpath.buildPathProbabilityForPainting(goodProp);
+    vector < vector <double> > reshapedProbs = tmpIBDpath.reshapeFm(tmpIBDpath.hprior.stateIdx);
+    this->ibdProbsHeader = tmpIBDpath.getIBDprobsHeader();
+    this->getIBDprobsIntegrated(reshapedProbs);
+    this->writeIBDpostProb(reshapedProbs, this->ibdProbsHeader);
+
+}
+
