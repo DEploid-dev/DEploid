@@ -232,6 +232,7 @@ class TestIBDpath : public CppUnit::TestCase {
     CPPUNIT_TEST( testmakeLlkSurf );
     CPPUNIT_TEST( testIbdTransProbs );
     CPPUNIT_TEST( testComputeUniqueEffectiveKCount );
+    CPPUNIT_TEST( testIBDconfigureHeader );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -345,6 +346,17 @@ class TestIBDpath : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL(this->ibdPath2_->uniqueEffectiveKCount[2], (int)25);
         CPPUNIT_ASSERT_EQUAL(this->ibdPath2_->uniqueEffectiveKCount[3], (int)10);
         CPPUNIT_ASSERT_EQUAL(this->ibdPath2_->uniqueEffectiveKCount[4], (int)1);
+    }
+
+
+    void testIBDconfigureHeader(){
+        vector <string> headerOf3Strain = this->ibdPath_->getIBDprobsHeader();
+        CPPUNIT_ASSERT_EQUAL((size_t)5, headerOf3Strain.size());
+        CPPUNIT_ASSERT("0-1-2" == headerOf3Strain[0]);
+        CPPUNIT_ASSERT("0-2-2" == headerOf3Strain[1]);
+        CPPUNIT_ASSERT("2-1-2" == headerOf3Strain[2]);
+        CPPUNIT_ASSERT("2-2-2" == headerOf3Strain[3]);
+        CPPUNIT_ASSERT("1-1-2" == headerOf3Strain[4]);
     }
 };
 
