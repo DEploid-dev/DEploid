@@ -66,7 +66,8 @@ class DEploidIO{
     bool version() const { return version_; }
     // Painting related
     void chromPainting ();
-    bool doPainting() const { return this->doPainting_; }
+    bool doLsPainting() const { return this->doLsPainting_; }
+    bool doIbdPainting() const { return this->doIbdPainting_; }
     bool useIBD() const { return this->useIBD_;}
     void paintIBD();
     void getIBDprobsIntegrated(vector < vector <double> > &prob);
@@ -112,7 +113,8 @@ class DEploidIO{
     bool doExportPostProb_;
     bool doExportSwitchMissCopy_;
     bool doAllowInbreeding_;
-    bool doPainting_;
+    bool doLsPainting_;
+    bool doIbdPainting_;
     bool useIBD_;
 
     vector <double> initialProp;
@@ -264,7 +266,8 @@ class DEploidIO{
     void setDoAllowInbreeding ( const bool setTo ) { this->doAllowInbreeding_ = setTo; }
     bool doAllowInbreeding() const { return this->doAllowInbreeding_; }
 
-    void setDoPainting ( const bool setTo ){ this->doPainting_ = setTo; }
+    void setDoLsPainting ( const bool setTo ){ this->doLsPainting_ = setTo; }
+    void setDoIbdPainting ( const bool setTo ){ this->doIbdPainting_ = setTo; }
     void setUseIBD( const bool setTo){ this->useIBD_ = setTo; }
 
     bool initialPropWasGiven() const { return initialPropWasGiven_; }

@@ -88,7 +88,7 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     if ( altFileName_.size()>0) (*writeTo) << setw(12) << "ALT count: " << altFileName_    << "\n";
     if ( excludeSites() ){ (*writeTo) << setw(12) << "Exclude: " << excludeFileName_    << "\n"; }
     (*writeTo) << "\n";
-    if ( this->doPainting() == false ) {
+    if ( this->doLsPainting() == false ) {
         (*writeTo) << "MCMC parameters: "<< "\n";
         (*writeTo) << setw(19) << " MCMC burn: " << mcmcBurn_ << "\n";
         (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_ << "\n";
@@ -121,7 +121,7 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         }
     }
     (*writeTo) << "\n";
-    if ( this->doPainting() == false ) {
+    if ( this->doLsPainting() == false ) {
         (*writeTo) << "MCMC diagnostic:"<< "\n";
         (*writeTo) << setw(19) << " Accept_ratio: " << acceptRatio_ << "\n";
         (*writeTo) << setw(19) << " Max_llks: " << maxLLKs_ << "\n";
@@ -137,7 +137,7 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     (*writeTo) << setw(14) << "End at: "    << endTime_  ;
     (*writeTo) << "\n";
     (*writeTo) << "Output saved to:\n";
-    if ( this->doPainting() ){
+    if ( this->doLsPainting() ){
         for ( size_t i = 0; i < kStrain(); i++ ){
             (*writeTo) << "Posterior probability of strain " << i << ": "<< strExportSingleFwdProbPrefix << i <<endl;
         }

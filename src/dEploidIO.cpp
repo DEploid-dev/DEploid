@@ -267,12 +267,12 @@ void DEploidIO::removeFilesWithSameName(){
     if ( compressVcf() ){
         strExportVcf += ".gz";
     }
-    strExportLog =  this->prefix_ + ((this->doPainting()) ? ".painting":"") + ".log";
+    strExportLog =  this->prefix_ + ((this->doLsPainting()) ? ".painting":"") + ".log";
     strExportRecombProb = this->prefix_ + ".recomb";
 
     strExportExtra = this->prefix_ + ".extra";
 
-    if ( this->doPainting() == false ){
+    if ( this->doLsPainting() == false ){
         if (this->useIBD()){
             remove(strIbdExportProp.c_str());
             remove(strIbdExportLLK.c_str());
@@ -286,7 +286,7 @@ void DEploidIO::removeFilesWithSameName(){
         remove(strIbdExportProbs.c_str());
     }
 
-    if (this->doPainting() || this->doExportPostProb() ){
+    if (this->doLsPainting() || this->doExportPostProb() ){
         if (this->useIBD()){
             strIbdExportSingleFwdProbPrefix = this->prefix_ + ".ibd.single";
             for ( size_t i = 0; i < this->kStrain_ ; i++ ){
@@ -449,7 +449,7 @@ void DEploidIO::parse (){
 
             this->setKstrain(this->initialProp.size());
         } else if ( *argv_i == "-initialHap" ){
-            if ( this->doPainting() == true ){
+            if ( this->doLsPainting() == true ){
                 throw ( FlagsConflict((*argv_i) , "-painting") );
             }
             this->readNextStringto ( this->initialHapFileName_ ) ;

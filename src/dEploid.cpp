@@ -45,7 +45,7 @@ int main( int argc, char *argv[] ){
             return EXIT_SUCCESS;
         }
 
-        if ( dEploidIO.doPainting() ){
+        if ( dEploidIO.doLsPainting() ){
             dEploidIO.chromPainting();
         } else{
 
