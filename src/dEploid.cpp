@@ -47,8 +47,9 @@ int main( int argc, char *argv[] ){
 
         if ( dEploidIO.doLsPainting() ){
             dEploidIO.chromPainting();
-        } else{
-
+        } else if ( dEploidIO.doIbdPainting() ){
+            dEploidIO.paintIBD();
+        }else{
             if (dEploidIO.useIBD()){ // ibd
                 McmcSample * ibdMcmcSample = new McmcSample();
                 MersenneTwister ibdRg(dEploidIO.randomSeed());

@@ -141,6 +141,14 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         for ( size_t i = 0; i < kStrain(); i++ ){
             (*writeTo) << "Posterior probability of strain " << i << ": "<< strExportSingleFwdProbPrefix << i <<endl;
         }
+    } else if (this->doIbdPainting()){
+        if (this->ibdProbsIntegrated.size()>1){
+            (*writeTo) << setw(14) << "IBD probs: "  << strIbdExportProbs  << "\n\n";
+            (*writeTo) << " IBD probabilities:\n";
+            for ( size_t stateI = 0; stateI < this->ibdProbsHeader.size(); stateI++ ){
+                (*writeTo) << setw(14) << this->ibdProbsHeader[stateI] << ": " << this->ibdProbsIntegrated[stateI] << "\n";
+            }
+        }
     } else {
         (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
         (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
@@ -165,6 +173,12 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     for ( size_t ii = 0; ii < this->finalProp.size(); ii++){
         (*writeTo) << setw(10) << this->finalProp[ii];
         (*writeTo) << ((ii < (this->finalProp.size()-1)) ? "\t" : "\n") ;
+    }
+    if (this->doIbdPainting()){
+        for ( size_t ii = 0; ii < this->initialProp.size(); ii++){
+            (*writeTo) << setw(10) << this->initialProp[ii];
+            (*writeTo) << ((ii < (this->initialProp.size()-1)) ? "\t" : "\n") ;
+        }
     }
 
 }

@@ -113,7 +113,8 @@ void DEploidIO::init() {
     this->setDoUpdatePair( true );
     this->setDoUpdateSingle( true );
     this->setDoExportPostProb( false );
-    this->setDoPainting( false );
+    this->setDoLsPainting( false );
+    this->setDoIbdPainting( false );
     this->setUseIBD( false );
     this->setDoExportSwitchMissCopy ( true );
     this->setDoAllowInbreeding( false );
@@ -170,6 +171,12 @@ void DEploidIO::reInit() {
 
 
 void DEploidIO::finalize(){
+    if ( this->doIbdPainting() ){
+        if (!initialPropWasGiven()){
+            throw InitialPropUngiven("");
+        }
+    }
+
     if ( this->useIBD() && this->kStrain() == 1){
         throw InvalidK();
     }
@@ -427,10 +434,12 @@ void DEploidIO::parse (){
                 throw ( FlagsConflict((*argv_i) , "-initialHap") );
             }
             this->readNextStringto ( this->initialHapFileName_ ) ;
-            this->setDoPainting( true );
+            this->setDoLsPainting( true );
             this->readInitialHaps();
         } else if ( *argv_i == "-ibd" ){
             this->setUseIBD(true);
+        } else if ( *argv_i == "-ibdPainting" ){
+            this->setDoIbdPainting( true );
         } else if ( *argv_i == "-initialP" ){
             this->readInitialProportions();
             this->setInitialPropWasGiven( true );
@@ -479,7 +488,7 @@ void DEploidIO::checkInput(){
         throw FileNameMissing ( "Alt count" );}
     if ( this->plafFileName_.size() == 0 ){
         throw FileNameMissing ( "PLAF" );}
-    if ( usePanel() && this->panelFileName_.size() == 0 ){
+    if ( usePanel() && this->panelFileName_.size() == 0 && !this->doIbdPainting() ){
         throw FileNameMissing ( "Reference panel" );}
     if ( this->initialPropWasGiven() && ( abs(sumOfVec(initialProp) - 1.0) > 0.00001 )){
         throw SumOfPropNotOne ( to_string(sumOfVec(initialProp)) );}
@@ -566,6 +575,7 @@ void DEploidIO::printHelp(std::ostream& out){
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CPanelExclude -panel data/testData/labStrains.test.panel.txt" << endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CPanelExclude -panel data/testData/labStrains.test.panel.txt -painting PG0390-CPanelExclude.hap" << endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel -k 2 -ibd -nSample 250 -rate 8 -burn 0.67" <<endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -ibdPainting -initialP 0.2 0.8" <<endl;
 }
 
 
@@ -680,6 +690,9 @@ void DEploidIO::readPanel(){
     if ( this->usePanel() == false ){
         return;
     }
+    if ( this->doIbdPainting() ){
+        return;
+    }
 
     panel = new Panel();
     panel->readFromFile(this->panelFileName_.c_str());
@@ -694,9 +707,9 @@ void DEploidIO::readPanel(){
 
 DEploidIO::DEploidIO(const DEploidIO &currentDEploidIO){
     // This is not working! to be improved
-    cout << this->refCount_.size() << endl;
+    //cout << this->refCount_.size() << endl;
     this->refCount_ = currentDEploidIO.refCount_;
-    cout << this->refCount_.size() << endl;
+    //cout << this->refCount_.size() << endl;
 }
 
 
@@ -724,10 +737,20 @@ void DEploidIO::getIBDprobsIntegrated(vector < vector <double> > &prob){
 void DEploidIO::paintIBD(){
     vector <double> goodProp;
     vector <size_t> goodStrainIdx;
-    for ( size_t i = 0; i < this->finalProp.size(); i++){
-        if (this->finalProp[i] > 0.01){
-            goodProp.push_back(this->finalProp[i]);
-            goodStrainIdx.push_back(i);
+
+    if ( this->doIbdPainting() ){
+        for ( size_t i = 0; i < this->initialProp.size(); i++){
+            if (this->initialProp[i] > 0.01){
+                goodProp.push_back(this->initialProp[i]);
+                goodStrainIdx.push_back(i);
+            }
+        }
+    }{
+        for ( size_t i = 0; i < this->finalProp.size(); i++){
+            if (this->finalProp[i] > 0.01){
+                goodProp.push_back(this->finalProp[i]);
+                goodStrainIdx.push_back(i);
+            }
         }
     }
 
@@ -737,7 +760,6 @@ void DEploidIO::paintIBD(){
 
     DEploidIO tmpDEploidIO; // (*this);
     tmpDEploidIO.setKstrain(goodProp.size());
-    cout << tmpDEploidIO.kStrain() << endl;
     tmpDEploidIO.setInitialPropWasGiven(true);
     tmpDEploidIO.initialProp = goodProp;
     tmpDEploidIO.finalProp = goodProp;

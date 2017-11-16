@@ -407,9 +407,6 @@ vector <size_t> IBDpath::findWhichIsSomething(vector <size_t> tmpOp, size_t some
 
 
 void IBDpath::buildPathProbabilityForPainting(vector <double> proportion){
-    cout << this->kStrain()<<endl;
-    cout << this->hprior.nState()<<endl;
-    cout << proportion.size()<<endl;
     vector <double> statePrior = this->computeStatePrior(this->theta());
     // First building the path likelihood
     this->computeIbdPathFwdProb(proportion, statePrior);
