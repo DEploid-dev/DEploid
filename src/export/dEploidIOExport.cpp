@@ -81,14 +81,16 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     (*writeTo) << "dEploid version: " << dEploidGitVersion_ << endl;
     (*writeTo) << "\n";
     (*writeTo) << "Input data: \n";
-    (*writeTo) << setw(12) << "Panel: "     << panelFileName_  << "\n";
+    if (panelFileName_.size() > 0){
+        (*writeTo) << setw(12) << "Panel: "     << panelFileName_  << "\n";
+    }
     (*writeTo) << setw(12) << "PLAF: "      << plafFileName_   << "\n";
     if ( useVcf() ) (*writeTo) << setw(12) << "VCF: " << vcfFileName_    << "\n";
     if ( refFileName_.size()>0) (*writeTo) << setw(12) << "REF count: " << refFileName_    << "\n";
     if ( altFileName_.size()>0) (*writeTo) << setw(12) << "ALT count: " << altFileName_    << "\n";
     if ( excludeSites() ){ (*writeTo) << setw(12) << "Exclude: " << excludeFileName_    << "\n"; }
     (*writeTo) << "\n";
-    if ( this->doLsPainting() == false ) {
+    if ( (this->doLsPainting() == false) & (this->doIbdPainting() == false) ) {
         (*writeTo) << "MCMC parameters: "<< "\n";
         (*writeTo) << setw(19) << " MCMC burn: " << mcmcBurn_ << "\n";
         (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_ << "\n";
@@ -121,7 +123,7 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         }
     }
     (*writeTo) << "\n";
-    if ( this->doLsPainting() == false ) {
+    if ( (this->doLsPainting() == false) & (this->doIbdPainting() == false) ) {
         (*writeTo) << "MCMC diagnostic:"<< "\n";
         (*writeTo) << setw(19) << " Accept_ratio: " << acceptRatio_ << "\n";
         (*writeTo) << setw(19) << " Max_llks: " << maxLLKs_ << "\n";
