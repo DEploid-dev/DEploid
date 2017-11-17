@@ -354,7 +354,12 @@ class DEploidIO{
     bool forbidCopyFromSame() const { return this->forbidCopyFromSame_; }
     void setForbidCopyFromSame(const bool forbid){ this->forbidCopyFromSame_ = forbid; }
 
-
+    double effectiveKstrain_ ;
+    void computeEffectiveKstrain(vector <double> proportion);
+    int inferredKstrain_;
+    void computeInferredKstrain(vector <double> proportion);
+    double adjustedEffectiveKstrain_;
+    void computeAdjustedEffectiveKstrain();
 };
 
 #endif

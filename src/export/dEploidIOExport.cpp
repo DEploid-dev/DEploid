@@ -171,18 +171,20 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         }
     }
     (*writeTo) << "\n";
+
+    this->computeEffectiveKstrain(this->finalProp);
+    (*writeTo) << "        Effective_K: " << this->effectiveKstrain_ <<"\n";
+    this->computeInferredKstrain(this->finalProp);
+    (*writeTo) << "         Inferred_K: " << this->inferredKstrain_ <<"\n";
+    this->computeAdjustedEffectiveKstrain();
+    (*writeTo) << "Adjusted_ffective_K: " << this->adjustedEffectiveKstrain_ <<"\n";
+
+    (*writeTo) << "\n";
     (*writeTo) << "Proportions:\n";
     for ( size_t ii = 0; ii < this->finalProp.size(); ii++){
         (*writeTo) << setw(10) << this->finalProp[ii];
         (*writeTo) << ((ii < (this->finalProp.size()-1)) ? "\t" : "\n") ;
     }
-    if (this->doIbdPainting()){
-        for ( size_t ii = 0; ii < this->initialProp.size(); ii++){
-            (*writeTo) << setw(10) << this->initialProp[ii];
-            (*writeTo) << ((ii < (this->initialProp.size()-1)) ? "\t" : "\n") ;
-        }
-    }
-
 }
 
 

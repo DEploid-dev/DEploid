@@ -733,24 +733,48 @@ void DEploidIO::getIBDprobsIntegrated(vector < vector <double> > &prob){
 }
 
 
+void DEploidIO::computeEffectiveKstrain(vector <double> proportion){
+    double tmpSumSq = 0.0;
+    for (double p : proportion){
+        tmpSumSq += p * p;
+    }
+    this->effectiveKstrain_ = 1.0 / tmpSumSq;
+}
+
+
+void DEploidIO::computeInferredKstrain(vector <double> proportion){
+    this->inferredKstrain_ = 0;
+    for (double p : proportion){
+        if ( p > 0.01 ){
+            this->inferredKstrain_ += 1;
+        }
+    }
+}
+
+
+void DEploidIO::computeAdjustedEffectiveKstrain(){
+    this->adjustedEffectiveKstrain_ = this->effectiveKstrain_;
+    if ( (this->inferredKstrain_ == 2) & (ibdProbsIntegrated.size() == 2)){
+        if ( this->ibdProbsIntegrated[1] > 0.95 ){
+            this->adjustedEffectiveKstrain_ = 1;
+        }
+    }
+}
+
+
 
 void DEploidIO::paintIBD(){
     vector <double> goodProp;
     vector <size_t> goodStrainIdx;
 
     if ( this->doIbdPainting() ){
-        for ( size_t i = 0; i < this->initialProp.size(); i++){
-            if (this->initialProp[i] > 0.01){
-                goodProp.push_back(this->initialProp[i]);
-                goodStrainIdx.push_back(i);
-            }
-        }
-    }{
-        for ( size_t i = 0; i < this->finalProp.size(); i++){
-            if (this->finalProp[i] > 0.01){
-                goodProp.push_back(this->finalProp[i]);
-                goodStrainIdx.push_back(i);
-            }
+        this->finalProp = this->initialProp;
+    }
+
+    for ( size_t i = 0; i < this->finalProp.size(); i++){
+        if (this->finalProp[i] > 0.01){
+            goodProp.push_back(this->finalProp[i]);
+            goodStrainIdx.push_back(i);
         }
     }
 
