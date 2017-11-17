@@ -205,6 +205,7 @@ void Hprior::buildHprior(size_t kStrain, vector <double> &plaf){
 
         vector < vector<int> > hSetBaseTmpUnique = unique(hSetBaseTmp); // uu
         size_t sizeOfhSetBaseTmpUnique = hSetBaseTmpUnique.size();
+        stateIdxFreq.push_back(sizeOfhSetBaseTmpUnique);
         //h.prior.i<-array(0, c(size.h.set.i, n.loci));
 
         for ( size_t i = 0; i < sizeOfhSetBaseTmpUnique; i++){
@@ -407,28 +408,73 @@ vector <size_t> IBDpath::findWhichIsSomething(vector <size_t> tmpOp, size_t some
 
 
 void IBDpath::buildPathProbabilityForPainting(vector <double> proportion){
-    vector <double> statePrior = this->computeStatePrior(this->theta());
+    vector <double> effectiveKPrior = this->computeEffectiveKPrior(this->theta());
+    vector <double> statePrior = this->computeStatePrior(effectiveKPrior);
     // First building the path likelihood
     this->computeIbdPathFwdProb(proportion, statePrior);
-    //this->computeIbdPathBwdProb();
-    //this->combineFwdBwd();
+    this->computeIbdPathBwdProb(proportion, effectiveKPrior, statePrior);
+    this->combineFwdBwd();
 }
 
 
-void IBDpath::computeIbdPathBwdProb(){
+
+void IBDpath::computeIbdPathBwdProb(vector <double> proportion, vector <double> effectiveKPrior, vector <double> statePrior){
 //# assuming each ibd state has equal probabilities, transform it into ibd configurations
 //bwd<-array(0, c(n.state, n.loci));
 
 //tmpBw = (a.prior * 1/table(state.idx)) %*% tij
 //bwd[,n.loci] = tmpBw/sum(tmpBw)
+    vector <double> tmp = vector <double> (hprior.stateIdxFreq.size());
+    assert(effectiveKPrior.size() == hprior.stateIdxFreq.size());
+    for (size_t i = 0; i < tmp.size(); i++){
+        tmp[i] = effectiveKPrior[i] / (double)hprior.stateIdxFreq[i];
+    }
+
+    vector <double> tmpBw = vector <double> (hprior.nState());
+    for (size_t j = 0; j < tmpBw.size(); j++){
+        for (size_t i = 0; i < tmp.size(); i++){
+            tmpBw[j] += tmp[i] * ibdTransProbs[i][j];
+        }
+    }
+
+    this->bwd.push_back(tmpBw);
+
+    for ( size_t rev_siteI = 1; rev_siteI < this->nLoci(); rev_siteI++ ){
+        size_t siteI = this->nLoci()-rev_siteI;
+        vector<double> lk = computeLlkOfStatesAtSiteI(proportion, siteI);
+
+        vector <double> bSumState = vector <double> (hprior.nState());
+        for ( size_t i = 0; i < bSumState.size(); i++){
+            for ( size_t j = 0; j < hprior.nState(); j++ ){
+                bSumState[i] += ibdTransProbs[i][j]*this->bwd.back()[j];
+            }
+        }
+
+        vector <double> vNoRecomb(hprior.nState());
+        for (size_t i = 0; i < hprior.stateIdx.size(); i++ ){
+            vNoRecomb[i] = bSumState[hprior.stateIdx[i]];
+        }
+
+        for (size_t i = 0; i < hprior.nState(); i++ ){
+            tmpBw[i] = 0;
+            for (size_t j = 0; j < lk.size(); j++){
+                tmpBw[i] += (lk[j] * bwd.back()[j]);
+            }
+            tmpBw[i] *= this->ibdRecombProbs.pRec_[siteI] * statePrior[i];
+            tmpBw[i] += lk[i] * (1-this->ibdRecombProbs.pRec_[siteI]) * vNoRecomb[i];
+            tmpBw[i] *= hprior.priorProb[i][siteI];
+        }
+        normalizeBySum(tmpBw);
+        this->bwd.push_back(tmpBw);
+    }
+
+    reverse(bwd.begin(),bwd.end());
 //print("compute backward")
-//#n.state.cases = rep(1,n.state)%*% t(tij)
 //for ( site in n.loci:2 ){
     //qs<-h.set %*% t(prop.0);
     //qs2<-qs*(1-err)+(1-qs)*err;
     //lk.data<-dbeta(qs2, llk.apx[site,1], llk.apx[site,2], log=T);
     //lk.norm<-exp(lk.data-max(lk.data));
-//#        lk.norm[]<-1;
 
     //b.sum.state = tij %*% bwd[,site]
     //v.norec = b.sum.state[state.idx]
@@ -487,6 +533,15 @@ void IBDpath::updateFmAtSiteI(vector <double> & prior, vector <double> & llk){
 
 
 void IBDpath::combineFwdBwd(){
+    for (size_t i = 0; i < nLoci(); i++ ){
+        normalizeBySum(fm[i]);
+        vector <double> tmp;
+        for (size_t j = 0; j < fm[i].size(); j++){
+            tmp.push_back(exp(log(fm[i][j])+log(bwd[i][j])));
+        }
+        fwdbwd.push_back(tmp);
+
+    }
 //post = exp(log(fmNomalized) + log(bwdNormalized))
 }
 
@@ -511,11 +566,11 @@ vector <string> IBDpath::getIBDprobsHeader(){
 
 vector < vector <double> > IBDpath::reshapeFm(vector <size_t> stateIdx){
     vector < vector <double> > ret;
-    for ( size_t siteIndex = 0; siteIndex < this->fm.size(); siteIndex++){
+    for ( size_t siteIndex = 0; siteIndex < this->fwdbwd.size(); siteIndex++){
         size_t previousStateIdx = 0;
         vector <double> tmpRow;
         double cumProb = 0;
-        for (size_t fm_ij = 0; fm_ij < this->fm[siteIndex].size(); fm_ij++){
+        for (size_t fm_ij = 0; fm_ij < this->fwdbwd[siteIndex].size(); fm_ij++){
             cumProb += this->fm[siteIndex][fm_ij];
             if (previousStateIdx != stateIdx[fm_ij]){
                 previousStateIdx++;
@@ -532,7 +587,7 @@ vector < vector <double> > IBDpath::reshapeFm(vector <size_t> stateIdx){
 
 
 
-vector <double> IBDpath::computeStatePrior( double theta ){
+vector <double> IBDpath::computeEffectiveKPrior(double theta){
     //#Calculate state prior given theta (theta is prob IBD)
     vector <double> pr0(this->kStrain());
     for (int i = 0; i < (int)pr0.size(); i++){
@@ -545,6 +600,11 @@ vector <double> IBDpath::computeStatePrior( double theta ){
         assert(effectiveKidx < (int)this->kStrain());
         effectiveKPrior.push_back(pr0[effectiveKidx]/uniqueEffectiveKCount[effectiveKidx]);
     }
+    return effectiveKPrior;
+}
+
+
+vector <double> IBDpath::computeStatePrior( vector <double> effectiveKPrior ){
     vector <double> ret;
     for (size_t stateIdxTmp : this->hprior.stateIdx){
         ret.push_back(effectiveKPrior[stateIdxTmp]);

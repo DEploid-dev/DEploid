@@ -115,6 +115,7 @@ class Hprior{
     void transposePriorProbs();
 
     vector <size_t> stateIdx; // size: nState
+    vector <size_t> stateIdxFreq;
 
     vector <vector <int> > hSet; // size: nState x kStrain
     size_t nState_;
@@ -142,6 +143,8 @@ class IBDpath{
     vector <double> fSumState;
     vector <size_t> ibdConfigurePath;
 
+    vector < vector <double> > bwd;
+    vector < vector <double> > fwdbwd;
 
     IBDpath();
 
@@ -171,7 +174,8 @@ class IBDpath{
                          vector <double> & llk);
     void ibdSamplePath(vector <double> statePrior);
     void makeIbdTransProbs();
-    vector <double> computeStatePrior(double theta);
+    vector <double> computeEffectiveKPrior(double theta);
+    vector <double> computeStatePrior(vector <double> effectiveKPrior);
     void makeLlkSurf(vector <double> altCount,
                      vector <double> refCount,
                      double scalingConst = 100.0,
@@ -184,7 +188,7 @@ class IBDpath{
     // For painting IBD
     void buildPathProbabilityForPainting(vector <double> proportion);
     void computeIbdPathFwdProb(vector <double> proportion, vector <double> statePrior);
-    void computeIbdPathBwdProb();
+    void computeIbdPathBwdProb(vector <double> proportion, vector <double> effectiveKPrior, vector <double> statePrior);
     void combineFwdBwd();
 
 

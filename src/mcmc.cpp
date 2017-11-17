@@ -422,7 +422,8 @@ void McmcMachinery::ibdInitializeEssentials(){
 
 
 void McmcMachinery::ibdSampleMcmcEventStep(){
-    vector <double> statePrior = this->ibdPath.computeStatePrior(this->ibdPath.theta());
+    vector <double> effectiveKPrior = this->ibdPath.computeEffectiveKPrior(this->ibdPath.theta());
+    vector <double> statePrior = this->ibdPath.computeStatePrior(effectiveKPrior);
     // First building the path likelihood
     this->ibdPath.computeIbdPathFwdProb(this->currentProp_, statePrior);
 
