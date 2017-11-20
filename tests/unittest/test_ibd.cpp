@@ -236,6 +236,7 @@ class TestIBDpath : public CppUnit::TestCase {
     CPPUNIT_TEST( testStatePrior );
     CPPUNIT_TEST( checkFwd );
     CPPUNIT_TEST( checkBwd );
+    CPPUNIT_TEST( checkPainting );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -425,6 +426,12 @@ class TestIBDpath : public CppUnit::TestCase {
             //vector <double > tmp = this->ibdPath2_->bwd[i];
             //normalizeBySum(tmp);
         //}
+    }
+
+    void checkPainting(){
+        CPPUNIT_ASSERT_NO_THROW(this->ibdPath2_->buildPathProbabilityForPainting(vector <double> ({.5, .5})));
+        CPPUNIT_ASSERT_NO_THROW(this->ibdPath3_->buildPathProbabilityForPainting(vector <double> ({.5, .25, .25})));
+        CPPUNIT_ASSERT_NO_THROW(this->ibdPath5_->buildPathProbabilityForPainting(vector <double> ({.25, .2, .2, .2, .15})));
     }
 
 };

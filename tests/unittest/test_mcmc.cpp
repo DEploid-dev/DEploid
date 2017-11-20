@@ -40,7 +40,6 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     CPPUNIT_TEST( testInitializeExpectedWsaf );
     CPPUNIT_TEST( testCalcMaxIteration );
     CPPUNIT_TEST( testCalcExpectedWsaf );
-
     CPPUNIT_TEST( testRBernoulli );
     CPPUNIT_TEST( testFindUpdatingStrainSingle );
     CPPUNIT_TEST( testFindUpdatingStrainPair );
