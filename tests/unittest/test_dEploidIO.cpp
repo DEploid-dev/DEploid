@@ -44,7 +44,7 @@ class TestIO : public CppUnit::TestCase {
 
     void testInitialization(){
         DEploidIO* dEploidIOptr = new DEploidIO ();
-        CPPUNIT_ASSERT_EQUAL( dEploidIOptr->randomSeedWasSet(), false );
+        CPPUNIT_ASSERT_EQUAL( dEploidIOptr->randomSeedWasGiven(), false );
         CPPUNIT_ASSERT_EQUAL( dEploidIOptr->doExportRecombProb(), false );
         CPPUNIT_ASSERT_EQUAL( dEploidIOptr->compressVcf(), false );
         CPPUNIT_ASSERT_EQUAL( dEploidIOptr->initialPropWasGiven(), false );
@@ -71,7 +71,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL( dEploidIOptr->parameterG() , 20.0, epsilon3 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( dEploidIOptr->parameterSigma() , 5.0, epsilon3 );
         CPPUNIT_ASSERT_EQUAL( dEploidIOptr->doExportVcf(), false );
-        CPPUNIT_ASSERT_EQUAL( dEploidIOptr->doPainting(), false);
+        CPPUNIT_ASSERT_EQUAL( dEploidIOptr->doLsPainting(), false);
         delete dEploidIOptr;
     }
 
@@ -733,7 +733,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_NO_THROW ( DEploidIO(9, argv1));
         CPPUNIT_ASSERT_NO_THROW ( DEploidIO(10, argv1));
         DEploidIO dEploidIO(10, argv1);
-        CPPUNIT_ASSERT_EQUAL(dEploidIO.doPainting(), true);
+        CPPUNIT_ASSERT_EQUAL(dEploidIO.doLsPainting(), true);
         CPPUNIT_ASSERT_NO_THROW(dEploidIO.chromPainting());
 
     }

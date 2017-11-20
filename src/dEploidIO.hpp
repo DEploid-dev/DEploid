@@ -23,17 +23,16 @@
  *
  */
 
-#include <stdlib.h>     /* strtol, strtod */
-#include <fstream>
-#include <stdexcept> // std::invalid_argument
 #include <vector>
-#include <iostream> // std::cout
-#include <sstream>      // std::stringstream
+#include <fstream>
+#include <stdlib.h>             // strtol, strtod
+#include <stdexcept>            // std::invalid_argument
+#include <iostream>             // std::cout
+#include <sstream>              // std::stringstream
 #include "global.h"
 #include "exceptions.hpp"
 #include "panel.hpp"
 #include "vcfReader.hpp"
-#include "mersenne_twister.hpp" // This is because paintIBD needs rg, need to redo this
 
 
 #ifndef PARAM
@@ -49,9 +48,11 @@ class DEploidIO{
 #ifdef UNITTEST
  friend class TestIO;
  friend class TestMcmcMachinery;
+ friend class TestIBDpath;
 #endif
  friend class McmcMachinery;
  friend class RMcmcSample;
+ friend class IBDpath;
   public:
     DEploidIO();
     DEploidIO(const DEploidIO &currentDEploidIO);
@@ -65,17 +66,17 @@ class DEploidIO{
     bool version() const { return version_; }
     // Painting related
     void chromPainting ();
-    bool doPainting() const { return this->doPainting_; }
+    bool doLsPainting() const { return this->doLsPainting_; }
+    bool doIbdPainting() const { return this->doIbdPainting_; }
     bool useIBD() const { return this->useIBD_;}
+    void paintIBD();
+    void getIBDprobsIntegrated(vector < vector <double> > &prob);
 
     // Log
     void wrapUp();
-    bool randomSeedWasSet() const {return this->randomSeedWasSet_; }
-
     friend std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO);
-    size_t randomSeed() const { return randomSeed_;}
 
-    void paintIBD( vector < vector <double> > &haps, RandomGenerator* rg_);
+    size_t randomSeed() const { return randomSeed_;}
 
   private:
     void core();
@@ -89,8 +90,8 @@ class DEploidIO{
     string initialHapFileName_;
     string prefix_;
     size_t randomSeed_;
-    bool randomSeedWasSet_;
-    void setRandomSeedWasSet(const bool random){ this->randomSeedWasSet_ = random; }
+    bool randomSeedWasGiven_;
+    void setrandomSeedWasGiven(const bool random){ this->randomSeedWasGiven_ = random; }
 
 
     bool initialPropWasGiven_;
@@ -112,7 +113,8 @@ class DEploidIO{
     bool doExportPostProb_;
     bool doExportSwitchMissCopy_;
     bool doAllowInbreeding_;
-    bool doPainting_;
+    bool doLsPainting_;
+    bool doIbdPainting_;
     bool useIBD_;
 
     vector <double> initialProp;
@@ -264,7 +266,8 @@ class DEploidIO{
     void setDoAllowInbreeding ( const bool setTo ) { this->doAllowInbreeding_ = setTo; }
     bool doAllowInbreeding() const { return this->doAllowInbreeding_; }
 
-    void setDoPainting ( const bool setTo ){ this->doPainting_ = setTo; }
+    void setDoLsPainting ( const bool setTo ){ this->doLsPainting_ = setTo; }
+    void setDoIbdPainting ( const bool setTo ){ this->doIbdPainting_ = setTo; }
     void setUseIBD( const bool setTo){ this->useIBD_ = setTo; }
 
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
@@ -272,6 +275,8 @@ class DEploidIO{
 
     bool initialHapWasGiven() const { return initialHapWasGiven_; }
     void setInitialHapWasGiven(const bool setTo){ this->initialHapWasGiven_ = setTo; }
+
+    bool randomSeedWasGiven() const {return this->randomSeedWasGiven_; }
 
     // log and export resutls
     void writeRecombProb ( Panel * panel );
@@ -323,6 +328,7 @@ class DEploidIO{
     void setIBDSigma ( const double setTo ){ this->ibdSigma_ = setTo; }
     double ibdSigma() const {return this->ibdSigma_;}
 
+    void setNLoci ( const size_t setTo ){ this->nLoci_ = setTo;}
     size_t nLoci() const { return this->nLoci_; }
     void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}
     size_t kStrain() const { return this->kStrain_;}
@@ -348,7 +354,12 @@ class DEploidIO{
     bool forbidCopyFromSame() const { return this->forbidCopyFromSame_; }
     void setForbidCopyFromSame(const bool forbid){ this->forbidCopyFromSame_ = forbid; }
 
-
+    double effectiveKstrain_ ;
+    void computeEffectiveKstrain(vector <double> proportion);
+    int inferredKstrain_;
+    void computeInferredKstrain(vector <double> proportion);
+    double adjustedEffectiveKstrain_;
+    void computeAdjustedEffectiveKstrain();
 };
 
 #endif

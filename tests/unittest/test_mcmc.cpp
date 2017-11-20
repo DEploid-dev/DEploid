@@ -40,14 +40,10 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     CPPUNIT_TEST( testInitializeExpectedWsaf );
     CPPUNIT_TEST( testCalcMaxIteration );
     CPPUNIT_TEST( testCalcExpectedWsaf );
-
     CPPUNIT_TEST( testRBernoulli );
     CPPUNIT_TEST( testFindUpdatingStrainSingle );
     CPPUNIT_TEST( testFindUpdatingStrainPair );
     CPPUNIT_TEST( testRunMcmcChain );
-    CPPUNIT_TEST( testmakeLlkSurf );
-    CPPUNIT_TEST( testIbdTransProbs );
-    CPPUNIT_TEST( testComputeUniqueEffectiveKCount );
     CPPUNIT_TEST( testAverageProportion );
     CPPUNIT_TEST_SUITE_END();
 
@@ -328,80 +324,6 @@ class TestMcmcMachinery: public CppUnit::TestCase {
 
         CPPUNIT_ASSERT_EQUAL( (size_t)100, this->mcmcMachineryIbd_->mcmcSample_->proportion.size() );
         CPPUNIT_ASSERT_EQUAL( (size_t)100, this->mcmcMachineryIbd_->mcmcSample_->sumLLKs.size() );
-    }
-
-
-    void testmakeLlkSurf(){
-        vector <double> alt ({2, 100, 50, 50, 2, 2});
-        vector <double> ref ({100, 2, 0, 50, 0, 2});
-        //> make.llk.surf(c(2,100,50,50,2,2), c(102,102,50,100,2,4), do.plot=FALSE)
-                  //[,1]      [,2]
-        //[1,]  2.149687 62.602446
-        //[2,] 62.602446  2.149687
-        //[3,] 50.250071  1.507423
-        //[4,] 24.735000 24.735000
-        //[5,]  2.968471  1.029853
-        //[6,]  2.800135  2.800135
-
-        CPPUNIT_ASSERT_NO_THROW(this->mcmcMachinery_->makeLlkSurf(alt, ref));
-        CPPUNIT_ASSERT_EQUAL( this->mcmcMachinery_->llkSurf.size(), (size_t)6 );
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.149687, this->mcmcMachinery_->llkSurf[0][0], epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 62.602446, this->mcmcMachinery_->llkSurf[0][1], epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 62.602446, this->mcmcMachinery_->llkSurf[1][0], epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.149687, this->mcmcMachinery_->llkSurf[1][1], epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 50.250071, this->mcmcMachinery_->llkSurf[2][0], epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 1.507423, this->mcmcMachinery_->llkSurf[2][1], epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 24.735000, this->mcmcMachinery_->llkSurf[3][0], epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 24.735000, this->mcmcMachinery_->llkSurf[3][1], epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.968471, this->mcmcMachinery_->llkSurf[4][0], epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 1.029853, this->mcmcMachinery_->llkSurf[4][1], epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.800135, this->mcmcMachinery_->llkSurf[5][0], epsilon2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL ( 2.800135, this->mcmcMachinery_->llkSurf[5][1], epsilon2);
-    }
-
-
-    void testIbdTransProbs(){
-        //k = 3
-        //> tij
-             //[,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14]
-        //[1,]    1    1    1    1    1    1    1    1    0     0     0     0     0     0
-        //[2,]    0    0    0    0    0    0    0    0    1     1     1     1     0     0
-        //[3,]    0    0    0    0    0    0    0    0    0     0     0     0     1     1
-        //[4,]    0    0    0    0    0    0    0    0    0     0     0     0     0     0
-        //[5,]    0    0    0    0    0    0    0    0    0     0     0     0     0     0
-             //[,15] [,16] [,17] [,18] [,19] [,20] [,21] [,22]
-        //[1,]     0     0     0     0     0     0     0     0
-        //[2,]     0     0     0     0     0     0     0     0
-        //[3,]     1     1     0     0     0     0     0     0
-        //[4,]     0     0     1     1     1     1     0     0
-        //[5,]     0     0     0     0     0     0     1     1
-        vector <double> tmpPlaf = vector <double> ({0.1, 0.2, 0.3});
-        CPPUNIT_ASSERT_NO_THROW(this->mcmcMachinery_->hprior.buildHprior(3, tmpPlaf));
-        CPPUNIT_ASSERT_EQUAL(this->mcmcMachinery_->hprior.nPattern(), (size_t)5);
-        CPPUNIT_ASSERT_EQUAL(this->mcmcMachinery_->hprior.nState(), (size_t)22);
-
-        CPPUNIT_ASSERT_NO_THROW(this->mcmcMachinery_->makeIbdTransProbs());
-        double tmpValue = sumOfMat(this->mcmcMachinery_->ibdTransProbs);
-        CPPUNIT_ASSERT_EQUAL(tmpValue, (double)22.0);
-        for ( size_t i =  0; i < 22; i++){
-            CPPUNIT_ASSERT_EQUAL(this->mcmcMachinery_->ibdTransProbs[this->mcmcMachinery_->hprior.stateIdx[i]][i], (double)1.0);
-        }
-    }
-
-
-    void testComputeUniqueEffectiveKCount(){
-        vector <double> tmpPlaf = vector <double> ({0.1, 0.2, 0.3});
-        CPPUNIT_ASSERT_NO_THROW(this->mcmcMachinery_->hprior.buildHprior(5, tmpPlaf));
-        CPPUNIT_ASSERT_NO_THROW(this->mcmcMachinery_->computeUniqueEffectiveKCount());
-        CPPUNIT_ASSERT_EQUAL(this->mcmcMachinery_->uniqueEffectiveKCount.size(), (size_t)5);
-        //> table(make.ibd.mat.joe(5)$k.eff)
-        //1  2  3  4  5
-        //1 15 25 10  1
-        CPPUNIT_ASSERT_EQUAL(this->mcmcMachinery_->uniqueEffectiveKCount[0], (int)1);
-        CPPUNIT_ASSERT_EQUAL(this->mcmcMachinery_->uniqueEffectiveKCount[1], (int)15);
-        CPPUNIT_ASSERT_EQUAL(this->mcmcMachinery_->uniqueEffectiveKCount[2], (int)25);
-        CPPUNIT_ASSERT_EQUAL(this->mcmcMachinery_->uniqueEffectiveKCount[3], (int)10);
-        CPPUNIT_ASSERT_EQUAL(this->mcmcMachinery_->uniqueEffectiveKCount[4], (int)1);
     }
 
 

@@ -81,14 +81,16 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     (*writeTo) << "dEploid version: " << dEploidGitVersion_ << endl;
     (*writeTo) << "\n";
     (*writeTo) << "Input data: \n";
-    (*writeTo) << setw(12) << "Panel: "     << panelFileName_  << "\n";
+    if (panelFileName_.size() > 0){
+        (*writeTo) << setw(12) << "Panel: "     << panelFileName_  << "\n";
+    }
     (*writeTo) << setw(12) << "PLAF: "      << plafFileName_   << "\n";
     if ( useVcf() ) (*writeTo) << setw(12) << "VCF: " << vcfFileName_    << "\n";
     if ( refFileName_.size()>0) (*writeTo) << setw(12) << "REF count: " << refFileName_    << "\n";
     if ( altFileName_.size()>0) (*writeTo) << setw(12) << "ALT count: " << altFileName_    << "\n";
     if ( excludeSites() ){ (*writeTo) << setw(12) << "Exclude: " << excludeFileName_    << "\n"; }
     (*writeTo) << "\n";
-    if ( this->doPainting() == false ) {
+    if ( (this->doLsPainting() == false) & (this->doIbdPainting() == false) ) {
         (*writeTo) << "MCMC parameters: "<< "\n";
         (*writeTo) << setw(19) << " MCMC burn: " << mcmcBurn_ << "\n";
         (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_ << "\n";
@@ -121,7 +123,7 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         }
     }
     (*writeTo) << "\n";
-    if ( this->doPainting() == false ) {
+    if ( (this->doLsPainting() == false) & (this->doIbdPainting() == false) ) {
         (*writeTo) << "MCMC diagnostic:"<< "\n";
         (*writeTo) << setw(19) << " Accept_ratio: " << acceptRatio_ << "\n";
         (*writeTo) << setw(19) << " Max_llks: " << maxLLKs_ << "\n";
@@ -137,9 +139,17 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     (*writeTo) << setw(14) << "End at: "    << endTime_  ;
     (*writeTo) << "\n";
     (*writeTo) << "Output saved to:\n";
-    if ( this->doPainting() ){
+    if ( this->doLsPainting() ){
         for ( size_t i = 0; i < kStrain(); i++ ){
             (*writeTo) << "Posterior probability of strain " << i << ": "<< strExportSingleFwdProbPrefix << i <<endl;
+        }
+    } else if (this->doIbdPainting()){
+        if (this->ibdProbsIntegrated.size()>1){
+            (*writeTo) << setw(14) << "IBD probs: "  << strIbdExportProbs  << "\n\n";
+            (*writeTo) << " IBD probabilities:\n";
+            for ( size_t stateI = 0; stateI < this->ibdProbsHeader.size(); stateI++ ){
+                (*writeTo) << setw(14) << this->ibdProbsHeader[stateI] << ": " << this->ibdProbsIntegrated[stateI] << "\n";
+            }
         }
     } else {
         (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
@@ -161,12 +171,20 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         }
     }
     (*writeTo) << "\n";
+
+    this->computeEffectiveKstrain(this->finalProp);
+    (*writeTo) << "        Effective_K: " << this->effectiveKstrain_ <<"\n";
+    this->computeInferredKstrain(this->finalProp);
+    (*writeTo) << "         Inferred_K: " << this->inferredKstrain_ <<"\n";
+    this->computeAdjustedEffectiveKstrain();
+    (*writeTo) << "Adjusted_ffective_K: " << this->adjustedEffectiveKstrain_ <<"\n";
+
+    (*writeTo) << "\n";
     (*writeTo) << "Proportions:\n";
     for ( size_t ii = 0; ii < this->finalProp.size(); ii++){
         (*writeTo) << setw(10) << this->finalProp[ii];
         (*writeTo) << ((ii < (this->finalProp.size()-1)) ? "\t" : "\n") ;
     }
-
 }
 
 

@@ -51,9 +51,9 @@ dEploid_prof_LDADD = $(common_LDADD)
 
 unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_runner.cpp \
+					 tests/unittest/test_ibd.cpp \
 					 tests/unittest/test_updateSingleHap.cpp \
 					 tests/unittest/test_utilities.cpp \
-					 tests/unittest/test_ibd.cpp \
 					 tests/unittest/test_panel.cpp \
 					 tests/unittest/test_txtReader.cpp \
 					 tests/unittest/test_dEploidIO.cpp \

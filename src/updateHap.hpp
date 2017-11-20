@@ -27,8 +27,6 @@
 #include <iostream>
 #include "utility.hpp"
 #include "panel.hpp"
-//#include "mersenne_twister.hpp"
-//#include "global.h"
 
 #ifndef HAP
 #define HAP

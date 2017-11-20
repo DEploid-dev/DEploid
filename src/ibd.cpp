@@ -26,9 +26,9 @@
 #include <set>
 #include <vector>
 #include <iostream>
-#include "ibd.hpp"
 #include <algorithm>
 #include <cassert>
+#include "ibd.hpp"
 
 IBDconfiguration::IBDconfiguration(){}
 
@@ -166,6 +166,21 @@ void IBDconfiguration::findEffectiveK(){
 }
 
 
+vector <string> IBDconfiguration::getIBDconfigureHeader(){
+    vector <string> ret;
+    for (size_t i = 0; i < this->states.size(); i++){
+        string tmp;
+        for (size_t j = 0; j < this->states[i].size(); j++){
+            stringstream tmp_ss;
+            tmp_ss << this->states[i][j];
+            tmp += tmp_ss.str() + ((j < (this->states[i].size()-1)) ? "-":"");
+        }
+        ret.push_back(tmp);
+    }
+    return ret;
+}
+
+
 Hprior::Hprior(){}
 
 
@@ -190,6 +205,7 @@ void Hprior::buildHprior(size_t kStrain, vector <double> &plaf){
 
         vector < vector<int> > hSetBaseTmpUnique = unique(hSetBaseTmp); // uu
         size_t sizeOfhSetBaseTmpUnique = hSetBaseTmpUnique.size();
+        stateIdxFreq.push_back(sizeOfhSetBaseTmpUnique);
         //h.prior.i<-array(0, c(size.h.set.i, n.loci));
 
         for ( size_t i = 0; i < sizeOfhSetBaseTmpUnique; i++){
@@ -230,6 +246,10 @@ void Hprior::transposePriorProbs(){
     }
 }
 
+
+vector <string> Hprior::getIBDconfigureHeader(){
+    return this->ibdConfig.getIBDconfigureHeader();
+}
 
 
 Hprior::~Hprior(){}
@@ -311,3 +331,382 @@ bool twoVectorsAreSame(vector<int> vec1, vector<int> vec2){
     return ret;
 }
 
+
+IBDpath::IBDpath(){};
+
+
+void IBDpath::init(DEploidIO &dEploidIO, RandomGenerator* rg){
+    this->ibdRg_ = rg;
+    this->setNLoci(dEploidIO.nLoci());
+    this->setKstrain(dEploidIO.kStrain());
+    this->setTheta(1.0 / (double)kStrain());
+
+    this->IBDpathChangeAt = vector <double> (this->nLoci());
+
+    // compute likelihood surface
+    this->makeLlkSurf(dEploidIO.altCount_, dEploidIO.refCount_);
+
+    // initialize haplotype prior
+    this->hprior.buildHprior(kStrain(), dEploidIO.plaf_);
+    this->hprior.transposePriorProbs();
+
+    this->makeIbdTransProbs();
+
+    // initialize fm
+    this->fSumState = vector <double> (this->hprior.nPattern());
+
+    // initialize ibdConfigurePath
+    this->ibdConfigurePath = vector <size_t> (this->nLoci());
+
+    // initialize recombination probabilities;
+    this->ibdRecombProbs = IBDrecombProbs(dEploidIO.position_, dEploidIO.nLoci());
+    this->ibdRecombProbs.computeRecombProbs( dEploidIO.averageCentimorganDistance(),
+                                             dEploidIO.parameterG(),
+                                             dEploidIO.useConstRecomb(),
+                                             dEploidIO.constRecombProb());
+    this->currentIBDpathChangeAt = vector <double> (this->nLoci());
+
+    this->computeUniqueEffectiveKCount();
+};
+
+
+void IBDpath::ibdSamplePath(vector <double> statePrior){
+    int lociIdx = this->nLoci()-1;
+    vector <double> tmpProp = fm[lociIdx];
+    (void)normalizeBySum(tmpProp);
+    ibdConfigurePath[lociIdx] = sampleIndexGivenProp(this->ibdRg_, tmpProp);
+
+    assert(this->fm.size() == nLoci());
+    while ( lociIdx > 0 ){
+        lociIdx--;
+        vector <double> vNoRecomb = vecProd(this->ibdTransProbs[this->hprior.stateIdx[ibdConfigurePath[lociIdx+1]]], fm[lociIdx]);
+        assert(vNoRecomb.size() == this->hprior.nState());
+        vector <double> vRecomb = fm[lociIdx];
+        assert(vRecomb.size() == this->hprior.nState());
+        vector <double> prop (this->hprior.nState());
+        for ( size_t i = 0; i < prop.size(); i++){
+            prop[i] = vNoRecomb[i]*this->ibdRecombProbs.pNoRec_[lociIdx] + vRecomb[i]*this->ibdRecombProbs.pRec_[lociIdx]*statePrior[ibdConfigurePath[lociIdx+1]];
+        }
+        tmpProp = prop;
+        (void)normalizeBySum(tmpProp);
+        ibdConfigurePath[lociIdx] = sampleIndexGivenProp(this->ibdRg_, tmpProp);
+        assert( ibdConfigurePath[lociIdx] < this->hprior.nState() );
+        assert( ibdConfigurePath[lociIdx] >= 0 );
+    }
+}
+
+
+vector <size_t> IBDpath::findWhichIsSomething(vector <size_t> tmpOp, size_t something){
+    vector <size_t> ret;
+    for ( size_t i = 0; i < tmpOp.size(); i++){
+        if ( tmpOp[i] == something){
+            ret.push_back(i);
+        }
+    }
+    return ret;
+}
+
+
+void IBDpath::buildPathProbabilityForPainting(vector <double> proportion){
+    //vector <double> effectiveKPrior = this->computeEffectiveKPrior(this->theta());
+    vector <double> effectiveKPrior = vector <double> (this->hprior.nPattern(), 1.0/this->hprior.nPattern());
+    vector <double> statePrior = this->computeStatePrior(effectiveKPrior);
+    // First building the path likelihood
+    this->computeIbdPathFwdProb(proportion, statePrior);
+    // Reshape Fwd
+    vector < vector <double>> reshapedFwd = reshapeProbs(this->fm);
+
+    this->computeIbdPathBwdProb(proportion, effectiveKPrior, statePrior);
+    // Reshape Bwd
+    vector < vector <double>> reshapedBwd = reshapeProbs(this->bwd);
+
+    // Combine Fwd Bwd
+    this->combineFwdBwd(reshapedFwd, reshapedBwd);
+}
+
+
+
+void IBDpath::computeIbdPathBwdProb(vector <double> proportion, vector <double> effectiveKPrior, vector <double> statePrior){
+    //# assuming each ibd state has equal probabilities, transform it into ibd configurations
+    //dout << " start building ibd bwd "<< endl;
+    vector <double> tmp = vector <double> (hprior.stateIdxFreq.size());
+    assert(effectiveKPrior.size() == hprior.stateIdxFreq.size());
+    for (size_t i = 0; i < tmp.size(); i++){
+        tmp[i] = effectiveKPrior[i] / (double)hprior.stateIdxFreq[i];
+    }
+
+    vector <double> tmpBw = vector <double> (hprior.nState());
+    for (size_t j = 0; j < tmpBw.size(); j++){
+        for (size_t i = 0; i < tmp.size(); i++){
+            tmpBw[j] += tmp[i] * ibdTransProbs[i][j];
+        }
+    }
+
+    this->bwd.push_back(tmpBw);
+    for ( size_t rev_siteI = 1; rev_siteI < this->nLoci(); rev_siteI++ ){
+        size_t siteI = this->nLoci()-rev_siteI;
+
+        vector<double> lk = computeLlkOfStatesAtSiteI(proportion, siteI);
+        //vector<double> lk = vector <double> (hprior.nState(), 1.0);
+        vector <double> bSumState = vector <double> (hprior.nPattern());
+        for ( size_t i = 0; i < bSumState.size(); i++){
+            for ( size_t j = 0; j < hprior.nState(); j++ ){
+                bSumState[i] += ibdTransProbs[i][j]*this->bwd.back()[j];
+            }
+        }
+        vector <double> vNoRecomb(hprior.nState());
+        for (size_t i = 0; i < hprior.stateIdx.size(); i++ ){
+            vNoRecomb[i] = bSumState[hprior.stateIdx[i]];
+        }
+
+        for (size_t i = 0; i < hprior.nState(); i++ ){
+            tmpBw[i] = 0;
+            for (size_t j = 0; j < lk.size(); j++){
+                tmpBw[i] += (lk[j] * bwd.back()[j])*this->ibdRecombProbs.pRec_[siteI-1];
+            }
+            tmpBw[i] *= statePrior[i];
+            tmpBw[i] += lk[i] * (this->ibdRecombProbs.pNoRec_[siteI-1]) * vNoRecomb[i];
+            tmpBw[i] *= hprior.priorProb[i][siteI];
+        }
+        normalizeBySum(tmpBw);
+        this->bwd.push_back(tmpBw);
+    }
+    reverse(bwd.begin(),bwd.end());
+}
+
+
+void IBDpath::computeIbdPathFwdProb(vector <double> proportion, vector <double> statePrior){
+    this->fm.clear();
+    vector <double> vPrior = vecProd(statePrior, this->hprior.priorProbTrans[0]);
+
+    vector <double> lk = computeLlkOfStatesAtSiteI(proportion, 0);
+    this->updateFmAtSiteI(vPrior, lk);
+    for ( size_t siteI = 1; siteI < this->nLoci(); siteI++ ){
+        vector <double> vNoRec;
+        for ( size_t stateIdxTmp : hprior.stateIdx ){
+            vNoRec.push_back(this->fSumState[stateIdxTmp]);
+        }
+        for ( size_t i = 0; i < hprior.nState(); i++ ){
+            vPrior[i] = (vNoRec[i] * this->ibdRecombProbs.pNoRec_[siteI] + fSum * this->ibdRecombProbs.pRec_[siteI] * statePrior[i]) * hprior.priorProbTrans[siteI][i];
+        }
+
+        lk = computeLlkOfStatesAtSiteI(proportion, siteI);
+        //cout << "lk = " ; for (double l :lk){cout << l << " ";}cout<<endl;
+        this->updateFmAtSiteI(vPrior, lk);
+        //for (double p : this->fm.back()){printf("%8.4f ", p);}cout<<endl;
+    }
+}
+
+
+void IBDpath::updateFmAtSiteI(vector <double> & prior, vector <double> & llk){
+    vector <double> postAtSiteI = vecProd(prior, llk);
+    //normalizeByMax(postAtSiteI);
+    normalizeBySum(postAtSiteI);
+    this->fm.push_back(postAtSiteI);
+    this->fSum = sumOfVec(postAtSiteI);
+    for ( size_t i = 0; i < fSumState.size(); i++){
+        this->fSumState[i] = 0;
+        for ( size_t j = 0; j < hprior.nState(); j++ ){
+            this->fSumState[i] += ibdTransProbs[i][j]*postAtSiteI[j];
+        }
+    }
+}
+
+
+void IBDpath::combineFwdBwd(vector < vector <double>> &reshapedFwd, vector < vector <double>> &reshapedBwd){
+    for (size_t i = 0; i < nLoci(); i++ ){
+        vector <double> tmp;
+        //cout << " site " << i << endl;
+        for (size_t j = 0; j < reshapedFwd[i].size(); j++){
+
+            tmp.push_back(exp(log(reshapedFwd[i][j])+log(reshapedBwd[i][j])));
+            //tmp.push_back(exp(log(bwd[i][j])));
+            //tmp.push_back(exp(log(fm[i][j])));
+            //cout << "fwd = "<<fm[i][j]<<" "<< ", bwd = "<<bwd[i][j]<< ", fwdbwd = "<< tmp.back()<<endl;
+        }
+        normalizeBySum(tmp);
+        fwdbwd.push_back(tmp);
+    }
+//post = exp(log(fmNomalized) + log(bwdNormalized))
+}
+
+
+void IBDpath::makeIbdTransProbs(){
+    assert(this->ibdTransProbs.size() == 0);
+    for ( size_t i = 0; i < hprior.nPattern(); i++ ){
+        vector <double> transProbRow(hprior.nState());
+        vector <size_t> wi = findWhichIsSomething(hprior.stateIdx, i);
+        for (size_t wii : wi){
+            transProbRow[wii] = 1;
+        }
+        ibdTransProbs.push_back(transProbRow);
+    }
+}
+
+
+vector <string> IBDpath::getIBDprobsHeader(){
+    return this->hprior.getIBDconfigureHeader();
+}
+
+
+vector < vector <double> > IBDpath::reshapeProbs(vector < vector <double> >& probs){
+    assert(this->nLoci() == probs.size());
+    vector < vector <double> > ret;
+    for ( size_t siteIndex = 0; siteIndex < this->nLoci(); siteIndex++){
+        size_t previousStateIdx = 0;
+        vector <double> tmpRow;
+        double cumProb = 0;
+        for (size_t prob_ij = 0; prob_ij < probs[siteIndex].size(); prob_ij++){
+            cumProb += probs[siteIndex][prob_ij];
+            if (previousStateIdx != this->hprior.stateIdx[prob_ij]){
+                cumProb -= probs[siteIndex][prob_ij];
+                previousStateIdx++;
+                tmpRow.push_back(cumProb);
+                cumProb = probs[siteIndex][prob_ij];
+            }
+        }
+        tmpRow.push_back(cumProb);
+        normalizeBySum(tmpRow);
+        ret.push_back(tmpRow);
+    }
+    return ret;
+}
+
+
+vector <double> IBDpath::computeEffectiveKPrior(double theta){
+    //#Calculate state prior given theta (theta is prob IBD)
+    vector <double> pr0(this->kStrain());
+    for (int i = 0; i < (int)pr0.size(); i++){
+        pr0[i] = binomialPdf(i, (int)(this->kStrain()-1), theta);
+    }
+    vector <double> effectiveKPrior;
+    for ( size_t effectiveKtmp : this->hprior.effectiveK){
+        int effectiveKidx = effectiveKtmp-1;
+        assert(effectiveKidx >= 0);
+        assert(effectiveKidx < (int)this->kStrain());
+        effectiveKPrior.push_back(pr0[effectiveKidx]/uniqueEffectiveKCount[effectiveKidx]);
+    }
+    return effectiveKPrior;
+}
+
+
+vector <double> IBDpath::computeStatePrior( vector <double> effectiveKPrior ){
+    vector <double> ret;
+    for (size_t stateIdxTmp : this->hprior.stateIdx){
+        ret.push_back(effectiveKPrior[stateIdxTmp]);
+    }
+    return ret;
+}
+
+
+void IBDpath::computeAndUpdateTheta(){
+    vector <size_t> obsState;
+    size_t previousState = 0;
+    size_t atSiteI = 0;
+    for (size_t a : this->ibdConfigurePath){
+        if ( a != previousState ){
+            obsState.push_back(a);
+        }
+        if ( this->hprior.stateIdx[a] != this->hprior.stateIdx[previousState] ){
+            this->IBDpathChangeAt[atSiteI] += 1.0;
+            this->currentIBDpathChangeAt[atSiteI] = 1.0;
+        } else {
+            this->currentIBDpathChangeAt[atSiteI] = 0.0;
+        }
+        previousState = a;
+        atSiteI++;
+    }
+
+    size_t sumOfKeffStates = 0;
+    size_t sccs = 0;
+    for (size_t obs : obsState){
+        sumOfKeffStates += this->hprior.effectiveK[obs] - 1;
+        sccs += this->kStrain() - this->hprior.effectiveK[obs];
+    }
+    //this->setTheta(rBeta(sccs+1.0, sumOfKeffStates+1.0, this->propRg_));
+    this->setTheta(rBeta(sccs+1.0, sumOfKeffStates+1.0, this->ibdRg_));
+}
+
+
+void IBDpath::computeUniqueEffectiveKCount(){
+    this->uniqueEffectiveKCount = vector <int> (this->kStrain());
+    for (size_t effectiveKtmp : this->hprior.effectiveK) {
+        int effectiveKidx = effectiveKtmp-1;
+        assert(effectiveKidx>=0);
+        this->uniqueEffectiveKCount[effectiveKidx]++;
+    }
+}
+
+
+void IBDpath::makeLlkSurf(vector <double> altCount, vector <double> refCount, double scalingConst, double err, size_t gridSize){
+    double pGridSpacing = 1.0 / (double)(gridSize+1);
+    vector <double> pGrid;
+    pGrid.push_back(pGridSpacing);
+    for (size_t i = 1; i < gridSize; i++){
+        pGrid.push_back(pGrid.back() + pGridSpacing);
+    }
+    assert(pGrid.size() == gridSize);
+
+    assert(llkSurf.size() == 0);
+
+    for ( size_t i = 0 ; i < altCount.size(); i++) {
+        double alt = altCount[i];
+        double ref = refCount[i];
+
+        vector <double> ll;
+        for ( double unadjustedP : pGrid ){
+            ll.push_back(calcLLK( ref, alt, unadjustedP, err, scalingConst));
+        }
+
+        double llmax = max_value(ll);
+        vector <double> ln;
+        for ( double lltmp : ll ){
+            ln.push_back(exp(lltmp-llmax));
+        }
+
+        double lnSum = sumOfVec(ln);
+        for (size_t i = 0; i < ln.size(); i++){
+            ln[i] = ln[i]/lnSum;
+        }
+
+        vector <double> tmpVec1 = vecProd(ln, pGrid);
+        double mn = sumOfVec(tmpVec1);
+        vector <double> pGridSq = vecProd(pGrid, pGrid);
+        vector <double> tmpVec2 = vecProd(ln, pGridSq);
+        double vr = sumOfVec(tmpVec2) - mn*mn;
+
+        double comm = (mn*(1.0-mn)/vr-1.0);
+        llkSurf.push_back(vector <double> {mn*comm, (1-mn)*comm});
+    }
+    assert(llkSurf.size() == this->nLoci());
+}
+
+
+vector <double> IBDpath::computeLlkOfStatesAtSiteI(vector<double> proportion, size_t siteI, double err ){
+    vector <double> llks;
+    for ( vector <int> hSetI : this->hprior.hSet ){
+        double qs = 0;
+        for ( size_t j = 0; j < this->kStrain() ; j++ ){
+            qs += (double)hSetI[j] * proportion[j];
+        }
+        double qs2 = qs*(1-err) + (1-qs)*err ;
+        //cout << qs2 << endl;
+        llks.push_back(logBetaPdf(qs2, this->llkSurf[siteI][0], this->llkSurf[siteI][1]));
+    }
+
+    double maxllk = max_value(llks);
+    vector <double> ret;
+    for ( double llk : llks ){
+        double normalized = exp(llk-maxllk);
+        //cout  << "llk-maxllk = "<<llk-maxllk<< " normalized " <<normalized<< endl;
+        if ( normalized == 0 ){
+            normalized = std::numeric_limits< double >::min();
+            //cout << normalized<<endl;
+        }
+        ret.push_back(normalized);
+    }
+
+    return ret;
+}
+
+IBDpath::~IBDpath(){};
