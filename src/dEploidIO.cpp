@@ -793,16 +793,18 @@ void DEploidIO::paintIBD(){
     tmpDEploidIO.nLoci_= this->nLoci();
     tmpDEploidIO.position_ = this->position_;
     tmpDEploidIO.chrom_ = this->chrom_;
+    //tmpDEploidIO.useConstRecomb_ = true;
+    //tmpDEploidIO.constRecombProb_ = 0.000001;
+
     //tmpDEploidIO.writeLog (&std::cout);
 
     MersenneTwister tmpRg(this->randomSeed());
     IBDpath tmpIBDpath;
     tmpIBDpath.init(tmpDEploidIO, &tmpRg);
     tmpIBDpath.buildPathProbabilityForPainting(goodProp);
-    vector < vector <double> > reshapedProbs = tmpIBDpath.reshapeFm(tmpIBDpath.hprior.stateIdx);
     this->ibdProbsHeader = tmpIBDpath.getIBDprobsHeader();
-    this->getIBDprobsIntegrated(reshapedProbs);
-    this->writeIBDpostProb(reshapedProbs, this->ibdProbsHeader);
+    this->getIBDprobsIntegrated(tmpIBDpath.fwdbwd);
+    this->writeIBDpostProb(tmpIBDpath.fwdbwd, this->ibdProbsHeader);
 
 }
 

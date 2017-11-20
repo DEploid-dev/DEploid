@@ -234,7 +234,7 @@ class TestIBDpath : public CppUnit::TestCase {
     CPPUNIT_TEST( testComputeUniqueEffectiveKCount );
     CPPUNIT_TEST( testIBDconfigureHeader );
     CPPUNIT_TEST( testStatePrior );
-    //CPPUNIT_TEST( checkFwd );
+    CPPUNIT_TEST( checkFwd );
     CPPUNIT_TEST( checkBwd );
     CPPUNIT_TEST_SUITE_END();
 
@@ -286,8 +286,8 @@ class TestIBDpath : public CppUnit::TestCase {
     }
 
     void testMainConstructor(){
-        for (double p : ibdPath2_->ibdRecombProbs.pRec_){cout <<p<<endl;}
-        for (double p : ibdPath3_->ibdRecombProbs.pRec_){cout <<p<<endl;}
+        //for (double p : ibdPath2_->ibdRecombProbs.pRec_){cout <<p<<endl;}
+        //for (double p : ibdPath3_->ibdRecombProbs.pRec_){cout <<p<<endl;}
     }
 
     void testmakeLlkSurf(){
@@ -382,13 +382,22 @@ class TestIBDpath : public CppUnit::TestCase {
     }
 
     void checkFwd(){
-        vector <double> effectiveKPrior = vector <double> (this->ibdPath3_->hprior.nPattern(), 1.0/this->ibdPath3_->hprior.nPattern());
+        vector <double> effectiveKPrior = vector <double> (this->ibdPath2_->hprior.nPattern(), 1.0/this->ibdPath2_->hprior.nPattern());
         //for (double p : effectiveKPrior){cout<<p<<endl;}
-        vector <double> statePrior = this->ibdPath3_->computeStatePrior(effectiveKPrior);
-        this->ibdPath3_->computeIbdPathFwdProb(vector <double> ({.5, .25, .25}), statePrior);
-        vector <double > tmp =this->ibdPath3_->fm[5];
+        vector <double> statePrior = this->ibdPath2_->computeStatePrior(effectiveKPrior);
+        this->ibdPath2_->computeIbdPathFwdProb(vector <double> ({.5, .5}), statePrior);
+        vector <double > tmp =this->ibdPath2_->fm[5];
         normalizeBySum(tmp);
-        for (double p:tmp) printf("%8.2f\n", p);
+        //for (double p:tmp) printf("%8.2f\n", p);
+        vector < vector <double>> reshapedFwd = this->ibdPath2_->reshapeProbs(this->ibdPath2_->fm);
+        for ( vector <double> p_vec : reshapedFwd){
+            for (double p : p_vec){
+                cout<<p<<" ";
+            }
+            cout<<endl;
+        }
+
+
     }
 
     void checkBwd(){
@@ -396,17 +405,26 @@ class TestIBDpath : public CppUnit::TestCase {
         //for (double p : effectiveKPrior){cout<<p<<endl;}
         vector <double> statePrior = this->ibdPath2_->computeStatePrior(effectiveKPrior);
         this->ibdPath2_->computeIbdPathBwdProb(vector <double> ({.5, .5}), effectiveKPrior, statePrior);
+
         for (size_t i = 0; i < 6; i++){
-        vector <double > tmp =this->ibdPath2_->bwd[i];
-        normalizeBySum(tmp);
-        }
-        for (size_t i = 0; i < 6; i++){
-            for (size_t j = 0; j < 5; j++){
+            for (size_t j = 0; j < 6; j++){
                 printf("%8.3f  ", this->ibdPath2_->bwd[j][i]);
             }
             cout << endl;
-        //for (double p:tmp) printf("%8.3f\n", p);
         }
+
+            vector < vector <double>> reshapedBwd = this->ibdPath2_->reshapeProbs(this->ibdPath2_->bwd);
+        for ( vector <double> p_vec : reshapedBwd){
+            for (double p : p_vec){
+                cout<<p<<" ";
+            }
+            cout<<endl;
+        }
+
+        //for (size_t i = 0; i < 6; i++){
+            //vector <double > tmp = this->ibdPath2_->bwd[i];
+            //normalizeBySum(tmp);
+        //}
     }
 
 };

@@ -189,13 +189,14 @@ class IBDpath{
     void buildPathProbabilityForPainting(vector <double> proportion);
     void computeIbdPathFwdProb(vector <double> proportion, vector <double> statePrior);
     void computeIbdPathBwdProb(vector <double> proportion, vector <double> effectiveKPrior, vector <double> statePrior);
-    void combineFwdBwd();
+    void combineFwdBwd(vector < vector <double>> &reshapedFwd, vector < vector <double>> &reshapedBwd);
+
+    vector < vector <double> > reshapeProbs(vector < vector <double> >& probs);
 
 
 public:
     vector <string> getIBDprobsHeader();
     void init(DEploidIO &dEploidIO, RandomGenerator* rg);
-    vector < vector <double> > reshapeFm(vector <size_t> stateIdx);
 
 };
 
