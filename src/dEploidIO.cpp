@@ -805,6 +805,5 @@ void DEploidIO::paintIBD(){
     this->ibdProbsHeader = tmpIBDpath.getIBDprobsHeader();
     this->getIBDprobsIntegrated(tmpIBDpath.fwdbwd);
     this->writeIBDpostProb(tmpIBDpath.fwdbwd, this->ibdProbsHeader);
-
 }
 

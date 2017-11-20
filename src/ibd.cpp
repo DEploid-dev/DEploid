@@ -487,7 +487,7 @@ void IBDpath::computeIbdPathFwdProb(vector <double> proportion, vector <double> 
             vNoRec.push_back(this->fSumState[stateIdxTmp]);
         }
         for ( size_t i = 0; i < hprior.nState(); i++ ){
-            vPrior[i] = (vNoRec[i] * this->ibdRecombProbs.pNoRec_[siteI-1] + fSum * this->ibdRecombProbs.pRec_[siteI-1] * statePrior[i]) * hprior.priorProbTrans[siteI][i];
+            vPrior[i] = (vNoRec[i] * this->ibdRecombProbs.pNoRec_[siteI] + fSum * this->ibdRecombProbs.pRec_[siteI] * statePrior[i]) * hprior.priorProbTrans[siteI][i];
         }
 
         lk = computeLlkOfStatesAtSiteI(proportion, siteI);
