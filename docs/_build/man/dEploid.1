@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "DEPLOID" "1" "May 22, 2017" "v0.5-beta" "DEploid"
+.TH "DEPLOID" "1" "Nov 21, 2017" "v0.5-release" "DEploid"
 .SH NAME
 dEploid \- 
 .
@@ -38,10 +38,10 @@ A software that deconvolutes mixed genomes with unknown proportions.
 .SH SYNOPSIS
 .INDENT 0.0
 .TP
-.B dEploid [ \-vcf \fIfile\fP ] [ \-plaf \fIfile\fP ] [ \-noPanel ] ... [ \-exclude \fIfile\fP ] [ \-vcfOut ] [ \-o \fIstring\fP ] 
+.B dEploid [ \-vcf \fIfile\fP ] [ \-plaf \fIfile\fP ] [ \-noPanel ] … [ \-exclude \fIfile\fP ] [ \-vcfOut ] [ \-o \fIstring\fP ] 
 
 .TP
-.B dEploid [ \-vcf \fIfile\fP ] [ \-plaf \fIfile\fP ] [ \-panel \fIfile\fP ] ... [ \-exclude \fIfile\fP ] [ \-vcfOut ] [ \-o \fIstring\fP ] 
+.B dEploid [ \-vcf \fIfile\fP ] [ \-plaf \fIfile\fP ] [ \-panel \fIfile\fP ] … [ \-exclude \fIfile\fP ] [ \-vcfOut ] [ \-o \fIstring\fP ] 
 
 .UNINDENT
 .SS Example:
@@ -62,7 +62,7 @@ $ ./dEploid \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
 .UNINDENT
 .SH DESCRIPTION
 .sp
-\fBdEploid\fP is designed for deconvoluting mixed genomes with unknown proportions. Traditional \(aqphasing\(aq programs are limited to diploid organisms. Our method modifies Li and Stephen’s [Li2003] algorithm with Markov chain Monte Carlo (MCMC) approaches, and builds a generic framework that allows haplotype searches in a multiple infection setting.
+\fBdEploid\fP is designed for deconvoluting mixed genomes with unknown proportions. Traditional ‘phasing’ programs are limited to diploid organisms. Our method modifies Li and Stephen’s [Li2003] algorithm with Markov chain Monte Carlo (MCMC) approaches, and builds a generic framework that allows haplotype searches in a multiple infection setting.
 .sp
 \fBdEploid\fP is primarily developed as part of the \fI\%Pf3k\fP project, from which this documentation will take examples from for demonstration. The Pf3k project is a global collaboration using the latest sequencing technologies to provide a high\-resolution view of natural variation in the malaria parasite \fIPlasmodium falciparum\fP\&. Parasite DNA are extracted from patient blood sample, which often contains more than one parasite strain, with unknown proportions. \fBDEploid\fP is used for deconvoluting mixed haplotypes, and reporting the mixture proportions from each sample.
 [image: An illustration of mixed infection in malaria]
@@ -73,16 +73,11 @@ Li, N. and M. Stephens (2003). Modeling linkage disequilibrium and identifying r
 .sp
 \fBdEploid\fP is written in C++.
 .SS Stable Release
-.INDENT 0.0
-.INDENT 3.5
-.SS Todo
 .sp
-You can download the latest stable release packaged for a variety of different platform from
-.UNINDENT
-.UNINDENT
+The latest version of \fBdEploid\fP is available at \fI\%github\fP\&.
 .SS Development Version From GitHub
 .sp
-You can also install \fBdEploid\fP directly from the git repository. Here, you will need \fBautoconf\fP, check whether this is already installed by running:
+You can also install \fBdEploid\fP directly from the git repository (\fI\%tar\fP, \fI\%zip\fP). Here, you will need \fBautoconf\fP, check whether this is already installed by running:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -475,11 +470,40 @@ Miss copying probability
 .B \-recomb [float]
 Constant recombination probability
 .TP
-.B \-initialP [float ...]
+.B \-initialP [float …]
 Initialize proportions.
 .TP
 .B \-p [int]
 Output precision (default value 8).
+.UNINDENT
+.SS R utilities
+.sp
+Flags \fB\-vcf\fP, \fB\-plaf\fP, \fB\-ref\fP, \fB\-alt\fP, \fB\-exclude\fP, \fB\-o\fP usage are the same as \fBDEploid\fP\&. Additionally, we have the following flags:
+.INDENT 0.0
+.TP
+.B \-dEprefix [string]
+Prefix of \fBDEploid\fP output.
+.TP
+.B \-inbreeding
+Painting haplotype inbreeding posterior probabilities.
+.TP
+.B \-ADFieldIndex
+The index of \fBAD\fP field (2 by default).
+.TP
+.B \-filter.threshold [float]
+Filtering threshold (0.995 by default).
+.TP
+.B \-filter.window [int]
+Filtering window (10 by default).
+.TP
+.B \-pdf
+Produce figures in pdf rather than png.
+.TP
+.B \-ibd
+Produce figures for IBD process.
+.TP
+.B \-ring
+Produce circular genome plots for WSAF and haplotype posterior painting probabilities.
 .UNINDENT
 .SS Example of data exploration
 .sp
@@ -638,14 +662,17 @@ $ utilities/interpretDEploid.r \-ref data/exampleData/PD0577\-C_ref.trim.txt \e
 .UNINDENT
 [image: PD0577inbreeding]
 [image]
-.SH EXAMPLE
-.INDENT 0.0
-.INDENT 3.5
-.SH TODO
+.SH PF3K WORKFLOW
 .sp
+[image: workflow]
+[image]
+
+.sp
+\&.. todo::
 Full example of working pipeline will be provided with the \fIPf3k\fP pilot paper.
-.UNINDENT
-.UNINDENT
+.sp
+\&.. .. note::
+\&..     Caveat: need to run the program multiple times, because some models are harder than the others.
 .SH FREQUENTLY ASKED QUESTIONS
 .SS Data filtering
 .sp
@@ -702,7 +729,7 @@ utilities/interpretDEploid.r \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
 [image]
 
 .sp
-The data exploration utility \fButilities/dataExplore.r\fP identifies a list of potential outliers. After filtering,
+The data exploration utility \fButilities/dataExplore.r\fP identifies a list of potential outliers. After filtering, we correctly identify the number of strains and proportion.
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -737,6 +764,85 @@ utilities/interpretDEploid.r \-vcf data/exampleData/PG0415\-C.eg.vcf.gz \e
 [image: PG0415_filtered]
 [image]
 
+.SS Over\-fitting
+.sp
+For extremely unbalanced samples, DEploid tends to over\-fit the minor strain with an additional component. We recommend adjusting the value of sigma for the prior to improve inference. In this example PG0400\-C is a mixture of lab strains 7G8 and HB3 with mixing proportions of 95/5%. The parameter sigma takes value of 5 by default, which over fits the minor strain (see \fI\%example 1\fP), and with proportions 0.0276862, 0.945509 and 0.0267463. \fI\%Example 1\fP paints the deconvolved strains (proportions in increasing order towards the centre) to the reference panel. We resolve the over\-fitting issue by rerun this example, and set sigma with value of 10, it correctly infer the proportions as 0.0313755 and 0.968599 (see \fI\%example 2\fP). Note that the radius are not in scale with strain proportions.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+\&./dEploid \-vcf data/exampleData/PG0400\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-panel  data/exampleData/labStrains.eg.panel.txt \e
+    \-o PG0400\-Csigma5 \-seed 2 \-sigma 5 \e
+    \-exclude exclude.txt
+
+initialProp=$( cat PG0400\-Csigma5.prop | tail \-1 | sed \-e "s/\et/ /g" )
+\&./dEploid \-vcf data/exampleData/PG0400\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-panel data/exampleData/labStrains.eg.panel.txt \e
+    \-exclude exclude.txt \e
+    \-o PG0400\-Csigma5 \e
+    \-initialP ${initialProp} \e
+    \-painting PG0400\-Csigma5.hap
+
+utilities/interpretDEploid.r \-vcf data/exampleData/PG0400\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-dEprefix PG0400\-Csigma5 \e
+    \-o PG0400\-Csigma5 \e
+    \-exclude exclude.txt \e
+    \-reverseRing \-transformP
+
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+
+[image: PG0400_sigma5]
+[image]
+
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+\&./dEploid \-vcf data/exampleData/PG0400\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-panel  data/exampleData/labStrains.eg.panel.txt \e
+    \-o PG0400\-Csigma10 \-seed 2 \-sigma 10\e
+    \-exclude exclude.txt
+
+initialProp=$( cat PG0400\-Csigma10.prop | tail \-1 | sed \-e "s/\et/ /g" )
+\&./dEploid \-vcf data/exampleData/PG0400\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-panel data/exampleData/labStrains.eg.panel.txt \e
+    \-exclude exclude.txt \e
+    \-o PG0400\-Csigma10 \e
+    \-initialP ${initialProp} \e
+    \-painting PG0400\-Csigma10.hap
+
+utilities/interpretDEploid.r \-vcf data/exampleData/PG0400\-C.eg.vcf.gz \e
+    \-plaf data/exampleData/labStrains.eg.PLAF.txt \e
+    \-dEprefix PG0400\-Csigma10 \e
+    \-o PG0400\-Csigma10 \e
+    \-exclude exclude.txt \e
+    \-reverseRing \-transformP
+
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+
+[image: #PG0400_sigma10]
+[image]
+
+.SS Benchmark
+.SS Comparing with other existing packages.
+.SS Performance
+.SS Error rates.
 .SH REPORTING BUGS
 .sp
 If you encounter any problem when using \fBdEploid\fP, please file a short bug report by using the \fI\%issue tracker\fP
@@ -749,7 +855,7 @@ Thank you!
 .sp
 If you use \fBdEploid\fP in your work, please cite the program:
 .sp
-Zhu, J. S. J. A. Garcia G. McVean. (2017) Deconvolution of multiple infections in \fIPlasmodium falciparum\fP from high throughput sequencing data. \fIbioRxiv\fP 099499. doi: https://doi.org/10.1101/099499
+Zhu, J. S. J. A. Garcia G. McVean. (2017) Deconvolution of multiple infections in \fIPlasmodium falciparum\fP from high throughput sequencing data. \fIBioinformatics\fP btx530. doi: https://doi.org/10.1093/bioinformatics/btx530.
 .sp
 Bibtex record::
 .INDENT 0.0
@@ -757,14 +863,13 @@ Bibtex record::
 .sp
 .nf
 .ft C
-@article {Zhu099499,
+@article {Zhubtx530,
 author = {Zhu, Sha Joe and Almagro\-Garcia, Jacob and McVean, Gil},
 title = {Deconvolution of multiple infections in {{\eem Plasmodium falciparum}} from high throughput sequencing data},
 year = {2017},
-doi = {10.1101/099499},
-publisher = {Cold Spring Harbor Labs Journals},
-URL = {http://www.biorxiv.org/content/early/2017/01/10/099499},
-journal = {bioRxiv}
+doi = {10.1093/bioinformatics/btx530},
+URL = {https://doi.org/10.1093/bioinformatics/btx530},
+journal = {Bioinformatics}
 }
 .ft P
 .fi

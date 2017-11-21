@@ -121,3 +121,14 @@ utilities/interpretDEploid.r -vcf data/exampleData/PG0400-C.eg.vcf.gz \
 
 <a name="PG0400_sigma10"></a>
 ![#PG0400_sigma10](_static/PG0400-Csigma10.ring.png "Correct PG0400-C deconvolution")
+
+
+Benchmark
+---------
+
+### Comparing with other existing packages.
+
+Performance
+-----------
+
+### Error rates.

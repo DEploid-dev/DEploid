@@ -10,15 +10,14 @@ Installation
 Stable Release
 **************
 
-.. todo::
-    You can download the latest stable release packaged for a variety of different platform from
+The latest version of ``dEploid`` is available at `github <https://github.com/mcveanlab/DEploid/releases/latest>`_.
 
 
 *******************************
 Development Version From GitHub
 *******************************
 
-You can also install ``dEploid`` directly from the git repository. Here, you will need ``autoconf``, check whether this is already installed by running:
+You can also install ``dEploid`` directly from the git repository (`tar <https://api.github.com/repos/mcveanlab/DEploid/tarball>`_, `zip <https://api.github.com/repos/mcveanlab/DEploid/zipball>`_). Here, you will need ``autoconf``, check whether this is already installed by running:
 
 .. code-block:: bash
 
