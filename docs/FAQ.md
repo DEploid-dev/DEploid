@@ -126,9 +126,4 @@ utilities/interpretDEploid.r -vcf data/exampleData/PG0400-C.eg.vcf.gz \
 Benchmark
 ---------
 
-### Comparing with other existing packages.
-
-Performance
------------
-
-### Error rates.
+Please refer to our paper [Zhu et.al (2017)](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btx530/4091117) section [3 Validation and performance](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btx530/4091117#96977811).
