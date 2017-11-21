@@ -135,6 +135,13 @@ void DEploidIO::writeVcf( McmcSample * mcmcSample ){
     } else {
         (*writeTo) << "##fileformat=VCFv4.2" << endl;
     }
+    // DEploid call
+    (*writeTo) << "##DEploid call: dEploid ";
+    for ( string s : argv_ ){
+        (*writeTo) << s << " ";
+    }
+    (*writeTo) << endl;
+
     // Include proportions
     for ( size_t ii = 0; ii < kStrain_; ii++){
         (*writeTo) << "##Proportion of strain "
