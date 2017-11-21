@@ -35,8 +35,8 @@ Example of output interpretion
 ******************************
 
 
-Example 1
-*********
+Example 1. Standard deconvolution output
+****************************************
 
 ::
 
@@ -65,8 +65,8 @@ The top three figures are the same as figures show in :ref:`data example <sec-eg
 This panel figure shows all allele frequencies within sample across all 14 chromosomes. Expected and observed WSAF are marked in blue and red respectively.
 
 
-Example 2
-*********
+Example 2. Haplotype painting from a given panel
+************************************************
 
 ``dEploid`` can take its output haplotypes, and calculate the posterior probability of each deconvoluted strain with the reference panel. In this example, the reference panel includes four lab strains: 3D7 (red), Dd2 (dark orange), HB3 (orange) and 7G8 (yellow).
 
@@ -91,39 +91,11 @@ Example 2
    :width: 1024px
    :alt: PG0390fwdBwdRing
 
-Example 3
-*********
+Example 3. Deconvolution followed by IBD painting
+*************************************************
 
 In addition to lab mixed samples, here we show example of ``dEploid`` deconvolute field sample PD0577-C.
 
-::
-
-    $ ./dEploid -ref data/exampleData/PD0577-C_ref.trim.txt \
-    -alt data/exampleData/PD0577-C_alt.trim.txt \
-    -plaf data/exampleData/asia-1_PLAF.trim.txt \
-    -panel data/exampleData/asia-1_panel.trim.txt \
-    -o PD0577-CPanel \
-    -k 3 -seed 1484961470
-
-Use ``dEploid`` to calculate the inbreeding probabilities: inbreeding (red) and outbreeding (blue).
-
-::
-
-
-    $ ./dEploid -ref data/exampleData/PD0577-C_ref.trim.txt \
-    -alt data/exampleData/PD0577-C_alt.trim.txt \
-    -plaf data/exampleData/asia-1_PLAF.trim.txt \
-    -panel data/exampleData/asia-1_panel.trim.txt \
-    -o PD0577-CPanel \
-    -painting PD0577-CPanel.hap \
-    -k 3 -inbreeding -initialP 0.25 0.5 0.25
-    $ utilities/interpretDEploid.r -ref data/exampleData/PD0577-C_ref.trim.txt \
-    -alt data/exampleData/PD0577-C_alt.trim.txt \
-    -plaf data/exampleData/asia-1_PLAF.trim.txt \
-    -o PD0577-CPanel \
-    -dEprefix PD0577-CPanel \
-    -inbreeding -ring
-
-.. image:: _static/PD0577-CPanel.inbreeding.ring.png
+.. image:: _static/PD0577-CPanel.IBD.ring.png
    :width: 1024px
    :alt: PD0577inbreeding
