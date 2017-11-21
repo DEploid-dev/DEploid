@@ -71,13 +71,19 @@ Mostly used
     MCMC burn rate (default value 0.5).
 
 -ibd\
-    Use IBD segment to infer the proportion, then infer the haplotype.
+    Use IBD segment to infer the proportion, then infer the haplotype (see `Pf3k work-flow <Pf3k-workflow.html#pf3k-workflow>`_  for more details).
 
 -painting [*file*]
     Paint the posterior probability of the given haplotypes.
 
 -inbreeding\
     Calculate the inbreeding probabilities.
+
+-initialP [float ...]
+    Initialize proportions.
+
+-ibdPainting\
+    IBD painting, compute posterior probabilities of IBD configurations of given strain proportions. This option must be used with flags `-initialP`.
 
 -h , -help
     Help.
@@ -131,17 +137,28 @@ You may also try
     Save the posterior probabilities of the final iteration of all strains.
 
 -miss [float]
-    Miss copying probability
+    Miss copying probability.
 
 -recomb [float]
-    Constant recombination probability
-
--initialP [float ...]
-    Initialize proportions.
+    Constant recombination probability.
 
 -p [int]
     Output precision (default value 8).
 
+-c [float]
+    Specify scaling parameter c, which reflects how much data is available (default value 100.0).
+
+-G [float]
+    Specify scaling parameter for genetic map (default value of 20.0).
+
+-sigma [float]
+    Specify the variance parameter for proportion estimation (default value of 5.0).
+
+-ibdSigma [flat]
+    Specify the variance parameter for proportion estimation when IBD method is used (default value of 20.0).
+
+-initialHap [file]
+    Specify initial haplotypes of deconvolution.
 
 R utilities
 -----------

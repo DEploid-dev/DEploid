@@ -16,7 +16,7 @@ DEploid
    installation
    input
    output
-   example
+   Pf3k-workflow.md
    FAQ
    Bug-report
    Citing-DEploid
