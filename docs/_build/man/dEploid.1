@@ -321,13 +321,19 @@ MCMC sample rate (default value 5).
 MCMC burn rate (default value 0.5).
 .TP
 .B \-ibd
-Use IBD segment to infer the proportion, then infer the haplotype.
+Use IBD segment to infer the proportion, then infer the haplotype (see \fI\%Pf3k work\-flow\fP  for more details).
 .TP
 .B \-painting [\fIfile\fP]
 Paint the posterior probability of the given haplotypes.
 .TP
 .B \-inbreeding
 Calculate the inbreeding probabilities.
+.TP
+.B \-initialP [float …]
+Initialize proportions.
+.TP
+.B \-ibdPainting
+IBD painting, compute posterior probabilities of IBD configurations of given strain proportions. This option must be used with flags \fI\-initialP\fP\&.
 .TP
 .B \-h , \-help
 Help.
@@ -465,16 +471,28 @@ Forbid MCMC moves to update pair haplotypes.
 Save the posterior probabilities of the final iteration of all strains.
 .TP
 .B \-miss [float]
-Miss copying probability
+Miss copying probability.
 .TP
 .B \-recomb [float]
-Constant recombination probability
-.TP
-.B \-initialP [float …]
-Initialize proportions.
+Constant recombination probability.
 .TP
 .B \-p [int]
 Output precision (default value 8).
+.TP
+.B \-c [float]
+Specify scaling parameter c, which reflects how much data is available (default value 100.0).
+.TP
+.B \-G [float]
+Specify scaling parameter for genetic map (default value of 20.0).
+.TP
+.B \-sigma [float]
+Specify the variance parameter for proportion estimation (default value of 5.0).
+.TP
+.B \-ibdSigma [flat]
+Specify the variance parameter for proportion estimation when IBD method is used (default value of 20.0).
+.TP
+.B \-initialHap [file]
+Specify initial haplotypes of deconvolution.
 .UNINDENT
 .SS R utilities
 .sp
@@ -557,7 +575,7 @@ When flag \fB\-vcfOut\fP is turned on, haplotypes are saved at the final iterati
 When flag \fB\-exportPostProb\fP is turned on, posterior probabilities of the final iteration of strain [i].
 .UNINDENT
 .SS Example of output interpretion
-.SS Example 1
+.SS Example 1. Standard deconvolution output
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -590,7 +608,7 @@ The right figure shows changes in MCMC likelihood .
 [image]
 .sp
 This panel figure shows all allele frequencies within sample across all 14 chromosomes. Expected and observed WSAF are marked in blue and red respectively.
-.SS Example 2
+.SS Example 2. Haplotype painting from a given panel
 .sp
 \fBdEploid\fP can take its output haplotypes, and calculate the posterior probability of each deconvoluted strain with the reference panel. In this example, the reference panel includes four lab strains: 3D7 (red), Dd2 (dark orange), HB3 (orange) and 7G8 (yellow).
 .INDENT 0.0
@@ -618,61 +636,28 @@ $ utilities/interpretDEploid.r \-vcf data/exampleData/PG0390\-C.eg.vcf.gz \e
 .UNINDENT
 [image: PG0390fwdBwdRing]
 [image]
-.SS Example 3
+.SS Example 3. Deconvolution followed by IBD painting
 .sp
 In addition to lab mixed samples, here we show example of \fBdEploid\fP deconvolute field sample PD0577\-C.
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-$ ./dEploid \-ref data/exampleData/PD0577\-C_ref.trim.txt \e
-\-alt data/exampleData/PD0577\-C_alt.trim.txt \e
-\-plaf data/exampleData/asia\-1_PLAF.trim.txt \e
-\-panel data/exampleData/asia\-1_panel.trim.txt \e
-\-o PD0577\-CPanel \e
-\-k 3 \-seed 1484961470
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.sp
-Use \fBdEploid\fP to calculate the inbreeding probabilities: inbreeding (red) and outbreeding (blue).
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-$ ./dEploid \-ref data/exampleData/PD0577\-C_ref.trim.txt \e
-\-alt data/exampleData/PD0577\-C_alt.trim.txt \e
-\-plaf data/exampleData/asia\-1_PLAF.trim.txt \e
-\-panel data/exampleData/asia\-1_panel.trim.txt \e
-\-o PD0577\-CPanel \e
-\-painting PD0577\-CPanel.hap \e
-\-k 3 \-inbreeding \-initialP 0.25 0.5 0.25
-$ utilities/interpretDEploid.r \-ref data/exampleData/PD0577\-C_ref.trim.txt \e
-\-alt data/exampleData/PD0577\-C_alt.trim.txt \e
-\-plaf data/exampleData/asia\-1_PLAF.trim.txt \e
-\-o PD0577\-CPanel \e
-\-dEprefix PD0577\-CPanel \e
-\-inbreeding \-ring
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
 [image: PD0577inbreeding]
 [image]
 .SH PF3K WORKFLOW
+.sp
+Our main work flow consist with three steps:
+.INDENT 0.0
+.IP \(bu 2
+Use \fBdEploid\fP on clonal samples, and build a reference panel.
+.IP \(bu 2
+Use the IBD method to infer the proportions without a reference panel.
+.IP \(bu 2
+Tune the haplotype with the given reference panel with fixed strain proportions
+.UNINDENT
 .sp
 [image: workflow]
 [image]
 
 .sp
-\&.. todo::
-Full example of working pipeline will be provided with the \fIPf3k\fP pilot paper.
-.sp
-\&.. .. note::
-\&..     Caveat: need to run the program multiple times, because some models are harder than the others.
+Black boxes indicate the key deconvolution steps when our program DEploid is used. Boxes in blue and purple represent the input and output respectively at each step. Steps \fBDeconvolution with IBD\fP and \fBDeconvolution with a reference panel\fP can be combined by using the flag \fB\-ibd\fP\&.
 .SH FREQUENTLY ASKED QUESTIONS
 .SS Data filtering
 .sp
@@ -840,9 +825,8 @@ utilities/interpretDEploid.r \-vcf data/exampleData/PG0400\-C.eg.vcf.gz \e
 [image]
 
 .SS Benchmark
-.SS Comparing with other existing packages.
-.SS Performance
-.SS Error rates.
+.sp
+Please refer to our paper \fI\%Zhu et.al (2017)\fP section \fI\%3 Validation and performance\fP\&.
 .SH REPORTING BUGS
 .sp
 If you encounter any problem when using \fBdEploid\fP, please file a short bug report by using the \fI\%issue tracker\fP
