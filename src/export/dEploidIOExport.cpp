@@ -173,11 +173,11 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     (*writeTo) << "\n";
 
     this->computeEffectiveKstrain(this->finalProp);
-    (*writeTo) << "        Effective_K: " << this->effectiveKstrain_ <<"\n";
+    (*writeTo) << "         Effective_K: " << this->effectiveKstrain_ <<"\n";
     this->computeInferredKstrain(this->finalProp);
-    (*writeTo) << "         Inferred_K: " << this->inferredKstrain_ <<"\n";
+    (*writeTo) << "          Inferred_K: " << this->inferredKstrain_ <<"\n";
     this->computeAdjustedEffectiveKstrain();
-    (*writeTo) << "Adjusted_ffective_K: " << this->adjustedEffectiveKstrain_ <<"\n";
+    (*writeTo) << "Adjusted_effective_K: " << this->adjustedEffectiveKstrain_ <<"\n";
 
     (*writeTo) << "\n";
     (*writeTo) << "Proportions:\n";

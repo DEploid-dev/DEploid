@@ -180,6 +180,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL((size_t)1, dEploidIO2.argv_.size());
         CPPUNIT_ASSERT_EQUAL( true, dEploidIO2.help());
         CPPUNIT_ASSERT_NO_THROW (dEploidIO2.printHelp(*output));
+        CPPUNIT_ASSERT_NO_THROW ( DEploidIO(string("-help")) );
 
         char *argv2[] = { "./dEploid", "-help" };
         CPPUNIT_ASSERT_NO_THROW(DEploidIO(2, argv2));
@@ -736,6 +737,16 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL(dEploidIO.doLsPainting(), true);
         CPPUNIT_ASSERT_NO_THROW(dEploidIO.chromPainting());
 
+        char *argv2[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                         "-initialP", "0.1", "0.2", "0.3", "0.4", "-ibdPainting" };
+        CPPUNIT_ASSERT_NO_THROW ( DEploidIO(15, argv2) );
+        DEploidIO dEploidIOibd(15, argv2);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOibd.doIbdPainting(), true);
+        CPPUNIT_ASSERT_NO_THROW(dEploidIOibd.paintIBD());
     }
 
     void testInvalidK(){

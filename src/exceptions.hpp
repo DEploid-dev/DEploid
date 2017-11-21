@@ -34,7 +34,6 @@ using namespace std;
 
 
 struct ShouldNotBeCalled : std::exception{
-
   explicit ShouldNotBeCalled(){ }
   virtual ~ShouldNotBeCalled() throw() {}
   virtual const char* what () const noexcept {
@@ -66,6 +65,15 @@ struct InvalidInput : std::exception {
   virtual ~InvalidInput() throw() {}
   virtual const char* what () const noexcept {
       return throwMsg.c_str();
+  }
+};
+
+
+struct OutOfVectorSize : std::exception{
+  explicit OutOfVectorSize(){ }
+  virtual ~OutOfVectorSize() throw() {}
+  virtual const char* what () const noexcept {
+      return string("Out of vector size!").c_str();
   }
 };
 
