@@ -71,7 +71,7 @@ Mostly used
     MCMC burn rate (default value 0.5).
 
 -ibd\
-    Use IBD segment to infer the proportion, then infer the haplotype.
+    Use IBD segment to infer the proportion, then infer the haplotype (see `Pf3k work-flow <Pf3k-workflow.html#pf3k-workflow>`_  for more details).
 
 -painting [*file*]
     Paint the posterior probability of the given haplotypes.
