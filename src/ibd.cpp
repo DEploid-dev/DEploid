@@ -529,7 +529,10 @@ double IBDpath::bestPath(vector <double> proportion, double err){
             qs += (double)hSetI[j] * proportion[j];
         }
         double qs2 = qs*(1-err) + (1-qs)*err ;
-        sumLLK += logBetaPdf(qs2, this->llkSurf[i][0], this->llkSurf[i][1]);
+
+        if ( (qs > 0) & (qs < 1) ){
+            sumLLK += logBetaPdf(qs2, this->llkSurf[i][0], this->llkSurf[i][1]);
+        }
     }
     return sumLLK;
 }
