@@ -513,6 +513,28 @@ void IBDpath::updateFmAtSiteI(vector <double> & prior, vector <double> & llk){
 }
 
 
+double IBDpath::bestPath(vector <double> proportion, double err){
+    double sumLLK = 0.0;
+    for (size_t i = 0; i < nLoci(); i++ ){
+        vector <double> tmp;
+        for (size_t j = 0; j < fm[i].size(); j++){
+            tmp.push_back(exp(log(fm[i][j])+log(bwd[i][j])));
+        }
+        normalizeBySum(tmp);
+        size_t indx = distance(tmp.begin(), max_element(tmp.begin(), tmp.end()));
+
+        vector <int> hSetI = this->hprior.hSet[indx];
+        double qs = 0;
+        for ( size_t j = 0; j < this->kStrain() ; j++ ){
+            qs += (double)hSetI[j] * proportion[j];
+        }
+        double qs2 = qs*(1-err) + (1-qs)*err ;
+        sumLLK += logBetaPdf(qs2, this->llkSurf[i][0], this->llkSurf[i][1]);
+    }
+    return sumLLK;
+}
+
+
 void IBDpath::combineFwdBwd(vector < vector <double>> &reshapedFwd, vector < vector <double>> &reshapedBwd){
     for (size_t i = 0; i < nLoci(); i++ ){
         vector <double> tmp;

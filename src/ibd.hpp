@@ -182,14 +182,12 @@ class IBDpath{
     void computeIbdPathFwdProb(vector <double> proportion, vector <double> statePrior);
     void computeIbdPathBwdProb(vector <double> proportion, vector <double> effectiveKPrior, vector <double> statePrior);
     void combineFwdBwd(vector < vector <double>> &reshapedFwd, vector < vector <double>> &reshapedBwd);
-
     vector < vector <double> > reshapeProbs(vector < vector <double> >& probs);
-
+    double bestPath(vector <double> proportion, double err = 0.01);
 
 public:
     vector <string> getIBDprobsHeader();
     void init(DEploidIO &dEploidIO, RandomGenerator* rg);
-
 };
 
 #endif

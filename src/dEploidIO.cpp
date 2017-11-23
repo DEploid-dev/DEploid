@@ -802,6 +802,7 @@ void DEploidIO::paintIBD(){
     IBDpath tmpIBDpath;
     tmpIBDpath.init(tmpDEploidIO, &tmpRg);
     tmpIBDpath.buildPathProbabilityForPainting(goodProp);
+    this->ibdLLK_ = tmpIBDpath.bestPath(goodProp);
     this->ibdProbsHeader = tmpIBDpath.getIBDprobsHeader();
     this->getIBDprobsIntegrated(tmpIBDpath.fwdbwd);
     this->writeIBDpostProb(tmpIBDpath.fwdbwd, this->ibdProbsHeader);

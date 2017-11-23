@@ -171,6 +171,7 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         }
     }
     (*writeTo) << "\n";
+    (*writeTo) << " IBD best path llk: " << ibdLLK_ << "\n\n";
 
     this->computeEffectiveKstrain(this->finalProp);
     (*writeTo) << "         Effective_K: " << this->effectiveKstrain_ <<"\n";
