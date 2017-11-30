@@ -123,7 +123,7 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         }
     }
     (*writeTo) << "\n";
-    if ( (this->doLsPainting() == false) & (this->doIbdPainting() == false) ) {
+    if ( (this->doLsPainting() == false) & (this->doIbdPainting() == false) & (this->doComputeLLK() == false) ) {
         (*writeTo) << "MCMC diagnostic:"<< "\n";
         (*writeTo) << setw(19) << " Accept_ratio: " << acceptRatio_ << "\n";
         (*writeTo) << setw(19) << " Max_llks: " << maxLLKs_ << "\n";
@@ -138,48 +138,52 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     (*writeTo) << setw(14) << "Start at: "  << startingTime_  ;
     (*writeTo) << setw(14) << "End at: "    << endTime_  ;
     (*writeTo) << "\n";
-    (*writeTo) << "Output saved to:\n";
-    if ( this->doLsPainting() ){
-        for ( size_t i = 0; i < kStrain(); i++ ){
-            (*writeTo) << "Posterior probability of strain " << i << ": "<< strExportSingleFwdProbPrefix << i <<endl;
-        }
-    } else if (this->doIbdPainting()){
-        if (this->ibdProbsIntegrated.size()>1){
-            (*writeTo) << setw(14) << "IBD probs: "  << strIbdExportProbs  << "\n\n";
-            (*writeTo) << " IBD probabilities:\n";
-            for ( size_t stateI = 0; stateI < this->ibdProbsHeader.size(); stateI++ ){
-                (*writeTo) << setw(14) << this->ibdProbsHeader[stateI] << ": " << this->ibdProbsIntegrated[stateI] << "\n";
-            }
-        }
+    if ( this->doComputeLLK() ){
+        (*writeTo) << "Input likelihood: " << llkFromInitialHap_;
+        (*writeTo) << "\n";
     } else {
-        (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
-        (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
-        (*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
-        if ( doExportVcf() ) { (*writeTo) << setw(14) << "Vcf: "  << strExportVcf  << "\n"; }
-        if (this->useIBD()){
-            (*writeTo) << " IBD method output saved to:\n";
-            (*writeTo) << setw(14) << "Likelihood: "  << strIbdExportLLK  << "\n";
-            (*writeTo) << setw(14) << "Proportions: " << strIbdExportProp << "\n";
-            (*writeTo) << setw(14) << "Haplotypes: "  << strIbdExportHap  << "\n";
-        }
-        if (this->ibdProbsIntegrated.size()>1){
-            (*writeTo) << setw(14) << "IBD probs: "  << strIbdExportProbs  << "\n\n";
-            (*writeTo) << " IBD probabilities:\n";
-            for ( size_t stateI = 0; stateI < this->ibdProbsHeader.size(); stateI++ ){
-                (*writeTo) << setw(14) << this->ibdProbsHeader[stateI] << ": " << this->ibdProbsIntegrated[stateI] << "\n";
+        (*writeTo) << "Output saved to:\n";
+        if ( this->doLsPainting() ){
+            for ( size_t i = 0; i < kStrain(); i++ ){
+                (*writeTo) << "Posterior probability of strain " << i << ": "<< strExportSingleFwdProbPrefix << i <<endl;
+            }
+        } else if (this->doIbdPainting()){
+            if (this->ibdProbsIntegrated.size()>1){
+                (*writeTo) << setw(14) << "IBD probs: "  << strIbdExportProbs  << "\n\n";
+                (*writeTo) << " IBD probabilities:\n";
+                for ( size_t stateI = 0; stateI < this->ibdProbsHeader.size(); stateI++ ){
+                    (*writeTo) << setw(14) << this->ibdProbsHeader[stateI] << ": " << this->ibdProbsIntegrated[stateI] << "\n";
+                }
+            }
+        } else {
+            (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
+            (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
+            (*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
+            if ( doExportVcf() ) { (*writeTo) << setw(14) << "Vcf: "  << strExportVcf  << "\n"; }
+            if (this->useIBD()){
+                (*writeTo) << " IBD method output saved to:\n";
+                (*writeTo) << setw(14) << "Likelihood: "  << strIbdExportLLK  << "\n";
+                (*writeTo) << setw(14) << "Proportions: " << strIbdExportProp << "\n";
+                (*writeTo) << setw(14) << "Haplotypes: "  << strIbdExportHap  << "\n";
+            }
+            if (this->ibdProbsIntegrated.size()>1){
+                (*writeTo) << setw(14) << "IBD probs: "  << strIbdExportProbs  << "\n\n";
+                (*writeTo) << " IBD probabilities:\n";
+                for ( size_t stateI = 0; stateI < this->ibdProbsHeader.size(); stateI++ ){
+                    (*writeTo) << setw(14) << this->ibdProbsHeader[stateI] << ": " << this->ibdProbsIntegrated[stateI] << "\n";
+                }
             }
         }
+        (*writeTo) << "\n";
+        (*writeTo) << " IBD best path llk: " << ibdLLK_ << "\n\n";
+
+        this->computeEffectiveKstrain(this->finalProp);
+        (*writeTo) << "         Effective_K: " << this->effectiveKstrain_ <<"\n";
+        this->computeInferredKstrain(this->finalProp);
+        (*writeTo) << "          Inferred_K: " << this->inferredKstrain_ <<"\n";
+        this->computeAdjustedEffectiveKstrain();
+        (*writeTo) << "Adjusted_effective_K: " << this->adjustedEffectiveKstrain_ <<"\n";
     }
-    (*writeTo) << "\n";
-    (*writeTo) << " IBD best path llk: " << ibdLLK_ << "\n\n";
-
-    this->computeEffectiveKstrain(this->finalProp);
-    (*writeTo) << "         Effective_K: " << this->effectiveKstrain_ <<"\n";
-    this->computeInferredKstrain(this->finalProp);
-    (*writeTo) << "          Inferred_K: " << this->inferredKstrain_ <<"\n";
-    this->computeAdjustedEffectiveKstrain();
-    (*writeTo) << "Adjusted_effective_K: " << this->adjustedEffectiveKstrain_ <<"\n";
-
     (*writeTo) << "\n";
     (*writeTo) << "Proportions:\n";
     for ( size_t ii = 0; ii < this->finalProp.size(); ii++){

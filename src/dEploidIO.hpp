@@ -68,6 +68,8 @@ class DEploidIO{
     void chromPainting ();
     bool doLsPainting() const { return this->doLsPainting_; }
     bool doIbdPainting() const { return this->doIbdPainting_; }
+    bool doComputeLLK() const { return this->doComputeLLK_; }
+    void computeLLKfromInitialHap();
     bool useIBD() const { return this->useIBD_;}
     void paintIBD();
     double ibdLLK_;
@@ -81,6 +83,7 @@ class DEploidIO{
 
   private:
     void core();
+    double llkFromInitialHap_;
 
     // Read in input
     string plafFileName_;
@@ -158,6 +161,9 @@ class DEploidIO{
     void setDoExportRecombProb( const bool exportRecombProb ){ this->doExportRecombProb_ = exportRecombProb; }
     bool doExportRecombProb() const { return this->doExportRecombProb_; }
 
+    bool doComputeLLK_;
+    void setDoComputeLLK( const bool setTo ){ this->doComputeLLK_ = setTo; }
+
     // Parameters
     double missCopyProb_;
     double averageCentimorganDistance_;// = 15000.0,
@@ -226,6 +232,7 @@ class DEploidIO{
 
     void set_seed(const size_t seed){ this->randomSeed_ = seed; }
     void removeFilesWithSameName();
+    vector <double> computeExpectedWsafFromInitialHap();
 
 
     template<class T>

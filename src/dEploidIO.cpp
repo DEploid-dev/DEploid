@@ -132,6 +132,7 @@ void DEploidIO::init() {
     this->setUseVcf(false);
     this->vcfReaderPtr_ = NULL;
     this->setDoExportVcf(false);
+    this->setDoComputeLLK(false);
 
     #ifdef COMPILEDATE
         compileTime_ = COMPILEDATE;
@@ -171,7 +172,7 @@ void DEploidIO::reInit() {
 
 
 void DEploidIO::finalize(){
-    if ( this->doIbdPainting() ){
+    if ( this->doIbdPainting() | this->doComputeLLK() ){
         if (!initialPropWasGiven()){
             throw InitialPropUngiven("");
         }
@@ -438,6 +439,8 @@ void DEploidIO::parse (){
             this->readInitialHaps();
         } else if ( *argv_i == "-ibd" ){
             this->setUseIBD(true);
+        } else if ( *argv_i == "-computeLLK" ){
+            this->setDoComputeLLK( true );
         } else if ( *argv_i == "-ibdPainting" ){
             this->setDoIbdPainting( true );
         } else if ( *argv_i == "-initialP" ){
@@ -488,7 +491,7 @@ void DEploidIO::checkInput(){
         throw FileNameMissing ( "Alt count" );}
     if ( this->plafFileName_.size() == 0 ){
         throw FileNameMissing ( "PLAF" );}
-    if ( usePanel() && this->panelFileName_.size() == 0 && !this->doIbdPainting() ){
+    if ( usePanel() && this->panelFileName_.size() == 0 && !this->doIbdPainting() && !this->doComputeLLK() ){
         throw FileNameMissing ( "Reference panel" );}
     if ( this->initialPropWasGiven() && ( abs(sumOfVec(initialProp) - 1.0) > 0.00001 )){
         throw SumOfPropNotOne ( to_string(sumOfVec(initialProp)) );}
@@ -608,6 +611,36 @@ void DEploidIO::readInitialHaps(){
 }
 
 
+vector <double> DEploidIO::computeExpectedWsafFromInitialHap(){
+    // Make this a separate function
+    // calculate expected wsaf
+    vector <double> expectedWsaf (this->initialHap.size(), 0.0);
+    for ( size_t i = 0; i < this->initialHap.size(); i++ ){
+        assert( kStrain_ == this->initialHap[i].size() );
+        for ( size_t k = 0; k < this->kStrain_; k++){
+            expectedWsaf[i] += this->initialHap[i][k] * finalProp[k];
+        }
+        assert ( expectedWsaf[i] >= 0 );
+        //assert ( expectedWsaf[i] <= 1.0 );
+    }
+    return expectedWsaf;
+}
+
+
+void DEploidIO::computeLLKfromInitialHap(){
+    for ( auto const& value: this->initialProp ){
+        this->finalProp.push_back(value);
+    }
+
+    vector <double> expectedWsaf = computeExpectedWsafFromInitialHap();
+    if (expectedWsaf.size() != this->refCount_.size()){
+        throw LociNumberUnequal("Hap length differs from data!");
+    }
+    vector <double> llk = calcLLKs ( this->refCount_, this->altCount_, expectedWsaf, 0, expectedWsaf.size(), this->scalingFactor());
+    this->llkFromInitialHap_ = sumOfVec(llk);
+}
+
+
 void DEploidIO::chromPainting(){
     dout << "Painting haplotypes in" << this->initialHapFileName_ <<endl;
 
@@ -638,17 +671,7 @@ void DEploidIO::chromPainting(){
 
     //vector < vector <double>> hap = decovolutedStrainsToBeRead.content_;
 
-    // Make this a separate function
-    // calculate expected wsaf
-    vector <double> expectedWsaf (this->nLoci_, 0.0);
-    for ( size_t i = 0; i < this->initialHap.size(); i++ ){
-        assert( kStrain_ == this->initialHap[i].size() );
-        for ( size_t k = 0; k < this->kStrain_; k++){
-            expectedWsaf[i] += this->initialHap[i][k] * finalProp[k];
-        }
-        assert ( expectedWsaf[i] >= 0 );
-        //assert ( expectedWsaf[i] <= 1.0 );
-    }
+    vector <double> expectedWsaf = computeExpectedWsafFromInitialHap();
 
     MersenneTwister tmpRg(this->randomSeed());
 
@@ -690,7 +713,7 @@ void DEploidIO::readPanel(){
     if ( this->usePanel() == false ){
         return;
     }
-    if ( this->doIbdPainting() ){
+    if ( this->doIbdPainting() | this->doComputeLLK() ){
         return;
     }
 

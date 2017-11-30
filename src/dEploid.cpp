@@ -45,7 +45,9 @@ int main( int argc, char *argv[] ){
             return EXIT_SUCCESS;
         }
 
-        if ( dEploidIO.doLsPainting() ){
+        if ( dEploidIO.doComputeLLK() ){
+            dEploidIO.computeLLKfromInitialHap();
+        } else if ( dEploidIO.doLsPainting() ){
             dEploidIO.chromPainting();
         } else if ( dEploidIO.doIbdPainting() ){
             dEploidIO.paintIBD();
