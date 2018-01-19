@@ -95,6 +95,7 @@ void DEploidIO::init() {
     this->setInitialPropWasGiven(false);
     this->setInitialHapWasGiven(false);
     this->initialProp.clear();
+    this->setPleaseCheckInitialP(true);
     this->setExcludeSites( false );
     this->excludedMarkers = NULL;
     this->panel = NULL;
@@ -443,6 +444,8 @@ void DEploidIO::parse (){
             this->setDoComputeLLK( true );
         } else if ( *argv_i == "-ibdPainting" ){
             this->setDoIbdPainting( true );
+        } else if ( *argv_i == "-skipCheckingInitialP" ){
+            this->setPleaseCheckInitialP(false);
         } else if ( *argv_i == "-initialP" ){
             this->readInitialProportions();
             this->setInitialPropWasGiven( true );
@@ -493,7 +496,7 @@ void DEploidIO::checkInput(){
         throw FileNameMissing ( "PLAF" );}
     if ( usePanel() && this->panelFileName_.size() == 0 && !this->doIbdPainting() && !this->doComputeLLK() ){
         throw FileNameMissing ( "Reference panel" );}
-    if ( this->initialPropWasGiven() && ( abs(sumOfVec(initialProp) - 1.0) > 0.00001 )){
+    if ( this->initialPropWasGiven() && ( abs(sumOfVec(initialProp) - 1.0) > 0.00001 ) && this->pleaseCheckInitialP() ){
         throw SumOfPropNotOne ( to_string(sumOfVec(initialProp)) );}
     if ( this->initialPropWasGiven() ){
         if ( this->kStrainWasManuallySet() == true ){

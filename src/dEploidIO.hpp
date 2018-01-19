@@ -99,6 +99,7 @@ class DEploidIO{
 
 
     bool initialPropWasGiven_;
+    bool pleaseCheckInitialP_;
     bool initialHapWasGiven_;
     bool kStrainWasManuallySet_;
     bool kStrainWasSetByHap_;
@@ -280,6 +281,9 @@ class DEploidIO{
 
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
     void setInitialPropWasGiven(const bool setTo){this->initialPropWasGiven_ = setTo; }
+
+    bool pleaseCheckInitialP() const { return pleaseCheckInitialP_; }
+    void setPleaseCheckInitialP(const bool setTo){this->pleaseCheckInitialP_ = setTo; }
 
     bool initialHapWasGiven() const { return initialHapWasGiven_; }
     void setInitialHapWasGiven(const bool setTo){ this->initialHapWasGiven_ = setTo; }
