@@ -22,7 +22,7 @@ $ which autoconf
 
 On Debian/Ubuntu based systems:
 ```bash
-$ apt-get install build-essential autoconf autoconf-archive libcppunit-dev
+$ apt-get install build-essential autoconf autoconf-archive libcppunit-dev zlib1g-dev
 ```
 
 On Mac OS:
@@ -59,6 +59,6 @@ Citation
 
 If you use `dEploid` in your work, please cite the program:
 
-Zhu, J. S. J. A. Garcia G. McVean. (2017) Deconvolution of multiple infections in *Plasmodium falciparum* from high throughput sequencing data. *Bioinformatics* btx530. doi: https://doi.org/10.1093/bioinformatics/btx530.
+Zhu, J. S. J. A. Garcia G. McVean. (2018) Deconvolution of multiple infections in *Plasmodium falciparum* from high throughput sequencing data. *Bioinformatics* 34(1), 9-15. doi: https://doi.org/10.1093/bioinformatics/btx530.
 
 
