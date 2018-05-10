@@ -432,12 +432,13 @@ plot.wsaf.vs.index.ring <- function ( coverage, expWSAF = c(), expWSAFChrom = c(
 
 
 plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), exclude, titlePrefix = "" ){
-    chromList = levels(coverage$CHROM)
+    chromList = unique(coverage$CHROM)
     ref = coverage$refCount
     alt = coverage$altCount
     obsWSAF = computeObsWSAF ( alt, ref )
     nFigures = length(chromList)
     for ( chromI in chromList ){
+        print(chromI)
         tmpWSAF = obsWSAF[coverage$CHROM==chromI]
         plot(tmpWSAF , col="red", ylim=c(0,1), main = paste(titlePrefix, chromI, "WSAF"), ylab = "WSAF",
             cex.axis = 3.5, cex.lab = 3.5, cex.main = 4, xaxt = "n", yaxt = "n")
@@ -460,6 +461,10 @@ plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), ex
             } else {
                 plotIndex = c(1:length(obsWSAF[coverage$CHROM==chromI]))
             }
+            print(length(plotIndex))
+            print(length(expWSAF))
+            print(length(expWSAF[expWSAFChrom == chromI]))
+            print("##########")
             points(plotIndex, expWSAF[expWSAFChrom == chromI], col="blue")
         }
     }

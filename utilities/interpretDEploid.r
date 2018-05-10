@@ -20,7 +20,7 @@ source(paste(dEploidRootDir, "/utilities/dEploidTools.r", sep=""))
 source(paste(dEploidRootDir, "/utilities/DEploidR.R", sep=""))
 
 args = (commandArgs(TRUE))
-
+print(args)
 myInput = fun.parse ( args )
 
 if (myInput$helpBool){

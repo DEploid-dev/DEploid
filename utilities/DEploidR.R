@@ -20,7 +20,7 @@
 extractCoverageFromTxt <- function ( refFileName, altFileName ){
     ref <- read.table(refFileName, header = TRUE, comment.char = "")
     alt <- read.table(altFileName, header = TRUE, comment.char = "")
-    return ( data.frame( CHROM = ref[, 1],
+    return ( data.frame( CHROM = as.character(ref[, 1]),
                          POS = ref[, 2],
                          refCount = ref[, 3],
                          altCount = alt[, 3] )

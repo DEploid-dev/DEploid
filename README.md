@@ -7,6 +7,7 @@
 [![CircleCI](https://circleci.com/gh/mcveanlab/DEploid.svg?style=shield)](https://circleci.com/gh/mcveanlab/DEploid)
 [![Coverage Status](https://coveralls.io/repos/github/mcveanlab/DEploid/badge.svg)](https://coveralls.io/github/mcveanlab/DEploid)
 [![Documentation Status](http://readthedocs.org/projects/deploid/badge/?version=latest)](http://deploid.readthedocs.io/en/latest/)
+[![Docker Status](https://img.shields.io/docker/build/shajoezhu/deploid.svg)](https://hub.docker.com/r/shajoezhu/deploid/)
 
 `dEploid` is designed for deconvoluting mixed genomes with unknown proportions. Traditional ‘phasing’ programs are limited to diploid organisms. Our method modifies Li and Stephen’s algorithm with Markov chain Monte Carlo (MCMC) approaches, and builds a generic framework that allows haloptype searches in a multiple infection setting.
 
@@ -22,7 +23,7 @@ $ which autoconf
 
 On Debian/Ubuntu based systems:
 ```bash
-$ apt-get install build-essential autoconf autoconf-archive libcppunit-dev
+$ apt-get install build-essential autoconf autoconf-archive libcppunit-dev zlib1g-dev
 ```
 
 On Mac OS:
@@ -59,6 +60,6 @@ Citation
 
 If you use `dEploid` in your work, please cite the program:
 
-Zhu, J. S. J. A. Garcia G. McVean. (2017) Deconvolution of multiple infections in *Plasmodium falciparum* from high throughput sequencing data. *Bioinformatics* btx530. doi: https://doi.org/10.1093/bioinformatics/btx530.
+Zhu, J. S. J. A. Garcia G. McVean. (2018) Deconvolution of multiple infections in *Plasmodium falciparum* from high throughput sequencing data. *Bioinformatics* 34(1), 9-15. doi: https://doi.org/10.1093/bioinformatics/btx530.
 
 
