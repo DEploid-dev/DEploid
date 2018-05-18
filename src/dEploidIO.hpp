@@ -77,6 +77,8 @@ class DEploidIO{
 
     // Log
     void wrapUp();
+    bool randomSeedWasSet() const {return this->randomSeedWasGiven_; }
+
     friend std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO);
 
     size_t randomSeed() const { return randomSeed_;}

@@ -288,3 +288,50 @@ void DEploidIO::writeIBDpostProb(vector < vector <double> > & reshapedProbs, vec
         ofstreamExportTmp.close();
     #endif
 }
+
+
+void DEploidIO::paintIBD(){
+    vector <double> goodProp;
+    vector <size_t> goodStrainIdx;
+
+    if ( this->doIbdPainting() ){
+        this->finalProp = this->initialProp;
+    }
+
+    for ( size_t i = 0; i < this->finalProp.size(); i++){
+        if (this->finalProp[i] > 0.01){
+            goodProp.push_back(this->finalProp[i]);
+            goodStrainIdx.push_back(i);
+        }
+    }
+
+    if (goodProp.size() == 1){
+        return;
+    }
+
+    DEploidIO tmpDEploidIO; // (*this);
+    tmpDEploidIO.setKstrain(goodProp.size());
+    tmpDEploidIO.setInitialPropWasGiven(true);
+    tmpDEploidIO.initialProp = goodProp;
+    tmpDEploidIO.finalProp = goodProp;
+    tmpDEploidIO.refCount_ = this->refCount_;
+    tmpDEploidIO.altCount_ = this->altCount_;
+    tmpDEploidIO.plaf_ = this->plaf_;
+    tmpDEploidIO.nLoci_= this->nLoci();
+    tmpDEploidIO.position_ = this->position_;
+    tmpDEploidIO.chrom_ = this->chrom_;
+    //tmpDEploidIO.useConstRecomb_ = true;
+    //tmpDEploidIO.constRecombProb_ = 0.000001;
+
+    //tmpDEploidIO.writeLog (&std::cout);
+
+    MersenneTwister tmpRg(this->randomSeed());
+    IBDpath tmpIBDpath;
+    tmpIBDpath.init(tmpDEploidIO, &tmpRg);
+    tmpIBDpath.buildPathProbabilityForPainting(goodProp);
+    this->ibdLLK_ = tmpIBDpath.bestPath(goodProp);
+    this->ibdProbsHeader = tmpIBDpath.getIBDprobsHeader();
+    this->getIBDprobsIntegrated(tmpIBDpath.fwdbwd);
+    this->writeIBDpostProb(tmpIBDpath.fwdbwd, this->ibdProbsHeader);
+}
+
