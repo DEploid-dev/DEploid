@@ -15,7 +15,8 @@ before_install:
   #- if [ $TRAVIS_OS_NAME == osx ]; then brew tap homebrew/homebrew-core; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then brew update ; fi
   #- if [ $TRAVIS_OS_NAME == osx ]; then brew install llvm cppunit valgrind zlib && brew link --force llvm; fi
-  - if [ $TRAVIS_OS_NAME == osx ]; then brew install llvm cppunit valgrind zlib ; fi
+  #- if [ $TRAVIS_OS_NAME == osx ]; then brew install llvm cppunit valgrind zlib ; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then brew install llvm cppunit zlib ; fi
 before_script:
   - ./bootstrap
 
