@@ -23,18 +23,19 @@
  *
  */
 
+#include <stdlib.h>     /* strtol, strtod */
 #include <string>  /* string */
 #include <vector>  /* vector */
 #include <fstream>
-#include <stdlib.h>     /* strtol, strtod */
 #include "exceptions.hpp"
 #include "variantIndex.hpp"
 #include "gzstream.h"
 
-#ifndef VCF
-#define VCF
+#ifndef DEPLOID_SRC_VCFREADER_HPP_
+#define DEPLOID_SRC_VCFREADER_HPP_
 
-using namespace std;
+// using namespace std;
+// using std::endl;
 
 struct InvalidVcf : public InvalidInput{
     InvalidVcf(string str) : InvalidInput(str) {
@@ -47,20 +48,20 @@ struct InvalidVcf : public InvalidInput{
 
 
 struct VcfInvalidHeaderFieldNames : public InvalidVcf{
-    VcfInvalidHeaderFieldNames( string str1, string str2 ):InvalidVcf( str1 ){
+    VcfInvalidHeaderFieldNames(string str1, string str2):InvalidVcf(str1) {
         this->reason = " VCF field header expects: ";
-        throwMsg = this->reason + this->src + ", " + str2 + " was found!" ;
+        throwMsg = this->reason + this->src + ", " + str2 + " was found!";
     }
     ~VcfInvalidHeaderFieldNames() throw() {}
 };
 
 
 struct VcfInvalidVariantEntry : public InvalidVcf{
-    VcfInvalidVariantEntry( string str ):InvalidVcf( str ){}
+    VcfInvalidVariantEntry(string str):InvalidVcf(str) {}
     virtual ~VcfInvalidVariantEntry() throw() {}
-    //virtual const char* what () const noexcept {
-        //return throwMsg.c_str();
-    //}
+    // virtual const char* what () const noexcept {
+        // return throwMsg.c_str();
+    // }
 };
 
 
@@ -146,7 +147,8 @@ class VcfReader : public VariantIndex {
     igzstream inFileGz;
     bool isCompressed_;
     bool isCompressed() const { return this->isCompressed_; }
-    void setIsCompressed ( const bool compressed ){ this->isCompressed_ = compressed; }
+    void setIsCompressed (const bool compressed) {
+        this->isCompressed_ = compressed; }
     void checkFileCompressed();
     string sampleName;
     string tmpLine_;
@@ -166,4 +168,4 @@ class VcfReader : public VariantIndex {
     bool printSampleName();
 };
 
-#endif
+#endif  // DEPLOID_SRC_VCFREADER_HPP_
