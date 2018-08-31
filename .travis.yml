@@ -17,6 +17,7 @@ before_install:
   #- if [ $TRAVIS_OS_NAME == osx ]; then brew install llvm cppunit valgrind zlib && brew link --force llvm; fi
   #- if [ $TRAVIS_OS_NAME == osx ]; then brew install llvm cppunit valgrind zlib ; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then brew install llvm cppunit zlib ; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then .ci/style.sh; fi
 before_script:
   - ./bootstrap
 
@@ -29,7 +30,6 @@ script:
   - ./tests/test-against-previous-version.sh
   - ./tests/test_binaryReproducible.sh
   - if [ $TRAVIS_OS_NAME == linux ]; then cd docs/doxygen; doxygen Doxyfile; cd ../..; fi
-  - if [ $TRAVIS_OS_NAME == linux ]; then .ci/style.sh; fi
 
 after_success:
   - coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --exclude src/gzstream/ --gcov-options '\-lp'
