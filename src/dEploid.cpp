@@ -23,41 +23,40 @@
  *
  */
 
-#include <iostream> // std::cout
+#include <iostream>  // std::cout
 #include "mcmc.hpp"
 #include "dEploidIO.hpp"
 
-using namespace std;
 
-int main( int argc, char *argv[] ){
+int main(int argc, char *argv[]) {
     try {
-
         DEploidIO dEploidIO(argc, argv);
         std::ostream *output = &std::cout;
 
-        if ( dEploidIO.version() ){
+        if ( dEploidIO.version() ) {
             dEploidIO.printVersion(*output);
             return EXIT_SUCCESS;
         }
 
-        if ( dEploidIO.help() ){
+        if ( dEploidIO.help() ) {
             dEploidIO.printHelp(*output);
             return EXIT_SUCCESS;
         }
 
-        if ( dEploidIO.doComputeLLK() ){
+        if ( dEploidIO.doComputeLLK() ) {
             dEploidIO.computeLLKfromInitialHap();
-        } else if ( dEploidIO.doLsPainting() ){
+        } else if ( dEploidIO.doLsPainting() ) {
             dEploidIO.chromPainting();
-        } else if ( dEploidIO.doIbdPainting() ){
+        } else if ( dEploidIO.doIbdPainting() ) {
             dEploidIO.paintIBD();
-        }else{
-            if (dEploidIO.useIBD()){ // ibd
+        } else {
+            if (dEploidIO.useIBD()) {  // ibd
                 McmcSample * ibdMcmcSample = new McmcSample();
                 MersenneTwister ibdRg(dEploidIO.randomSeed());
 
-                McmcMachinery ibdMcmcMachinery(&dEploidIO, ibdMcmcSample, &ibdRg, true);
-                ibdMcmcMachinery.runMcmcChain(true, // show progress
+                McmcMachinery ibdMcmcMachinery(&dEploidIO, ibdMcmcSample,
+                                               &ibdRg, true);
+                ibdMcmcMachinery.runMcmcChain(true,   // show progress
                                               true);  // use IBD
                 delete ibdMcmcSample;
             }
@@ -65,9 +64,9 @@ int main( int argc, char *argv[] ){
             MersenneTwister rg(dEploidIO.randomSeed());
 
             McmcMachinery mcmcMachinery(&dEploidIO, mcmcSample, &rg,
-                                        false); // use IBD
-            mcmcMachinery.runMcmcChain(true, // show progress
-                                       false); // use IBD
+                                        false);  // use IBD
+            mcmcMachinery.runMcmcChain(true,     // show progress
+                                       false);   // use IBD
 
             dEploidIO.paintIBD();
             delete mcmcSample;

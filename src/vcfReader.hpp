@@ -37,12 +37,12 @@
 using namespace std;
 
 struct InvalidVcf : public InvalidInput{
-    InvalidVcf( string str ):InvalidInput( str ){
+    InvalidVcf(string str) : InvalidInput(str) {
     }
     virtual ~InvalidVcf() throw() {}
-    //virtual const char* what () const noexcept {
-        //return throwMsg.c_str();
-    //}
+    // virtual const char* what () const noexcept {
+        // return throwMsg.c_str();
+    // }
 };
 
 
@@ -133,7 +133,7 @@ class VcfReader : public VariantIndex {
   public:
     // Constructors and Destructors
     VcfReader(string fileName); // parse in exclude sites
-    ~VcfReader(){};
+    ~VcfReader(){}
 
   private:
     vector <VariantLine> variants;
@@ -153,14 +153,14 @@ class VcfReader : public VariantIndex {
     string tmpStr_;
 
     // Methods
-    void init( string fileName );
+    void init(string fileName);
     void finalize();
     void readVariants();
-    void readHeader( );
-    void checkFeilds( );
+    void readHeader();
+    void checkFeilds();
 
     void getChromList();
-    void removeMarkers ( );
+    void removeMarkers();
 
     // Debug tools
     bool printSampleName();
