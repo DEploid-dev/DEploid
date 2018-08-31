@@ -9,7 +9,7 @@ compiler:
 before_install:
   - echo $LANG
   - echo $LC_ALL
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -qq; sudo apt-get install -qq libcppunit-dev valgrind r-base-core lcov python-pip doxygen graphviz; pip install --user cpp-coveralls; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -qq; sudo apt-get install -qq libcppunit-dev valgrind r-base-core lcov python-pip doxygen graphviz; pip install --user cpp-coveralls cpplint; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then apt-cache policy zlib*; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then rvm get 1.29.3; brew update; brew doctor; rvm install 2.3.3; fi
   #- if [ $TRAVIS_OS_NAME == osx ]; then brew tap homebrew/homebrew-core; fi
@@ -29,6 +29,7 @@ script:
   - ./tests/test-against-previous-version.sh
   - ./tests/test_binaryReproducible.sh
   - if [ $TRAVIS_OS_NAME == linux ]; then cd docs/doxygen; doxygen Doxyfile; cd ../..; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then .ci/style.sh; fi
 
 after_success:
   - coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --exclude src/gzstream/ --gcov-options '\-lp'
