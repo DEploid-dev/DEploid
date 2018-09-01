@@ -1,7 +1,7 @@
 #!/bin/bash
 
 while read file; do
-  cpplint --filter=-build/include_subdir ${file} 2>&1 > lint_tmp
+  cpplint --filter=-build/include_subdir,-build/header_guard ${file} 2>&1 > lint_tmp
   if [ $? -ne 0 ]; then
     echo "Coding style check:"
     echo "cpplint ${file} failed"
