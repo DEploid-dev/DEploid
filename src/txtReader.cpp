@@ -107,6 +107,14 @@ void TxtReader::extractChrom( string & tmp_str ){
 
 
 void TxtReader::extractPOS( string & tmp_str ){
+    if (tmp_str.find("e") != std::string::npos){
+        throw BadScientificNotation(tmp_str, fileName);
+    }
+
+    if (tmp_str.find("E") != std::string::npos){
+        throw BadScientificNotation(tmp_str, fileName);
+    }
+
     int ret;
     try {
         ret = stoi(tmp_str.c_str(), NULL);

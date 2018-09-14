@@ -114,6 +114,15 @@ struct WrongType : public InvalidInput{
 };
 
 
+struct BadScientificNotation : public InvalidInput{
+  BadScientificNotation( string str1, string str2 ):InvalidInput( str1 ){
+    this->reason = "Bad scientific notation: ";
+    throwMsg = this->reason + this->src + ", int expected. Check input file" + str2;
+  }
+  ~BadScientificNotation() throw() {}
+};
+
+
 struct BadConversion : public InvalidInput{
   BadConversion( string str1, string str2 ):InvalidInput( str1 ){
     this->reason = "Bad conversion: ";

@@ -10,6 +10,7 @@ class TestTxtReader : public CppUnit::TestCase {
     CPPUNIT_TEST( checkRemoveMarkers );
     CPPUNIT_TEST( checkSizeAfter );
     CPPUNIT_TEST( checkBadConversion );
+    CPPUNIT_TEST( checkBadScientificNotation );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -38,7 +39,14 @@ class TestTxtReader : public CppUnit::TestCase {
     void checkBadConversion(){
         TxtReader tmp;
         CPPUNIT_ASSERT_THROW ( tmp.readFromFile("data/testData/bad.plaf.txt"), BadConversion );
+    }
 
+    void checkBadScientificNotation(){
+        TxtReader tmp2;
+        CPPUNIT_ASSERT_THROW ( tmp2.readFromFile("data/testData/bad.plaf_scientific.txt"), BadScientificNotation );
+
+        TxtReader tmp3;
+        CPPUNIT_ASSERT_THROW ( tmp3.readFromFile("data/testData/bad.plaf_scientificE.txt"), BadScientificNotation );
     }
 
     void checkSizeBefore(){
