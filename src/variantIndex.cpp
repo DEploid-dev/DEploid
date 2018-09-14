@@ -29,6 +29,10 @@
 #include "txtReader.hpp"
 #include "variantIndex.hpp"
 
+using std::min;
+using std::endl;
+
+
 VariantIndex::VariantIndex() {
     this->init();
 }

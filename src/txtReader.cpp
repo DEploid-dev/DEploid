@@ -29,6 +29,8 @@
 #include "exceptions.hpp"
 #include "txtReader.hpp"
 
+using std::min;
+
 void TxtReader::readFromFileBase(const char inchar[]){
     fileName = string (inchar);
     tmpChromInex_ = -1;
