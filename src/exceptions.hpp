@@ -30,7 +30,7 @@
 #ifndef EXCEPTION
 #define EXCEPTION
 
-//using namespace std;
+// using namespace std;
 using std::string;
 using std::ifstream;
 using std::stoi;
