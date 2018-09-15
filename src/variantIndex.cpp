@@ -29,6 +29,10 @@
 #include "txtReader.hpp"
 #include "variantIndex.hpp"
 
+using std::min;
+using std::endl;
+
+
 VariantIndex::VariantIndex() {
     this->init();
 }
@@ -39,7 +43,7 @@ void VariantIndex::findWhoToBeKept(ExcludeMarker* excludedMarkers) {
     assert(this->indexOfPosToBeKept.size() == 0);
 
     for (size_t chromI = 0; chromI < this->chrom_.size(); chromI++) {
-        dout << "   Going through chrom "<< chrom_[chromI] << endl;
+        dout << "   Going through chrom "<< chrom_[chromI];
         vector < size_t > tmpindexOfPosToBeKept;
 
         // detemine if something needs to be removed from the current chrom.
@@ -47,7 +51,7 @@ void VariantIndex::findWhoToBeKept(ExcludeMarker* excludedMarkers) {
                                                 excludedMarkers->chrom_.end(),
                                                 this->chrom_[chromI]);
 
-        size_t hapIndex = indexOfChromStarts_[ chromI ];
+        size_t hapIndex = indexOfChromStarts_[chromI];
         size_t chromIndexInExclude = std::distance(
                                         excludedMarkers->chrom_.begin(),
                                         chromIt);
@@ -66,6 +70,8 @@ void VariantIndex::findWhoToBeKept(ExcludeMarker* excludedMarkers) {
             hapIndex++;
         }
         indexOfPosToBeKept.push_back(tmpindexOfPosToBeKept);
+
+        dout << " keeping " << tmpindexOfPosToBeKept.size() << endl;
     }
     assert(indexOfPosToBeKept.size() == this->chrom_.size());
 

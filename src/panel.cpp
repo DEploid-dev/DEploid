@@ -26,6 +26,7 @@
 #include "panel.hpp"
 #include <math.h>
 #include <iostream>
+using std::endl;
 
 Panel::Panel():TxtReader(){
     this->setTruePanelSize(0);
