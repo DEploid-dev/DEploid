@@ -125,3 +125,16 @@ void VariantIndex::init() {
 }
 
 void VariantIndex::removeMarkers() { throw VirtualFunctionShouldNotBeCalled();}
+
+
+void VariantIndex::checkSortedPositions(string fileName) {
+    for (size_t chromI = 0; chromI < this->chrom_.size(); chromI++) {
+        int previousPosition_ = 0;
+        for (auto const &value : this->position_[chromI]) {
+            if (value < previousPosition_) {
+                throw PositionUnsorted(fileName);
+            }
+            previousPosition_ = value;
+        }
+    }
+}

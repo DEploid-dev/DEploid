@@ -89,6 +89,15 @@ struct InvalidK : public InvalidInput{
 };
 
 
+struct PositionUnsorted : public InvalidInput{
+  explicit PositionUnsorted(string str):InvalidInput(str) {
+    this->reason = "Position (POS) not sorted in ";
+    throwMsg = this->reason + this->src;
+  }
+  ~PositionUnsorted() throw() {}
+};
+
+
 struct NotEnoughArg : public InvalidInput{
   explicit NotEnoughArg(string str):InvalidInput(str) {
     this->reason = "Not enough parameters when parsing option: ";

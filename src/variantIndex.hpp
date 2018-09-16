@@ -79,6 +79,7 @@ class VariantIndex {
     void init();
     void getIndexOfChromStarts();
     void removePositions();
+    void checkSortedPositions(string fileName);
 
  public:
     VariantIndex();

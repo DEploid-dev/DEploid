@@ -66,7 +66,7 @@ struct VcfInvalidVariantEntry : public InvalidVcf{
 
 
 struct VcfCoverageFieldNotFound : public VcfInvalidVariantEntry{
-    VcfCoverageFieldNotFound( string str ):VcfInvalidVariantEntry( str ){
+    VcfCoverageFieldNotFound( string str ):VcfInvalidVariantEntry( str) {
         this->reason = "Coverage field AD was not found in the FORMAT, found: ";
         throwMsg = this->reason + this->src ;
     }
