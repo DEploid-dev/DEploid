@@ -229,13 +229,13 @@ class TestTxtReader : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL (this->txtReader_->nInfoLines_, this->afterExclude_->nInfoLines_ );
         CPPUNIT_ASSERT_EQUAL (this->txtReader_->nInfoLines_, (size_t)1);
 
-        for ( size_t i = 0; i < 93; i++ ){
+        for ( size_t i = 0; i < 93; i++) {
             CPPUNIT_ASSERT_EQUAL (this->txtReader_->info_[i], this->afterExclude_->info_[i] );
             CPPUNIT_ASSERT_EQUAL (this->txtReader_->content_[i][0], this->afterExclude_->content_[i][0] );
         }
 
 
-        for ( size_t i = 0; i < 93; i++ ){
+        for ( size_t i = 0; i < 93; i++) {
             CPPUNIT_ASSERT_EQUAL (this->txtReader_->info_[i], this->afterExclude_->info_[i] );
             CPPUNIT_ASSERT_EQUAL (this->txtReader_->content_[i][0], this->afterExclude_->content_[i][0] );
         }
@@ -249,11 +249,11 @@ class TestTxtReader : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL (this->txtReader_->keptPosition_.size(), this->afterExclude_->keptPosition_.size() );
         CPPUNIT_ASSERT_EQUAL (this->txtReader_->keptPosition_.size(), (size_t)0 );
 
-        for ( size_t i = 0; i < 6; i++ ){
+        for ( size_t i = 0; i < 6; i++) {
             CPPUNIT_ASSERT_EQUAL (this->txtReader_->chrom_[i], this->afterExclude_->chrom_[i] );
             CPPUNIT_ASSERT_EQUAL (this->txtReader_->indexOfChromStarts_[i], this->afterExclude_->indexOfChromStarts_[i] );
             CPPUNIT_ASSERT_EQUAL (this->txtReader_->position_[i].size(), this->afterExclude_->position_[i].size() );
-            for ( size_t j = 0; j < this->txtReader_->position_[i].size(); j++ ){
+            for ( size_t j = 0; j < this->txtReader_->position_[i].size(); j++) {
                 CPPUNIT_ASSERT_EQUAL (this->txtReader_->position_[i][j], this->afterExclude_->position_[i][j] );
 
             }

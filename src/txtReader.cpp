@@ -25,6 +25,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 #include <iterator>     // std::distance
 #include "exceptions.hpp"
 #include "txtReader.hpp"
@@ -32,65 +33,67 @@
 using std::min;
 
 void TxtReader::readFromFileBase(const char inchar[]) {
-    fileName = string (inchar);
+    fileName = string(inchar);
     tmpChromInex_ = -1;
 
     ifstream in_file(inchar);
     string tmp_line;
-    if ( in_file.good() ){
-        getline ( in_file, tmp_line ); // skip the first line, which is the header
-        getline ( in_file, tmp_line );
-        while ( tmp_line.size() > 0 ){
+    if (in_file.good()) {
+        // skip the first line, which is the header
+        getline(in_file, tmp_line);
+        getline(in_file, tmp_line);
+        while (tmp_line.size() > 0) {
             size_t field_start = 0;
             size_t field_end = 0;
             size_t field_index = 0;
             vector <double> contentRow;
-            while ( field_end < tmp_line.size() ){
-                field_end = min ( min ( tmp_line.find(',',field_start),
-                                        tmp_line.find('\t',field_start) ),
-                                  tmp_line.find('\n', field_start) );
+            while (field_end < tmp_line.size()) {
+                field_end = min(
+                    min(tmp_line.find(',', field_start),
+                        tmp_line.find('\t', field_start)),
+                        tmp_line.find('\n', field_start));
 
-                string tmp_str = tmp_line.substr( field_start, field_end - field_start );
-                if ( field_index > 1 ){
-                    contentRow.push_back( strtod(tmp_str.c_str(), NULL) );
-                } else if ( field_index == 0 ){
-                    this->extractChrom( tmp_str );
-                } else if ( field_index == 1 ){
-                    this->extractPOS ( tmp_str );
+                string tmp_str = tmp_line.substr(field_start,
+                    field_end - field_start);
+                if (field_index > 1) {
+                    contentRow.push_back(strtod(tmp_str.c_str(), NULL));
+                } else if (field_index == 0) {
+                    this->extractChrom(tmp_str);
+                } else if (field_index == 1) {
+                    this->extractPOS(tmp_str);
                 }
 
                 field_start = field_end+1;
                 field_index++;
             }
             this->content_.push_back(contentRow);
-            getline ( in_file, tmp_line );
+            getline(in_file, tmp_line);
         }
     } else {
         throw InvalidInputFile(fileName);
-
     }
     in_file.close();
 
-    this->position_.push_back( this->tmpPosition_ );
+    this->position_.push_back(this->tmpPosition_);
 
     this->nLoci_ = this->content_.size();
     this->nInfoLines_ = this->content_.back().size();
 
-    if ( this->nInfoLines_ == 1 ){
+    if (this->nInfoLines_ == 1) {
         this->reshapeContentToInfo();
     }
 
     this->getIndexOfChromStarts();
-    assert ( tmpChromInex_ > -1 );
-    assert ( chrom_.size() == position_.size() );
+    assert(tmpChromInex_ > -1);
+    assert(chrom_.size() == position_.size());
     assert(this->doneGetIndexOfChromStarts_ == true);
     this->checkSortedPositions(this->fileName);
 }
 
 
-void TxtReader::extractChrom( string & tmp_str ){
-    if ( tmpChromInex_ >= 0 ){
-        if ( tmp_str != this->chrom_.back() ){
+void TxtReader::extractChrom(const string & tmp_str) {
+    if (tmpChromInex_ >= 0) {
+        if (tmp_str != this->chrom_.back()) {
             tmpChromInex_++;
             // save current positions
             this->position_.push_back(this->tmpPosition_);
@@ -101,45 +104,45 @@ void TxtReader::extractChrom( string & tmp_str ){
         }
     } else {
         tmpChromInex_++;
-        assert (this->chrom_.size() == 0);
-        this->chrom_.push_back( tmp_str );
-        assert ( this->tmpPosition_.size() == 0 );
-        assert ( this->position_.size() == 0);
+        assert(this->chrom_.size() == 0);
+        this->chrom_.push_back(tmp_str);
+        assert(this->tmpPosition_.size() == 0);
+        assert(this->position_.size() == 0);
     }
 }
 
 
-void TxtReader::extractPOS( string & tmp_str ){
-    if (tmp_str.find("e") != std::string::npos){
+void TxtReader::extractPOS(const string & tmp_str) {
+    if (tmp_str.find("e") != std::string::npos) {
         throw BadScientificNotation(tmp_str, fileName);
     }
 
-    if (tmp_str.find("E") != std::string::npos){
+    if (tmp_str.find("E") != std::string::npos) {
         throw BadScientificNotation(tmp_str, fileName);
     }
 
     int ret;
     try {
         ret = stoi(tmp_str.c_str(), NULL);
-    } catch ( const std::exception &e ){
+    } catch ( const std::exception &e) {
         throw BadConversion(tmp_str, fileName);
     }
     this->tmpPosition_.push_back(ret);
 }
 
 
-void TxtReader::reshapeContentToInfo(){
-    assert ( this->info_.size() == 0 );
-    for ( size_t i = 0; i < this->content_.size(); i++){
-        this->info_.push_back( this->content_[i][0] );
+void TxtReader::reshapeContentToInfo() {
+    assert(this->info_.size() == 0);
+    for (size_t i = 0; i < this->content_.size(); i++) {
+        this->info_.push_back(this->content_[i][0]);
     }
 }
 
 
-void TxtReader::removeMarkers ( ){
-    assert( this->keptContent_.size() == (size_t)0 );
-    for ( auto const &value: this->indexOfContentToBeKept){
-        this->keptContent_.push_back(this->content_[value] );
+void TxtReader::removeMarkers() {
+    assert(this->keptContent_.size() == (size_t)0);
+    for (auto const &value : this->indexOfContentToBeKept) {
+        this->keptContent_.push_back(this->content_[value]);
     }
 
     this->content_.clear();
@@ -147,7 +150,7 @@ void TxtReader::removeMarkers ( ){
     this->content_ = this->keptContent_;
     this->keptContent_.clear();
 
-    if ( this->nInfoLines_ == 1 ){
+    if (this->nInfoLines_ == 1) {
         this->info_.clear();
         this->reshapeContentToInfo();
     }

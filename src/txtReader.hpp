@@ -27,22 +27,24 @@
 #ifndef TXTREADER
 #define TXTREADER
 
+#include <vector>
+#include <string>
 #include "variantIndex.hpp"
 #include "exceptions.hpp"
 
 class TxtReader : public VariantIndex {
-#ifdef UNITTEST
- friend class TestPanel;
- friend class TestTxtReader;
- friend class TestInitialHaplotypes;
-#endif
- friend class McmcMachinery;
- friend class UpdateSingleHap;
- friend class UpdatePairHap;
- friend class UpdateHap;
- friend class Panel;
- friend class DEploidIO;
-  private:
+    #ifdef UNITTEST
+    friend class TestPanel;
+    friend class TestTxtReader;
+    friend class TestInitialHaplotypes;
+    #endif
+    friend class McmcMachinery;
+    friend class UpdateSingleHap;
+    friend class UpdatePairHap;
+    friend class UpdateHap;
+    friend class Panel;
+    friend class DEploidIO;
+ private:
     // Members
 
     // content is a matrix of n.loci by n.strains, i.e. content length is n.loci
@@ -57,27 +59,27 @@ class TxtReader : public VariantIndex {
     vector < int > tmpPosition_;
 
     // Methods
-    void extractChrom( string & tmp_str );
-    void extractPOS ( string & tmp_str );
+    void extractChrom(const string & tmp_str);
+    void extractPOS(const string & tmp_str);
     void reshapeContentToInfo();
     string fileName;
 
-  public: // move the following to private
-    TxtReader (){};
-    virtual void readFromFile( const char inchar[] ){ this->readFromFileBase( inchar ); };
-    void readFromFileBase( const char inchar[] );
-    virtual ~TxtReader(){ };
-    void removeMarkers ( );
+ public:  // move the following to private
+    TxtReader() {}
+    virtual void readFromFile(const char inchar[]) {
+        this->readFromFileBase(inchar); }
+    void readFromFileBase(const char inchar[]);
+    virtual ~TxtReader() {}
+    void removeMarkers();
 };
 
 
 
 
 class ExcludeMarker : public TxtReader {
-  // sorting
-  public:
-    ExcludeMarker():TxtReader(){};
-    ~ExcludeMarker(){};
+ public:
+    ExcludeMarker():TxtReader() {}
+    ~ExcludeMarker() {}
 };
 
 
