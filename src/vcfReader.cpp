@@ -42,6 +42,7 @@ VcfReader::VcfReader(string fileName){
     this->getChromList();
     this->getIndexOfChromStarts();
     assert(this->doneGetIndexOfChromStarts_ == true);
+    this->checkSortedPositions(fileName);
 }
 
 

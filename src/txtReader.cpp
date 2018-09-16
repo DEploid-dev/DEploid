@@ -31,7 +31,7 @@
 
 using std::min;
 
-void TxtReader::readFromFileBase(const char inchar[]){
+void TxtReader::readFromFileBase(const char inchar[]) {
     fileName = string (inchar);
     tmpChromInex_ = -1;
 
@@ -84,6 +84,7 @@ void TxtReader::readFromFileBase(const char inchar[]){
     assert ( tmpChromInex_ > -1 );
     assert ( chrom_.size() == position_.size() );
     assert(this->doneGetIndexOfChromStarts_ == true);
+    this->checkSortedPositions(this->fileName);
 }
 
 
