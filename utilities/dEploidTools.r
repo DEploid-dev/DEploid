@@ -437,11 +437,14 @@ plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), ex
     alt = coverage$altCount
     obsWSAF = computeObsWSAF ( alt, ref )
     nFigures = length(chromList)
+    totalCoverage = alt + ref
     for ( chromI in chromList ){
         print(chromI)
         tmpWSAF = obsWSAF[coverage$CHROM==chromI]
-        plot(tmpWSAF , col="red", ylim=c(0,1), main = paste(titlePrefix, chromI, "WSAF"), ylab = "WSAF",
-            cex.axis = 3.5, cex.lab = 3.5, cex.main = 4, xaxt = "n", yaxt = "n")
+        colorFrac = (totalCoverage[coverage$CHROM==chromI])/50
+        colorTrans = unlist(lapply(colorFrac, function(x){adjustcolor("red", alpha.f=x)}))
+        plot(tmpWSAF , col=colorTrans, ylim=c(0,1), main = paste(titlePrefix, chromI, "WSAF"), ylab = "WSAF",
+            cex.axis = 3.5, cex.lab = 3.5, cex.main = 4, xaxt = "n", yaxt = "n", pch = 16)
         newXaxt = round(seq(1, length(tmpWSAF), length.out = 6))
         axis(1, at = newXaxt, labels = as.character(newXaxt),
             cex.axis= 3.5)
@@ -461,11 +464,12 @@ plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), ex
             } else {
                 plotIndex = c(1:length(obsWSAF[coverage$CHROM==chromI]))
             }
-            print(length(plotIndex))
-            print(length(expWSAF))
-            print(length(expWSAF[expWSAFChrom == chromI]))
-            print("##########")
-            points(plotIndex, expWSAF[expWSAFChrom == chromI], col="blue")
+#            print(length(plotIndex))
+#            print(length(expWSAF))
+#            print(length(expWSAF[expWSAFChrom == chromI]))
+#            print("##########")
+            colorTrans = unlist(lapply(colorFrac, function(x){adjustcolor("blue", alpha.f=x)}))[plotIndex]
+            points(plotIndex, expWSAF[expWSAFChrom == chromI], col=colorTrans, pch = 16)
         }
     }
 }
