@@ -29,6 +29,7 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST( testVcfOutUnSpecified );
     CPPUNIT_TEST( testInvalidK );
     CPPUNIT_TEST( testChromPainting );
+    CPPUNIT_TEST( testComputeObsWsaf );
     CPPUNIT_TEST_SUITE_END();
 
   private:
@@ -42,7 +43,7 @@ class TestIO : public CppUnit::TestCase {
     void tearDown() {
     }
 
-    void testInitialization(){
+    void testInitialization() {
         DEploidIO* dEploidIOptr = new DEploidIO ();
         CPPUNIT_ASSERT_EQUAL( dEploidIOptr->randomSeedWasGiven(), false );
         CPPUNIT_ASSERT_EQUAL( dEploidIOptr->doExportRecombProb(), false );
@@ -165,7 +166,7 @@ class TestIO : public CppUnit::TestCase {
     }
 
 
-    void testPrintHelp(){
+    void testPrintHelp() {
         char *argv[] = { "./dEploid" };
         std::ostream *output = &std::cout;
         CPPUNIT_ASSERT_NO_THROW ( DEploidIO(1, argv) );
@@ -191,7 +192,7 @@ class TestIO : public CppUnit::TestCase {
     }
 
 
-    void testPrintVersion(){
+    void testPrintVersion() {
         std::ostream *output = &std::cout;
         char *argv1[] = { "./dEploid", "-v" };
         CPPUNIT_ASSERT_NO_THROW ( DEploidIO(2, argv1) );
@@ -207,7 +208,7 @@ class TestIO : public CppUnit::TestCase {
     }
 
 
-    void testOutOfRange(){
+    void testOutOfRange() {
         char *argv1[] = {"./dEploid",
                          "-ref", "data/testData/PG0390-C.test.ref",
                          "-alt", "data/testData/PG0390-C.test.alt",
@@ -234,7 +235,7 @@ class TestIO : public CppUnit::TestCase {
     }
 
 
-    void testNotEnoughArg(){
+    void testNotEnoughArg() {
         char *argv1[] = { "./dEploid",
                          "-ref", "data/testData/PG0390-C.test.ref",
                          "-alt", "data/testData/PG0390-C.test.alt",
@@ -306,7 +307,7 @@ class TestIO : public CppUnit::TestCase {
     }
 
 
-    void testWrongType(){
+    void testWrongType() {
         char *argv2[] = { "./dEploid",
                          "-ref", "data/testData/PG0390-C.test.ref",
                          "-alt", "data/testData/PG0390-C.test.alt",
@@ -354,7 +355,7 @@ class TestIO : public CppUnit::TestCase {
     }
 
 
-    void testFileNameMissing(){
+    void testFileNameMissing() {
         char *argv1[] = { "./dEploid",
                          "-alt", "data/testData/PG0390-C.test.alt",
                          "-plaf", "data/testData/labStrains.test.PLAF.txt",
@@ -401,7 +402,7 @@ class TestIO : public CppUnit::TestCase {
     }
 
 
-    void testInvalidInputFile(){
+    void testInvalidInputFile() {
         char *argv[] = { "./dEploid",
                          "-ref", "PG0390_first100ref.txt",
                          "-alt", "data/testData/PG0390-C.test.alt",
@@ -418,13 +419,13 @@ class TestIO : public CppUnit::TestCase {
     }
 
 
-    void testUnknowArg(){
+    void testUnknowArg() {
         char *argv[] = { "./dEploid", "-unknow"};
         CPPUNIT_ASSERT_THROW( DEploidIO(2, argv), UnknowArg );
     }
 
 
-    void testFlagsConflict(){
+    void testFlagsConflict() {
         // panel conflict with noPanel
         char *argv1[] = { "./dEploid",
                          "-ref", "data/testData/PG0390-C.test.ref",
@@ -491,7 +492,7 @@ class TestIO : public CppUnit::TestCase {
     }
 
 
-    void testLociNumberUnequal(){
+    void testLociNumberUnequal() {
         char *argv1[] = { "./dEploid",
                          "-ref", "data/testData/PG0390-C.test.ref",
                          "-alt", "data/testData/PG0390.C_alt.txt",
@@ -509,7 +510,7 @@ class TestIO : public CppUnit::TestCase {
     }
 
 
-    void testExtractRefAltPlaf(){
+    void testExtractRefAltPlaf() {
         char *argv1[] = { "./dEploid",
          "-ref", "data/testData/PG0390-C.test.ref",
          "-alt", "data/testData/PG0390-C.test.alt",
@@ -584,7 +585,7 @@ class TestIO : public CppUnit::TestCase {
     }
 
 
-    void testInvalidVcf(){
+    void testInvalidVcf() {
         char *argv1[] = { "./dEploid",
                          "-vcf", "data/testData/PG0389-C.test.vcf",
                          "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
@@ -592,7 +593,7 @@ class TestIO : public CppUnit::TestCase {
     }
 
 
-    void testVcfHeader(){
+    void testVcfHeader() {
         char *argv1[] = { "./dEploid",
                          "-vcf", "data/testData/crappyVcf/badHeaderFieldNames.alt.vcf",
                          "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
@@ -644,14 +645,14 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_THROW ( DEploidIO(6, argv10), VcfInvalidHeaderFieldNames );
     }
 
-    void testVcfNoAD(){
+    void testVcfNoAD() {
         char *argv1[] = { "./dEploid",
                          "-vcf", "data/testData/crappyVcf/badVariant.noAD.vcf",
                          "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( DEploidIO(6, argv1), VcfCoverageFieldNotFound );
     }
 
-    void testInvalidVcfGz(){
+    void testInvalidVcfGz() {
         char *argv1[] = { "./dEploid",
                          "-vcf", "data/testData/PG0389-C.test.vcf.gz",
                          "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
@@ -659,7 +660,7 @@ class TestIO : public CppUnit::TestCase {
     }
 
 
-    void testVcfGzHeader(){
+    void testVcfGzHeader() {
         char *argv1[] = { "./dEploid",
                          "-vcf", "data/testData/crappyVcfGz/badHeaderFieldNames.alt.vcf.gz",
                          "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
@@ -711,21 +712,21 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_THROW ( DEploidIO(6, argv10), VcfInvalidHeaderFieldNames );
     }
 
-    void testVcfGzNoAD(){
+    void testVcfGzNoAD() {
         char *argv1[] = { "./dEploid",
                          "-vcf", "data/testData/crappyVcfGz/badVariant.noAD.vcf.gz",
                          "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW ( DEploidIO(6, argv1), VcfCoverageFieldNotFound );
     }
 
-    void testVcfOutUnSpecified(){
+    void testVcfOutUnSpecified() {
         char *argv1[] = { "./dEploid",
                          "-vcf", "data/testData/PG0390-C.test.vcf",
                          "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel", "-z"};
         CPPUNIT_ASSERT_THROW ( DEploidIO(7, argv1), VcfOutUnSpecified );
     }
 
-    void testChromPainting(){
+    void testChromPainting() {
         char *argv1[] = { "./dEploid",
                          "-vcf", "data/testData/PG0390-C.test.vcf",
                          "-plaf", "data/testData/labStrains.test.PLAF.txt",
@@ -749,7 +750,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_NO_THROW(dEploidIOibd.paintIBD());
     }
 
-    void testInvalidK(){
+    void testInvalidK() {
         char *argv1[] = { "./dEploid",
                          "-vcf", "data/testData/PG0390-C.test.vcf",
                          "-plaf", "data/testData/labStrains.test.PLAF.txt",
@@ -763,6 +764,19 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "data/testData/labStrains.test.panel.txt",
                          "-initialP", "1", "-ibd"};
         CPPUNIT_ASSERT_THROW ( DEploidIO(10, argv2), InvalidK);
+    }
+
+    void testComputeObsWsaf() {
+        char *argv[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                         "-lasso" };
+        CPPUNIT_ASSERT_NO_THROW ( DEploidIO(10, argv) );
+        DEploidIO dEploidIOlasso(10, argv);
+        CPPUNIT_ASSERT_NO_THROW(dEploidIOlasso.computeObsWsaf());
+
     }
 };
 

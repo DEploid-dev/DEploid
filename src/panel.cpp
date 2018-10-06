@@ -28,32 +28,32 @@
 #include <iostream>
 using std::endl;
 
-Panel::Panel():TxtReader(){
+Panel::Panel():TxtReader() {
     this->setTruePanelSize(0);
     this->setInbreedingPanelSize(0);
 };
 
 
-void Panel::readFromFile( const char inchar[] ){
+void Panel::readFromFile( const char inchar[] ) {
     this->readFromFileBase( inchar );
     this->setTruePanelSize( this->nInfoLines_ );
     this->setInbreedingPanelSize( this->truePanelSize() );
 };
 
 
-void Panel::checkForExceptions( size_t nLoci, string panelFileName ){
-    if ( this->content_.size() != nLoci ){
+void Panel::checkForExceptions( size_t nLoci, string panelFileName ) {
+    if ( this->content_.size() != nLoci ) {
         throw LociNumberUnequal( panelFileName );
     }
 
-    if ( this->pRec_.size() != nLoci ){
+    if ( this->pRec_.size() != nLoci ) {
         throw LociNumberUnequal( panelFileName );
     }
     return;
 }
 
 
-void Panel::computeRecombProbs( double averageCentimorganDistance, double G, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame ){
+void Panel::computeRecombProbs( double averageCentimorganDistance, double G, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame ) {
     assert(pRec_.size() == 0 );
     assert(pRecEachHap_.size() == 0 );
     assert(pNoRec_.size() == 0 );
@@ -66,8 +66,8 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double G, boo
     double rho;
     double nPanelDouble = (double)this->truePanelSize();
     double nPanlelMinus1 = nPanelDouble - 1.0;
-    for ( size_t i = 0; i < this->position_.size(); i++){
-        for ( size_t j = 1; j < this->position_[i].size(); j++){
+    for ( size_t i = 0; i < this->position_.size(); i++) {
+        for ( size_t j = 1; j < this->position_[i].size(); j++) {
             geneticDistance = (double)(this->position_[i][j] - this->position_[i][j-1])/averageMorganDistance ;
             //rho = geneticDistance * 2 * Ne;
             rho = geneticDistance * G;
@@ -103,7 +103,7 @@ void Panel::computeRecombProbs( double averageCentimorganDistance, double G, boo
 }
 
 
-void Panel::buildExamplePanel1(){
+void Panel::buildExamplePanel1() {
     this->chrom_ = vector <string> ({"Pf3D7_01_v3"});
     this->position_.push_back( vector <int> ({93157, 94422, 94459, 94487, 95518, 95632, 95641 }) );
     this->indexOfChromStarts_ = vector <size_t> ({0});
@@ -111,7 +111,7 @@ void Panel::buildExamplePanel1(){
 }
 
 
-void Panel::buildExamplePanel2(){
+void Panel::buildExamplePanel2() {
     this->chrom_ = vector <string> ({"Pf3D7_01_v3", "Pf3D7_02_v3", "Pf3D7_03_v3"});
     this->position_.push_back( vector <int> ({93157}) );
     this->position_.push_back( vector <int> ({94422, 94459, 94487, 95518, 95632}) );
@@ -121,7 +121,7 @@ void Panel::buildExamplePanel2(){
 }
 
 
-void Panel::buildExamplePanelContent(){
+void Panel::buildExamplePanelContent() {
     this->content_.push_back( vector <double> ({0,0,0,1}) );
     this->content_.push_back( vector <double> ({0,0,0,1}) );
     this->content_.push_back( vector <double> ({0,0,0,1}) );
@@ -136,19 +136,19 @@ void Panel::buildExamplePanelContent(){
 }
 
 
-void Panel::initializeUpdatePanel(size_t inbreedingPanelSizeSetTo){
+void Panel::initializeUpdatePanel(size_t inbreedingPanelSizeSetTo) {
     this->setInbreedingPanelSize(inbreedingPanelSizeSetTo);
 
     // If allows inbreeding, update reference panel by including strain haplotypes
     dout << "************* Allow inbreeding ************" << endl;
     dout << "** Initialize inbreeding reference panel **" << endl;
 
-    if ( this->truePanelSize() == this->inbreedingPanelSize()){
+    if ( this->truePanelSize() == this->inbreedingPanelSize()) {
         return;
     }
 
-    for ( size_t siteI = 0; siteI < this->content_.size(); siteI++ ){
-        for ( size_t panelStrainJ = this->truePanelSize() ; panelStrainJ < this->inbreedingPanelSize(); panelStrainJ++ ){
+    for ( size_t siteI = 0; siteI < this->content_.size(); siteI++ ) {
+        for ( size_t panelStrainJ = this->truePanelSize() ; panelStrainJ < this->inbreedingPanelSize(); panelStrainJ++ ) {
             this->content_[siteI].push_back( 1 );
         }
         assert(inbreedingPanelSizeSetTo == this->content_[siteI].size());
@@ -156,28 +156,28 @@ void Panel::initializeUpdatePanel(size_t inbreedingPanelSizeSetTo){
 }
 
 
-void Panel::updatePanelWithHaps(size_t inbreedingPanelSizeSetTo, size_t excludedStrain, vector < vector<double> > & haps){
+void Panel::updatePanelWithHaps(size_t inbreedingPanelSizeSetTo, size_t excludedStrain, vector < vector<double> > & haps) {
     this->setInbreedingPanelSize(inbreedingPanelSizeSetTo);
 
     // If allows inbreeding, update reference panel by including strain haplotypes
     dout << "*************** Allow inbreeding **************" << endl;
     dout << "*** Update reference panel without strain " << excludedStrain << " ***" << endl;
 
-    if ( this->truePanelSize() == this->inbreedingPanelSize()){
+    if ( this->truePanelSize() == this->inbreedingPanelSize()) {
         return;
     }
 
-    for ( size_t siteI = 0; siteI < this->content_.size(); siteI++ ){
+    for ( size_t siteI = 0; siteI < this->content_.size(); siteI++ ) {
         size_t shiftAfter = this->inbreedingPanelSize();
 
-        for ( size_t panelStrainJ = this->truePanelSize() ; panelStrainJ < this->inbreedingPanelSize(); panelStrainJ++ ){
+        for ( size_t panelStrainJ = this->truePanelSize() ; panelStrainJ < this->inbreedingPanelSize(); panelStrainJ++ ) {
             size_t strainIndex = panelStrainJ - this->truePanelSize();
 
-            if ( strainIndex == excludedStrain ){
+            if ( strainIndex == excludedStrain ) {
                 shiftAfter = panelStrainJ;
             }
 
-            if (shiftAfter <= panelStrainJ){
+            if (shiftAfter <= panelStrainJ) {
                 strainIndex++;
             }
             this->content_[siteI][panelStrainJ] = haps[siteI][strainIndex];
@@ -186,14 +186,14 @@ void Panel::updatePanelWithHaps(size_t inbreedingPanelSizeSetTo, size_t excluded
 }
 
 
-void IBDrecombProbs::computeRecombProbs( double averageCentimorganDistance, double G, bool useConstRecomb, double constRecombProb ){
+void IBDrecombProbs::computeRecombProbs( double averageCentimorganDistance, double G, bool useConstRecomb, double constRecombProb ) {
     assert(pRec_.size() == 0 );
     assert(pNoRec_.size() == 0 );
     double averageMorganDistance = averageCentimorganDistance * 100;
     double geneticDistance;
     double rho;
-    for ( size_t i = 0; i < this->position_.size(); i++){
-        for ( size_t j = 1; j < this->position_[i].size(); j++){
+    for ( size_t i = 0; i < this->position_.size(); i++) {
+        for ( size_t j = 1; j < this->position_[i].size(); j++) {
             geneticDistance = (double)(this->position_[i][j] - this->position_[i][j-1])/averageMorganDistance ;
             //rho = geneticDistance * 2 * Ne;
             rho = geneticDistance * G;

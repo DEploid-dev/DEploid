@@ -71,7 +71,7 @@ class UpdateHap{
 
     size_t kStrain_;
     size_t nPanel_;
-    void setPanelSize ( const size_t setTo ){ this->nPanel_ = setTo; }
+    void setPanelSize ( const size_t setTo ) { this->nPanel_ = setTo; }
 
     vector <double> newLLK;
 
@@ -81,7 +81,7 @@ class UpdateHap{
     vector < vector <double> > emission_;
     double scalingFactor_;
     double scalingFactor() const {return this->scalingFactor_; }
-    void setScalingFactor ( const double setTo ){ this->scalingFactor_ = setTo; }
+    void setScalingFactor ( const double setTo ) { this->scalingFactor_ = setTo; }
 
     // Methods
     virtual void core(vector <double> &refCount,

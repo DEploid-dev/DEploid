@@ -71,9 +71,12 @@ class DEploidIO{
     bool doComputeLLK() const { return this->doComputeLLK_; }
     void computeLLKfromInitialHap();
     bool useIBD() const { return this->useIBD_;}
+    bool useLasso() const { return this->useLasso_;}
     void paintIBD();
     double ibdLLK_;
     void getIBDprobsIntegrated(vector < vector <double> > &prob);
+    // Lasso related
+    void computeObsWsaf();
 
     // Log
     void wrapUp();
@@ -97,7 +100,7 @@ class DEploidIO{
     string prefix_;
     size_t randomSeed_;
     bool randomSeedWasGiven_;
-    void setrandomSeedWasGiven(const bool random){ this->randomSeedWasGiven_ = random; }
+    void setrandomSeedWasGiven(const bool random) { this->randomSeedWasGiven_ = random; }
 
 
     bool initialPropWasGiven_;
@@ -123,6 +126,7 @@ class DEploidIO{
     bool doLsPainting_;
     bool doIbdPainting_;
     bool useIBD_;
+    bool useLasso_;
 
     vector <double> initialProp;
     vector <double> finalProp;
@@ -133,6 +137,7 @@ class DEploidIO{
     vector <double> plaf_;
     vector <double> refCount_;
     vector <double> altCount_;
+    vector <double> obsWsaf_;
     size_t nLoci_;
 
     // Help related
@@ -149,23 +154,23 @@ class DEploidIO{
     VcfReader * vcfReaderPtr_;
 
     bool useVcf_;
-    void setUseVcf(const bool useVcf){ this->useVcf_ = useVcf; }
+    void setUseVcf(const bool useVcf) { this->useVcf_ = useVcf; }
     bool useVcf() const {return this->useVcf_; }
 
     bool doExportVcf_;
-    void setDoExportVcf( const bool exportVcf ){ this->doExportVcf_ = exportVcf; }
+    void setDoExportVcf( const bool exportVcf ) { this->doExportVcf_ = exportVcf; }
     bool doExportVcf() const { return this->doExportVcf_; }
 
     bool compressVcf_;
-    void setCompressVcf( const bool compress ){ this->compressVcf_ = compress; }
+    void setCompressVcf( const bool compress ) { this->compressVcf_ = compress; }
     bool compressVcf() const { return this->compressVcf_; }
 
     bool doExportRecombProb_;
-    void setDoExportRecombProb( const bool exportRecombProb ){ this->doExportRecombProb_ = exportRecombProb; }
+    void setDoExportRecombProb( const bool exportRecombProb ) { this->doExportRecombProb_ = exportRecombProb; }
     bool doExportRecombProb() const { return this->doExportRecombProb_; }
 
     bool doComputeLLK_;
-    void setDoComputeLLK( const bool setTo ){ this->doComputeLLK_ = setTo; }
+    void setDoComputeLLK( const bool setTo ) { this->doComputeLLK_ = setTo; }
 
     // Parameters
     double missCopyProb_;
@@ -179,19 +184,19 @@ class DEploidIO{
 
     // Diagnostics
     double maxLLKs_;
-    void setmaxLLKs ( const double setTo ){ this->maxLLKs_ = setTo; }
+    void setmaxLLKs ( const double setTo ) { this->maxLLKs_ = setTo; }
     double meanThetallks_;
-    void setmeanThetallks ( const double setTo ){ this->meanThetallks_ = setTo; }
+    void setmeanThetallks ( const double setTo ) { this->meanThetallks_ = setTo; }
     double meanllks_;
-    void setmeanllks ( const double setTo ){ this->meanllks_ = setTo; }
+    void setmeanllks ( const double setTo ) { this->meanllks_ = setTo; }
     double stdvllks_;
-    void setstdvllks ( const double setTo ){ this->stdvllks_ = setTo; }
+    void setstdvllks ( const double setTo ) { this->stdvllks_ = setTo; }
     double dicByTheta_;
-    void setdicByTheta ( const double setTo ){ this->dicByTheta_ = setTo; }
+    void setdicByTheta ( const double setTo ) { this->dicByTheta_ = setTo; }
     double dicByVar_;
-    void setdicByVar ( const double setTo ){ this->dicByVar_ = setTo; }
+    void setdicByVar ( const double setTo ) { this->dicByVar_ = setTo; }
     double acceptRatio_;
-    void setacceptRatio ( const double setTo ){ this->acceptRatio_ = setTo; }
+    void setacceptRatio ( const double setTo ) { this->acceptRatio_ = setTo; }
 
     // Output stream
     string dEploidGitVersion_;
@@ -233,7 +238,7 @@ class DEploidIO{
     void readInitialProportions();
     void readInitialHaps();
 
-    void set_seed(const size_t seed){ this->randomSeed_ = seed; }
+    void set_seed(const size_t seed) { this->randomSeed_ = seed; }
     void removeFilesWithSameName();
     vector <double> computeExpectedWsafFromInitialHap();
 
@@ -259,36 +264,38 @@ class DEploidIO{
     }
 
     // Getters and Setters
-    void setDoUpdateProp ( const bool setTo ){ this->doUpdateProp_ = setTo; }
+    void setDoUpdateProp ( const bool setTo ) { this->doUpdateProp_ = setTo; }
     bool doUpdateProp() const { return this->doUpdateProp_; }
 
-    void setDoUpdateSingle ( const bool setTo ){ this->doUpdateSingle_ = setTo; }
+    void setDoUpdateSingle ( const bool setTo ) { this->doUpdateSingle_ = setTo; }
     bool doUpdateSingle() const { return this->doUpdateSingle_; }
 
-    void setDoUpdatePair ( const bool setTo ){ this->doUpdatePair_ = setTo; }
+    void setDoUpdatePair ( const bool setTo ) { this->doUpdatePair_ = setTo; }
     bool doUpdatePair() const { return this->doUpdatePair_; }
 
-    void setDoExportPostProb ( const bool setTo ){ this->doExportPostProb_ = setTo; }
+    void setDoExportPostProb ( const bool setTo ) { this->doExportPostProb_ = setTo; }
     bool doExportPostProb() const { return this->doExportPostProb_; }
 
-    void setDoExportSwitchMissCopy ( const bool setTo ){ this->doExportSwitchMissCopy_ = setTo; }
+    void setDoExportSwitchMissCopy ( const bool setTo ) { this->doExportSwitchMissCopy_ = setTo; }
     bool doExportSwitchMissCopy() const { return this->doExportSwitchMissCopy_; }
 
     void setDoAllowInbreeding ( const bool setTo ) { this->doAllowInbreeding_ = setTo; }
     bool doAllowInbreeding() const { return this->doAllowInbreeding_; }
 
-    void setDoLsPainting ( const bool setTo ){ this->doLsPainting_ = setTo; }
-    void setDoIbdPainting ( const bool setTo ){ this->doIbdPainting_ = setTo; }
-    void setUseIBD( const bool setTo){ this->useIBD_ = setTo; }
+    void setDoLsPainting ( const bool setTo ) { this->doLsPainting_ = setTo; }
+    void setDoIbdPainting ( const bool setTo ) { this->doIbdPainting_ = setTo; }
+    void setUseIBD( const bool setTo) { this->useIBD_ = setTo; }
+
+    void setUseLasso( const bool setTo) { this->useLasso_ = setTo; }
 
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
-    void setInitialPropWasGiven(const bool setTo){this->initialPropWasGiven_ = setTo; }
+    void setInitialPropWasGiven(const bool setTo) {this->initialPropWasGiven_ = setTo; }
 
     bool pleaseCheckInitialP() const { return pleaseCheckInitialP_; }
-    void setPleaseCheckInitialP(const bool setTo){this->pleaseCheckInitialP_ = setTo; }
+    void setPleaseCheckInitialP(const bool setTo) {this->pleaseCheckInitialP_ = setTo; }
 
     bool initialHapWasGiven() const { return initialHapWasGiven_; }
-    void setInitialHapWasGiven(const bool setTo){ this->initialHapWasGiven_ = setTo; }
+    void setInitialHapWasGiven(const bool setTo) { this->initialHapWasGiven_ = setTo; }
 
     bool randomSeedWasGiven() const {return this->randomSeedWasGiven_; }
 
@@ -339,34 +346,34 @@ class DEploidIO{
     void setParameterSigma ( const double setTo ) { this->parameterSigma_ = setTo; }
     double parameterSigma() const { return this->parameterSigma_; }
     double ibdSigma_;
-    void setIBDSigma ( const double setTo ){ this->ibdSigma_ = setTo; }
+    void setIBDSigma ( const double setTo ) { this->ibdSigma_ = setTo; }
     double ibdSigma() const {return this->ibdSigma_;}
 
-    void setNLoci ( const size_t setTo ){ this->nLoci_ = setTo;}
+    void setNLoci ( const size_t setTo ) { this->nLoci_ = setTo;}
     size_t nLoci() const { return this->nLoci_; }
-    void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}
+    void setKstrain ( const size_t setTo ) { this->kStrain_ = setTo;}
     size_t kStrain() const { return this->kStrain_;}
-    void setKStrainWasManuallySet ( const size_t setTo ){ this->kStrainWasManuallySet_ = setTo; }
+    void setKStrainWasManuallySet ( const size_t setTo ) { this->kStrainWasManuallySet_ = setTo; }
     bool kStrainWasSetByHap() const { return this->kStrainWasSetByHap_; }
-    void setKStrainWasSetByHap ( const size_t setTo ){ this->kStrainWasSetByHap_ = setTo; }
+    void setKStrainWasSetByHap ( const size_t setTo ) { this->kStrainWasSetByHap_ = setTo; }
     bool kStrainWasManuallySet() const { return this->kStrainWasManuallySet_; }
-    void setKStrainWasSetByProp ( const size_t setTo ){ this->kStrainWasSetByProp_ = setTo; }
+    void setKStrainWasSetByProp ( const size_t setTo ) { this->kStrainWasSetByProp_ = setTo; }
     bool kStrainWasSetByProp() const { return this->kStrainWasSetByProp_; }
     size_t nMcmcSample() const { return this->nMcmcSample_; }
     double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
     //double Ne() const { return this->Ne_; }
     double scalingFactor() const {return this->scalingFactor_; }
-    void setScalingFactor ( const double setTo ){ this->scalingFactor_ = setTo; }
+    void setScalingFactor ( const double setTo ) { this->scalingFactor_ = setTo; }
     double constRecombProb() const { return this->constRecombProb_; }
     bool useConstRecomb() const { return this->useConstRecomb_; }
 
     ExcludeMarker* excludedMarkers;
     bool excludeSites_;
     bool excludeSites() const {return this->excludeSites_; }
-    void setExcludeSites(const size_t exclude){ this->excludeSites_ = exclude; }
+    void setExcludeSites(const size_t exclude) { this->excludeSites_ = exclude; }
 
     bool forbidCopyFromSame() const { return this->forbidCopyFromSame_; }
-    void setForbidCopyFromSame(const bool forbid){ this->forbidCopyFromSame_ = forbid; }
+    void setForbidCopyFromSame(const bool forbid) { this->forbidCopyFromSame_ = forbid; }
 
     double effectiveKstrain_ ;
     void computeEffectiveKstrain(vector <double> proportion);
@@ -374,6 +381,7 @@ class DEploidIO{
     void computeInferredKstrain(vector <double> proportion);
     double adjustedEffectiveKstrain_;
     void computeAdjustedEffectiveKstrain();
+
 };
 
 #endif

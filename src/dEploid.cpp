@@ -43,12 +43,19 @@ int main(int argc, char *argv[]) {
             return EXIT_SUCCESS;
         }
 
-        if ( dEploidIO.doComputeLLK() ) {
+        if (dEploidIO.doComputeLLK()) {
             dEploidIO.computeLLKfromInitialHap();
-        } else if ( dEploidIO.doLsPainting() ) {
+        } else if (dEploidIO.doLsPainting()) {
             dEploidIO.chromPainting();
-        } else if ( dEploidIO.doIbdPainting() ) {
+        } else if (dEploidIO.doIbdPainting()) {
             dEploidIO.paintIBD();
+        } else if (dEploidIO.useLasso()) {
+            dEploidIO.computeObsWsaf();
+            // for loop, for each chromosome
+                // First produce reference panels
+                // run mcmc on chromsome by chromosome
+                // collect chromosome
+            cout << "to do" << endl;
         } else {
             if (dEploidIO.useIBD()) {  // ibd
                 McmcSample * ibdMcmcSample = new McmcSample();
