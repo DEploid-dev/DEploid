@@ -76,7 +76,7 @@ class DEploidIO{
     double ibdLLK_;
     void getIBDprobsIntegrated(vector < vector <double> > &prob);
     // Lasso related
-    void computeObsWsaf();
+    void dEploidLasso();
 
     // Log
     void wrapUp();
@@ -382,6 +382,9 @@ class DEploidIO{
     double adjustedEffectiveKstrain_;
     void computeAdjustedEffectiveKstrain();
 
+    // Lasso related
+    vector <double> lassoComputeObsWsaf(size_t segmentStartIndex, size_t nLoci);
+    vector < vector <double> > lassoSubsetPanel(size_t segmentStartIndex, size_t nLoci);
 };
 
 #endif

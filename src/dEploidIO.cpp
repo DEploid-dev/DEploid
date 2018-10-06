@@ -30,6 +30,7 @@
 #include "updateHap.hpp"  // chromPainting
 #include "dEploidIO.hpp"
 #include "ibd.hpp"
+#include "dEploidLasso.hpp"
 
 DEploidIO::DEploidIO() {
     this->init();
@@ -791,10 +792,41 @@ void DEploidIO::computeAdjustedEffectiveKstrain() {
 }
 
 
-void DEploidIO::computeObsWsaf() {
-    for ( size_t i = 0; i < nLoci(); i++) {
-        double wsaf = this->altCount_[i] / (this->refCount_[i] + this->altCount_[i] + 0.00000000000001);
-        obsWsaf_.push_back(wsaf);
+vector <double> DEploidIO::lassoComputeObsWsaf(size_t segmentStartIndex, size_t nLoci) {
+    vector <double> ret(nLoci, 0.0);
+    for ( size_t i = 0; i < nLoci; i++) {
+        size_t idx = i + segmentStartIndex;
+        ret[i] = this->altCount_[idx] / (this->refCount_[idx] + this->altCount_[idx] + 0.00000000000001);
+    }
+    return ret;
+}
+
+
+vector < vector <double> > DEploidIO::lassoSubsetPanel(size_t segmentStartIndex, size_t nLoci) {
+    vector < vector <double> > ret;
+    for ( size_t i = 0; i < nLoci; i++) {
+        size_t idx = i + segmentStartIndex;
+        ret.push_back(this->panel->content_[idx]);
+    }
+    return ret;
+}
+
+
+void DEploidIO::dEploidLasso() {
+    for ( size_t chromi = 0 ; chromi < this->indexOfChromStarts_.size(); chromi++ ) {
+        size_t start = this->indexOfChromStarts_[chromi];
+        size_t length = this->position_[chromi].size();
+        cout << " lasso Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
+        vector <double> wsaf = lassoComputeObsWsaf(start, length);
+        vector < vector <double> > tmpPanel = lassoSubsetPanel(start, length);
+        DEploidLASSO dummy(tmpPanel, wsaf, 250);
+
+        ////dummy.printResults();
+
+        // for loop, for each chromosome
+            // First produce reference panels
+            // run mcmc on chromsome by chromosome
+            // collect chromosome
     }
 }
 

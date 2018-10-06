@@ -15,7 +15,7 @@ TESTS = unit_tests
 check_PROGRAMS = unit_tests dEploid_dbg dEploid_prof
 PROG = DEPLOID
 
-common_flags = -std=c++0x -Isrc/ -Isrc/codeCogs/ -Isrc/random/ -Isrc/gzstream/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
+common_flags = -std=c++0x -Isrc/ -Isrc/codeCogs/ -Isrc/random/ -Isrc/gzstream/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\" -IDEploid-Lasso-lib/src/
 common_LDADD = -lz
 
 common_src = src/random/fastfunc.cpp \
@@ -33,9 +33,11 @@ common_src = src/random/fastfunc.cpp \
 			 src/gzstream/gzstream.cpp \
 			 src/export/dEploidIOExport.cpp \
 			 src/export/dEploidIOExportPosteriorProb.cpp \
-			 src/export/writeMcmcRelated.cpp
+			 src/export/writeMcmcRelated.cpp \
+			 DEploid-Lasso-lib/src/dEploidLasso.cpp
 
-debug_src = src/debug/mcmcDebug.cpp src/debug/vcfReaderDebug.cpp
+debug_src = src/debug/mcmcDebug.cpp src/debug/vcfReaderDebug.cpp \
+			DEploid-Lasso-lib/src/dEploidLassoDBG.cpp
 
 dEploid_SOURCES = src/dEploid.cpp $(common_src)
 dEploid_dbg_SOURCES =  $(debug_src) $(dEploid_SOURCES)
@@ -51,16 +53,15 @@ dEploid_prof_LDADD = $(common_LDADD)
 
 unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_runner.cpp \
-					 tests/unittest/test_dEploidIO.cpp
-
-#					 tests/unittest/test_ibd.cpp \
-#					 tests/unittest/test_updateSingleHap.cpp \
-#					 tests/unittest/test_utilities.cpp \
-#					 tests/unittest/test_panel.cpp \
-#					 tests/unittest/test_txtReader.cpp \
-#					 tests/unittest/test_mcmc.cpp \
-#					 tests/unittest/test_updatePairHap.cpp \
-#					 tests/unittest/test_vcfReader.cpp
+					 tests/unittest/test_dEploidIO.cpp \
+					 tests/unittest/test_ibd.cpp \
+					 tests/unittest/test_updateSingleHap.cpp \
+					 tests/unittest/test_utilities.cpp \
+					 tests/unittest/test_panel.cpp \
+					 tests/unittest/test_txtReader.cpp \
+					 tests/unittest/test_mcmc.cpp \
+					 tests/unittest/test_updatePairHap.cpp \
+					 tests/unittest/test_vcfReader.cpp
 
 unit_tests_CXXFLAGS = $(common_flags) -DNDEBUG -DUNITTEST -Wno-write-strings --coverage
 unit_tests_LDADD    = -lcppunit -ldl $(common_LDADD)
