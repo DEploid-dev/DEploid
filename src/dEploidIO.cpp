@@ -117,6 +117,7 @@ void DEploidIO::init() {
     this->setDoLsPainting( false );
     this->setDoIbdPainting( false );
     this->setUseIBD( false );
+    this->setUseLasso( false );
     this->setDoExportSwitchMissCopy ( true );
     this->setDoAllowInbreeding( false );
     this->mcmcBurn_ = 0.5;
