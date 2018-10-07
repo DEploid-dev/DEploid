@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
             dEploidIO.paintIBD();
         } else if (dEploidIO.useLasso()) {
             dEploidIO.dEploidLasso();
-            //cout << "to do" << endl;
+            // cout << "to do" << endl;
         } else {
             if (dEploidIO.useIBD()) {  // ibd
                 McmcSample * ibdMcmcSample = new McmcSample();
