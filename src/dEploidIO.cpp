@@ -821,7 +821,8 @@ void DEploidIO::dEploidLasso() {
         vector < vector <double> > tmpPanel = lassoSubsetPanel(start, length);
         DEploidLASSO dummy(tmpPanel, wsaf, 250);
 
-        ////dummy.printResults();
+        //lassoPanels.push_back();
+        dummy.printResults();
 
         // for loop, for each chromosome
             // First produce reference panels

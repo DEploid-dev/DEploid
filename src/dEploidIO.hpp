@@ -172,6 +172,9 @@ class DEploidIO{
     bool doComputeLLK_;
     void setDoComputeLLK( const bool setTo ) { this->doComputeLLK_ = setTo; }
 
+    // Lasso Related
+    vector < vector < vector <double> > > lassoPanels;
+
     // Parameters
     double missCopyProb_;
     double averageCentimorganDistance_;// = 15000.0,

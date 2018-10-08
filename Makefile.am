@@ -34,10 +34,11 @@ common_src = src/random/fastfunc.cpp \
 			 src/export/dEploidIOExport.cpp \
 			 src/export/dEploidIOExportPosteriorProb.cpp \
 			 src/export/writeMcmcRelated.cpp \
+			 DEploid-Lasso-lib/src/lasso.cpp \
 			 DEploid-Lasso-lib/src/dEploidLasso.cpp
 
 debug_src = src/debug/mcmcDebug.cpp src/debug/vcfReaderDebug.cpp \
-			DEploid-Lasso-lib/src/dEploidLassoDBG.cpp
+			DEploid-Lasso-lib/src/lassoDBG.cpp
 
 dEploid_SOURCES = src/dEploid.cpp $(common_src)
 dEploid_dbg_SOURCES =  $(debug_src) $(dEploid_SOURCES)
