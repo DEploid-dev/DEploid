@@ -15,7 +15,7 @@ TESTS = unit_tests
 check_PROGRAMS = unit_tests dEploid_dbg dEploid_prof
 PROG = DEPLOID
 
-common_flags = -std=c++0x -Isrc/ -Isrc/codeCogs/ -Isrc/random/ -Isrc/gzstream/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\" -IDEploid-Lasso-lib/src/
+common_flags = -std=c++0x -Isrc/ -Isrc/codeCogs/ -Isrc/random/ -Isrc/gzstream/ -Isrc/lasso/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
 common_LDADD = -lz
 
 common_src = src/random/fastfunc.cpp \
@@ -34,11 +34,11 @@ common_src = src/random/fastfunc.cpp \
 			 src/export/dEploidIOExport.cpp \
 			 src/export/dEploidIOExportPosteriorProb.cpp \
 			 src/export/writeMcmcRelated.cpp \
-			 DEploid-Lasso-lib/src/lasso.cpp \
-			 DEploid-Lasso-lib/src/dEploidLasso.cpp
+			 src/lasso/lasso.cpp \
+			 src/lasso/dEploidLasso.cpp
 
 debug_src = src/debug/mcmcDebug.cpp src/debug/vcfReaderDebug.cpp \
-			DEploid-Lasso-lib/src/lassoDBG.cpp
+			src/lasso/lassoDBG.cpp
 
 dEploid_SOURCES = src/dEploid.cpp $(common_src)
 dEploid_dbg_SOURCES =  $(debug_src) $(dEploid_SOURCES)

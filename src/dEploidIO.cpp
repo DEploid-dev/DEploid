@@ -586,6 +586,7 @@ void DEploidIO::printHelp(std::ostream& out) {
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CPanelExclude -panel data/testData/labStrains.test.panel.txt -painting PG0390-CPanelExclude.hap" << endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel -k 2 -ibd -nSample 250 -rate 8 -burn 0.67" <<endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -ibdPainting -initialP 0.2 0.8" <<endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CPanelExclude -panel data/testData/labStrains.test.panel.txt -lasso -initialP 0.2 0.8" << endl;
 }
 
 
@@ -816,13 +817,26 @@ void DEploidIO::dEploidLasso() {
     for ( size_t chromi = 0 ; chromi < this->indexOfChromStarts_.size(); chromi++ ) {
         size_t start = this->indexOfChromStarts_[chromi];
         size_t length = this->position_[chromi].size();
-        cout << " lasso Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
+        // cout << " lasso Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
         vector <double> wsaf = lassoComputeObsWsaf(start, length);
         vector < vector <double> > tmpPanel = lassoSubsetPanel(start, length);
         DEploidLASSO dummy(tmpPanel, wsaf, 250);
+        lassoPanels.push_back(dummy.reducedPanel);
 
-        //lassoPanels.push_back();
-        dummy.printResults();
+
+
+        // for (size_t i = 0; i < dummy.choiceIdx.size(); i++) {
+            // cout << dummy.choiceIdx[i] << " " ;
+        // }
+        // cout << endl;
+
+        // dummy.printResults();
+        // for (size_t i = 0; i < dummy.reducedPanel.size(); i++) {
+            // for (size_t j = 0; j < dummy.reducedPanel[i].size(); j++) {
+                // cout << dummy.reducedPanel[i][j] << " ";
+            // }
+            // cout << endl;
+        // }
 
         // for loop, for each chromosome
             // First produce reference panels
