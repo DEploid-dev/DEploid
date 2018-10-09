@@ -90,6 +90,14 @@ class DEploidIO{
     vector <double> plaf_;
     vector <double> refCount_;
     vector <double> altCount_;
+    vector < size_t > indexOfChromStarts_;
+    vector < vector < int > > position_;
+
+    // Lasso Related
+    vector < vector < vector <double> > > lassoPanels;
+    vector < vector <double> > lassoPlafs;
+    vector < vector <double> > lassoRefCount;
+    vector < vector <double> > lassoAltCount;
 
 
   private:
@@ -138,8 +146,6 @@ class DEploidIO{
     vector <double> finalProp;
     vector < vector <double> > initialHap;
     vector <string> chrom_;
-    vector < size_t > indexOfChromStarts_;
-    vector < vector < int > > position_;
     vector <double> obsWsaf_;
     size_t nLoci_;
 
@@ -175,11 +181,6 @@ class DEploidIO{
     bool doComputeLLK_;
     void setDoComputeLLK( const bool setTo ) { this->doComputeLLK_ = setTo; }
 
-    // Lasso Related
-    vector < vector < vector <double> > > lassoPanels;
-    vector < vector <double> > lassoPlafs;
-    vector < vector <double> > lassoRefCount;
-    vector < vector <double> > lassoAltCount;
 
 
     // Parameters

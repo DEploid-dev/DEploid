@@ -51,7 +51,23 @@ int main(int argc, char *argv[]) {
             dEploidIO.paintIBD();
         } else if (dEploidIO.useLasso()) {
             dEploidIO.dEploidLasso();
-            // cout << "to do" << endl;
+            MersenneTwister lassoRg(dEploidIO.randomSeed());
+            for (size_t chromi = 0; chromi < dEploidIO.indexOfChromStarts_.size(); chromi++ ) {
+                DEploidIO tmpIO(dEploidIO);
+                tmpIO.position_.clear();
+                tmpIO.position_.push_back(dEploidIO.position_.at(chromi));
+                tmpIO.indexOfChromStarts_.clear();
+                tmpIO.indexOfChromStarts_.push_back(0);
+                McmcSample * lassoMcmcSample = new McmcSample();
+                McmcMachinery lassoMcmcMachinery(&dEploidIO.lassoPlafs.at(chromi),
+                                                 &dEploidIO.lassoRefCount.at(chromi),
+                                                 &dEploidIO.lassoAltCount.at(chromi),
+                                                 &tmpIO, lassoMcmcSample,
+                                                 &lassoRg, false);
+                lassoMcmcMachinery.runMcmcChain(true,   // show progress
+                                                false);  // use IBD
+                delete lassoMcmcSample;
+            }
         } else {
             if (dEploidIO.useIBD()) {  // ibd
                 McmcSample * ibdMcmcSample = new McmcSample();

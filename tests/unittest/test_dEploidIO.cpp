@@ -138,6 +138,10 @@ class TestIO : public CppUnit::TestCase {
     }
 
 
+    void testConstructorCopier() {
+
+    }
+
     void testInitialProp() {
         char *argv1[] = { "./dEploid",
                          "-ref", "data/testData/PG0390-C.test.ref",

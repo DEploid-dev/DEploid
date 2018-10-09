@@ -739,7 +739,60 @@ void DEploidIO::readPanel() {
 DEploidIO::DEploidIO(const DEploidIO &currentDEploidIO) {
     // This is not working! to be improved
     //cout << this->refCount_.size() << endl;
-    this->refCount_ = currentDEploidIO.refCount_;
+
+    this->setDoExportRecombProb(currentDEploidIO.doExportRecombProb());
+    this->setrandomSeedWasGiven(currentDEploidIO.randomSeedWasGiven());
+    this->setCompressVcf(currentDEploidIO.compressVcf());
+    this->setInitialPropWasGiven(currentDEploidIO.initialPropWasGiven());
+    this->setInitialHapWasGiven(currentDEploidIO.initialHapWasGiven());
+    this->initialProp = vector <double> (currentDEploidIO.initialProp.begin(),
+                                         currentDEploidIO.initialProp.end());
+    this->setPleaseCheckInitialP(currentDEploidIO.pleaseCheckInitialP());
+    this->setExcludeSites(currentDEploidIO.excludeSites());
+    this->excludedMarkers = currentDEploidIO.excludedMarkers;
+    this->panel = currentDEploidIO.panel;
+    this->set_seed(currentDEploidIO.randomSeed_);
+    this->set_help(currentDEploidIO.help());
+    this->setVersion(currentDEploidIO.version());
+    this->setUsePanel(currentDEploidIO.usePanel());
+    this->precision_ = currentDEploidIO.precision_;
+    this->prefix_ = currentDEploidIO.prefix_;
+    this->setKStrainWasManuallySet(currentDEploidIO.kStrainWasManuallySet());
+    this->setKStrainWasSetByHap(currentDEploidIO.kStrainWasSetByHap());
+    this->setKStrainWasSetByProp(currentDEploidIO.kStrainWasSetByProp());
+    this->setKstrain(currentDEploidIO.kStrain());
+    this->nMcmcSample_ = currentDEploidIO.nMcmcSample();
+    this->setDoUpdateProp(currentDEploidIO.doUpdateProp());
+    this->setDoUpdatePair(currentDEploidIO.doUpdatePair());
+    this->setDoUpdateSingle(currentDEploidIO.doUpdateSingle());
+    this->setDoExportPostProb(currentDEploidIO.doExportPostProb());
+    this->setDoLsPainting(currentDEploidIO.doLsPainting());
+    this->setDoIbdPainting(currentDEploidIO.doIbdPainting());
+    this->setUseIBD(currentDEploidIO.useIBD());
+    this->setUseLasso(currentDEploidIO.useLasso());
+    this->setDoExportSwitchMissCopy(currentDEploidIO.doExportSwitchMissCopy());
+    this->setDoAllowInbreeding(currentDEploidIO.doAllowInbreeding());
+    this->mcmcBurn_ = currentDEploidIO.mcmcBurn_;
+    this->mcmcMachineryRate_ = currentDEploidIO.mcmcMachineryRate_;
+    this->missCopyProb_ = currentDEploidIO.missCopyProb_;
+    this->useConstRecomb_ = currentDEploidIO.useConstRecomb();
+    this->setForbidCopyFromSame(currentDEploidIO.forbidCopyFromSame());
+    this->constRecombProb_ = currentDEploidIO.constRecombProb();
+    this->averageCentimorganDistance_ = currentDEploidIO.averageCentimorganDistance();
+    this->setScalingFactor(currentDEploidIO.scalingFactor());
+    this->setParameterG(currentDEploidIO.parameterG());
+    this->setParameterSigma(currentDEploidIO.parameterSigma());
+    this->setIBDSigma(currentDEploidIO.ibdSigma());
+    this->setUseVcf(currentDEploidIO.useVcf());
+    this->vcfReaderPtr_ = currentDEploidIO.vcfReaderPtr_;
+    this->setDoExportVcf(currentDEploidIO.doExportVcf());
+    this->setDoComputeLLK(currentDEploidIO.doComputeLLK());
+
+
+
+
+    this->refCount_ = vector <double> (currentDEploidIO.refCount_.begin(),
+                                       currentDEploidIO.refCount_.end());
     //cout << this->refCount_.size() << endl;
 }
 

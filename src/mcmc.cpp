@@ -135,6 +135,7 @@ void McmcMachinery::initializeMcmcChain(bool useIBD) {
 void McmcMachinery::initializeHap() {
     assert( currentHap_.size() == 0);
     if ( this->dEploidIO_ -> initialHapWasGiven() ) {
+        cout << "here"<<endl;
         this->currentHap_ = this->dEploidIO_->initialHap;
     } else {
         for ( size_t i = 0; i < this->plaf_ptr_->size(); i++ ) {
@@ -146,6 +147,8 @@ void McmcMachinery::initializeHap() {
             this->currentHap_.push_back(tmpVec);
         }
     }
+    cout << "this->plaf_ptr_->size() = "<<this->plaf_ptr_->size()<<endl;
+    cout << "this->currentHap_.size() = "<<this->currentHap_.size()<<endl;
     assert(this->currentHap_.size() == this->plaf_ptr_->size());
 }
 
