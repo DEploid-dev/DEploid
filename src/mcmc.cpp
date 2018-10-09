@@ -35,8 +35,13 @@
 McmcSample::McmcSample() {};
 McmcSample::~McmcSample() {};
 
-McmcMachinery::McmcMachinery( vector <double> * plaf, DEploidIO* dEploidIO, McmcSample *mcmcSample, RandomGenerator* rg_, bool useIBD ) { // initialiseMCMCmachinery
+McmcMachinery::McmcMachinery( vector <double> * plaf,
+                              vector <double> * refCount,
+                              vector <double> * altCount,
+                              DEploidIO* dEploidIO, McmcSample *mcmcSample, RandomGenerator* rg_, bool useIBD ) { // initialiseMCMCmachinery
     this->plaf_ptr_ = plaf;
+    this->refCount_ptr_ = refCount;
+    this->altCount_ptr_ = altCount;
     this->dEploidIO_ = dEploidIO;
     this->panel_ = dEploidIO->panel;
     this->mcmcSample_ = mcmcSample;
@@ -94,7 +99,7 @@ void McmcMachinery::initializeMcmcChain(bool useIBD) {
     this->initializeHap();
     this->initializeProp();
     this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
-    this->currentLLks_ = calcLLKs( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->currentExpectedWsaf_ , 0, this->currentExpectedWsaf_.size(), this->dEploidIO_->scalingFactor());
+    this->currentLLks_ = calcLLKs( *this->refCount_ptr_, *this->altCount_ptr_, this->currentExpectedWsaf_ , 0, this->currentExpectedWsaf_.size(), this->dEploidIO_->scalingFactor());
     this->acceptUpdate = 0;
 
     if ( this->dEploidIO_->doAllowInbreeding() == true ) {
@@ -326,17 +331,17 @@ void McmcMachinery::computeDiagnostics() {
     for ( size_t i = 0; i < this->cumExpectedWsaf_.size(); i++) {
         this->cumExpectedWsaf_[i] /= this->dEploidIO_->nMcmcSample_;
     }
-    vector <double> tmpLLKs1 = calcLLKs (this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->cumExpectedWsaf_, 0, this->cumExpectedWsaf_.size(), this->dEploidIO_->scalingFactor());
+    vector <double> tmpLLKs1 = calcLLKs (*this->refCount_ptr_, *this->altCount_ptr_, this->cumExpectedWsaf_, 0, this->cumExpectedWsaf_.size(), this->dEploidIO_->scalingFactor());
     this->dEploidIO_->setmeanThetallks( sumOfVec(tmpLLKs1) );
 
     vector <double> wsaf_vec;
     for ( size_t i = 0; i < nLoci(); i++) {
-        double wsaf = this->dEploidIO_->altCount_[i] / (this->dEploidIO_->refCount_[i] + this->dEploidIO_->altCount_[i] + 0.00000000000001);
+        double wsaf = this->altCount_ptr_->at(i) / (this->refCount_ptr_->at(i) + this->altCount_ptr_->at(i) + 0.00000000000001);
         double adjustedWsaf = wsaf*(1-0.01) + (1-wsaf)*0.01;
         wsaf_vec.push_back(adjustedWsaf);
         //llkOfData.push_back( logBetaPdf(adjustedWsaf, this->llkSurf[i][0], this->llkSurf[i][1]));
     }
-    vector <double> tmpLLKs = calcLLKs (this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, wsaf_vec, 0, wsaf_vec.size(), this->dEploidIO_->scalingFactor());
+    vector <double> tmpLLKs = calcLLKs (*this->refCount_ptr_, *this->altCount_ptr_, wsaf_vec, 0, wsaf_vec.size(), this->dEploidIO_->scalingFactor());
     this->dEploidIO_->setmaxLLKs( sumOfVec(tmpLLKs) );
 
     double sum = std::accumulate(this->mcmcSample_->sumLLKs.begin(), this->mcmcSample_->sumLLKs.end(), 0.0);
@@ -404,7 +409,7 @@ void McmcMachinery::ibdInitializeEssentials() {
 
     vector <double> llkOfData;
     for ( size_t i = 0; i < nLoci(); i++) {
-        double wsaf = this->dEploidIO_->altCount_[i] / (this->dEploidIO_->refCount_[i] + this->dEploidIO_->altCount_[i] + 0.00000000000001);
+        double wsaf = this->altCount_ptr_->at(i) / (this->refCount_ptr_->at(i) + this->altCount_ptr_->at(i) + 0.00000000000001);
         double adjustedWsaf = wsaf*(1-0.01) + (1-wsaf)*0.01;
         llkOfData.push_back( logBetaPdf(adjustedWsaf, this->ibdPath.llkSurf[i][0], this->ibdPath.llkSurf[i][1]));
     }
@@ -529,7 +534,7 @@ void McmcMachinery::updateProportion() {
     }
 
     vector <double> tmpExpecedWsaf = calcExpectedWsaf(tmpProp);
-    vector <double> tmpLLKs = calcLLKs (this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, tmpExpecedWsaf, 0, tmpExpecedWsaf.size(), this->dEploidIO_->scalingFactor());
+    vector <double> tmpLLKs = calcLLKs (*this->refCount_ptr_, *this->altCount_ptr_, tmpExpecedWsaf, 0, tmpExpecedWsaf.size(), this->dEploidIO_->scalingFactor());
     double diffLLKs = this->deltaLLKs(tmpLLKs);
     double tmpLogPriorTitre = calcLogPriorTitre( tmpTitre );
     double priorPropRatio = exp(tmpLogPriorTitre - this->currentLogPriorTitre_ );
@@ -582,8 +587,8 @@ void McmcMachinery::updateSingleHap() {
         size_t start = this->dEploidIO_->indexOfChromStarts_[chromi];
         size_t length = this->dEploidIO_->position_[chromi].size();
         dout << "   Update Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
-        UpdateSingleHap updating( this->dEploidIO_->refCount_,
-                                  this->dEploidIO_->altCount_,
+        UpdateSingleHap updating( *this->refCount_ptr_,
+                                  *this->altCount_ptr_,
                                   *this->plaf_ptr_,
                                   this->currentExpectedWsaf_,
                                   this->currentProp_, this->currentHap_, this->hapRg_,
@@ -595,7 +600,7 @@ void McmcMachinery::updateSingleHap() {
             updating.setPanelSize(this->panel_->inbreedingPanelSize());
         }
 
-        updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, *this->plaf_ptr_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+        updating.core ( *this->refCount_ptr_, *this->altCount_ptr_, *this->plaf_ptr_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
 
         size_t updateIndex = 0;
         for ( size_t ii = start ; ii < (start+length); ii++ ) {

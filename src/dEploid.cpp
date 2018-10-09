@@ -57,7 +57,10 @@ int main(int argc, char *argv[]) {
                 McmcSample * ibdMcmcSample = new McmcSample();
                 MersenneTwister ibdRg(dEploidIO.randomSeed());
 
-                McmcMachinery ibdMcmcMachinery(&dEploidIO.plaf_, &dEploidIO, ibdMcmcSample,
+                McmcMachinery ibdMcmcMachinery(&dEploidIO.plaf_,
+                                               &dEploidIO.refCount_,
+                                               &dEploidIO.altCount_,
+                                               &dEploidIO, ibdMcmcSample,
                                                &ibdRg, true);
                 ibdMcmcMachinery.runMcmcChain(true,   // show progress
                                               true);  // use IBD
@@ -66,7 +69,10 @@ int main(int argc, char *argv[]) {
             McmcSample * mcmcSample = new McmcSample();
             MersenneTwister rg(dEploidIO.randomSeed());
 
-            McmcMachinery mcmcMachinery(&dEploidIO.plaf_, &dEploidIO, mcmcSample, &rg,
+            McmcMachinery mcmcMachinery(&dEploidIO.plaf_,
+                                        &dEploidIO.refCount_,
+                                        &dEploidIO.altCount_,
+                                        &dEploidIO, mcmcSample, &rg,
                                         false);  // use IBD
             mcmcMachinery.runMcmcChain(true,     // show progress
                                        false);   // use IBD

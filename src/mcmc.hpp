@@ -82,7 +82,10 @@ class McmcMachinery {
   friend class DEploidIO;
   public:
     //McmcMachinery();
-    McmcMachinery( vector <double> * plaf, DEploidIO* dEplioidIO, McmcSample *mcmcSample, RandomGenerator* rg_, bool useIBD = false );
+    McmcMachinery( vector <double> * plaf,
+                   vector <double> * refCount,
+                   vector <double> * altCount,
+                   DEploidIO* dEplioidIO, McmcSample *mcmcSample, RandomGenerator* rg_, bool useIBD = false );
     ~McmcMachinery();
     void runMcmcChain( bool showProgress = true, bool useIBD = false, bool notInR = true );
 
@@ -91,6 +94,8 @@ class McmcMachinery {
   /* Variables */
     DEploidIO* dEploidIO_;
     vector <double> * plaf_ptr_;
+    vector <double> * refCount_ptr_;
+    vector <double> * altCount_ptr_;
     Panel* panel_;
     size_t kStrain_;
     void setKstrain ( const size_t setTo ) { this->kStrain_ = setTo;}
