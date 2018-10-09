@@ -174,6 +174,7 @@ class DEploidIO{
 
     // Lasso Related
     vector < vector < vector <double> > > lassoPanels;
+    vector < vector <double> > lassoPlafs;
 
     // Parameters
     double missCopyProb_;

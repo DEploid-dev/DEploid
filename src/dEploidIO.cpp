@@ -822,8 +822,7 @@ void DEploidIO::dEploidLasso() {
         vector < vector <double> > tmpPanel = lassoSubsetPanel(start, length);
         DEploidLASSO dummy(tmpPanel, wsaf, 250);
         lassoPanels.push_back(dummy.reducedPanel);
-
-
+        lassoPlafs.push_back(vector <double> (plaf_.begin()+start, plaf_.begin()+start+length));
 
         // for (size_t i = 0; i < dummy.choiceIdx.size(); i++) {
             // cout << dummy.choiceIdx[i] << " " ;
