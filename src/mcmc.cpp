@@ -35,8 +35,8 @@
 McmcSample::McmcSample() {};
 McmcSample::~McmcSample() {};
 
-McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, McmcSample *mcmcSample, RandomGenerator* rg_, bool useIBD ) { // initialiseMCMCmachinery
-
+McmcMachinery::McmcMachinery( vector <double> * plaf, DEploidIO* dEploidIO, McmcSample *mcmcSample, RandomGenerator* rg_, bool useIBD ) { // initialiseMCMCmachinery
+    this->plaf_ptr_ = plaf;
     this->dEploidIO_ = dEploidIO;
     this->panel_ = dEploidIO->panel;
     this->mcmcSample_ = mcmcSample;
@@ -63,7 +63,7 @@ McmcMachinery::McmcMachinery(DEploidIO* dEploidIO, McmcSample *mcmcSample, Rando
     stdNorm_ = new StandNormalRandomSample(this->seed_);
 
     this->setKstrain(this->dEploidIO_->kStrain());
-    this->setNLoci(this->dEploidIO_->plaf_.size());
+    this->setNLoci(this->plaf_ptr_->size());
     this->initializeMcmcChain( useIBD );
 }
 
@@ -132,8 +132,8 @@ void McmcMachinery::initializeHap() {
     if ( this->dEploidIO_ -> initialHapWasGiven() ) {
         this->currentHap_ = this->dEploidIO_->initialHap;
     } else {
-        for ( size_t i = 0; i < this->dEploidIO_->plaf_.size(); i++ ) {
-            double currentPlaf = this->dEploidIO_->plaf_[i];
+        for ( size_t i = 0; i < this->plaf_ptr_->size(); i++ ) {
+            double currentPlaf = this->plaf_ptr_->at(i);
             vector <double> tmpVec;
             for ( size_t k = 0; k < this->kStrain_; k++) {
                 tmpVec.push_back( this->rBernoulli(currentPlaf) );
@@ -141,7 +141,7 @@ void McmcMachinery::initializeHap() {
             this->currentHap_.push_back(tmpVec);
         }
     }
-    assert(this->currentHap_.size() == this->dEploidIO_->plaf_.size());
+    assert(this->currentHap_.size() == this->plaf_ptr_->size());
 }
 
 
@@ -397,13 +397,6 @@ void McmcMachinery::sampleMcmcEvent( bool useIBD ) {
 }
 
 
-
-
-
-
-
-
-
 void McmcMachinery::ibdInitializeEssentials() {
 
     this->initializePropIBD();
@@ -591,7 +584,7 @@ void McmcMachinery::updateSingleHap() {
         dout << "   Update Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
         UpdateSingleHap updating( this->dEploidIO_->refCount_,
                                   this->dEploidIO_->altCount_,
-                                  this->dEploidIO_->plaf_,
+                                  *this->plaf_ptr_,
                                   this->currentExpectedWsaf_,
                                   this->currentProp_, this->currentHap_, this->hapRg_,
                                   start, length,
@@ -602,7 +595,7 @@ void McmcMachinery::updateSingleHap() {
             updating.setPanelSize(this->panel_->inbreedingPanelSize());
         }
 
-        updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+        updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, *this->plaf_ptr_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
 
         size_t updateIndex = 0;
         for ( size_t ii = start ; ii < (start+length); ii++ ) {
@@ -637,7 +630,7 @@ void McmcMachinery::updatePairHaps() {
 
         UpdatePairHap updating( this->dEploidIO_->refCount_,
                                 this->dEploidIO_->altCount_,
-                                this->dEploidIO_->plaf_,
+                                *this->plaf_ptr_,
                                 this->currentExpectedWsaf_,
                                 this->currentProp_, this->currentHap_, this->hapRg_,
                                 start, length,
@@ -646,7 +639,7 @@ void McmcMachinery::updatePairHaps() {
                                 this->strainIndex1_,
                                 this->strainIndex2_);
 
-        updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, this->dEploidIO_->plaf_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+        updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, *this->plaf_ptr_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
 
         size_t updateIndex = 0;
         for ( size_t ii = start ; ii < (start+length); ii++ ) {

@@ -823,7 +823,8 @@ void DEploidIO::dEploidLasso() {
         DEploidLASSO dummy(tmpPanel, wsaf, 250);
         lassoPanels.push_back(dummy.reducedPanel);
         lassoPlafs.push_back(vector <double> (plaf_.begin()+start, plaf_.begin()+start+length));
-
+        lassoRefCount.push_back(vector <double> (refCount_.begin()+start, refCount_.begin()+start+length));
+        lassoAltCount.push_back(vector <double> (altCount_.begin()+start, altCount_.begin()+start+length));
         // for (size_t i = 0; i < dummy.choiceIdx.size(); i++) {
             // cout << dummy.choiceIdx[i] << " " ;
         // }

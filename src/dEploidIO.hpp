@@ -86,6 +86,12 @@ class DEploidIO{
 
     size_t randomSeed() const { return randomSeed_;}
 
+
+    vector <double> plaf_;
+    vector <double> refCount_;
+    vector <double> altCount_;
+
+
   private:
     void core();
     double llkFromInitialHap_;
@@ -134,9 +140,6 @@ class DEploidIO{
     vector <string> chrom_;
     vector < size_t > indexOfChromStarts_;
     vector < vector < int > > position_;
-    vector <double> plaf_;
-    vector <double> refCount_;
-    vector <double> altCount_;
     vector <double> obsWsaf_;
     size_t nLoci_;
 
@@ -175,6 +178,9 @@ class DEploidIO{
     // Lasso Related
     vector < vector < vector <double> > > lassoPanels;
     vector < vector <double> > lassoPlafs;
+    vector < vector <double> > lassoRefCount;
+    vector < vector <double> > lassoAltCount;
+
 
     // Parameters
     double missCopyProb_;
