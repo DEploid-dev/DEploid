@@ -58,7 +58,8 @@ vector <T> vecSum ( vector<T> &vecA, vector<T> &vecB ){
 
 
 template <typename T>
-vector <T> vecProd ( vector<T> &vecA, vector<T> &vecB ){
+vector <T> vecProd (const vector<T> &vecA,
+                    const vector<T> &vecB ){
     assert(vecA.size() == vecB.size());
     vector <T> tmpProd (vecA.size(), (T)0);
     for ( size_t i = 0; i < vecA.size(); i++ ){
@@ -105,7 +106,9 @@ double sumOfMat( vector <vector <double> > & matrix );
 void normalizeBySum ( vector <double> & array );
 void normalizeByMax ( vector <double> & array );
 void normalizeBySumMat ( vector <vector <double> > & matrix );
-vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf, size_t firstIndex, size_t length, double fac, double err = 0.01);
+vector <double> calcLLKs(vector <double> &refCount, vector <double> &altCount,
+    vector <double> &expectedWsaf, size_t firstIndex, size_t length,
+    double fac, double err = 0.01);
 double calcLLK( double ref, double alt, double unadjustedWsaf, double err, double fac) ;
 size_t sampleIndexGivenProp ( RandomGenerator* rg, vector <double> proportion );
 vector <double> reshapeMatToVec ( vector < vector <double> > &Mat );

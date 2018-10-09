@@ -1,8 +1,5 @@
 src/dEploidIO.cpp
 src/dEploidIO.hpp
-src/exceptions.hpp
-src/ibd.cpp
-src/ibd.hpp
 src/mcmc.cpp
 src/mcmc.hpp
 src/panel.cpp

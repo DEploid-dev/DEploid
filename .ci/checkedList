@@ -5,3 +5,5 @@ src/variantIndex.hpp
 src/exceptions.hpp
 src/txtReader.cpp
 src/txtReader.hpp
+src/ibd.hpp
+src/ibd.cpp

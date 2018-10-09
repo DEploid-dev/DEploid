@@ -25,8 +25,9 @@
 
 #include <vector>
 #include <iostream>
-#include <exceptions.hpp>
 #include <sstream>
+#include <string>
+#include "exceptions.hpp"
 #include "utility.hpp"
 #include "mersenne_twister.hpp"
 #include "dEploidIO.hpp"
@@ -34,15 +35,16 @@
 #ifndef IBD
 #define IBD
 
-using namespace std;
+// using namespace std;
 
 int nchoose2(int n);
 bool twoVectorsAreSame(vector<int> vec1, vector<int> vec2);
-vector < vector<int> > unique( vector < vector<int> > &mat );
+vector < vector<int> > unique(const vector < vector<int> > &mat);
 vector<int> convertIntToBinary(int x, size_t len);
 vector < vector <int> > enumerateBinaryMatrixOfK(size_t k);
 
-// The IBDconfiguration is used for index, which should be non-negative, use int, any thing below zero should throw.
+// The IBDconfiguration is used for index, which should be non-negative,
+// use int, any thing below zero should throw.
 class IBDconfiguration{
 #ifdef UNITTEST
   friend class TestIBDconfig;
@@ -90,7 +92,7 @@ class Hprior{
     Hprior();
     ~Hprior();
 
-    void buildHprior(size_t kStrain, vector <double> &plaf);
+    void buildHprior(size_t kStrain, const vector <double> &plaf);
 
     IBDconfiguration ibdConfig;
     size_t kStrain_;
@@ -102,14 +104,14 @@ class Hprior{
     size_t nLoci() const {return this->nLoci_;}
 
     vector <double> plaf_;
-    vector < vector <double> > priorProb; // size: nState x nLoci
-    vector < vector <double> > priorProbTrans; // size: nLoci x nState
+    vector < vector <double> > priorProb;  // size: nState x nLoci
+    vector < vector <double> > priorProbTrans;  // size: nLoci x nState
     void transposePriorProbs();
 
-    vector <size_t> stateIdx; // size: nState
+    vector <size_t> stateIdx;  // size: nState
     vector <size_t> stateIdxFreq;
 
-    vector <vector <int> > hSet; // size: nState x kStrain
+    vector <vector <int> > hSet;  // size: nState x kStrain
     size_t nState_;
     size_t nState() const {return this->nState_;}
 
@@ -143,12 +145,12 @@ class IBDpath{
     ~IBDpath();
 
     size_t kStrain_;
-    void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}
+    void setKstrain(const size_t setTo) {this->kStrain_ = setTo;}
     size_t kStrain() const { return this->kStrain_;}
 
     size_t nLoci_;
-    void setNLoci ( const size_t setTo ){ this->nLoci_ = setTo;}
-    size_t nLoci() const { return this->nLoci_; }
+    void setNLoci(const size_t setTo) {this->nLoci_ = setTo;}
+    size_t nLoci() const {return this->nLoci_;}
 
     double theta_;
     void setTheta(const double setTo) {this->theta_ = setTo;}
@@ -162,8 +164,8 @@ class IBDpath{
     vector <double> IBDpathChangeAt;
     // Methods
     void computeAndUpdateTheta();
-    void updateFmAtSiteI(vector <double> & prior,
-                         vector <double> & llk);
+    void updateFmAtSiteI(const vector <double> & prior,
+                         const vector <double> & llk);
     void ibdSamplePath(vector <double> statePrior);
     void makeIbdTransProbs();
     vector <double> computeEffectiveKPrior(double theta);
@@ -172,22 +174,29 @@ class IBDpath{
                      vector <double> refCount,
                      double scalingConst = 100.0,
                      double err = 0.01,
-                     size_t gridSize=99);
+                     size_t gridSize = 99);
     void computeUniqueEffectiveKCount();
-    vector <double> computeLlkOfStatesAtSiteI(vector<double> proportion, size_t siteI, double err = 0.01);
-    vector <size_t> findWhichIsSomething(vector <size_t> tmpOp, size_t something);
+    vector <double> computeLlkOfStatesAtSiteI(vector<double> proportion,
+                                              size_t siteI, double err = 0.01);
+    vector <size_t> findWhichIsSomething(vector <size_t> tmpOp,
+                                         size_t something);
 
     // For painting IBD
     void buildPathProbabilityForPainting(vector <double> proportion);
-    void computeIbdPathFwdProb(vector <double> proportion, vector <double> statePrior);
-    void computeIbdPathBwdProb(vector <double> proportion, vector <double> effectiveKPrior, vector <double> statePrior);
-    void combineFwdBwd(vector < vector <double>> &reshapedFwd, vector < vector <double>> &reshapedBwd);
-    vector < vector <double> > reshapeProbs(vector < vector <double> >& probs);
+    void computeIbdPathFwdProb(vector <double> proportion,
+                               vector <double> statePrior);
+    void computeIbdPathBwdProb(vector <double> proportion,
+                               vector <double> effectiveKPrior,
+                               vector <double> statePrior);
+    void combineFwdBwd(const vector < vector <double>> &reshapedFwd,
+                       const vector < vector <double>> &reshapedBwd);
+    vector < vector <double> > reshapeProbs(
+                              const vector < vector <double> >& probs);
     double bestPath(vector <double> proportion, double err = 0.01);
 
-public:
+ public:
     vector <string> getIBDprobsHeader();
-    void init(DEploidIO &dEploidIO, RandomGenerator* rg);
+    void init(const DEploidIO &dEploidIO, RandomGenerator* rg);
 };
 
 #endif
