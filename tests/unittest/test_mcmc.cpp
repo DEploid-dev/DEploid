@@ -110,8 +110,16 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         dEploidIO_->chrom_ = vector <string> ({"chrom1", "chrom2"});
         dEploidIO_->indexOfChromStarts_ = vector <size_t> ({0, 2});
         rg_ = new MersenneTwister(dEploidIO_->randomSeed());
-        mcmcMachinery_ = new McmcMachinery(this->dEploidIO_, this->mcmcSample_, this->rg_ );
-        mcmcMachineryIbd_ = new McmcMachinery(this->dEploidIO_, this->mcmcSampleIbd_, this->rg_, true);
+        mcmcMachinery_ = new McmcMachinery(&this->dEploidIO_->plaf_,
+                                       &this->dEploidIO_->refCount_,
+                                       &this->dEploidIO_->altCount_,
+                                       this->dEploidIO_->panel,
+                                       this->dEploidIO_, this->mcmcSample_, this->rg_ );
+        mcmcMachineryIbd_ = new McmcMachinery(&this->dEploidIO_->plaf_,
+                                       &this->dEploidIO_->refCount_,
+                                       &this->dEploidIO_->altCount_,
+                                       this->dEploidIO_->panel,
+                                       this->dEploidIO_, this->mcmcSampleIbd_, this->rg_, true);
         nRepeat = 1000000;
         epsilon1 = 0.01;
         epsilon2 = 0.001;
@@ -130,7 +138,13 @@ class TestMcmcMachinery: public CppUnit::TestCase {
 
 
     void testMainConstructor(){
-        McmcMachinery tmpMcmcMachinery(this->dEploidIO_, this->mcmcSample_, this->rg_ );
+        McmcMachinery tmpMcmcMachinery(&this->dEploidIO_->plaf_,
+                                       &this->dEploidIO_->refCount_,
+                                       &this->dEploidIO_->altCount_,
+                                       this->dEploidIO_->panel,
+                                       this->dEploidIO_,
+                                       this->mcmcSample_,
+                                       this->rg_ );
     }
 
 

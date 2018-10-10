@@ -1,8 +1,5 @@
 src/dEploidIO.cpp
 src/dEploidIO.hpp
-src/exceptions.hpp
-src/ibd.cpp
-src/ibd.hpp
 src/mcmc.cpp
 src/mcmc.hpp
 src/panel.cpp
@@ -20,7 +17,6 @@ src/debug/vcfReaderDebug.cpp
 src/export/dEploidIOExport.cpp
 src/export/dEploidIOExportPosteriorProb.cpp
 src/export/writeMcmcRelated.cpp
-tests/unittest/test_dEploidIO.cpp
 tests/unittest/test_ibd.cpp
 tests/unittest/test_mcmc.cpp
 tests/unittest/test_panel.cpp

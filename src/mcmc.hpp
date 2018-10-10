@@ -48,7 +48,7 @@ class McmcSample {
   public:
     McmcSample();
     ~McmcSample();
-    void clear(){
+    void clear() {
         proportion.clear();
         sumLLKs.clear();
         moves.clear();
@@ -82,7 +82,14 @@ class McmcMachinery {
   friend class DEploidIO;
   public:
     //McmcMachinery();
-    McmcMachinery( DEploidIO* dEplioidIO, McmcSample *mcmcSample, RandomGenerator* rg_, bool useIBD = false );
+    McmcMachinery( vector <double> * plaf,
+                   vector <double> * refCount,
+                   vector <double> * altCount,
+                   Panel *panel_ptr,
+                   DEploidIO* dEplioidIO,
+                   McmcSample *mcmcSample,
+                   RandomGenerator* rg_,
+                   bool useIBD = false );
     ~McmcMachinery();
     void runMcmcChain( bool showProgress = true, bool useIBD = false, bool notInR = true );
 
@@ -90,13 +97,16 @@ class McmcMachinery {
     McmcSample* mcmcSample_;
   /* Variables */
     DEploidIO* dEploidIO_;
+    vector <double> * plaf_ptr_;
+    vector <double> * refCount_ptr_;
+    vector <double> * altCount_ptr_;
     Panel* panel_;
     size_t kStrain_;
-    void setKstrain ( const size_t setTo ){ this->kStrain_ = setTo;}
+    void setKstrain ( const size_t setTo ) { this->kStrain_ = setTo;}
     size_t kStrain() const { return this->kStrain_;}
 
     size_t nLoci_;
-    void setNLoci ( const size_t setTo ){ this->nLoci_ = setTo;}
+    void setNLoci ( const size_t setTo ) { this->nLoci_ = setTo;}
     size_t nLoci() const { return this->nLoci_; }
 
     double burnIn_;
@@ -118,9 +128,9 @@ class McmcMachinery {
     //std::normal_distribution<double>* initialTitre_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);
     //std::normal_distribution<double>* deltaX_normal_distribution_;// (0, 1/PROP_SCALE);
     StandNormalRandomSample* stdNorm_;
-    double initialTitreNormalVariable(){ return this->stdNorm_->genReal() * SD_LOG_TITRE + MN_LOG_TITRE; }
-    //double deltaXnormalVariable(){ return this->stdNorm_->genReal() * 1.0/PROP_SCALE + MN_LOG_TITRE; }
-    double deltaXnormalVariable(){ return this->stdNorm_->genReal() * SD_LOG_TITRE* 1.0/PROP_SCALE + MN_LOG_TITRE; }
+    double initialTitreNormalVariable() { return this->stdNorm_->genReal() * SD_LOG_TITRE + MN_LOG_TITRE; }
+    //double deltaXnormalVariable() { return this->stdNorm_->genReal() * 1.0/PROP_SCALE + MN_LOG_TITRE; }
+    double deltaXnormalVariable() { return this->stdNorm_->genReal() * SD_LOG_TITRE* 1.0/PROP_SCALE + MN_LOG_TITRE; }
     double MN_LOG_TITRE;
     double SD_LOG_TITRE;
     double PROP_SCALE;
@@ -150,8 +160,8 @@ class McmcMachinery {
     double calcLogPriorTitre( vector <double> &tmpTitre);
     double rBernoulli(double p);
 
-    void printArray ( vector <double> array ){
-        for (auto const& value: array){
+    void printArray ( vector <double> array ) {
+        for (auto const& value: array) {
             cout << value << " ";
         }
         cout << endl;

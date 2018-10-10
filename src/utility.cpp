@@ -54,7 +54,7 @@ double max_value( vector <double> x){
 }
 
 
-vector <double> computeCdf ( vector <double> & dist ){
+vector <double> computeCdf (const vector <double> & dist ){
     vector <double> cdf;
     double cumsum = 0;
     for (double p : dist){
@@ -67,7 +67,7 @@ vector <double> computeCdf ( vector <double> & dist ){
 }
 
 
-double sumOfMat( vector <vector <double> > & matrix ){
+double sumOfMat(const vector <vector <double> > & matrix ){
     double tmp = 0.0;
     for (auto const& array: matrix){
         for (auto const& value: array){
@@ -78,7 +78,7 @@ double sumOfMat( vector <vector <double> > & matrix ){
 }
 
 
-void normalizeBySum ( vector <double> & array ){
+void normalizeBySum(vector <double> & array ){
     double sumOfArray = sumOfVec(array);
     for( vector<double>::iterator it = array.begin(); it != array.end(); ++it) {
         *it /= sumOfArray;
@@ -86,7 +86,7 @@ void normalizeBySum ( vector <double> & array ){
 }
 
 
-void normalizeByMax ( vector <double> & array ){
+void normalizeByMax(vector <double> & array ){
     double maxOfArray = max_value(array);
     for( vector<double>::iterator it = array.begin(); it != array.end(); ++it) {
         *it /= maxOfArray;
@@ -94,7 +94,7 @@ void normalizeByMax ( vector <double> & array ){
 }
 
 
-void normalizeBySumMat ( vector <vector <double> > & matrix ){
+void normalizeBySumMat(vector <vector <double> > & matrix ){
     double tmpsum = sumOfMat(matrix);
     for( size_t i = 0; i < matrix.size(); i++ ){
         for( vector<double>::iterator it = matrix[i].begin(); it != matrix[i].end(); ++it) {
@@ -104,7 +104,11 @@ void normalizeBySumMat ( vector <vector <double> > & matrix ){
 }
 
 
-vector <double> calcLLKs( vector <double> &refCount, vector <double> &altCount, vector <double> &expectedWsaf, size_t firstIndex, size_t length, double fac, double err){
+vector <double> calcLLKs(const vector <double> &refCount,
+                         const vector <double> &altCount,
+                         const vector <double> &expectedWsaf,
+                         size_t firstIndex, size_t length,
+                         double fac, double err){
     assert ( expectedWsaf.size() == length );
     vector <double> tmpLLKs (length, 0.0);
     size_t index = firstIndex;
@@ -152,7 +156,7 @@ size_t sampleIndexGivenProp ( RandomGenerator* rg, vector <double> proportion ){
 }
 
 
-vector <double> reshapeMatToVec ( vector < vector <double> > &Mat ){
+vector <double> reshapeMatToVec(vector < vector <double> > &Mat ){
     vector <double> tmp;
     for (auto const& array: Mat){
         for (auto const& value: array){

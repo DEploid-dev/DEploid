@@ -43,19 +43,58 @@ int main(int argc, char *argv[]) {
             return EXIT_SUCCESS;
         }
 
-        if ( dEploidIO.doComputeLLK() ) {
+        if (dEploidIO.doComputeLLK()) {
             dEploidIO.computeLLKfromInitialHap();
-        } else if ( dEploidIO.doLsPainting() ) {
+        } else if (dEploidIO.doLsPainting()) {
             dEploidIO.chromPainting();
-        } else if ( dEploidIO.doIbdPainting() ) {
+        } else if (dEploidIO.doIbdPainting()) {
             dEploidIO.paintIBD();
+        } else if (dEploidIO.useLasso()) {
+            dEploidIO.dEploidLasso();
+            MersenneTwister lassoRg(dEploidIO.randomSeed());
+            DEploidIO tmpIO(dEploidIO);
+            vector < vector <double> > hap;
+            for (size_t chromi = 0;
+                 chromi < dEploidIO.indexOfChromStarts_.size();
+                 chromi++ ) {
+                tmpIO.position_.clear();
+                tmpIO.position_.push_back(dEploidIO.position_.at(chromi));
+                tmpIO.indexOfChromStarts_.clear();
+                tmpIO.indexOfChromStarts_.push_back(0);
+                McmcSample * lassoMcmcSample = new McmcSample();
+                McmcMachinery lassoMcmcMachinery(
+                                            &dEploidIO.lassoPlafs.at(chromi),
+                                            &dEploidIO.lassoRefCount.at(chromi),
+                                            &dEploidIO.lassoAltCount.at(chromi),
+                                            dEploidIO.lassoPanels.at(chromi),
+                                            &tmpIO,
+                                            lassoMcmcSample,
+                                            &lassoRg,
+                                            false);
+                lassoMcmcMachinery.runMcmcChain(true,   // show progress
+                                                false);  // use IBD
+                for (size_t snpi = 0;
+                     snpi < lassoMcmcSample->hap.size(); snpi++) {
+                    hap.push_back(vector <double> (
+                                        lassoMcmcSample->hap[snpi].begin(),
+                                        lassoMcmcSample->hap[snpi].end()));
+                }
+                delete lassoMcmcSample;
+            }
+            dEploidIO.writeHap(hap, false);
         } else {
             if (dEploidIO.useIBD()) {  // ibd
                 McmcSample * ibdMcmcSample = new McmcSample();
                 MersenneTwister ibdRg(dEploidIO.randomSeed());
 
-                McmcMachinery ibdMcmcMachinery(&dEploidIO, ibdMcmcSample,
-                                               &ibdRg, true);
+                McmcMachinery ibdMcmcMachinery(&dEploidIO.plaf_,
+                                               &dEploidIO.refCount_,
+                                               &dEploidIO.altCount_,
+                                               dEploidIO.panel,
+                                               &dEploidIO,
+                                               ibdMcmcSample,
+                                               &ibdRg,
+                                               true);
                 ibdMcmcMachinery.runMcmcChain(true,   // show progress
                                               true);  // use IBD
                 delete ibdMcmcSample;
@@ -63,7 +102,13 @@ int main(int argc, char *argv[]) {
             McmcSample * mcmcSample = new McmcSample();
             MersenneTwister rg(dEploidIO.randomSeed());
 
-            McmcMachinery mcmcMachinery(&dEploidIO, mcmcSample, &rg,
+            McmcMachinery mcmcMachinery(&dEploidIO.plaf_,
+                                        &dEploidIO.refCount_,
+                                        &dEploidIO.altCount_,
+                                        dEploidIO.panel,
+                                        &dEploidIO,
+                                        mcmcSample,
+                                        &rg,
                                         false);  // use IBD
             mcmcMachinery.runMcmcChain(true,     // show progress
                                        false);   // use IBD
