@@ -57,6 +57,10 @@ DEploidIO::DEploidIO(int argc, char *argv[]) {
 
 
 DEploidIO::~DEploidIO() {
+    if (this->isCopied()){
+        return;
+    }
+
     if ( this->excludedMarkers != NULL ) {
         delete this->excludedMarkers;
     }
@@ -90,6 +94,7 @@ void DEploidIO::core() {
 
 
 void DEploidIO::init() {
+    this->setIsCopied(false);
     this->setDoExportRecombProb(false);
     this->setrandomSeedWasGiven(false);
     this->setCompressVcf(false);
@@ -444,6 +449,7 @@ void DEploidIO::parse () {
             this->setUseIBD(true);
         } else if ( *argv_i == "-lasso" ) {
             this->setUseLasso(true);
+            this->setDoUpdateProp(false);
         } else if ( *argv_i == "-computeLLK" ) {
             this->setDoComputeLLK( true );
         } else if ( *argv_i == "-ibdPainting" ) {
@@ -737,9 +743,7 @@ void DEploidIO::readPanel() {
 
 
 DEploidIO::DEploidIO(const DEploidIO &currentDEploidIO) {
-    // This is not working! to be improved
-    //cout << this->refCount_.size() << endl;
-
+    this->setIsCopied(true);
     this->setDoExportRecombProb(currentDEploidIO.doExportRecombProb());
     this->setrandomSeedWasGiven(currentDEploidIO.randomSeedWasGiven());
     this->setCompressVcf(currentDEploidIO.compressVcf());
@@ -788,12 +792,12 @@ DEploidIO::DEploidIO(const DEploidIO &currentDEploidIO) {
     this->setDoExportVcf(currentDEploidIO.doExportVcf());
     this->setDoComputeLLK(currentDEploidIO.doComputeLLK());
 
-
-
-
     this->refCount_ = vector <double> (currentDEploidIO.refCount_.begin(),
                                        currentDEploidIO.refCount_.end());
-    //cout << this->refCount_.size() << endl;
+    this->altCount_ = vector <double> (currentDEploidIO.altCount_.begin(),
+                                       currentDEploidIO.altCount_.end());
+    this->plaf_ = vector <double> (currentDEploidIO.plaf_.begin(),
+                                   currentDEploidIO.plaf_.end());
 }
 
 
@@ -870,14 +874,27 @@ void DEploidIO::dEploidLasso() {
     for ( size_t chromi = 0 ; chromi < this->indexOfChromStarts_.size(); chromi++ ) {
         size_t start = this->indexOfChromStarts_[chromi];
         size_t length = this->position_[chromi].size();
+        size_t end = start + length;
         // cout << " lasso Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
         vector <double> wsaf = lassoComputeObsWsaf(start, length);
         vector < vector <double> > tmpPanel = lassoSubsetPanel(start, length);
         DEploidLASSO dummy(tmpPanel, wsaf, 250);
-        lassoPanels.push_back(dummy.reducedPanel);
-        lassoPlafs.push_back(vector <double> (plaf_.begin()+start, plaf_.begin()+start+length));
-        lassoRefCount.push_back(vector <double> (refCount_.begin()+start, refCount_.begin()+start+length));
-        lassoAltCount.push_back(vector <double> (altCount_.begin()+start, altCount_.begin()+start+length));
+
+        Panel * tmp = new Panel(vecFromTo(this->panel->pRec_, start, end),
+                            vecFromTo(this->panel->pRecEachHap_, start, end),
+                            vecFromTo(this->panel->pNoRec_, start, end),
+                            vecFromTo(this->panel->pRecRec_, start, end),
+                            vecFromTo(this->panel->pRecNoRec_, start, end),
+                            vecFromTo(this->panel->pNoRecNoRec_, start, end),
+                            dummy.reducedPanel);
+        lassoPanels.push_back(tmp);
+        //lassoPanels.push_back(dummy.reducedPanel);
+        lassoPlafs.push_back(vecFromTo(plaf_, start, end));
+        lassoRefCount.push_back(vecFromTo(refCount_, start, end));
+        lassoAltCount.push_back(vecFromTo(altCount_, start, end));
+
+
+
         // for (size_t i = 0; i < dummy.choiceIdx.size(); i++) {
             // cout << dummy.choiceIdx[i] << " " ;
         // }

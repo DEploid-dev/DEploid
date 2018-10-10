@@ -52,8 +52,8 @@ int main(int argc, char *argv[]) {
         } else if (dEploidIO.useLasso()) {
             dEploidIO.dEploidLasso();
             MersenneTwister lassoRg(dEploidIO.randomSeed());
+            DEploidIO tmpIO(dEploidIO);
             for (size_t chromi = 0; chromi < dEploidIO.indexOfChromStarts_.size(); chromi++ ) {
-                DEploidIO tmpIO(dEploidIO);
                 tmpIO.position_.clear();
                 tmpIO.position_.push_back(dEploidIO.position_.at(chromi));
                 tmpIO.indexOfChromStarts_.clear();
@@ -62,8 +62,11 @@ int main(int argc, char *argv[]) {
                 McmcMachinery lassoMcmcMachinery(&dEploidIO.lassoPlafs.at(chromi),
                                                  &dEploidIO.lassoRefCount.at(chromi),
                                                  &dEploidIO.lassoAltCount.at(chromi),
-                                                 &tmpIO, lassoMcmcSample,
-                                                 &lassoRg, false);
+                                                 dEploidIO.lassoPanels.at(chromi),
+                                                 &tmpIO,
+                                                 lassoMcmcSample,
+                                                 &lassoRg,
+                                                 false);
                 lassoMcmcMachinery.runMcmcChain(true,   // show progress
                                                 false);  // use IBD
                 delete lassoMcmcSample;
@@ -76,8 +79,11 @@ int main(int argc, char *argv[]) {
                 McmcMachinery ibdMcmcMachinery(&dEploidIO.plaf_,
                                                &dEploidIO.refCount_,
                                                &dEploidIO.altCount_,
-                                               &dEploidIO, ibdMcmcSample,
-                                               &ibdRg, true);
+                                               dEploidIO.panel,
+                                               &dEploidIO,
+                                               ibdMcmcSample,
+                                               &ibdRg,
+                                               true);
                 ibdMcmcMachinery.runMcmcChain(true,   // show progress
                                               true);  // use IBD
                 delete ibdMcmcSample;
@@ -88,7 +94,10 @@ int main(int argc, char *argv[]) {
             McmcMachinery mcmcMachinery(&dEploidIO.plaf_,
                                         &dEploidIO.refCount_,
                                         &dEploidIO.altCount_,
-                                        &dEploidIO, mcmcSample, &rg,
+                                        dEploidIO.panel,
+                                        &dEploidIO,
+                                        mcmcSample,
+                                        &rg,
                                         false);  // use IBD
             mcmcMachinery.runMcmcChain(true,     // show progress
                                        false);   // use IBD

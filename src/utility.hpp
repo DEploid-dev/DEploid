@@ -47,6 +47,13 @@ vector <T> vecDiff ( vector<T> &vecA, vector<T> &vecB ){
 
 
 template <typename T>
+vector <T> vecFromTo(vector<T> &vec, size_t start, size_t end) {
+    vector <T> ret(vec.begin()+start, vec.begin()+end);
+    return ret;
+}
+
+
+template <typename T>
 vector <T> vecSum ( vector<T> &vecA, vector<T> &vecB ){
     assert(vecA.size() == vecB.size());
     vector <T> tmpSum (vecA.size(), (T)0);

@@ -90,11 +90,13 @@ class DEploidIO{
     vector <double> plaf_;
     vector <double> refCount_;
     vector <double> altCount_;
+    Panel *panel;
     vector < size_t > indexOfChromStarts_;
     vector < vector < int > > position_;
 
     // Lasso Related
-    vector < vector < vector <double> > > lassoPanels;
+    //vector < vector < vector <double> > > lassoPanels;
+    vector < Panel* > lassoPanels;
     vector < vector <double> > lassoPlafs;
     vector < vector <double> > lassoRefCount;
     vector < vector <double> > lassoAltCount;
@@ -238,6 +240,7 @@ class DEploidIO{
     string endTime_;
     void getTime( bool isStartingTime );
 
+    bool isCopied_;
 
     // Methods
     void init();
@@ -275,6 +278,9 @@ class DEploidIO{
     }
 
     // Getters and Setters
+    void setIsCopied ( const bool setTo ) { this->isCopied_ = setTo; }
+    bool isCopied() const { return this->isCopied_; }
+
     void setDoUpdateProp ( const bool setTo ) { this->doUpdateProp_ = setTo; }
     bool doUpdateProp() const { return this->doUpdateProp_; }
 
@@ -343,7 +349,6 @@ class DEploidIO{
     vector <double> finalSiteOfOneMissCopyOne;
 
 
-    Panel *panel;
     void writeMcmcRelated (McmcSample * mcmcSample, bool useIBD = false);
     void readPanel();
 

@@ -34,6 +34,34 @@ Panel::Panel():TxtReader() {
 };
 
 
+Panel::Panel(vector < double > pRec,
+             vector < double > pRecEachHap,
+             vector < double > pNoRec,
+             vector < double > pRecRec,
+             vector < double > pRecNoRec,
+             vector < double > pNoRecNoRec,
+             vector < vector < double > > content) {
+             this->pRec_ = vector <double> (pRec.begin(), pRec.end());
+    this->pRecEachHap_ = vector <double> (pRecEachHap.begin(),
+                                          pRecEachHap.end());
+    this->pNoRec_ = vector <double> (pNoRec.begin(),
+                                     pNoRec.end());
+    this->pRecRec_ = vector <double> (pRecRec.begin(),
+                                      pRecRec.end());
+    this->pRecNoRec_ = vector <double> (pRecNoRec.begin(),
+                                        pRecNoRec.end());
+    this->pNoRecNoRec_ = vector <double> (pNoRecNoRec.begin(),
+                                          pNoRecNoRec.end());
+    for (size_t i = 0; i < content.size(); i++) {
+        this->content_.push_back(vector <double> (content[i].begin(),
+                                                  content[i].end()));
+    }
+    this->setTruePanelSize(this->content_[0].size());
+    assert(this->pRec_.size() == this->pRecEachHap_.size());
+    assert(this->pRec_.size() == this->content_.size());
+}
+
+
 void Panel::readFromFile( const char inchar[] ) {
     this->readFromFileBase( inchar );
     this->setTruePanelSize( this->nInfoLines_ );

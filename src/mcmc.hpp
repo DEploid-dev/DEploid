@@ -85,7 +85,11 @@ class McmcMachinery {
     McmcMachinery( vector <double> * plaf,
                    vector <double> * refCount,
                    vector <double> * altCount,
-                   DEploidIO* dEplioidIO, McmcSample *mcmcSample, RandomGenerator* rg_, bool useIBD = false );
+                   Panel *panel_ptr,
+                   DEploidIO* dEplioidIO,
+                   McmcSample *mcmcSample,
+                   RandomGenerator* rg_,
+                   bool useIBD = false );
     ~McmcMachinery();
     void runMcmcChain( bool showProgress = true, bool useIBD = false, bool notInR = true );
 

@@ -38,12 +38,17 @@ McmcSample::~McmcSample() {};
 McmcMachinery::McmcMachinery( vector <double> * plaf,
                               vector <double> * refCount,
                               vector <double> * altCount,
-                              DEploidIO* dEploidIO, McmcSample *mcmcSample, RandomGenerator* rg_, bool useIBD ) { // initialiseMCMCmachinery
+                              Panel *panel_ptr,
+                              DEploidIO* dEploidIO,
+                              McmcSample *mcmcSample,
+                              RandomGenerator* rg_,
+                              bool useIBD ) {  // initialiseMCMCmachinery
     this->plaf_ptr_ = plaf;
     this->refCount_ptr_ = refCount;
     this->altCount_ptr_ = altCount;
+    this->panel_ = panel_ptr;
     this->dEploidIO_ = dEploidIO;
-    this->panel_ = dEploidIO->panel;
+    //this->panel_ = dEploidIO->panel;
     this->mcmcSample_ = mcmcSample;
     this->seed_ = rg_->seed();
 
@@ -69,7 +74,7 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
 
     this->setKstrain(this->dEploidIO_->kStrain());
     this->setNLoci(this->plaf_ptr_->size());
-    this->initializeMcmcChain( useIBD );
+    this->initializeMcmcChain(useIBD);
 }
 
 
@@ -135,7 +140,6 @@ void McmcMachinery::initializeMcmcChain(bool useIBD) {
 void McmcMachinery::initializeHap() {
     assert( currentHap_.size() == 0);
     if ( this->dEploidIO_ -> initialHapWasGiven() ) {
-        cout << "here"<<endl;
         this->currentHap_ = this->dEploidIO_->initialHap;
     } else {
         for ( size_t i = 0; i < this->plaf_ptr_->size(); i++ ) {
@@ -147,8 +151,6 @@ void McmcMachinery::initializeHap() {
             this->currentHap_.push_back(tmpVec);
         }
     }
-    cout << "this->plaf_ptr_->size() = "<<this->plaf_ptr_->size()<<endl;
-    cout << "this->currentHap_.size() = "<<this->currentHap_.size()<<endl;
     assert(this->currentHap_.size() == this->plaf_ptr_->size());
 }
 
@@ -282,9 +284,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
         clog << "\r" << " MCMC step" << setw(4) << 100 << "% completed."<<endl;
     #endif
     this->mcmcSample_->hap = this->currentHap_;
-
     this->writeLastFwdProb(useIBD);
-
     this->dEploidIO_->finalProp = this->mcmcSample_->proportion.back();
 
     for (size_t atSiteI = 0; atSiteI < nLoci(); atSiteI++ ) {
@@ -296,7 +296,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
         this->mcmcSample_->siteOfOneMissCopyOne[atSiteI] /= (double)this->maxIteration_;
     }
 
-    if ( notInR ) {
+    if ( notInR & (this->dEploidIO_->useLasso() == false) ) {
         this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, useIBD);
     }
 
@@ -315,9 +315,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
         this->dEploidIO_->initialHap = this->mcmcSample_->hap;
         this->dEploidIO_->setInitialHapWasGiven(true);
     }
-
     this->computeDiagnostics();
-
     dout << "###########################################"<< endl;
     dout << "#            MCMC RUN finished            #"<< endl;
     dout << "###########################################"<< endl;
@@ -327,12 +325,16 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
 
 
 void McmcMachinery::computeDiagnostics() {
-    //clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
+    // clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
     this->dEploidIO_->setacceptRatio(acceptUpdate / (1.0*this->maxIteration_));
 
     // average cumulate expectedWSAF
     for ( size_t i = 0; i < this->cumExpectedWsaf_.size(); i++) {
-        this->cumExpectedWsaf_[i] /= this->dEploidIO_->nMcmcSample_;
+        //cout << "cumExpectedWsaf_ i = "<<i <<" " << this->cumExpectedWsaf_[i] << " " << this->dEploidIO_->nMcmcSample_<<endl;
+        this->cumExpectedWsaf_[i] /= static_cast<double>(this->dEploidIO_->nMcmcSample_);
+        if (this->cumExpectedWsaf_[i]>1){
+            this->cumExpectedWsaf_[i] = 1;
+        }
     }
     vector <double> tmpLLKs1 = calcLLKs (*this->refCount_ptr_, *this->altCount_ptr_, this->cumExpectedWsaf_, 0, this->cumExpectedWsaf_.size(), this->dEploidIO_->scalingFactor());
     this->dEploidIO_->setmeanThetallks( sumOfVec(tmpLLKs1) );

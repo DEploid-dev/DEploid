@@ -41,7 +41,6 @@ UpdateHap::UpdateHap( vector <double> &refCount,
                       Panel* panel,
                       double missCopyProb,
                       double scalingFactor) {
-
     this->panel_ = panel;
     this->nPanel_ = 0; // Initialize when panel is not given
 
@@ -419,7 +418,6 @@ void UpdatePairHap::core(vector <double> &refCount,
 
     this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
     this->calcHapLLKs(refCount, altCount);
-
     if ( this->panel_ != NULL ) {
         this->buildEmission(this->missCopyProb_);
         this->calcFwdProbs(this->forbidCopyFromSame_);
@@ -428,7 +426,6 @@ void UpdatePairHap::core(vector <double> &refCount,
     } else {
         this->sampleHapIndependently( plaf );
     }
-
     this->updateLLK();
 }
 
@@ -565,14 +562,14 @@ void UpdatePairHap:: calcFwdProbs( bool forbidCopyFromSame ) {
     size_t hapIndex = this->segmentStartIndex_;
     assert ( this->fwdProbs_.size() == 0 );
     vector < vector < double > > fwd1st;
-    for ( size_t i = 0 ; i < this->nPanel_; i++) { // Row of the matrix
+    for ( size_t i = 0 ; i < this->nPanel_; i++) {  // Row of the matrix
         size_t rowObs = (size_t)this->panel_->content_[0][i];
         vector <double> fwd1stRow (this->nPanel_, 0.0);
 
-        for ( size_t ii = 0 ; ii < this->nPanel_; ii++) { // Column of the matrix
+        for ( size_t ii = 0 ; ii < this->nPanel_; ii++) {  // Column of the matrix
             if ( forbidCopyFromSame && i == ii ) continue;
+            size_t colObs = static_cast<size_t>(this->panel_->content_[hapIndex][ii]);
 
-            size_t colObs = (size_t)this->panel_->content_[hapIndex][ii];
             size_t obs = rowObs*2 + colObs;
             fwd1stRow[ii] = this->emission_[0][obs];
         }
@@ -580,7 +577,6 @@ void UpdatePairHap:: calcFwdProbs( bool forbidCopyFromSame ) {
     }
     (void)normalizeBySumMat(fwd1st);
     this->fwdProbs_.push_back(fwd1st);
-
     for ( size_t j = 1; j < this->nLoci_; j++ ) {
         double recRec = this->panel_->pRecRec_[hapIndex];
         double recNorec = this->panel_->pRecNoRec_[hapIndex];

@@ -139,7 +139,17 @@ class TestIO : public CppUnit::TestCase {
 
 
     void testConstructorCopier() {
-
+        char *argv1[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                         "-o", "tmp1",
+                         "-exclude",
+                         "data/testData/labStrains.test.exclude.txt",
+                         "-vcfOut", "-z"};
+        DEploidIO tmp(11, argv1);
+        CPPUNIT_ASSERT_NO_THROW(DEploidIO(tmp));
     }
 
     void testInitialProp() {

@@ -47,12 +47,12 @@ class Panel: public TxtReader{
     // Members
     vector < double > pRec_;
     // Used in update single haplotype
-    vector < double > pRecEachHap_; // = pRec / nPanel_;
-    vector < double > pNoRec_; // = 1.0 - pRec;
+    vector < double > pRecEachHap_;  // = pRec / nPanel_;
+    vector < double > pNoRec_;  // = 1.0 - pRec;
     // Used in update pair of haplotypes
-    vector < double > pRecRec_; // pRecEachHap * pRecEachHap;
-    vector < double > pRecNoRec_; // pRecEachHap * pNoRec;
-    vector < double > pNoRecNoRec_; // pNoRec * pNoRec;
+    vector < double > pRecRec_;  // pRecEachHap * pRecEachHap;
+    vector < double > pRecNoRec_;  // pRecEachHap * pNoRec;
+    vector < double > pNoRecNoRec_;  // pNoRec * pNoRec;
 
     size_t truePanelSize_;
     void setTruePanelSize ( const size_t setTo ){ this->truePanelSize_ = setTo; }
@@ -63,8 +63,14 @@ class Panel: public TxtReader{
     size_t inbreedingPanelSize() const { return this->inbreedingPanelSize_; }
     size_t truePanelSize() const { return this->truePanelSize_; }
     Panel();
+    Panel(vector < double > pRec,
+          vector < double > pRecEachHap,
+          vector < double > pNoRec,
+          vector < double > pRecRec,
+          vector < double > pRecNoRec,
+          vector < double > pNoRecNoRec,
+          vector < vector < double > > content);
     //Panel(const char inchar[] );
-    virtual ~Panel(){};
 
     // Methods
     void readFromFile( const char inchar[] );
@@ -77,6 +83,9 @@ class Panel: public TxtReader{
     void buildExamplePanelContent();
     void buildExamplePanel1();
     void buildExamplePanel2();
+
+  public:
+    virtual ~Panel() {};
 };
 
 
