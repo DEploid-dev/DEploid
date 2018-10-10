@@ -114,29 +114,28 @@ void DEploidIO::writeHap(vector < vector <double> > &hap, bool useIBD){
 }
 
 
-void DEploidIO::writePanel(Panel *panel, size_t chromI){
+void DEploidIO::writePanel(Panel *panel, size_t chromI, vector <string> hdr){
     string strExport = this->prefix_ + ".panel." + to_string(chromI);
+    remove(strExport.c_str());
+
     ofstreamExportTmp.open( strExport.c_str(), ios::out | ios::app | ios::binary );
 
-    // TODO need to redo header
     // HEADER
     ofstreamExportTmp << "CHROM" << "\t" << "POS" << "\t";;
     for ( size_t ii = 0; ii < panel->truePanelSize_; ii++){
-        ofstreamExportTmp << "h" << (ii+1) ;
+        ofstreamExportTmp << hdr[ii];
         ofstreamExportTmp << ((ii < (panel->truePanelSize_-1)) ? "\t" : "\n") ;
     }
 
     size_t siteIndex = 0;
-    //for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
-        for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
-            ofstreamExportTmp << chrom_[chromI] << "\t" << (int)position_[chromI][posI] << "\t";
-            for ( size_t ii = 0; ii < panel->content_[siteIndex].size(); ii++){
-                ofstreamExportTmp << panel->content_[siteIndex][ii];
-                ofstreamExportTmp << ((ii < (panel->content_[siteIndex].size()-1)) ? "\t" : "\n") ;
-            }
-            siteIndex++;
+    for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
+        ofstreamExportTmp << chrom_[chromI] << "\t" << (int)position_[chromI][posI] << "\t";
+        for ( size_t ii = 0; ii < panel->content_[siteIndex].size(); ii++){
+            ofstreamExportTmp << panel->content_[siteIndex][ii];
+            ofstreamExportTmp << ((ii < (panel->content_[siteIndex].size()-1)) ? "\t" : "\n") ;
         }
-    //}
+        siteIndex++;
+    }
 
     assert ( siteIndex == panel->content_.size());
     ofstreamExportTmp.close();

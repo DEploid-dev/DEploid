@@ -41,6 +41,7 @@ void TxtReader::readFromFileBase(const char inchar[]) {
     if (in_file.good()) {
         // skip the first line, which is the header
         getline(in_file, tmp_line);
+        this->extractHeader(tmp_line);
         getline(in_file, tmp_line);
         while (tmp_line.size() > 0) {
             size_t field_start = 0;
@@ -88,6 +89,29 @@ void TxtReader::readFromFileBase(const char inchar[]) {
     assert(chrom_.size() == position_.size());
     assert(this->doneGetIndexOfChromStarts_ == true);
     this->checkSortedPositions(this->fileName);
+}
+
+
+void TxtReader::extractHeader(const string &line) {
+    this->header_.clear();
+    size_t field_start = 0;
+    size_t field_end = 0;
+    size_t field_index = 0;
+    while (field_end < line.size()) {
+        field_end = min(
+            min(line.find(',', field_start),
+                line.find('\t', field_start)),
+                line.find('\n', field_start));
+
+        string tmp_str = line.substr(field_start,
+                                     field_end - field_start);
+        if (field_index > 1) {
+            this->header_.push_back(tmp_str);
+        }
+
+        field_start = field_end+1;
+        field_index++;
+    }
 }
 
 
