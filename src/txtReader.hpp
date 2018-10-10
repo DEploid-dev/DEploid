@@ -53,6 +53,7 @@ class TxtReader : public VariantIndex {
     // info_ only refers to the first column of the content
     vector <double> info_;
 
+    vector <string> header_;
     size_t nInfoLines_;
 
     int tmpChromInex_;
@@ -61,6 +62,7 @@ class TxtReader : public VariantIndex {
     // Methods
     void extractChrom(const string & tmp_str);
     void extractPOS(const string & tmp_str);
+    void extractHeader(const string &line);
     void reshapeContentToInfo();
     string fileName;
 

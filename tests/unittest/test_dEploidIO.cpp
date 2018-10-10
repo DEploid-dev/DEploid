@@ -837,15 +837,11 @@ class TestIO : public CppUnit::TestCase {
                          "-lasso" };
         CPPUNIT_ASSERT_NO_THROW(DEploidIO(10, argv));
         DEploidIO dEploidIOlasso(10, argv);
-        // CPPUNIT_ASSERT_EQUAL(dEploidIOlasso.obsWsaf_.size(), (size_t)594);
-        // CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOlasso.obsWsaf_[0],
-                                     // 0, epsilon3);
-        // CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOlasso.obsWsaf_[4],
-                                     // 0.22772277, epsilon2);
-        // CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOlasso.obsWsaf_[11],
-                                     // 0.21111111, epsilon2);
-        // CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOlasso.obsWsaf_[589],
-                                     // 0.18324607, epsilon2);
+        CPPUNIT_ASSERT_NO_THROW(dEploidIOlasso.dEploidLasso());
+        CPPUNIT_ASSERT_EQUAL(dEploidIOlasso.lassoPanels.size(), (size_t)14);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOlasso.lassoPlafs.size(), (size_t)14);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOlasso.lassoRefCount.size(), (size_t)14);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOlasso.lassoAltCount.size(), (size_t)14);
     }
 };
 

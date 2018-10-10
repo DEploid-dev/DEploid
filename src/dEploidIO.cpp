@@ -94,6 +94,7 @@ void DEploidIO::core() {
 
 
 void DEploidIO::init() {
+    this->setDoPrintLassoPanel(false);
     this->setIsCopied(false);
     this->setDoExportRecombProb(false);
     this->setrandomSeedWasGiven(false);
@@ -450,6 +451,8 @@ void DEploidIO::parse () {
         } else if ( *argv_i == "-lasso" ) {
             this->setUseLasso(true);
             this->setDoUpdateProp(false);
+        } else if ( *argv_i == "-writePanel" ) {
+            this->setDoPrintLassoPanel(true);
         } else if ( *argv_i == "-computeLLK" ) {
             this->setDoComputeLLK( true );
         } else if ( *argv_i == "-ibdPainting" ) {
@@ -592,7 +595,7 @@ void DEploidIO::printHelp(std::ostream& out) {
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CPanelExclude -panel data/testData/labStrains.test.panel.txt -painting PG0390-CPanelExclude.hap" << endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel -k 2 -ibd -nSample 250 -rate 8 -burn 0.67" <<endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -ibdPainting -initialP 0.2 0.8" <<endl;
-    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CLassoExclude -panel data/testData/labStrains.test.panel.txt -lasso -initialP 0.2 0.8" << endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CLassoExclude -panel data/testData/labStrains.test.panel.txt -lasso -initialP 0.2 0.8 -writePanel" << endl;
 }
 
 
@@ -878,7 +881,10 @@ void DEploidIO::dEploidLasso() {
         vector <double> wsaf = lassoComputeObsWsaf(start, length);
         vector < vector <double> > tmpPanel = lassoSubsetPanel(start, length);
         DEploidLASSO dummy(tmpPanel, wsaf, 250);
-
+        vector <string> newHeader;
+        for (size_t i = 0; i < dummy.choiceIdx.size(); i++) {
+            newHeader.push_back(panel->header_[dummy.choiceIdx[i]]);
+        }
         Panel * tmp = new Panel(vecFromTo(this->panel->pRec_, start, end),
                             vecFromTo(this->panel->pRecEachHap_, start, end),
                             vecFromTo(this->panel->pNoRec_, start, end),
@@ -890,7 +896,9 @@ void DEploidIO::dEploidLasso() {
         lassoPlafs.push_back(vecFromTo(plaf_, start, end));
         lassoRefCount.push_back(vecFromTo(refCount_, start, end));
         lassoAltCount.push_back(vecFromTo(altCount_, start, end));
-        this->writePanel(tmp, chromi);
+        if (this->doPrintLassoPanel()) {
+            this->writePanel(tmp, chromi, newHeader);
+        }
     }
     for ( auto const& value: this->initialProp ) {
         this->finalProp.push_back(value);

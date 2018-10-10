@@ -102,6 +102,7 @@ class DEploidIO{
     vector < vector <double> > lassoAltCount;
 
     void writeHap (vector < vector <double> > &hap, bool useIBD = false);
+    bool doPrintLassoPanel_;
 
   private:
     void core();
@@ -279,6 +280,9 @@ class DEploidIO{
     }
 
     // Getters and Setters
+    void setDoPrintLassoPanel ( const bool setTo ) { this->doPrintLassoPanel_ = setTo; }
+    bool doPrintLassoPanel() const { return this->doPrintLassoPanel_; }
+
     void setIsCopied ( const bool setTo ) { this->isCopied_ = setTo; }
     bool isCopied() const { return this->isCopied_; }
 
@@ -401,7 +405,7 @@ class DEploidIO{
     // Lasso related
     vector <double> lassoComputeObsWsaf(size_t segmentStartIndex, size_t nLoci);
     vector < vector <double> > lassoSubsetPanel(size_t segmentStartIndex, size_t nLoci);
-    void writePanel(Panel *panel, size_t chromi);
+    void writePanel(Panel *panel, size_t chromi, vector <string> hdr);
 };
 
 #endif
