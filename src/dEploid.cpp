@@ -53,6 +53,7 @@ int main(int argc, char *argv[]) {
             dEploidIO.dEploidLasso();
             MersenneTwister lassoRg(dEploidIO.randomSeed());
             DEploidIO tmpIO(dEploidIO);
+            vector < vector <double> > hap;
             for (size_t chromi = 0;
                  chromi < dEploidIO.indexOfChromStarts_.size();
                  chromi++ ) {
@@ -72,8 +73,15 @@ int main(int argc, char *argv[]) {
                                             false);
                 lassoMcmcMachinery.runMcmcChain(true,   // show progress
                                                 false);  // use IBD
+                for (size_t snpi = 0;
+                     snpi < lassoMcmcSample->hap.size(); snpi++) {
+                    hap.push_back(vector <double> (
+                                        lassoMcmcSample->hap[snpi].begin(),
+                                        lassoMcmcSample->hap[snpi].end()));
+                }
                 delete lassoMcmcSample;
             }
+            dEploidIO.writeHap(hap, false);
         } else {
             if (dEploidIO.useIBD()) {  // ibd
                 McmcSample * ibdMcmcSample = new McmcSample();

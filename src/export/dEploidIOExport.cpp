@@ -123,7 +123,7 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         }
     }
     (*writeTo) << "\n";
-    if ( (this->doLsPainting() == false) & (this->doIbdPainting() == false) & (this->doComputeLLK() == false) ) {
+    if ((this->useLasso() == false) & (this->doLsPainting() == false) & (this->doIbdPainting() == false) & (this->doComputeLLK() == false) ) {
         (*writeTo) << "MCMC diagnostic:"<< "\n";
         (*writeTo) << setw(19) << " Accept_ratio: " << acceptRatio_ << "\n";
         (*writeTo) << setw(19) << " Max_llks: " << maxLLKs_ << "\n";
@@ -156,8 +156,10 @@ void DEploidIO::writeLog ( ostream * writeTo ){
                 }
             }
         } else {
-            (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
-            (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
+            if (this->useLasso() == false) {
+                (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
+                (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
+            }
             (*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
             if ( doExportVcf() ) { (*writeTo) << setw(14) << "Vcf: "  << strExportVcf  << "\n"; }
             if (this->useIBD()){
@@ -175,8 +177,9 @@ void DEploidIO::writeLog ( ostream * writeTo ){
             }
         }
         (*writeTo) << "\n";
-        (*writeTo) << " IBD best path llk: " << ibdLLK_ << "\n\n";
-
+        if (this->useLasso() == false) {
+            (*writeTo) << " IBD best path llk: " << ibdLLK_ << "\n\n";
+        }
         this->computeEffectiveKstrain(this->finalProp);
         (*writeTo) << "         Effective_K: " << this->effectiveKstrain_ <<"\n";
         this->computeInferredKstrain(this->finalProp);

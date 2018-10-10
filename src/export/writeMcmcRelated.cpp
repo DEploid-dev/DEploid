@@ -29,7 +29,7 @@
 void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample, bool useIBD){
     this->writeProp( mcmcSample, useIBD );
     this->writeLLK( mcmcSample, useIBD );
-    this->writeHap( mcmcSample, useIBD);
+    this->writeHap(mcmcSample->hap, useIBD);
 
     if ( useIBD == false ){
         this->writeVcf( mcmcSample );
@@ -84,7 +84,7 @@ void DEploidIO::writeLLK( McmcSample * mcmcSample, bool useIBD){
 }
 
 
-void DEploidIO::writeHap( McmcSample * mcmcSample, bool useIBD){
+void DEploidIO::writeHap(vector < vector <double> > &hap, bool useIBD){
     if ( useIBD ){
         ofstreamExportTmp.open( strIbdExportHap.c_str(), ios::out | ios::app | ios::binary );
     } else {
@@ -101,17 +101,47 @@ void DEploidIO::writeHap( McmcSample * mcmcSample, bool useIBD){
     for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
         for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
             ofstreamExportTmp << chrom_[chromI] << "\t" << (int)position_[chromI][posI] << "\t";
-            for ( size_t ii = 0; ii < mcmcSample->hap[siteIndex].size(); ii++){
-                ofstreamExportTmp << mcmcSample->hap[siteIndex][ii];
-                ofstreamExportTmp << ((ii < (mcmcSample->hap[siteIndex].size()-1)) ? "\t" : "\n") ;
+            for ( size_t ii = 0; ii < hap[siteIndex].size(); ii++){
+                ofstreamExportTmp << hap[siteIndex][ii];
+                ofstreamExportTmp << ((ii < (hap[siteIndex].size()-1)) ? "\t" : "\n") ;
             }
             siteIndex++;
         }
     }
 
-    assert ( siteIndex == mcmcSample->hap.size());
+    assert ( siteIndex == hap.size());
     ofstreamExportTmp.close();
 }
+
+
+void DEploidIO::writePanel(Panel *panel, size_t chromI){
+    string strExport = this->prefix_ + ".panel." + to_string(chromI);
+    ofstreamExportTmp.open( strExport.c_str(), ios::out | ios::app | ios::binary );
+
+    // TODO need to redo header
+    // HEADER
+    ofstreamExportTmp << "CHROM" << "\t" << "POS" << "\t";;
+    for ( size_t ii = 0; ii < panel->truePanelSize_; ii++){
+        ofstreamExportTmp << "h" << (ii+1) ;
+        ofstreamExportTmp << ((ii < (panel->truePanelSize_-1)) ? "\t" : "\n") ;
+    }
+
+    size_t siteIndex = 0;
+    //for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
+        for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
+            ofstreamExportTmp << chrom_[chromI] << "\t" << (int)position_[chromI][posI] << "\t";
+            for ( size_t ii = 0; ii < panel->content_[siteIndex].size(); ii++){
+                ofstreamExportTmp << panel->content_[siteIndex][ii];
+                ofstreamExportTmp << ((ii < (panel->content_[siteIndex].size()-1)) ? "\t" : "\n") ;
+            }
+            siteIndex++;
+        }
+    //}
+
+    assert ( siteIndex == panel->content_.size());
+    ofstreamExportTmp.close();
+}
+
 
 
 void DEploidIO::writeVcf( McmcSample * mcmcSample ){

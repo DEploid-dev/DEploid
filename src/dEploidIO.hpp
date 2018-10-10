@@ -101,6 +101,7 @@ class DEploidIO{
     vector < vector <double> > lassoRefCount;
     vector < vector <double> > lassoAltCount;
 
+    void writeHap (vector < vector <double> > &hap, bool useIBD = false);
 
   private:
     void core();
@@ -324,7 +325,6 @@ class DEploidIO{
 
     void writeLLK (McmcSample * mcmcSample, bool useIBD = false);
     void writeProp (McmcSample * mcmcSample, bool useIBD = false);
-    void writeHap (McmcSample * mcmcSample, bool useIBD = false);
     void writeVcf (McmcSample * mcmcSample);
     void writeLastSingleFwdProb( vector < vector <double> >& probabilities, size_t chromIndex, size_t strainIndex, bool useIBD );
     void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
@@ -401,6 +401,7 @@ class DEploidIO{
     // Lasso related
     vector <double> lassoComputeObsWsaf(size_t segmentStartIndex, size_t nLoci);
     vector < vector <double> > lassoSubsetPanel(size_t segmentStartIndex, size_t nLoci);
+    void writePanel(Panel *panel, size_t chromi);
 };
 
 #endif
