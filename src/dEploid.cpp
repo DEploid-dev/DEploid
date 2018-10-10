@@ -53,20 +53,23 @@ int main(int argc, char *argv[]) {
             dEploidIO.dEploidLasso();
             MersenneTwister lassoRg(dEploidIO.randomSeed());
             DEploidIO tmpIO(dEploidIO);
-            for (size_t chromi = 0; chromi < dEploidIO.indexOfChromStarts_.size(); chromi++ ) {
+            for (size_t chromi = 0;
+                 chromi < dEploidIO.indexOfChromStarts_.size();
+                 chromi++ ) {
                 tmpIO.position_.clear();
                 tmpIO.position_.push_back(dEploidIO.position_.at(chromi));
                 tmpIO.indexOfChromStarts_.clear();
                 tmpIO.indexOfChromStarts_.push_back(0);
                 McmcSample * lassoMcmcSample = new McmcSample();
-                McmcMachinery lassoMcmcMachinery(&dEploidIO.lassoPlafs.at(chromi),
-                                                 &dEploidIO.lassoRefCount.at(chromi),
-                                                 &dEploidIO.lassoAltCount.at(chromi),
-                                                 dEploidIO.lassoPanels.at(chromi),
-                                                 &tmpIO,
-                                                 lassoMcmcSample,
-                                                 &lassoRg,
-                                                 false);
+                McmcMachinery lassoMcmcMachinery(
+                                            &dEploidIO.lassoPlafs.at(chromi),
+                                            &dEploidIO.lassoRefCount.at(chromi),
+                                            &dEploidIO.lassoAltCount.at(chromi),
+                                            dEploidIO.lassoPanels.at(chromi),
+                                            &tmpIO,
+                                            lassoMcmcSample,
+                                            &lassoRg,
+                                            false);
                 lassoMcmcMachinery.runMcmcChain(true,   // show progress
                                                 false);  // use IBD
                 delete lassoMcmcSample;
