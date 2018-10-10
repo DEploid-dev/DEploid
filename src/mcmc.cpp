@@ -638,8 +638,8 @@ void McmcMachinery::updatePairHaps() {
         size_t length = this->dEploidIO_->position_[chromi].size();
         dout << "   Update Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
 
-        UpdatePairHap updating( this->dEploidIO_->refCount_,
-                                this->dEploidIO_->altCount_,
+        UpdatePairHap updating( *this->refCount_ptr_,
+                                *this->altCount_ptr_,
                                 *this->plaf_ptr_,
                                 this->currentExpectedWsaf_,
                                 this->currentProp_, this->currentHap_, this->hapRg_,
@@ -649,7 +649,7 @@ void McmcMachinery::updatePairHaps() {
                                 this->strainIndex1_,
                                 this->strainIndex2_);
 
-        updating.core ( this->dEploidIO_->refCount_, this->dEploidIO_->altCount_, *this->plaf_ptr_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+        updating.core(*this->refCount_ptr_, *this->altCount_ptr_, *this->plaf_ptr_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
 
         size_t updateIndex = 0;
         for ( size_t ii = start ; ii < (start+length); ii++ ) {
