@@ -7,3 +7,4 @@ src/txtReader.cpp
 src/txtReader.hpp
 src/ibd.hpp
 src/ibd.cpp
+src/vcfReader.hpp
