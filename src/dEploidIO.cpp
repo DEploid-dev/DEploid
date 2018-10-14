@@ -745,62 +745,62 @@ void DEploidIO::readPanel() {
 }
 
 
-DEploidIO::DEploidIO(const DEploidIO &currentDEploidIO) {
+DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->setIsCopied(true);
-    this->setDoExportRecombProb(currentDEploidIO.doExportRecombProb());
-    this->setrandomSeedWasGiven(currentDEploidIO.randomSeedWasGiven());
-    this->setCompressVcf(currentDEploidIO.compressVcf());
-    this->setInitialPropWasGiven(currentDEploidIO.initialPropWasGiven());
-    this->setInitialHapWasGiven(currentDEploidIO.initialHapWasGiven());
-    this->initialProp = vector <double> (currentDEploidIO.initialProp.begin(),
-                                         currentDEploidIO.initialProp.end());
-    this->setPleaseCheckInitialP(currentDEploidIO.pleaseCheckInitialP());
-    this->setExcludeSites(currentDEploidIO.excludeSites());
-    this->excludedMarkers = currentDEploidIO.excludedMarkers;
-    this->panel = currentDEploidIO.panel;
-    this->set_seed(currentDEploidIO.randomSeed_);
-    this->set_help(currentDEploidIO.help());
-    this->setVersion(currentDEploidIO.version());
-    this->setUsePanel(currentDEploidIO.usePanel());
-    this->precision_ = currentDEploidIO.precision_;
-    this->prefix_ = currentDEploidIO.prefix_;
-    this->setKStrainWasManuallySet(currentDEploidIO.kStrainWasManuallySet());
-    this->setKStrainWasSetByHap(currentDEploidIO.kStrainWasSetByHap());
-    this->setKStrainWasSetByProp(currentDEploidIO.kStrainWasSetByProp());
-    this->setKstrain(currentDEploidIO.kStrain());
-    this->nMcmcSample_ = currentDEploidIO.nMcmcSample();
-    this->setDoUpdateProp(currentDEploidIO.doUpdateProp());
-    this->setDoUpdatePair(currentDEploidIO.doUpdatePair());
-    this->setDoUpdateSingle(currentDEploidIO.doUpdateSingle());
-    this->setDoExportPostProb(currentDEploidIO.doExportPostProb());
-    this->setDoLsPainting(currentDEploidIO.doLsPainting());
-    this->setDoIbdPainting(currentDEploidIO.doIbdPainting());
-    this->setUseIBD(currentDEploidIO.useIBD());
-    this->setUseLasso(currentDEploidIO.useLasso());
-    this->setDoExportSwitchMissCopy(currentDEploidIO.doExportSwitchMissCopy());
-    this->setDoAllowInbreeding(currentDEploidIO.doAllowInbreeding());
-    this->mcmcBurn_ = currentDEploidIO.mcmcBurn_;
-    this->mcmcMachineryRate_ = currentDEploidIO.mcmcMachineryRate_;
-    this->missCopyProb_ = currentDEploidIO.missCopyProb_;
-    this->useConstRecomb_ = currentDEploidIO.useConstRecomb();
-    this->setForbidCopyFromSame(currentDEploidIO.forbidCopyFromSame());
-    this->constRecombProb_ = currentDEploidIO.constRecombProb();
-    this->averageCentimorganDistance_ = currentDEploidIO.averageCentimorganDistance();
-    this->setScalingFactor(currentDEploidIO.scalingFactor());
-    this->setParameterG(currentDEploidIO.parameterG());
-    this->setParameterSigma(currentDEploidIO.parameterSigma());
-    this->setIBDSigma(currentDEploidIO.ibdSigma());
-    this->setUseVcf(currentDEploidIO.useVcf());
-    this->vcfReaderPtr_ = currentDEploidIO.vcfReaderPtr_;
-    this->setDoExportVcf(currentDEploidIO.doExportVcf());
-    this->setDoComputeLLK(currentDEploidIO.doComputeLLK());
+    this->setDoExportRecombProb(cpFrom.doExportRecombProb());
+    this->setrandomSeedWasGiven(cpFrom.randomSeedWasGiven());
+    this->setCompressVcf(cpFrom.compressVcf());
+    this->setInitialPropWasGiven(cpFrom.initialPropWasGiven());
+    this->setInitialHapWasGiven(cpFrom.initialHapWasGiven());
+    this->initialProp = vector <double> (cpFrom.initialProp.begin(),
+                                         cpFrom.initialProp.end());
+    this->setPleaseCheckInitialP(cpFrom.pleaseCheckInitialP());
+    this->setExcludeSites(cpFrom.excludeSites());
+    this->excludedMarkers = cpFrom.excludedMarkers;
+    this->panel = cpFrom.panel;
+    this->set_seed(cpFrom.randomSeed_);
+    this->set_help(cpFrom.help());
+    this->setVersion(cpFrom.version());
+    this->setUsePanel(cpFrom.usePanel());
+    this->precision_ = cpFrom.precision_;
+    this->prefix_ = cpFrom.prefix_;
+    this->setKStrainWasManuallySet(cpFrom.kStrainWasManuallySet());
+    this->setKStrainWasSetByHap(cpFrom.kStrainWasSetByHap());
+    this->setKStrainWasSetByProp(cpFrom.kStrainWasSetByProp());
+    this->setKstrain(cpFrom.kStrain());
+    this->nMcmcSample_ = cpFrom.nMcmcSample();
+    this->setDoUpdateProp(cpFrom.doUpdateProp());
+    this->setDoUpdatePair(cpFrom.doUpdatePair());
+    this->setDoUpdateSingle(cpFrom.doUpdateSingle());
+    this->setDoExportPostProb(cpFrom.doExportPostProb());
+    this->setDoLsPainting(cpFrom.doLsPainting());
+    this->setDoIbdPainting(cpFrom.doIbdPainting());
+    this->setUseIBD(cpFrom.useIBD());
+    this->setUseLasso(cpFrom.useLasso());
+    this->setDoExportSwitchMissCopy(cpFrom.doExportSwitchMissCopy());
+    this->setDoAllowInbreeding(cpFrom.doAllowInbreeding());
+    this->mcmcBurn_ = cpFrom.mcmcBurn_;
+    this->mcmcMachineryRate_ = cpFrom.mcmcMachineryRate_;
+    this->missCopyProb_ = cpFrom.missCopyProb_;
+    this->useConstRecomb_ = cpFrom.useConstRecomb();
+    this->setForbidCopyFromSame(cpFrom.forbidCopyFromSame());
+    this->constRecombProb_ = cpFrom.constRecombProb();
+    this->averageCentimorganDistance_ = cpFrom.averageCentimorganDistance();
+    this->setScalingFactor(cpFrom.scalingFactor());
+    this->setParameterG(cpFrom.parameterG());
+    this->setParameterSigma(cpFrom.parameterSigma());
+    this->setIBDSigma(cpFrom.ibdSigma());
+    this->setUseVcf(cpFrom.useVcf());
+    this->vcfReaderPtr_ = cpFrom.vcfReaderPtr_;
+    this->setDoExportVcf(cpFrom.doExportVcf());
+    this->setDoComputeLLK(cpFrom.doComputeLLK());
 
-    this->refCount_ = vector <double> (currentDEploidIO.refCount_.begin(),
-                                       currentDEploidIO.refCount_.end());
-    this->altCount_ = vector <double> (currentDEploidIO.altCount_.begin(),
-                                       currentDEploidIO.altCount_.end());
-    this->plaf_ = vector <double> (currentDEploidIO.plaf_.begin(),
-                                   currentDEploidIO.plaf_.end());
+    this->refCount_ = vector <double> (cpFrom.refCount_.begin(),
+                                       cpFrom.refCount_.end());
+    this->altCount_ = vector <double> (cpFrom.altCount_.begin(),
+                                       cpFrom.altCount_.end());
+    this->plaf_ = vector <double> (cpFrom.plaf_.begin(),
+                                   cpFrom.plaf_.end());
 }
 
 

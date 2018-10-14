@@ -84,6 +84,7 @@ int main(int argc, char *argv[]) {
             dEploidIO.writeHap(hap, false);
         } else {
             if (dEploidIO.useIBD()) {  // ibd
+                DEploidIO tmpIO(dEploidIO);
                 McmcSample * ibdMcmcSample = new McmcSample();
                 MersenneTwister ibdRg(dEploidIO.randomSeed());
 
