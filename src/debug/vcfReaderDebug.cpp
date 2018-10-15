@@ -23,13 +23,13 @@
  *
  */
 
-#include "global.h"
 #include <iostream>      // std::cout
+#include "global.h"
 #include "vcfReader.hpp"
 
-using namespace std;
+using std::endl;
 
-bool VcfReader::printSampleName(){
+bool VcfReader::printSampleName() {
     dout << "Sample name is " << this->sampleName << endl;
     return true;
 }

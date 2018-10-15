@@ -8,3 +8,5 @@ src/txtReader.hpp
 src/ibd.hpp
 src/ibd.cpp
 src/vcfReader.hpp
+src/debug/mcmcDebug.cpp
+src/debug/vcfReaderDebug.cpp
