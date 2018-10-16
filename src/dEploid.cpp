@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
                 dEploidIO.setDoUpdateProp(false);
                 delete ibdMcmcSample;
             }
-            if (dEploidIO.useIbdOnly() == false){
+            if (dEploidIO.useIbdOnly() == false) {
                 McmcSample * mcmcSample = new McmcSample();
                 MersenneTwister rg(dEploidIO.randomSeed());
 

@@ -155,6 +155,14 @@ void DEploidIO::init() {
     #else
         dEploidGitVersion_ = "";
     #endif
+
+    #ifdef DEPLOIDVERSION
+        lassoGitVersion_ = LASSOVERSION;
+    #else
+        lassoGitVersion_ = "";
+    #endif
+
+
 }
 
 
@@ -567,7 +575,8 @@ void DEploidIO::printVersion(std::ostream& out) {
     out << endl
         << "dEploid " << VERSION
         << endl
-        << "Git commit: " << dEploidGitVersion_ << endl;
+        << "Git commit (DEploid): " << dEploidGitVersion_ << endl
+        << "Git commit (Lasso): " << lassoGitVersion_ << endl;
 }
 
 void DEploidIO::printHelp(std::ostream& out) {

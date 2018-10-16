@@ -227,6 +227,7 @@ class DEploidIO{
 
     // Output stream
     string dEploidGitVersion_;
+    string lassoGitVersion_;
     string compileTime_;
     string strExportLLK;
     string strExportHap;
