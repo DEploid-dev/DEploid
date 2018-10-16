@@ -319,7 +319,7 @@ class DEploidIO{
     void setDoLsPainting ( const bool setTo ) { this->doLsPainting_ = setTo; }
     void setDoIbdPainting ( const bool setTo ) { this->doIbdPainting_ = setTo; }
     void setUseIBD( const bool setTo) { this->useIBD_ = setTo; }
-    bool setUseIbdOnly(const bool setTo) { this->useIbdOnly_ = setTo;}
+    void setUseIbdOnly(const bool setTo) { this->useIbdOnly_ = setTo;}
     void setUseLasso( const bool setTo) { this->useLasso_ = setTo; }
 
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
