@@ -99,27 +99,34 @@ int main(int argc, char *argv[]) {
                                                true);
                 ibdMcmcMachinery.runMcmcChain(true,   // show progress
                                               true);  // use IBD
+                if (dEploidIO.useIbdOnly()) {
+                    tmpIO.paintIBD();
+                    dEploidIO.finalProp = tmpIO.initialProp;
+                }
+
                 dEploidIO.initialProp = tmpIO.initialProp;
                 dEploidIO.setInitialPropWasGiven(true);
                 dEploidIO.setDoUpdateProp(false);
                 delete ibdMcmcSample;
             }
-            McmcSample * mcmcSample = new McmcSample();
-            MersenneTwister rg(dEploidIO.randomSeed());
+            if (dEploidIO.useIbdOnly() == false){
+                McmcSample * mcmcSample = new McmcSample();
+                MersenneTwister rg(dEploidIO.randomSeed());
 
-            McmcMachinery mcmcMachinery(&dEploidIO.plaf_,
-                                        &dEploidIO.refCount_,
-                                        &dEploidIO.altCount_,
-                                        dEploidIO.panel,
-                                        &dEploidIO,
-                                        mcmcSample,
-                                        &rg,
-                                        false);  // use IBD
-            mcmcMachinery.runMcmcChain(true,     // show progress
-                                       false);   // use IBD
+                McmcMachinery mcmcMachinery(&dEploidIO.plaf_,
+                                            &dEploidIO.refCount_,
+                                            &dEploidIO.altCount_,
+                                            dEploidIO.panel,
+                                            &dEploidIO,
+                                            mcmcSample,
+                                            &rg,
+                                            false);  // use IBD
+                mcmcMachinery.runMcmcChain(true,     // show progress
+                                           false);   // use IBD
 
-            dEploidIO.paintIBD();
-            delete mcmcSample;
+                dEploidIO.paintIBD();
+                delete mcmcSample;
+            }
         }
         // Finishing, write log
         dEploidIO.wrapUp();

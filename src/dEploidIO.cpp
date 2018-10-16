@@ -124,6 +124,7 @@ void DEploidIO::init() {
     this->setDoLsPainting( false );
     this->setDoIbdPainting( false );
     this->setUseIBD( false );
+    this->setUseIbdOnly(false);
     this->setUseLasso( false );
     this->setDoExportSwitchMissCopy ( true );
     this->setDoAllowInbreeding( false );
@@ -275,10 +276,16 @@ void DEploidIO::removeFilesWithSameName() {
     strExportLLK = this->prefix_ + ".llk";
     strExportHap = this->prefix_ + ".hap";
 
-    strIbdExportProp = this->prefix_ + ".ibd.prop";
-    strIbdExportLLK = this->prefix_ + ".ibd.llk";
-    strIbdExportHap = this->prefix_ + ".ibd.hap";
-    strIbdExportProbs = this->prefix_ + ".ibd.probs";
+    if (this->useIbdOnly()) {
+        strIbdExportProp = this->prefix_ + ".prop";
+        strIbdExportLLK = this->prefix_ + ".llk";
+        strIbdExportHap = this->prefix_ + ".hap";
+    } else {
+        strIbdExportProp = this->prefix_ + ".ibd.prop";
+        strIbdExportLLK = this->prefix_ + ".ibd.llk";
+        strIbdExportHap = this->prefix_ + ".ibd.hap";
+        strIbdExportProbs = this->prefix_ + ".ibd.probs";
+    }
 
     strExportVcf = this->prefix_ + ".vcf";
     if ( compressVcf() ) {
@@ -448,6 +455,9 @@ void DEploidIO::parse () {
             this->readInitialHaps();
         } else if ( *argv_i == "-ibd" ) {
             this->setUseIBD(true);
+        } else if ( *argv_i == "-ibdonly" ) {
+            this->setUseIBD(true);
+            this->setUseIbdOnly(true);
         } else if ( *argv_i == "-lasso" ) {
             this->setUseLasso(true);
             this->setDoUpdateProp(false);
@@ -776,6 +786,7 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->setDoLsPainting(cpFrom.doLsPainting());
     this->setDoIbdPainting(cpFrom.doIbdPainting());
     this->setUseIBD(cpFrom.useIBD());
+    this->setUseIbdOnly(cpFrom.useIbdOnly());
     this->setUseLasso(cpFrom.useLasso());
     this->setDoExportSwitchMissCopy(cpFrom.doExportSwitchMissCopy());
     this->setDoAllowInbreeding(cpFrom.doAllowInbreeding());

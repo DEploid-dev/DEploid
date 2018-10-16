@@ -71,12 +71,14 @@ class DEploidIO{
     bool doComputeLLK() const { return this->doComputeLLK_; }
     void computeLLKfromInitialHap();
     bool useIBD() const { return this->useIBD_;}
+    bool useIbdOnly() const { return this->useIbdOnly_;}
     bool useLasso() const { return this->useLasso_;}
     void paintIBD();
     double ibdLLK_;
     void getIBDprobsIntegrated(vector < vector <double> > &prob);
     // Lasso related
     void dEploidLasso();
+    vector <double> finalProp;
 
     // Log
     void wrapUp();
@@ -155,9 +157,9 @@ class DEploidIO{
     bool doLsPainting_;
     bool doIbdPainting_;
     bool useIBD_;
+    bool useIbdOnly_;
     bool useLasso_;
 
-    vector <double> finalProp;
     vector <string> chrom_;
     vector <double> obsWsaf_;
     vector <size_t> wsafGt0At_;
@@ -316,7 +318,7 @@ class DEploidIO{
     void setDoLsPainting ( const bool setTo ) { this->doLsPainting_ = setTo; }
     void setDoIbdPainting ( const bool setTo ) { this->doIbdPainting_ = setTo; }
     void setUseIBD( const bool setTo) { this->useIBD_ = setTo; }
-
+    bool setUseIbdOnly(const bool setTo) { this->useIbdOnly_ = setTo;}
     void setUseLasso( const bool setTo) { this->useLasso_ = setTo; }
 
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
