@@ -24,26 +24,21 @@
  */
 
 #include "mcmc.hpp"
-//#include "utility.hpp"
-//#include <math.h>       /* ceil */
-//#include <random>
-//#include "updateHap.hpp"
-//#include <stdio.h>
 
 
-bool McmcMachinery::doutProp(){
+bool McmcMachinery::doutProp() {
     dout << "  Update proportion to: ";
 
-    for ( auto const& value: this->currentProp_ ){
+    for (auto const& value : this->currentProp_) {
         dout << value << " ";
     }
-
-    dout<<endl;
+    dout << endl;
     return true;
 }
 
 
-bool McmcMachinery::doutLLK(){
-    dout << " Current log likelihood = " << sumOfVec( this->currentLLks_ ) << endl;
+bool McmcMachinery::doutLLK() {
+    dout << " Current log likelihood = " <<
+            sumOfVec(this->currentLLks_) << endl;
     return true;
 }

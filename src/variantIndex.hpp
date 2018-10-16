@@ -61,6 +61,8 @@ class VariantIndex {
 
     // For removing markers and positions
     void findWhoToBeKept(ExcludeMarker* excludedMarkers);
+    void findWhoToBeKeptWsafGt0(const vector <size_t> & wsafGt0At);
+
     virtual void removeMarkers();
 
     /* Index of content/info will be kept */
@@ -80,11 +82,12 @@ class VariantIndex {
     void getIndexOfChromStarts();
     void removePositions();
     void checkSortedPositions(string fileName);
+    void findAndKeepMarkers(ExcludeMarker* excludedMarkers);
+    void findAndKeepMarkersAtWsafGt0(const vector <size_t> & wsafGt0At);
 
  public:
     VariantIndex();
     virtual ~VariantIndex() {}
-    void findAndKeepMarkers(ExcludeMarker* excludedMarkers);
 };
 
 

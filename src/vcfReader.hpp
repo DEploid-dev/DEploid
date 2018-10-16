@@ -38,7 +38,7 @@
 // using std::endl;
 
 struct InvalidVcf : public InvalidInput{
-    InvalidVcf(string str) : InvalidInput(str) {
+    explicit InvalidVcf(string str):InvalidInput(str) {
     }
     virtual ~InvalidVcf() throw() {}
     // virtual const char* what () const noexcept {
@@ -48,7 +48,8 @@ struct InvalidVcf : public InvalidInput{
 
 
 struct VcfInvalidHeaderFieldNames : public InvalidVcf{
-    VcfInvalidHeaderFieldNames(string str1, string str2):InvalidVcf(str1) {
+    explicit VcfInvalidHeaderFieldNames(string str1, string str2):
+                InvalidVcf(str1) {
         this->reason = " VCF field header expects: ";
         throwMsg = this->reason + this->src + ", " + str2 + " was found!";
     }
@@ -57,7 +58,7 @@ struct VcfInvalidHeaderFieldNames : public InvalidVcf{
 
 
 struct VcfInvalidVariantEntry : public InvalidVcf{
-    VcfInvalidVariantEntry(string str):InvalidVcf(str) {}
+    explicit VcfInvalidVariantEntry(string str):InvalidVcf(str) {}
     virtual ~VcfInvalidVariantEntry() throw() {}
     // virtual const char* what () const noexcept {
         // return throwMsg.c_str();
@@ -66,42 +67,37 @@ struct VcfInvalidVariantEntry : public InvalidVcf{
 
 
 struct VcfCoverageFieldNotFound : public VcfInvalidVariantEntry{
-    VcfCoverageFieldNotFound( string str ):VcfInvalidVariantEntry( str) {
+    explicit VcfCoverageFieldNotFound(string str):VcfInvalidVariantEntry(str) {
         this->reason = "Coverage field AD was not found in the FORMAT, found: ";
-        throwMsg = this->reason + this->src ;
+        throwMsg = this->reason + this->src;
     }
     ~VcfCoverageFieldNotFound() throw() {}
 };
 
-// This requires more thinking, check for data type?
-
-
-// More informative exceptions for vcf related errors
-
 
 class VariantLine{
- friend class VcfReader;
- friend class DEploidIO;
-  public:
-    VariantLine ( string tmpLine );
-    ~VariantLine(){}
+  friend class VcfReader;
+  friend class DEploidIO;
+ public:
+    explicit VariantLine(string tmpLine);
+    ~VariantLine() {}
 
-  private:
+ private:
     string tmpLine_;
     string tmpStr_;
 
-    void init( string tmpLine );
+    void init(string tmpLine);
 
-    void extract_field_CHROM   ( );
-    void extract_field_POS     ( );
-    void extract_field_ID      ( );
-    void extract_field_REF     ( );
-    void extract_field_ALT     ( );
-    void extract_field_QUAL    ( );
-    void extract_field_FILTER  ( );
-    void extract_field_INFO    ( );
-    void extract_field_FORMAT  ( );
-    void extract_field_VARIANT ( );
+    void extract_field_CHROM();
+    void extract_field_POS();
+    void extract_field_ID();
+    void extract_field_REF();
+    void extract_field_ALT();
+    void extract_field_QUAL();
+    void extract_field_FILTER();
+    void extract_field_INFO();
+    void extract_field_FORMAT();
+    void extract_field_VARIANT();
 
     size_t feildStart_;
     size_t fieldEnd_;
@@ -126,28 +122,27 @@ class VariantLine{
 
 /*! \brief VCF file reader @ingroup group_data */
 class VcfReader : public VariantIndex {
-
 #ifdef UNITTEST
- friend class TestVCF;
+  friend class TestVCF;
 #endif
- friend class DEploidIO;
-  public:
+  friend class DEploidIO;
+ public:
     // Constructors and Destructors
-    VcfReader(string fileName); // parse in exclude sites
-    ~VcfReader(){}
+    explicit VcfReader(string fileName);  // parse in exclude sites
+    ~VcfReader() {}
 
-  private:
+ private:
     vector <VariantLine> variants;
     vector <VariantLine> keptVariants;
     vector <double> refCount;
     vector <double> altCount;
-    vector <string> headerLines ;
+    vector <string> headerLines;
     string fileName_;
     ifstream inFile;
     igzstream inFileGz;
     bool isCompressed_;
     bool isCompressed() const { return this->isCompressed_; }
-    void setIsCompressed (const bool compressed) {
+    void setIsCompressed(const bool compressed) {
         this->isCompressed_ = compressed; }
     void checkFileCompressed();
     string sampleName;

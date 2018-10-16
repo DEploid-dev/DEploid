@@ -84,19 +84,24 @@ int main(int argc, char *argv[]) {
             dEploidIO.writeHap(hap, false);
         } else {
             if (dEploidIO.useIBD()) {  // ibd
+                DEploidIO tmpIO(dEploidIO);
+                tmpIO.ibdTrimming();
                 McmcSample * ibdMcmcSample = new McmcSample();
-                MersenneTwister ibdRg(dEploidIO.randomSeed());
+                MersenneTwister ibdRg(tmpIO.randomSeed());
 
-                McmcMachinery ibdMcmcMachinery(&dEploidIO.plaf_,
-                                               &dEploidIO.refCount_,
-                                               &dEploidIO.altCount_,
-                                               dEploidIO.panel,
-                                               &dEploidIO,
+                McmcMachinery ibdMcmcMachinery(&tmpIO.plaf_,
+                                               &tmpIO.refCount_,
+                                               &tmpIO.altCount_,
+                                               tmpIO.panel,
+                                               &tmpIO,
                                                ibdMcmcSample,
                                                &ibdRg,
                                                true);
                 ibdMcmcMachinery.runMcmcChain(true,   // show progress
                                               true);  // use IBD
+                dEploidIO.initialProp = tmpIO.initialProp;
+                dEploidIO.setInitialPropWasGiven(true);
+                dEploidIO.setDoUpdateProp(false);
                 delete ibdMcmcSample;
             }
             McmcSample * mcmcSample = new McmcSample();

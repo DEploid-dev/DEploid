@@ -745,62 +745,74 @@ void DEploidIO::readPanel() {
 }
 
 
-DEploidIO::DEploidIO(const DEploidIO &currentDEploidIO) {
+DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->setIsCopied(true);
-    this->setDoExportRecombProb(currentDEploidIO.doExportRecombProb());
-    this->setrandomSeedWasGiven(currentDEploidIO.randomSeedWasGiven());
-    this->setCompressVcf(currentDEploidIO.compressVcf());
-    this->setInitialPropWasGiven(currentDEploidIO.initialPropWasGiven());
-    this->setInitialHapWasGiven(currentDEploidIO.initialHapWasGiven());
-    this->initialProp = vector <double> (currentDEploidIO.initialProp.begin(),
-                                         currentDEploidIO.initialProp.end());
-    this->setPleaseCheckInitialP(currentDEploidIO.pleaseCheckInitialP());
-    this->setExcludeSites(currentDEploidIO.excludeSites());
-    this->excludedMarkers = currentDEploidIO.excludedMarkers;
-    this->panel = currentDEploidIO.panel;
-    this->set_seed(currentDEploidIO.randomSeed_);
-    this->set_help(currentDEploidIO.help());
-    this->setVersion(currentDEploidIO.version());
-    this->setUsePanel(currentDEploidIO.usePanel());
-    this->precision_ = currentDEploidIO.precision_;
-    this->prefix_ = currentDEploidIO.prefix_;
-    this->setKStrainWasManuallySet(currentDEploidIO.kStrainWasManuallySet());
-    this->setKStrainWasSetByHap(currentDEploidIO.kStrainWasSetByHap());
-    this->setKStrainWasSetByProp(currentDEploidIO.kStrainWasSetByProp());
-    this->setKstrain(currentDEploidIO.kStrain());
-    this->nMcmcSample_ = currentDEploidIO.nMcmcSample();
-    this->setDoUpdateProp(currentDEploidIO.doUpdateProp());
-    this->setDoUpdatePair(currentDEploidIO.doUpdatePair());
-    this->setDoUpdateSingle(currentDEploidIO.doUpdateSingle());
-    this->setDoExportPostProb(currentDEploidIO.doExportPostProb());
-    this->setDoLsPainting(currentDEploidIO.doLsPainting());
-    this->setDoIbdPainting(currentDEploidIO.doIbdPainting());
-    this->setUseIBD(currentDEploidIO.useIBD());
-    this->setUseLasso(currentDEploidIO.useLasso());
-    this->setDoExportSwitchMissCopy(currentDEploidIO.doExportSwitchMissCopy());
-    this->setDoAllowInbreeding(currentDEploidIO.doAllowInbreeding());
-    this->mcmcBurn_ = currentDEploidIO.mcmcBurn_;
-    this->mcmcMachineryRate_ = currentDEploidIO.mcmcMachineryRate_;
-    this->missCopyProb_ = currentDEploidIO.missCopyProb_;
-    this->useConstRecomb_ = currentDEploidIO.useConstRecomb();
-    this->setForbidCopyFromSame(currentDEploidIO.forbidCopyFromSame());
-    this->constRecombProb_ = currentDEploidIO.constRecombProb();
-    this->averageCentimorganDistance_ = currentDEploidIO.averageCentimorganDistance();
-    this->setScalingFactor(currentDEploidIO.scalingFactor());
-    this->setParameterG(currentDEploidIO.parameterG());
-    this->setParameterSigma(currentDEploidIO.parameterSigma());
-    this->setIBDSigma(currentDEploidIO.ibdSigma());
-    this->setUseVcf(currentDEploidIO.useVcf());
-    this->vcfReaderPtr_ = currentDEploidIO.vcfReaderPtr_;
-    this->setDoExportVcf(currentDEploidIO.doExportVcf());
-    this->setDoComputeLLK(currentDEploidIO.doComputeLLK());
-
-    this->refCount_ = vector <double> (currentDEploidIO.refCount_.begin(),
-                                       currentDEploidIO.refCount_.end());
-    this->altCount_ = vector <double> (currentDEploidIO.altCount_.begin(),
-                                       currentDEploidIO.altCount_.end());
-    this->plaf_ = vector <double> (currentDEploidIO.plaf_.begin(),
-                                   currentDEploidIO.plaf_.end());
+    this->setDoExportRecombProb(cpFrom.doExportRecombProb());
+    this->setrandomSeedWasGiven(cpFrom.randomSeedWasGiven());
+    this->setCompressVcf(cpFrom.compressVcf());
+    this->setInitialPropWasGiven(cpFrom.initialPropWasGiven());
+    this->setInitialHapWasGiven(cpFrom.initialHapWasGiven());
+    this->initialProp = vector <double> (cpFrom.initialProp.begin(),
+                                         cpFrom.initialProp.end());
+    this->setPleaseCheckInitialP(cpFrom.pleaseCheckInitialP());
+    this->setExcludeSites(cpFrom.excludeSites());
+    this->excludedMarkers = cpFrom.excludedMarkers;
+    this->panel = cpFrom.panel;
+    this->set_seed(cpFrom.randomSeed_);
+    this->set_help(cpFrom.help());
+    this->setVersion(cpFrom.version());
+    this->setUsePanel(cpFrom.usePanel());
+    this->precision_ = cpFrom.precision_;
+    this->prefix_ = cpFrom.prefix_;
+    this->setKStrainWasManuallySet(cpFrom.kStrainWasManuallySet());
+    this->setKStrainWasSetByHap(cpFrom.kStrainWasSetByHap());
+    this->setKStrainWasSetByProp(cpFrom.kStrainWasSetByProp());
+    this->setKstrain(cpFrom.kStrain());
+    this->nMcmcSample_ = cpFrom.nMcmcSample();
+    this->setDoUpdateProp(cpFrom.doUpdateProp());
+    this->setDoUpdatePair(cpFrom.doUpdatePair());
+    this->setDoUpdateSingle(cpFrom.doUpdateSingle());
+    this->setDoExportPostProb(cpFrom.doExportPostProb());
+    this->setDoLsPainting(cpFrom.doLsPainting());
+    this->setDoIbdPainting(cpFrom.doIbdPainting());
+    this->setUseIBD(cpFrom.useIBD());
+    this->setUseLasso(cpFrom.useLasso());
+    this->setDoExportSwitchMissCopy(cpFrom.doExportSwitchMissCopy());
+    this->setDoAllowInbreeding(cpFrom.doAllowInbreeding());
+    this->mcmcBurn_ = cpFrom.mcmcBurn_;
+    this->mcmcMachineryRate_ = cpFrom.mcmcMachineryRate_;
+    this->missCopyProb_ = cpFrom.missCopyProb_;
+    this->useConstRecomb_ = cpFrom.useConstRecomb();
+    this->setForbidCopyFromSame(cpFrom.forbidCopyFromSame());
+    this->constRecombProb_ = cpFrom.constRecombProb();
+    this->averageCentimorganDistance_ = cpFrom.averageCentimorganDistance();
+    this->setScalingFactor(cpFrom.scalingFactor());
+    this->setParameterG(cpFrom.parameterG());
+    this->setParameterSigma(cpFrom.parameterSigma());
+    this->setIBDSigma(cpFrom.ibdSigma());
+    this->setUseVcf(cpFrom.useVcf());
+    this->vcfReaderPtr_ = cpFrom.vcfReaderPtr_;
+    this->setDoExportVcf(cpFrom.doExportVcf());
+    this->setDoComputeLLK(cpFrom.doComputeLLK());
+    this->setNLoci(cpFrom.nLoci());
+    this->refCount_ = vector <double> (cpFrom.refCount_.begin(),
+                                       cpFrom.refCount_.end());
+    this->altCount_ = vector <double> (cpFrom.altCount_.begin(),
+                                       cpFrom.altCount_.end());
+    this->plaf_ = vector <double> (cpFrom.plaf_.begin(),
+                                   cpFrom.plaf_.end());
+    this->chrom_ = vector <string> (cpFrom.chrom_.begin(),
+                                   cpFrom.chrom_.end());
+    this->position_ = vector < vector <int> > (cpFrom.position_.begin(),
+                                   cpFrom.position_.end());
+    this->indexOfChromStarts_ = vector <size_t> (cpFrom.indexOfChromStarts_.begin(),
+                                   cpFrom.indexOfChromStarts_.end());
+    this->strExportProp = cpFrom.strExportProp;
+    this->strExportLLK = cpFrom.strExportLLK;
+    this->strExportHap = cpFrom.strExportHap;
+    this->strIbdExportProp = cpFrom.strIbdExportProp;
+    this->strIbdExportLLK = cpFrom.strIbdExportLLK;
+    this->strIbdExportHap = cpFrom.strIbdExportHap;
 }
 
 
@@ -905,3 +917,71 @@ void DEploidIO::dEploidLasso() {
     }
 }
 
+
+void DEploidIO::computeObsWsaf() {
+    assert(this->obsWsaf_.size() == 0);
+    for ( size_t i = 0; i < this->nLoci(); i++) {
+        this->obsWsaf_.push_back(this->altCount_[i] /
+            (this->refCount_[i] + this->altCount_[i] + 0.00000000000001));
+    }
+    assert(this->obsWsaf_.size() == this->nLoci());
+}
+
+
+void DEploidIO::findWsafGreaterZeroAt() {
+    assert(wsafGt0At_.size() == 0);
+    for ( size_t i = 0; i < this->nLoci(); i++) {
+        if (this->obsWsaf_[i] > 0 ) {
+            this->wsafGt0At_.push_back(i);
+        }
+    }
+    // cout << "wsafGt0At_.size() = " << wsafGt0At_.size() << endl;
+}
+
+
+void DEploidIO::trimVec(vector <double> &vec, vector <size_t> &idx) {
+    vector <double> ret;
+    for (auto const& value : idx){
+        ret.push_back(vec[value]);
+    }
+    //return ret;
+    vec.clear();
+    for (auto const& value : ret){
+        vec.push_back(value);
+    }
+}
+
+
+void DEploidIO::ibdTrimming() {
+    this->computeObsWsaf();
+    this->findWsafGreaterZeroAt();
+
+    this->trimVec(this->refCount_, this->wsafGt0At_);
+    this->trimVec(this->altCount_, this->wsafGt0At_);
+    this->trimVec(this->plaf_, this->wsafGt0At_);
+
+    this->setNLoci(this->plaf_.size());
+
+    vector <string> oldChrom = vector <string> (chrom_.begin(), chrom_.end());
+    this->chrom_.clear();
+
+    vector < vector < int > > oldposition = this->position_;
+    this->position_.clear();
+
+    for (size_t chromI = 0; chromI < oldChrom.size(); chromI++) {
+        size_t hapIndex = indexOfChromStarts_[chromI];
+        vector <int> newTrimmedPos;
+        for (size_t posI = 0; posI < oldposition[chromI].size(); posI++) {
+            if (std::find(this->wsafGt0At_.begin(),this->wsafGt0At_.end(), hapIndex)
+                    != this->wsafGt0At_.end()){
+                if (newTrimmedPos.size() == 0) {
+                    this->chrom_.push_back(oldChrom[chromI]);
+                }
+                newTrimmedPos.push_back(oldposition[chromI][posI]);
+            }
+
+            hapIndex++;
+        }
+        this->position_.push_back(newTrimmedPos);
+    }
+}

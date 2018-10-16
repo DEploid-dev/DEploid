@@ -104,6 +104,17 @@ class DEploidIO{
     void writeHap (vector < vector <double> > &hap, bool useIBD = false);
     bool doPrintLassoPanel_;
 
+    // Trimming related
+    void ibdTrimming();
+
+
+
+    void setInitialHapWasGiven(const bool setTo) { this->initialHapWasGiven_ = setTo; }
+    vector < vector <double> > initialHap;
+    vector <double> initialProp;
+    void setDoUpdateProp ( const bool setTo ) { this->doUpdateProp_ = setTo; }
+    void setInitialPropWasGiven(const bool setTo) {this->initialPropWasGiven_ = setTo; }
+
   private:
     void core();
     double llkFromInitialHap_;
@@ -146,11 +157,10 @@ class DEploidIO{
     bool useIBD_;
     bool useLasso_;
 
-    vector <double> initialProp;
     vector <double> finalProp;
-    vector < vector <double> > initialHap;
     vector <string> chrom_;
     vector <double> obsWsaf_;
+    vector <size_t> wsafGt0At_;
     size_t nLoci_;
 
     // Help related
@@ -286,7 +296,6 @@ class DEploidIO{
     void setIsCopied ( const bool setTo ) { this->isCopied_ = setTo; }
     bool isCopied() const { return this->isCopied_; }
 
-    void setDoUpdateProp ( const bool setTo ) { this->doUpdateProp_ = setTo; }
     bool doUpdateProp() const { return this->doUpdateProp_; }
 
     void setDoUpdateSingle ( const bool setTo ) { this->doUpdateSingle_ = setTo; }
@@ -311,13 +320,11 @@ class DEploidIO{
     void setUseLasso( const bool setTo) { this->useLasso_ = setTo; }
 
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
-    void setInitialPropWasGiven(const bool setTo) {this->initialPropWasGiven_ = setTo; }
 
     bool pleaseCheckInitialP() const { return pleaseCheckInitialP_; }
     void setPleaseCheckInitialP(const bool setTo) {this->pleaseCheckInitialP_ = setTo; }
 
     bool initialHapWasGiven() const { return initialHapWasGiven_; }
-    void setInitialHapWasGiven(const bool setTo) { this->initialHapWasGiven_ = setTo; }
 
     bool randomSeedWasGiven() const {return this->randomSeedWasGiven_; }
 
@@ -406,6 +413,12 @@ class DEploidIO{
     vector <double> lassoComputeObsWsaf(size_t segmentStartIndex, size_t nLoci);
     vector < vector <double> > lassoSubsetPanel(size_t segmentStartIndex, size_t nLoci);
     void writePanel(Panel *panel, size_t chromi, vector <string> hdr);
+
+    // Trimming related
+    void computeObsWsaf();
+    void findWsafGreaterZeroAt();
+    void trimVec(vector <double> &vec, vector <size_t> &idx);
+
 };
 
 #endif

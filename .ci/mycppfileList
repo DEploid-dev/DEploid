@@ -4,15 +4,12 @@ src/mcmc.cpp
 src/mcmc.hpp
 src/panel.cpp
 src/panel.hpp
-src/txtReader.cpp
-src/txtReader.hpp
 src/updateHap.cpp
 src/updateHap.hpp
 src/utility.cpp
 src/utility.hpp
 src/vcfReader.cpp
 src/vcfReader.hpp
-src/debug/mcmcDebug.cpp
 src/debug/vcfReaderDebug.cpp
 src/export/dEploidIOExport.cpp
 src/export/dEploidIOExportPosteriorProb.cpp
