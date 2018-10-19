@@ -84,8 +84,6 @@ int main(int argc, char *argv[]) {
             dEploidIO.writeHap(hap, false);
         } else {
             if (dEploidIO.useIBD()) {  // ibd
-                //DEploidIO tmpIO(dEploidIO);
-                //tmpIO.ibdTrimming();
                 McmcSample * ibdMcmcSample = new McmcSample();
                 MersenneTwister ibdRg(dEploidIO.randomSeed());
 
@@ -99,17 +97,17 @@ int main(int argc, char *argv[]) {
                                                true);
                 ibdMcmcMachinery.runMcmcChain(true,   // show progress
                                               true);  // use IBD
-                //if (dEploidIO.useIbdOnly()) {
-                    //tmpIO.paintIBD();
-                    //dEploidIO.finalProp = tmpIO.initialProp;
-                //}
+                // if (dEploidIO.useIbdOnly()) {
+                    // tmpIO.paintIBD();
+                    // dEploidIO.finalProp = tmpIO.initialProp;
+                // }
 
-                //dEploidIO.initialProp = tmpIO.initialProp;
-                //dEploidIO.setInitialPropWasGiven(true);
-                //dEploidIO.setDoUpdateProp(false);
+                // dEploidIO.initialProp = tmpIO.initialProp;
+                // dEploidIO.setInitialPropWasGiven(true);
+                // dEploidIO.setDoUpdateProp(false);
                 delete ibdMcmcSample;
             }
-            //if (dEploidIO.useIbdOnly() == false) {
+            // if (dEploidIO.useIbdOnly() == false) {
                 McmcSample * mcmcSample = new McmcSample();
                 MersenneTwister rg(dEploidIO.randomSeed());
 
@@ -126,7 +124,7 @@ int main(int argc, char *argv[]) {
 
                 dEploidIO.paintIBD();
                 delete mcmcSample;
-            //}
+            // }
         }
         // Finishing, write log
         dEploidIO.wrapUp();

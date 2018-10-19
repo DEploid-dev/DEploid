@@ -417,10 +417,6 @@ class DEploidIO{
     vector < vector <double> > lassoSubsetPanel(size_t segmentStartIndex, size_t nLoci);
     void writePanel(Panel *panel, size_t chromi, vector <string> hdr);
 
-    // Trimming related
-    void computeObsWsaf();
-    void findWsafGreaterZeroAt();
-    void trimVec(vector <double> &vec, vector <size_t> &idx);
 
 };
 
