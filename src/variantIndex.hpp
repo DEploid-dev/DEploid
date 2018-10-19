@@ -30,7 +30,7 @@
 #include <vector>
 #include <string>
 #include <cassert>
-#include "global.h"
+#include "src/global.h"
 
 
 using std::vector;

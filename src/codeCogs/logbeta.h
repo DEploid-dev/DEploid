@@ -15,11 +15,11 @@
 #define MATHS_SPECIAL_GAMMA_LOGBETA_H
 
 #include <math.h>
-#include <ln_add1.h>
-#include <log_gamma.h>
-#include <loggammasum.h>
-#include <loggammafrac.h>
-#include <asympt_expn.h>
+#include "src/codeCogs/ln_add1.h"
+#include "src/codeCogs/log_gamma.h"
+#include "src/codeCogs/loggammasum.h"
+#include "src/codeCogs/loggammafrac.h"
+#include "src/codeCogs/asympt_expn.h"
 
 namespace Maths
 {

@@ -1,6 +1,6 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "txtReader.hpp"
+#include "src/txtReader.hpp"
 
 class TestTxtReader : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE( TestTxtReader );

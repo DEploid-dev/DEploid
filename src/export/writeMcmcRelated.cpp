@@ -23,8 +23,8 @@
  *
  */
 
-#include "dEploidIO.hpp"
-#include "mcmc.hpp"
+#include "src/dEploidIO.hpp"
+#include "src/mcmc.hpp"
 
 void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample, bool useIBD){
     this->writeProp( mcmcSample, useIBD );

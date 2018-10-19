@@ -1,6 +1,6 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "ibd.hpp"
+#include "src/ibd.hpp"
 #include <iomanip>      // std::setw
 
 

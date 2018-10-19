@@ -26,10 +26,10 @@
 #include <vector>
 #include <iostream>
 #include <iomanip>      // std::setw
-#include "mersenne_twister.hpp"
+#include "random/mersenne_twister.hpp"
 #include "dEploidIO.hpp"
 #include "panel.hpp"
-#include "randomSample.hpp"   // src/codeCogs/randomSample.hpp
+#include "codeCogs/randomSample.hpp"   // src/codeCogs/randomSample.hpp
 #include "ibd.hpp"
 
 #ifndef MCMC

@@ -24,10 +24,10 @@
 #endif
 #endif
 
-#include <poly_eval.h>
-#include <stirling.h>
 #include <math.h>
 #include <float.h>
+#include "src/codeCogs/poly_eval.h"
+#include "src/codeCogs/stirling.h"
 
 #define MAXNUM 1.79769313486231570815E308
 #define PI 3.141592653589793238

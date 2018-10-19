@@ -14,9 +14,9 @@
 #ifndef MATHS_SPECIAL_GAMMA_STIRLING_H
 #define MATHS_SPECIAL_GAMMA_STIRLING_H
 
-#include <poly_eval.h>
 #include <math.h>
 #include <float.h>
+#include "src/codeCogs/poly_eval.h"
 
 namespace Maths
 {
