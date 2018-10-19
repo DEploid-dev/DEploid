@@ -29,7 +29,7 @@
 #include <fstream>
 #include "exceptions.hpp"
 #include "variantIndex.hpp"
-#include "gzstream.h"
+#include "gzstream/gzstream.h"
 
 #ifndef DEPLOID_SRC_VCFREADER_HPP_
 #define DEPLOID_SRC_VCFREADER_HPP_

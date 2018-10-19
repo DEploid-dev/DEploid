@@ -15,8 +15,8 @@
 #define MATHS_SPECIAL_GAMMA_LOGGAMMASUM_H
 
 #include <assert.h>
-#include <log_gamma.h>
 #include <math.h>
+#include "src/codeCogs/log_gamma.h"
 
 namespace Maths
 {

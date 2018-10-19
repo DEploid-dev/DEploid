@@ -14,8 +14,8 @@
 #ifndef MATHS_SPECIAl_GAMMA_LOG_GAMMA_H
 #define MATHS_SPECIAl_GAMMA_LOG_GAMMA_H
 
-#include <machine_epsilon.h>
 #include <cmath>
+#include "src/codeCogs/machine_epsilon.h"
 
 #define D1      -0.5772156649015328605195174
 #define D2      0.4227843350984671393993777

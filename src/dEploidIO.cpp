@@ -30,7 +30,7 @@
 #include "updateHap.hpp"  // chromPainting
 #include "dEploidIO.hpp"
 #include "ibd.hpp"
-#include "dEploidLasso.hpp"
+#include "lasso/dEploidLasso.hpp"
 
 DEploidIO::DEploidIO() {
     this->init();
@@ -124,6 +124,7 @@ void DEploidIO::init() {
     this->setDoLsPainting( false );
     this->setDoIbdPainting( false );
     this->setUseIBD( false );
+    this->setUseIbdOnly(false);
     this->setUseLasso( false );
     this->setDoExportSwitchMissCopy ( true );
     this->setDoAllowInbreeding( false );
@@ -154,6 +155,14 @@ void DEploidIO::init() {
     #else
         dEploidGitVersion_ = "";
     #endif
+
+    #ifdef DEPLOIDVERSION
+        lassoGitVersion_ = LASSOVERSION;
+    #else
+        lassoGitVersion_ = "";
+    #endif
+
+
 }
 
 
@@ -275,10 +284,16 @@ void DEploidIO::removeFilesWithSameName() {
     strExportLLK = this->prefix_ + ".llk";
     strExportHap = this->prefix_ + ".hap";
 
-    strIbdExportProp = this->prefix_ + ".ibd.prop";
-    strIbdExportLLK = this->prefix_ + ".ibd.llk";
-    strIbdExportHap = this->prefix_ + ".ibd.hap";
-    strIbdExportProbs = this->prefix_ + ".ibd.probs";
+    if (this->useIbdOnly()) {
+        strIbdExportProp = this->prefix_ + ".prop";
+        strIbdExportLLK = this->prefix_ + ".llk";
+        strIbdExportHap = this->prefix_ + ".hap";
+    } else {
+        strIbdExportProp = this->prefix_ + ".ibd.prop";
+        strIbdExportLLK = this->prefix_ + ".ibd.llk";
+        strIbdExportHap = this->prefix_ + ".ibd.hap";
+        strIbdExportProbs = this->prefix_ + ".ibd.probs";
+    }
 
     strExportVcf = this->prefix_ + ".vcf";
     if ( compressVcf() ) {
@@ -448,6 +463,9 @@ void DEploidIO::parse () {
             this->readInitialHaps();
         } else if ( *argv_i == "-ibd" ) {
             this->setUseIBD(true);
+        } else if ( *argv_i == "-ibdonly" ) {
+            this->setUseIBD(true);
+            this->setUseIbdOnly(true);
         } else if ( *argv_i == "-lasso" ) {
             this->setUseLasso(true);
             this->setDoUpdateProp(false);
@@ -557,7 +575,8 @@ void DEploidIO::printVersion(std::ostream& out) {
     out << endl
         << "dEploid " << VERSION
         << endl
-        << "Git commit: " << dEploidGitVersion_ << endl;
+        << "Git commit (DEploid): " << dEploidGitVersion_ << endl
+        << "Git commit (Lasso): " << lassoGitVersion_ << endl;
 }
 
 void DEploidIO::printHelp(std::ostream& out) {
@@ -776,6 +795,7 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->setDoLsPainting(cpFrom.doLsPainting());
     this->setDoIbdPainting(cpFrom.doIbdPainting());
     this->setUseIBD(cpFrom.useIBD());
+    this->setUseIbdOnly(cpFrom.useIbdOnly());
     this->setUseLasso(cpFrom.useLasso());
     this->setDoExportSwitchMissCopy(cpFrom.doExportSwitchMissCopy());
     this->setDoAllowInbreeding(cpFrom.doAllowInbreeding());
@@ -918,70 +938,3 @@ void DEploidIO::dEploidLasso() {
 }
 
 
-void DEploidIO::computeObsWsaf() {
-    assert(this->obsWsaf_.size() == 0);
-    for ( size_t i = 0; i < this->nLoci(); i++) {
-        this->obsWsaf_.push_back(this->altCount_[i] /
-            (this->refCount_[i] + this->altCount_[i] + 0.00000000000001));
-    }
-    assert(this->obsWsaf_.size() == this->nLoci());
-}
-
-
-void DEploidIO::findWsafGreaterZeroAt() {
-    assert(wsafGt0At_.size() == 0);
-    for ( size_t i = 0; i < this->nLoci(); i++) {
-        if (this->obsWsaf_[i] > 0 ) {
-            this->wsafGt0At_.push_back(i);
-        }
-    }
-    // cout << "wsafGt0At_.size() = " << wsafGt0At_.size() << endl;
-}
-
-
-void DEploidIO::trimVec(vector <double> &vec, vector <size_t> &idx) {
-    vector <double> ret;
-    for (auto const& value : idx){
-        ret.push_back(vec[value]);
-    }
-    //return ret;
-    vec.clear();
-    for (auto const& value : ret){
-        vec.push_back(value);
-    }
-}
-
-
-void DEploidIO::ibdTrimming() {
-    this->computeObsWsaf();
-    this->findWsafGreaterZeroAt();
-
-    this->trimVec(this->refCount_, this->wsafGt0At_);
-    this->trimVec(this->altCount_, this->wsafGt0At_);
-    this->trimVec(this->plaf_, this->wsafGt0At_);
-
-    this->setNLoci(this->plaf_.size());
-
-    vector <string> oldChrom = vector <string> (chrom_.begin(), chrom_.end());
-    this->chrom_.clear();
-
-    vector < vector < int > > oldposition = this->position_;
-    this->position_.clear();
-
-    for (size_t chromI = 0; chromI < oldChrom.size(); chromI++) {
-        size_t hapIndex = indexOfChromStarts_[chromI];
-        vector <int> newTrimmedPos;
-        for (size_t posI = 0; posI < oldposition[chromI].size(); posI++) {
-            if (std::find(this->wsafGt0At_.begin(),this->wsafGt0At_.end(), hapIndex)
-                    != this->wsafGt0At_.end()){
-                if (newTrimmedPos.size() == 0) {
-                    this->chrom_.push_back(oldChrom[chromI]);
-                }
-                newTrimmedPos.push_back(oldposition[chromI][posI]);
-            }
-
-            hapIndex++;
-        }
-        this->position_.push_back(newTrimmedPos);
-    }
-}

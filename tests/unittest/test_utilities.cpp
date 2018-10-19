@@ -1,6 +1,6 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "utility.hpp"
+#include "src/utility.hpp"
 
 
 class TestUtility : public CppUnit::TestCase {

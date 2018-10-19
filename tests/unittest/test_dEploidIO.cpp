@@ -25,7 +25,7 @@
 
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "dEploidIO.hpp"
+#include "src/dEploidIO.hpp"
 
 class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE(TestIO);

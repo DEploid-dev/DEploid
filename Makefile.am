@@ -1,4 +1,5 @@
 DEPLOIDVERSION = $(shell git show HEAD | head -1 | sed -e "s/commit //g" | cat)
+LASSOVERSION = $(shell git submodule status | grep DEploid-Lasso-lib | sed -e "s/ //g" -e "s/DEploid.*//" | cat)
 EXTRA_DIST = bootstrap \
              $(top_srcdir)/utilities/dataExplore.r \
              $(top_srcdir)/utilities/interpretDEploid.r \
@@ -15,7 +16,7 @@ TESTS = unit_tests io_unit_tests
 check_PROGRAMS = unit_tests dEploid_dbg dEploid_prof io_unit_tests
 PROG = DEPLOID
 
-common_flags = -std=c++0x -Isrc/ -Isrc/codeCogs/ -Isrc/random/ -Isrc/gzstream/ -Isrc/lasso/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
+common_flags = -std=c++0x -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DLASSOVERSION=\"${LASSOVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
 common_LDADD = -lz
 
 common_src = src/random/fastfunc.cpp \

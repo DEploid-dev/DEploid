@@ -1,6 +1,6 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "mcmc.hpp"
+#include "src/mcmc.hpp"
 
 class TestMcmcSample: public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE( TestMcmcSample );

@@ -116,7 +116,7 @@ jobs:
             ./tests/test_binary.sh
             ./tests/testPOS.sh
             ./tests/test_binaryVcfVsTxt.sh
-            #./tests/test-against-previous-version.sh
+            ./tests/test-against-previous-version.sh
             ./tests/test_binaryReproducible.sh
 
 

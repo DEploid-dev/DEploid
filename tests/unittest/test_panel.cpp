@@ -1,6 +1,6 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "panel.hpp"
+#include "src/panel.hpp"
 
 class TestPanel : public CppUnit::TestCase {
 

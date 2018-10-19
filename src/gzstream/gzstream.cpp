@@ -21,14 +21,14 @@
 // Revision      : $Revision: 1.7 $
 // Revision_date : $Date: 2003/01/08 14:41:27 $
 // Author(s)     : Deepak Bandyopadhyay, Lutz Kettner
-// 
-// Standard streambuf implementation following Nicolai Josuttis, "The 
+//
+// Standard streambuf implementation following Nicolai Josuttis, "The
 // Standard C++ Library".
 // ============================================================================
 
-#include <gzstream.h>
 #include <iostream>
 #include <string.h>  // for memcpy
+#include "src/gzstream/gzstream.h"
 
 #ifdef GZSTREAM_NAMESPACE
 namespace GZSTREAM_NAMESPACE {
@@ -97,7 +97,7 @@ int gzstreambuf::underflow() { // used for input buffer only
           buffer + 4 + num);          // end of buffer
 
     // return next character
-    return * reinterpret_cast<unsigned char *>( gptr());    
+    return * reinterpret_cast<unsigned char *>( gptr());
 }
 
 int gzstreambuf::flush_buffer() {

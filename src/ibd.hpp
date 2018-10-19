@@ -29,7 +29,7 @@
 #include <string>
 #include "exceptions.hpp"
 #include "utility.hpp"
-#include "mersenne_twister.hpp"
+#include "random/mersenne_twister.hpp"
 #include "dEploidIO.hpp"
 
 #ifndef IBD

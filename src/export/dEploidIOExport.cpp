@@ -23,8 +23,8 @@
  *
  */
 
-#include "dEploidIO.hpp"
-#include "mcmc.hpp"
+#include "src/dEploidIO.hpp"
+#include "src/mcmc.hpp"
 
 
 void DEploidIO::wrapUp(){
@@ -79,6 +79,7 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     (*writeTo) << "\n";
     (*writeTo) << "Program was compiled on: " << compileTime_ << endl;
     (*writeTo) << "dEploid version: " << dEploidGitVersion_ << endl;
+    (*writeTo) << "lasso version: " << lassoGitVersion_ << endl;
     (*writeTo) << "\n";
     (*writeTo) << "Input data: \n";
     if (panelFileName_.size() > 0){

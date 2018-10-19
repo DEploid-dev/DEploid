@@ -1,6 +1,6 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "vcfReader.hpp"
+#include "src/vcfReader.hpp"
 
 class TestVCF : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE( TestVCF );

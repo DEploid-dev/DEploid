@@ -84,42 +84,47 @@ int main(int argc, char *argv[]) {
             dEploidIO.writeHap(hap, false);
         } else {
             if (dEploidIO.useIBD()) {  // ibd
-                DEploidIO tmpIO(dEploidIO);
-                tmpIO.ibdTrimming();
                 McmcSample * ibdMcmcSample = new McmcSample();
-                MersenneTwister ibdRg(tmpIO.randomSeed());
+                MersenneTwister ibdRg(dEploidIO.randomSeed());
 
-                McmcMachinery ibdMcmcMachinery(&tmpIO.plaf_,
-                                               &tmpIO.refCount_,
-                                               &tmpIO.altCount_,
-                                               tmpIO.panel,
-                                               &tmpIO,
+                McmcMachinery ibdMcmcMachinery(&dEploidIO.plaf_,
+                                               &dEploidIO.refCount_,
+                                               &dEploidIO.altCount_,
+                                               dEploidIO.panel,
+                                               &dEploidIO,
                                                ibdMcmcSample,
                                                &ibdRg,
                                                true);
                 ibdMcmcMachinery.runMcmcChain(true,   // show progress
                                               true);  // use IBD
-                dEploidIO.initialProp = tmpIO.initialProp;
-                dEploidIO.setInitialPropWasGiven(true);
-                dEploidIO.setDoUpdateProp(false);
+                // if (dEploidIO.useIbdOnly()) {
+                    // tmpIO.paintIBD();
+                    // dEploidIO.finalProp = tmpIO.initialProp;
+                // }
+
+                // dEploidIO.initialProp = tmpIO.initialProp;
+                // dEploidIO.setInitialPropWasGiven(true);
+                // dEploidIO.setDoUpdateProp(false);
                 delete ibdMcmcSample;
             }
-            McmcSample * mcmcSample = new McmcSample();
-            MersenneTwister rg(dEploidIO.randomSeed());
+            // if (dEploidIO.useIbdOnly() == false) {
+                McmcSample * mcmcSample = new McmcSample();
+                MersenneTwister rg(dEploidIO.randomSeed());
 
-            McmcMachinery mcmcMachinery(&dEploidIO.plaf_,
-                                        &dEploidIO.refCount_,
-                                        &dEploidIO.altCount_,
-                                        dEploidIO.panel,
-                                        &dEploidIO,
-                                        mcmcSample,
-                                        &rg,
-                                        false);  // use IBD
-            mcmcMachinery.runMcmcChain(true,     // show progress
-                                       false);   // use IBD
+                McmcMachinery mcmcMachinery(&dEploidIO.plaf_,
+                                            &dEploidIO.refCount_,
+                                            &dEploidIO.altCount_,
+                                            dEploidIO.panel,
+                                            &dEploidIO,
+                                            mcmcSample,
+                                            &rg,
+                                            false);  // use IBD
+                mcmcMachinery.runMcmcChain(true,     // show progress
+                                           false);   // use IBD
 
-            dEploidIO.paintIBD();
-            delete mcmcSample;
+                dEploidIO.paintIBD();
+                delete mcmcSample;
+            // }
         }
         // Finishing, write log
         dEploidIO.wrapUp();
