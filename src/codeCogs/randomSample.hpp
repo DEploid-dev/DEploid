@@ -15,7 +15,7 @@
 #define STATS_DISTS_CONTINUOUS_NORMAL_RANDOMSAMPLE_H
 
 #include <math.h>
-#include "codeCogs/mersenne.hpp"
+#include "mersenne.hpp"
 
 #define NORMALDENS(x) ((fabs(x) > 8.0) ? 0 : 0.398942280 * exp(- x * x / 2))
 
