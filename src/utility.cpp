@@ -23,12 +23,12 @@
  *
  */
 
-#include "src/utility.hpp"
+#include "utility.hpp"
 #include <iterator>     // std::distance
 #include <algorithm> // find
-#include "src/codeCogs/loggammasum.h" // which includes log_gamma.h
-#include "src/codeCogs/gamma.h"
-#include "src/codeCogs/logbeta.h"
+#include "codeCogs/loggammasum.h" // which includes log_gamma.h
+#include "codeCogs/gamma.h"
+#include "codeCogs/logbeta.h"
 
 
 

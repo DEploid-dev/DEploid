@@ -23,8 +23,8 @@
  *
  */
 
-#include "src/dEploidIO.hpp"
-#include "src/mcmc.hpp"
+#include "dEploidIO.hpp"
+#include "mcmc.hpp"
 
 
 void DEploidIO::wrapUp(){

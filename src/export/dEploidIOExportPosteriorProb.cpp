@@ -23,9 +23,9 @@
  *
  */
 
-#include "src/dEploidIO.hpp"
-#include "src/updateHap.hpp"
-#include "src/mcmc.hpp"
+#include "dEploidIO.hpp"
+#include "updateHap.hpp"
+#include "mcmc.hpp"
 
 void McmcMachinery::writeLastFwdProb(bool useIBD){
     if ( this->dEploidIO_ ->doExportPostProb() != true ){
