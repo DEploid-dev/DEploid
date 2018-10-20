@@ -663,7 +663,7 @@ void UpdatePairHap::samplePaths() {
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
         } else if ( tmpCase == (size_t)1 ) { // switching second strain
             this->siteOfTwoSwitchOne[j] += 0.5;
-            rowI = rowI;
+            //rowI = rowI;
             (void)normalizeBySum(rowIdist);
             colJ = sampleIndexGivenProp( this->recombLevel2Rg_, rowIdist );
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
@@ -671,11 +671,11 @@ void UpdatePairHap::samplePaths() {
             this->siteOfTwoSwitchOne[j] += 0.5;
             (void)normalizeBySum(colJdist);
             rowI = sampleIndexGivenProp( this->recombLevel2Rg_, colJdist );
-            colJ = colJ;
+            //colJ = colJ;
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
         } else if ( tmpCase == (size_t)3 ) { // no switching
-            rowI = rowI;
-            colJ = colJ;
+            //rowI = rowI;
+            //colJ = colJ;
             //assert (rowI != colJ); // OFF, as by default, allow copying the same strain
         } else {
             throw ShouldNotBeCalled();
