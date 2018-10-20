@@ -1,6 +1,6 @@
 [submodule "DEploid.wiki"]
 	path = DEploid.wiki
-	url = https://github.com/mcveanlab/DEploid.wiki.git
+	url = https://github.com/DEploid-dev/DEploid.wiki.git
 [submodule "DEploid-Lasso-lib"]
 	path = DEploid-Lasso-lib
 	url = https://github.com/shajoezhu/DEploid-Lasso-lib
