@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-rm(list=ls()); dEploidRootDir="/home/joezhu/DEploid"
+rm(list=ls()); dEploidRootDir="/home/joezhu/DEploid-r/.DEploid"
 # DESCRIPTION:
 #
 # USAGE:

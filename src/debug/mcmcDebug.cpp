@@ -23,7 +23,7 @@
  *
  */
 
-#include "src/mcmc.hpp"
+#include "mcmc.hpp"
 
 
 bool McmcMachinery::doutProp() {

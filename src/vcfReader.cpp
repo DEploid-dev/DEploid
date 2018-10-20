@@ -23,10 +23,10 @@
  *
  */
 
-#include "global.h"
 #include <cassert>       // assert
 #include <iostream>      // std::cout
 #include "vcfReader.hpp"
+#include "global.hpp"
 
 using namespace std;
 
