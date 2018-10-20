@@ -3,9 +3,9 @@
 
 
 [![License (GPL version 3)](https://img.shields.io/badge/license-GPL%20version%203-brightgreen.svg)](http://opensource.org/licenses/GPL-3.0)
-[![Build Status](https://travis-ci.org/mcveanlab/DEploid.svg?branch=master)](https://travis-ci.org/mcveanlab/DEploid)
-[![CircleCI](https://circleci.com/gh/mcveanlab/DEploid.svg?style=shield)](https://circleci.com/gh/mcveanlab/DEploid)
-[![Coverage Status](https://coveralls.io/repos/github/mcveanlab/DEploid/badge.svg)](https://coveralls.io/github/mcveanlab/DEploid)
+[![Build Status](https://travis-ci.org/DEploid-dev/DEploid.svg?branch=master)](https://travis-ci.org/DEploid-dev/DEploid)
+[![CircleCI](https://circleci.com/gh/DEploid-dev/DEploid.svg?style=shield)](https://circleci.com/gh/DEploid-dev/DEploid)
+[![Coverage Status](https://coveralls.io/repos/github/DEploid-dev/DEploid/badge.svg)](https://coveralls.io/github/DEploid-dev/DEploid)
 [![Documentation Status](http://readthedocs.org/projects/deploid/badge/?version=latest)](http://deploid.readthedocs.io/en/latest/)
 [![Docker Status](https://img.shields.io/docker/build/shajoezhu/deploid.svg)](https://hub.docker.com/r/shajoezhu/deploid/)
 
