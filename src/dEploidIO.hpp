@@ -29,7 +29,7 @@
 #include <stdexcept>            // std::invalid_argument
 #include <iostream>             // std::cout
 #include <sstream>              // std::stringstream
-#include "global.h"
+#include "global.hpp"
 #include "exceptions.hpp"
 #include "panel.hpp"
 #include "vcfReader.hpp"

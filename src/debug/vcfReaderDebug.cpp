@@ -24,7 +24,7 @@
  */
 
 #include <iostream>      // std::cout
-#include "global.h"
+#include "global.hpp"
 #include "vcfReader.hpp"
 
 using std::endl;

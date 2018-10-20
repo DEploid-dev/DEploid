@@ -28,7 +28,7 @@
 #include <algorithm>    /* min_element, max_element */
 
 #include "random/mersenne_twister.hpp"
-#include "global.h"
+#include "global.hpp"
 
 #ifndef UTILITY
 #define UTILITY
