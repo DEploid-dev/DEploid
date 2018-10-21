@@ -79,6 +79,7 @@ void VcfReader::finalize(){
     for ( size_t i = 0; i < this->variants.size(); i++) {
         this->refCount.push_back( (double)this->variants[i].ref );
         this->altCount.push_back( (double)this->variants[i].alt );
+        this->vqslod.push_back( this->variants[i].vqslod);
     }
 
     if ( this->isCompressed()) {
@@ -297,6 +298,32 @@ void VariantLine::extract_field_FILTER() {
 
 void VariantLine::extract_field_INFO() {
     this->infoStr = this->tmpStr_;
+    bool vqslodNotFound = true;
+    size_t feild_start = 0;
+    size_t field_end = 0;
+    int field_index = 0;
+
+
+    while( field_end < this->tmpStr_.size() ) {
+        field_end = min( this->tmpStr_.find(';',feild_start), this->tmpStr_.find('\t',feild_start) );
+        string filterFiledStr = this->tmpStr_.substr( feild_start, field_end-feild_start );
+        size_t eqIndex = filterFiledStr.find('=', 0);
+        string filterFiledName = filterFiledStr.substr(0, eqIndex);
+        cout << filterFiledName << endl;
+        if ( "VQSLOD" == filterFiledName ) {
+            vqslodNotFound = false;
+            vqslod = stod(filterFiledStr.substr(eqIndex+1, filterFiledStr.size()) );
+            break;
+        }
+        feild_start = field_end+1;
+        field_index++;
+    }
+
+    if (vqslodNotFound){
+        throw VcfVQSLODNotFound(this->tmpStr_);
+    }
+
+    assert(vqslodNotFound == false);
 }
 
 
