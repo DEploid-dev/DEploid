@@ -75,6 +75,15 @@ struct VcfCoverageFieldNotFound : public VcfInvalidVariantEntry{
 };
 
 
+struct VcfVQSLODNotFound : public VcfInvalidVariantEntry{
+    explicit VcfVQSLODNotFound(string str):VcfInvalidVariantEntry(str) {
+        this->reason = "VQSLOD was note found, check: ";
+        throwMsg = this->reason + this->src;
+    }
+    ~VcfVQSLODNotFound() throw() {}
+};
+
+
 class VariantLine{
   friend class VcfReader;
   friend class DEploidIO;
@@ -116,6 +125,7 @@ class VariantLine{
 
     int ref;
     int alt;
+    double vqslod;
 };
 
 
@@ -136,6 +146,7 @@ class VcfReader : public VariantIndex {
     vector <VariantLine> keptVariants;
     vector <double> refCount;
     vector <double> altCount;
+    vector <double> vqslod;
     vector <string> headerLines;
     string fileName_;
     ifstream inFile;

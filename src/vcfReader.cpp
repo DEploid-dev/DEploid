@@ -23,22 +23,24 @@
  *
  */
 
+#include <algorithm>     // std::min
 #include <cassert>       // assert
 #include <iostream>      // std::cout
 #include "vcfReader.hpp"
 #include "global.hpp"
 
-using namespace std;
+// using namespace std;
+using std::min;
 
 /*! Initialize vcf file, search for the end of the vcf header.
  *  Extract the first block of data ( "buffer_length" lines ) into buff
  */
-VcfReader::VcfReader(string fileName){
-
+VcfReader::VcfReader(string fileName) {
     /*! Initialize by read in the vcf header file */
-    this->init( fileName );
+    this->init(fileName);
     this->readHeader();
     this->readVariants();
+
     this->getChromList();
     this->getIndexOfChromStarts();
     assert(this->doneGetIndexOfChromStarts_ == true);
@@ -46,28 +48,29 @@ VcfReader::VcfReader(string fileName){
 }
 
 
-void VcfReader::checkFileCompressed(){
+void VcfReader::checkFileCompressed() {
     FILE *f = NULL;
     f = fopen(this->fileName_.c_str(), "rb");
-    if ( f == NULL){
-        throw InvalidInputFile( this->fileName_ );
+    if (f == NULL) {
+        throw InvalidInputFile(this->fileName_);
     }
 
     unsigned char magic[2];
 
-    fread((void *)magic, 1, 2, f);
-    this->setIsCompressed( (int(magic[0]) == 0x1f) && (int(magic[1]) == 0x8b) );
+    fread(reinterpret_cast<void *>(magic), 1, 2, f);
+    this->setIsCompressed((static_cast<int>(magic[0]) == 0x1f) &&
+                          (static_cast<int>(magic[1]) == 0x8b));
     fclose(f);
 }
 
-void VcfReader::init( string fileName) {
+void VcfReader::init(string fileName) {
     /*! Initialize other VcfReader class members
      */
     this->fileName_ = fileName;
 
     this->checkFileCompressed();
 
-    if ( this->isCompressed()) {
+    if (this->isCompressed()) {
         this->inFileGz.open(this->fileName_.c_str(), std::ios::in);
     } else {
         this->inFile.open(this->fileName_.c_str(), std::ios::in);
@@ -75,13 +78,14 @@ void VcfReader::init( string fileName) {
 }
 
 
-void VcfReader::finalize(){
-    for ( size_t i = 0; i < this->variants.size(); i++) {
-        this->refCount.push_back( (double)this->variants[i].ref );
-        this->altCount.push_back( (double)this->variants[i].alt );
+void VcfReader::finalize() {
+    for (size_t i = 0; i < this->variants.size(); i++) {
+        this->refCount.push_back(static_cast<double>(this->variants[i].ref));
+        this->altCount.push_back(static_cast<double>(this->variants[i].alt));
+        this->vqslod.push_back(this->variants[i].vqslod);
     }
 
-    if ( this->isCompressed()) {
+    if (this->isCompressed()) {
         this->inFileGz.close();
     } else {
         this->inFile.close();
@@ -89,56 +93,58 @@ void VcfReader::finalize(){
 }
 
 
-void VcfReader::readHeader(){
-    if ( this->isCompressed()) {
-        if (!inFileGz.good()){
-            throw InvalidInputFile( this->fileName_ );
+void VcfReader::readHeader() {
+    if (this->isCompressed()) {
+        if (!inFileGz.good()) {
+            throw InvalidInputFile(this->fileName_);
         }
     } else {
-        if (!inFile.good()){
-            throw InvalidInputFile( this->fileName_ );
+        if (!inFile.good()) {
+            throw InvalidInputFile(this->fileName_);
         }
     }
 
-    if ( this->isCompressed()) {
-        getline ( inFileGz, this->tmpLine_ );
+    if (this->isCompressed()) {
+        getline(inFileGz, this->tmpLine_);
     } else {
-        getline ( inFile, this->tmpLine_ );
+        getline(inFile, this->tmpLine_);
     }
 
-    while ( this->tmpLine_.size()>0) {
-        if ( this->tmpLine_[0]=='#') {
-            if ( this->tmpLine_[1]=='#') {
-                this->headerLines.push_back( this->tmpLine_ );
-                if ( this->isCompressed()) {
-                    getline ( inFileGz, this->tmpLine_ );
+    while (this->tmpLine_.size() > 0) {
+        if (this->tmpLine_[0] == '#') {
+            if (this->tmpLine_[1] == '#') {
+                this->headerLines.push_back(this->tmpLine_);
+                if (this->isCompressed()) {
+                    getline(inFileGz, this->tmpLine_);
                 } else {
-                    getline ( inFile, this->tmpLine_ );
+                    getline(inFile, this->tmpLine_);
                 }
             } else {
                 this->checkFeilds();
-                break; //end of the header
+                break;  // end of the header
             }
         } else {
             this->checkFeilds();
         }
     }
 
-
-    dout << " There are "<< this->headerLines.size() << " lines in the header." <<endl;
+    dout << " There are "<< this->headerLines.size()
+         << " lines in the header." << std::endl;
 }
 
 
-void VcfReader::checkFeilds(){
+void VcfReader::checkFeilds() {
     size_t feild_start = 0;
     size_t field_end = 0;
     size_t field_index = 0;
 
-    while( field_end < this->tmpLine_.size() ) {
-        field_end = min( this->tmpLine_.find('\t',feild_start), this->tmpLine_.find('\n',feild_start) );
-        this->tmpStr_ = this->tmpLine_.substr( feild_start, field_end-feild_start );
+    while (field_end < this->tmpLine_.size()) {
+        field_end = min(this->tmpLine_.find('\t', feild_start),
+                        this->tmpLine_.find('\n', feild_start));
+        this->tmpStr_ = this->tmpLine_.substr(feild_start,
+                                              field_end-feild_start);
         string correctFieldValue;
-        switch ( field_index) {
+        switch (field_index) {
             case 0: correctFieldValue = "#CHROM";  break;
             case 1: correctFieldValue =  "POS";    break;
             case 2: correctFieldValue =  "ID";     break;
@@ -151,95 +157,98 @@ void VcfReader::checkFeilds(){
             case 9: sampleName = this->tmpStr_;    break;
         }
 
-        if ( this->tmpStr_ != correctFieldValue && field_index < 9){
-            throw VcfInvalidHeaderFieldNames( correctFieldValue, this->tmpStr_ );
+        if (this->tmpStr_ != correctFieldValue && field_index < 9) {
+            throw VcfInvalidHeaderFieldNames(correctFieldValue, this->tmpStr_);
         }
 
-        if ( field_index == 9) {
+        if (field_index == 9) {
             break;
         }
 
         feild_start = field_end+1;
         field_index++;
-    } // End of while loop: field_end < line.size()
+    }  // End of while loop: field_end < line.size()
 
-    assert( field_index == 9 );
-    assert( printSampleName() );
+    assert(field_index == 9);
+    assert(printSampleName());
 }
 
 
-void VcfReader::readVariants(){
-    if ( this->isCompressed()) {
-        getline ( inFileGz, this->tmpLine_ );
+void VcfReader::readVariants() {
+    if (this->isCompressed()) {
+        getline(inFileGz, this->tmpLine_);
     } else {
-        getline ( inFile, this->tmpLine_ );
+        getline(inFile, this->tmpLine_);
     }
-    while ( inFile.good() && this->tmpLine_.size()>0) {
-        VariantLine newVariant ( this->tmpLine_ );
+    while (inFile.good() && this->tmpLine_.size() > 0) {
+        VariantLine newVariant(this->tmpLine_);
         // check variantLine quality
         this->variants.push_back(newVariant);
-        if ( this->isCompressed()) {
-            getline ( inFileGz, this->tmpLine_ );
+        if (this->isCompressed()) {
+            getline(inFileGz, this->tmpLine_);
         } else {
-            getline ( inFile, this->tmpLine_ );
+            getline(inFile, this->tmpLine_);
         }
     }
 }
 
 
-void VcfReader::getChromList(){
+void VcfReader::getChromList() {
     this->chrom_.clear();
     this->position_.clear();
 
-    assert ( this->chrom_.size() == (size_t)0 );
-    assert ( this->position_.size() == (size_t)0 );
+    assert(this->chrom_.size() == (size_t)0);
+    assert(this->position_.size() == (size_t)0);
 
-    string previousChrom ("");
+    string previousChrom("");
     vector <int> positionOfChrom_;
 
-    for ( size_t i = 0; i < this->variants.size() ; i++) {
-        if ( previousChrom != this->variants[i].chromStr && previousChrom.size() > (size_t)0) {
-            this->chrom_.push_back( previousChrom );
+    for (size_t i = 0; i < this->variants.size() ; i++) {
+        if (previousChrom != this->variants[i].chromStr &&
+            previousChrom.size() > (size_t)0) {
+            this->chrom_.push_back(previousChrom);
             this->position_.push_back(positionOfChrom_);
             positionOfChrom_.clear();
         }
-        positionOfChrom_.push_back( stoi (this->variants[i].posStr.c_str(), NULL) );
+        positionOfChrom_.push_back(
+            stoi(this->variants[i].posStr.c_str(), NULL));
         previousChrom = this->variants[i].chromStr;
     }
 
-    this->chrom_.push_back( previousChrom );
+    this->chrom_.push_back(previousChrom);
     this->position_.push_back(positionOfChrom_);
-    assert ( this->position_.size() == this->chrom_.size() );
+    assert(this->position_.size() == this->chrom_.size());
 }
 
 
 void VcfReader::removeMarkers() {
-    assert ( this->keptVariants.size() == (size_t)0 );
-    for ( auto const &value: this->indexOfContentToBeKept){
-        this->keptVariants.push_back(this->variants[value] );
+    assert(this->keptVariants.size() == (size_t)0);
+    for (auto const &value : this->indexOfContentToBeKept) {
+        this->keptVariants.push_back(this->variants[value]);
     }
     this->variants.clear();
     this->variants = this->keptVariants;
     this->keptVariants.clear();
     this->nLoci_ = this->variants.size();
-    dout << " Vcf number of loci kept = " << this->nLoci_ << endl;
+    dout << " Vcf number of loci kept = " << this->nLoci_ << std::endl;
 }
 
 
+VariantLine::VariantLine(string tmpLine) {
+    this->init(tmpLine);
 
-VariantLine::VariantLine ( string tmpLine) {
-    this->init( tmpLine );
-
-    while ( fieldEnd_ < this->tmpLine_.size()) {
-        fieldEnd_ = min ( this->tmpLine_.find('\t',feildStart_), this->tmpLine_.find('\n', feildStart_) );
-        this->tmpStr_ = this->tmpLine_.substr( feildStart_, fieldEnd_ - feildStart_ );
-        switch ( fieldIndex_) {
+    while (fieldEnd_ < this->tmpLine_.size()) {
+        fieldEnd_ = min(this->tmpLine_.find('\t', feildStart_),
+                        this->tmpLine_.find('\n', feildStart_));
+        this->tmpStr_ = this->tmpLine_.substr(feildStart_,
+                                              fieldEnd_-feildStart_);
+        switch (fieldIndex_) {
             case 0: this->extract_field_CHROM();   break;
-            case 1: this->extract_field_POS ();    break;
-            case 2: this->extract_field_ID ();     break;
-            case 3: this->extract_field_REF () ;   break;
-            case 4: this->extract_field_ALT () ;   break;
-            case 5: this->extract_field_QUAL() ;   break;
+            case 1: this->extract_field_POS();     break;
+            case 2: this->extract_field_ID();      break;
+            case 3: this->extract_field_REF();     break;
+            case 4: this->extract_field_ALT();     break;
+            case 5: this->extract_field_QUAL();    break;
             case 6: this->extract_field_FILTER();  break;
             case 7: this->extract_field_INFO();    break;
             case 8: this->extract_field_FORMAT();  break;
@@ -252,7 +261,7 @@ VariantLine::VariantLine ( string tmpLine) {
 }
 
 
-void VariantLine::init( string tmpLine) {
+void VariantLine::init(string tmpLine) {
     this->tmpLine_ = tmpLine;
     this->feildStart_ = 0;
     this->fieldEnd_ = 0;
@@ -261,7 +270,7 @@ void VariantLine::init( string tmpLine) {
 }
 
 
-void VariantLine::extract_field_CHROM () {
+void VariantLine::extract_field_CHROM() {
     this->chromStr = this->tmpStr_;
 }
 
@@ -286,7 +295,7 @@ void VariantLine::extract_field_ALT() {
 }
 
 
-void VariantLine::extract_field_QUAL() { // Check for PASS
+void VariantLine::extract_field_QUAL() {  // Check for PASS
     this->qualStr = this->tmpStr_;
 }
 
@@ -295,8 +304,36 @@ void VariantLine::extract_field_FILTER() {
     this->filterStr = this->tmpStr_;
 }
 
+
 void VariantLine::extract_field_INFO() {
     this->infoStr = this->tmpStr_;
+    bool vqslodNotFound = true;
+    size_t feild_start = 0;
+    size_t field_end = 0;
+    int field_index = 0;
+
+    while (field_end < this->tmpStr_.size()) {
+        field_end = min(this->tmpStr_.find(';', feild_start),
+                        this->tmpStr_.find('\t', feild_start));
+        string filterFiledStr = this->tmpStr_.substr(feild_start,
+                                                     field_end-feild_start);
+        size_t eqIndex = filterFiledStr.find('=', 0);
+        string filterFiledName = filterFiledStr.substr(0, eqIndex);
+        if ( "VQSLOD" == filterFiledName ) {
+            vqslodNotFound = false;
+            vqslod = stod(filterFiledStr.substr(eqIndex+1,
+                                                filterFiledStr.size()));
+            break;
+        }
+        feild_start = field_end+1;
+        field_index++;
+    }
+
+    if (vqslodNotFound) {
+        throw VcfVQSLODNotFound(this->tmpStr_);
+    }
+
+    assert(vqslodNotFound == false);
 }
 
 
@@ -306,19 +343,21 @@ void VariantLine::extract_field_FORMAT() {
     size_t field_end = 0;
     size_t field_index = 0;
 
-    while( field_end < this->formatStr.size() ) {
-        field_end = min( this->formatStr.find(':',feild_start), this->formatStr.find('\n',feild_start) );
-        if ( "AD" == this->formatStr.substr( feild_start, field_end-feild_start )) {
+    while (field_end < this->formatStr.size()) {
+        field_end = min(this->formatStr.find(':', feild_start),
+                        this->formatStr.find('\n', feild_start));
+        if ( "AD" == this->formatStr.substr(feild_start,
+                                            field_end-feild_start)) {
             adFieldIndex_ = field_index;
             break;
         }
         feild_start = field_end+1;
         field_index++;
     }
-    if ( adFieldIndex_ == -1) {
-        throw VcfCoverageFieldNotFound ( this->tmpStr_ );
+    if (adFieldIndex_ == -1) {
+        throw VcfCoverageFieldNotFound(this->tmpStr_);
     }
-    assert ( adFieldIndex_ > -1 );
+    assert(adFieldIndex_ > -1);
 }
 
 
@@ -327,11 +366,13 @@ void VariantLine::extract_field_VARIANT() {
     size_t field_end = 0;
     int field_index = 0;
 
-    while( field_end < this->tmpStr_.size() ) {
-        field_end = min( this->tmpStr_.find(':',feild_start), this->tmpStr_.find('\n',feild_start) );
-        if ( field_index == adFieldIndex_) {
-            string adStr = this->tmpStr_.substr( feild_start, field_end-feild_start );
-            size_t commaIndex = adStr.find(',',0);
+    while (field_end < this->tmpStr_.size()) {
+        field_end = min(this->tmpStr_.find(':', feild_start),
+                        this->tmpStr_.find('\n', feild_start));
+        if (field_index == adFieldIndex_) {
+            string adStr = this->tmpStr_.substr(feild_start,
+                                                field_end-feild_start);
+            size_t commaIndex = adStr.find(',', 0);
             ref = stoi(adStr.substr(0, commaIndex) );
             alt = stoi(adStr.substr(commaIndex+1, adStr.size()) );
             break;
@@ -339,7 +380,6 @@ void VariantLine::extract_field_VARIANT() {
         feild_start = field_end+1;
         field_index++;
     }
-
 }
 
 
