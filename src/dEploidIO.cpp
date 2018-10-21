@@ -549,7 +549,7 @@ void DEploidIO::readInitialProportions() {
         try {
             double tmp = convert<double>(*argv_i);
             this->initialProp.push_back(tmp);
-        } catch (WrongType e) {
+        } catch (const WrongType &e) {
             --argv_i;
             break;
         }
