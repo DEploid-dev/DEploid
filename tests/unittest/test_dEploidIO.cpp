@@ -51,6 +51,7 @@ class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST(testVcfGzHeader);
     CPPUNIT_TEST(testVcfGzNoAD);
     CPPUNIT_TEST(testVcfOutUnSpecified);
+    CPPUNIT_TEST(testVcfGzNoVQSLOD);
     CPPUNIT_TEST(testInvalidK);
     CPPUNIT_TEST(testChromPainting);
     CPPUNIT_TEST(testComputeObsWsaf);
@@ -776,6 +777,13 @@ class TestIO : public CppUnit::TestCase {
                 "-vcf", "data/testData/crappyVcfGz/badVariant.noAD.vcf.gz",
                 "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
         CPPUNIT_ASSERT_THROW(DEploidIO(6, argv1), VcfCoverageFieldNotFound);
+    }
+
+    void testVcfGzNoVQSLOD() {
+        char *argv1[] = { "./dEploid",
+                "-vcf", "data/testData/crappyVcf/badVariant.noVQSLOD.vcf",
+                "-plaf", "data/testData/labStrains.test.PLAF.txt", "-noPanel"};
+        CPPUNIT_ASSERT_THROW(DEploidIO(6, argv1), VcfVQSLODNotFound);
     }
 
     void testVcfOutUnSpecified() {

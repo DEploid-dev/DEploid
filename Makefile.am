@@ -13,7 +13,7 @@ bin_PROGRAMS = dEploid dEploid_dbg utilities
 man1_MANS = docs/_build/man/dEploid.1
 
 TESTS = unit_tests io_unit_tests
-check_PROGRAMS = unit_tests dEploid_dbg dEploid_prof io_unit_tests
+check_PROGRAMS = unit_tests dEploid_dbg dEploid_prof io_unit_tests current_unit_tests
 PROG = DEPLOID
 
 common_flags = -std=c++0x -Isrc/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DLASSOVERSION=\"${LASSOVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
@@ -73,6 +73,13 @@ io_unit_tests_SOURCES = $(common_src) \
 
 io_unit_tests_CXXFLAGS = $(common_flags) -DNDEBUG -DUNITTEST -Wno-write-strings --coverage
 io_unit_tests_LDADD    = -lcppunit -ldl $(common_LDADD)
+
+current_unit_tests_SOURCES = $(common_src) \
+					 tests/unittest/test_runner.cpp \
+					 tests/unittest/test_vcfReader.cpp
+
+current_unit_tests_CXXFLAGS = $(common_flags) -DNDEBUG -DUNITTEST -Wno-write-strings --coverage
+current_unit_tests_LDADD    = -lcppunit -ldl $(common_LDADD)
 
 clean-local: clean-local-check
 .PHONY: clean-local-check utilities

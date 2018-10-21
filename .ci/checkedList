@@ -8,5 +8,8 @@ src/txtReader.hpp
 src/ibd.hpp
 src/ibd.cpp
 src/vcfReader.hpp
+src/vcfReader.cpp
 src/debug/mcmcDebug.cpp
 src/debug/vcfReaderDebug.cpp
+src/global.hpp
+tests/unittest/test_vcfReader.cpp
