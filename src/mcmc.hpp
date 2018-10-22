@@ -77,25 +77,27 @@ class McmcSample {
 
 class McmcMachinery {
 #ifdef UNITTEST
-  friend class TestMcmcMachinery;
+    friend class TestMcmcMachinery;
 #endif
-  friend class DEploidIO;
-  public:
+    friend class DEploidIO;
+ public:
     //McmcMachinery();
     McmcMachinery( vector <double> * plaf,
                    vector <double> * refCount,
                    vector <double> * altCount,
                    Panel *panel_ptr,
                    DEploidIO* dEplioidIO,
+                   string mcmcJob,
                    McmcSample *mcmcSample,
                    RandomGenerator* rg_,
                    bool useIBD = false );
     ~McmcMachinery();
     void runMcmcChain( bool showProgress = true, bool useIBD = false, bool notInR = true );
 
-  private:
+ private:
+    string mcmcJob;
     McmcSample* mcmcSample_;
-  /* Variables */
+    /* Variables */
     DEploidIO* dEploidIO_;
     vector <double> * plaf_ptr_;
     vector <double> * refCount_ptr_;
@@ -144,9 +146,9 @@ class McmcMachinery {
     vector < double > currentExpectedWsaf_;
     vector < double > cumExpectedWsaf_;
 
-  /* Methods */
+    /* Methods */
     void calcMaxIteration( size_t nSample, size_t McmcMachineryRate, double burnIn );
-   /* Initialize */
+    /* Initialize */
     void initializeMcmcChain(bool useIBD);
     void initializeProp();
     void initializeTitre();
@@ -195,19 +197,19 @@ class McmcMachinery {
     //vector <double> getIBDprobsIntegrated(vector < vector <double> > &prob);
 
 
-  /* Moves */
+    /* Moves */
     void updateProportion();
-     vector <double> calcTmpTitre();
-     double deltaLLKs ( vector <double> &newLLKs );
+    vector <double> calcTmpTitre();
+    double deltaLLKs ( vector <double> &newLLKs );
 
     void updateSingleHap();
-     void findUpdatingStrainSingle( );
+    void findUpdatingStrainSingle( );
 
     void updatePairHaps();
-     //vector <size_t> sampleNoReplace(MersenneTwister* rg, vector <double> & proportion, size_t nSample );
-     void findUpdatingStrainPair( );
+    //vector <size_t> sampleNoReplace(MersenneTwister* rg, vector <double> & proportion, size_t nSample );
+    void findUpdatingStrainPair( );
 
-  /* Debug */
+    /* Debug */
     bool doutProp();
     bool doutLLK();
     int acceptUpdate;

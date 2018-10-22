@@ -41,9 +41,11 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
                               vector <double> * altCount,
                               Panel *panel_ptr,
                               DEploidIO* dEploidIO,
+                              string mcmcJob,
                               McmcSample *mcmcSample,
                               RandomGenerator* rg_,
                               bool useIBD ) {  // initialiseMCMCmachinery
+    this->mcmcJob = mcmcJob;
     this->plaf_ptr_ = plaf;
     this->refCount_ptr_ = refCount;
     this->altCount_ptr_ = altCount;
@@ -63,7 +65,8 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
     //this->propRg_  = new MersenneTwister(this->seed_);
     //this->initialHapRg_ = new MersenneTwister(this->seed_);
     if (useIBD == true) {
-        this->calcMaxIteration(100, 10, 0.5);
+        //this->calcMaxIteration(100, 10, 0.5);
+        this->calcMaxIteration(10, 10, 0.5);
     } else {
         this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
     }
@@ -142,6 +145,7 @@ void McmcMachinery::initializeHap() {
     assert( currentHap_.size() == 0);
     if ( this->dEploidIO_ -> initialHapWasGiven() ) {
         this->currentHap_ = this->dEploidIO_->initialHap;
+        cout << "given initial hap ?" << endl;
     } else {
         for ( size_t i = 0; i < this->plaf_ptr_->size(); i++ ) {
             double currentPlaf = this->plaf_ptr_->at(i);
@@ -270,19 +274,18 @@ void McmcMachinery::initializePropIBD() {
 
 
 void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) {
-
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++) {
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
         if ( this->currentMcmcIteration_ > 0 && this->currentMcmcIteration_%100 == 0 && showProgress ) {
             #ifndef RBUILD
-                clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->maxIteration_) << "% completed."<<flush;
+                clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->maxIteration_) << "% completed ("<<this->mcmcJob<<")"<<flush;
             #endif
         }
         this->sampleMcmcEvent(useIBD);
     }
     #ifndef RBUILD
-        clog << "\r" << " MCMC step" << setw(4) << 100 << "% completed."<<endl;
+        clog << "\r" << " MCMC step" << setw(4) << 100 << "% completed ("<<this->mcmcJob<<")"<<endl;
     #endif
     this->mcmcSample_->hap = this->currentHap_;
     this->writeLastFwdProb(useIBD);
@@ -297,9 +300,9 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
         this->mcmcSample_->siteOfOneMissCopyOne[atSiteI] /= (double)this->maxIteration_;
     }
 
-    if ( notInR & (this->dEploidIO_->useLasso() == false) ) {
-        this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, useIBD);
-    }
+    //if ( notInR & (this->dEploidIO_->useLasso() == false) ) {
+        //this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, useIBD);
+    //}
 
     if ( useIBD == true ) {
         for (size_t atSiteI = 0; atSiteI < nLoci(); atSiteI++ ) {
@@ -313,9 +316,10 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
         this->dEploidIO_->initialProp = averageProportion(this->mcmcSample_->proportion);
         this->dEploidIO_->setInitialPropWasGiven(true);
         this->dEploidIO_->setDoUpdateProp(false);
-        this->dEploidIO_->initialHap = this->mcmcSample_->hap;
-        this->dEploidIO_->setInitialHapWasGiven(true);
+        //this->dEploidIO_->initialHap = this->mcmcSample_->hap;
+        //this->dEploidIO_->setInitialHapWasGiven(true);
     }
+
     this->computeDiagnostics();
     dout << "###########################################"<< endl;
     dout << "#            MCMC RUN finished            #"<< endl;

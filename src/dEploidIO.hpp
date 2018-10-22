@@ -119,6 +119,8 @@ class DEploidIO{
     void setInitialPropWasGiven(const bool setTo) {this->initialPropWasGiven_ = setTo; }
 
     void setKstrain ( const size_t setTo ) { this->kStrain_ = setTo;}
+    bool usePanel() const { return usePanel_; }
+    vector <string> chrom_;
 
   private:
     void core();
@@ -163,7 +165,6 @@ class DEploidIO{
     bool useIbdOnly_;
     bool useLasso_;
 
-    vector <string> chrom_;
     vector <double> obsWsaf_;
     vector <size_t> wsafGt0At_;
     size_t nLoci_;
@@ -370,7 +371,6 @@ class DEploidIO{
     void readPanel();
 
     // Panel related
-    bool usePanel() const { return usePanel_; }
     string panelFileName_;
     double parameterG_;
     void setParameterG ( const double setTo ) { this->parameterG_ = setTo; }

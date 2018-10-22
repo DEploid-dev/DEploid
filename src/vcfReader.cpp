@@ -241,7 +241,6 @@ void VcfReader::findLegitSnpsGivenVQSLOD(double vqslodThreshold) {
             this->legitVqslodAt.push_back(i);
         }
     }
-    std::cout << "legitVqslodAt size = " << legitVqslodAt.size() << std::endl;
 }
 
 
