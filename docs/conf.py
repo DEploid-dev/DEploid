@@ -65,7 +65,7 @@ author = 'Sha (Joe) Zhu'
 # built documents.
 #
 # The short X.Y version.
-version = open("../version", "r").readline().strip("\n")
+version = open("../VERSION", "r").readline().strip("\n")
 # The full version, including alpha/beta/rc tags.
 release = version
 #print(version)

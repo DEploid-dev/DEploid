@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "DEPLOID" "1" "Nov 21, 2017" "v0.5-release" "DEploid"
+.TH "DEPLOID" "1" "Oct 22, 2018" "v0.6-beta" "DEploid"
 .SH NAME
 dEploid \- 
 .
@@ -347,8 +347,8 @@ Save final halpotypes into a VCF file.
 .SS You may also try
 .INDENT 0.0
 .TP
-.B \-ref [file] \-alt [file]
-File path of reference and alternative allele count (tab\-delimited plain text file).
+.B \-ref [file]
+File path of reference allele count (tab\-delimited plain text file).
 .UNINDENT
 .sp
 \fBNOTE:\fP
@@ -403,6 +403,11 @@ T}	T{
 T}
 _
 .TE
+.INDENT 0.0
+.TP
+.B \-alt [file]
+File path of alternative allele count (tab\-delimited plain text file).
+.UNINDENT
 .SS Alternative allele count
 .TS
 center;
@@ -836,6 +841,31 @@ Please include the output of \fBdEploid \-v\fP and the platform you are using \f
 .sp
 Thank you!
 .SH CITING DEPLOID
+.sp
+If you use \fBdEploid\fP with the flag \fB\-ibd\fP, please cite the following paper:
+.sp
+Zhu, J. S., J. A. Hendry, J. Almagro\-Garcia, R. D. Pearson, R. Amato, A. Miles, D. J. Weiss, T. C. D. Lucas, M. Nguyen, P. W. Gething, D. Kwiatkowski, G. McVean, and for the Pf3k Project. (2018) The origins and relatedness structure of mixed infections vary with local prevalence of \fIP. falciparum\fP malaria. \fIbiorxiv\fP, doi: https://doi.org/10.1101/387266.
+.sp
+Bibtex record::
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+@article {Zhu387266,
+author = {Zhu, Sha Joe and Hendry, Jason A. and Almagro\-Garcia, Jacob and Pearson, Richard D. and Amato, Roberto and Miles, Alistair and Weiss, Daniel J. and Lucas, Tim C.D. and Nguyen, Michele and Gething, Peter W. and Kwiatkowski, Dominic and McVean, Gil and ,},
+title = {The origins and relatedness structure of mixed infections vary with local prevalence of P. falciparum malaria},
+year = {2018},
+doi = {10.1101/387266},
+publisher = {Cold Spring Harbor Laboratory},
+URL = {https://www.biorxiv.org/content/early/2018/08/09/387266},
+eprint = {https://www.biorxiv.org/content/early/2018/08/09/387266.full.pdf},
+journal = {bioRxiv}
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .sp
 If you use \fBdEploid\fP in your work, please cite the program:
 .sp

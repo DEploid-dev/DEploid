@@ -97,8 +97,8 @@ Mostly used
 You may also try
 ----------------
 
--ref [file] -alt [file]
-    File path of reference and alternative allele count (tab-delimited plain text file).
+-ref [file]
+    File path of reference allele count (tab-delimited plain text file).
 
 .. note::
     In early ``dEploid`` versions (prior to `v0.2-release`), allele counts extracted from the vcf file are placed in two files, and parsed by flags **-ref [file]** and **-alt [file]**. Tab-delimited plain text for input. First and second columns record chromosome and position labels respectively.  Third columns records the reference allele count or alternative allele count. For example,
@@ -111,6 +111,9 @@ You may also try
     Pf3D7_01_v3,94422,77
     Pf3D7_01_v3,94459,90
     Pf3D7_01_v3,94487,79
+
+-alt [file]
+    File path of alternative allele count (tab-delimited plain text file).
 
 .. csv-table:: Alternative allele count
     :header: CHROM, POS, PG0390.C

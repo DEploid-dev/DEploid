@@ -580,8 +580,9 @@ void DEploidIO::printVersion(std::ostream& out) {
 
 void DEploidIO::printHelp(std::ostream& out) {
     out << endl
-        << "dEploid " << VERSION
-        << endl
+        << "dEploid " << VERSION << endl
+        << endl;
+    out << "Contact: Joe Zhu <joe.zhu@bdi.ox.ac.uk>" << endl
         << endl;
     out << "Usage:"
         << endl;
@@ -604,6 +605,8 @@ void DEploidIO::printHelp(std::ostream& out) {
     out << setw(20) << "-forbidUpdateSingle" << "  --  " << "Forbid MCMC moves to update single haplotype."<<endl;
     out << setw(20) << "-forbidUpdatePair"   << "  --  " << "Forbid MCMC moves to update pair haplotypes."<<endl;
     out << setw(20) << "-initialP FLT ..."   << "  --  " << "Initialize proportions."<<endl;
+    out << endl;
+    out << "Note: Please `man docs/_build/man/dEploid.1' for the manual." << endl;
     out << endl;
     out << "Examples:" << endl;
     out << endl;
