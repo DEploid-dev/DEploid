@@ -42,10 +42,12 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
                               Panel *panel_ptr,
                               DEploidIO* dEploidIO,
                               string mcmcJob,
+                              string jobbrief,
                               McmcSample *mcmcSample,
                               RandomGenerator* rg_,
                               bool useIBD ) {  // initialiseMCMCmachinery
     this->mcmcJob = mcmcJob;
+    this->jobbrief = jobbrief;
     this->plaf_ptr_ = plaf;
     this->refCount_ptr_ = refCount;
     this->altCount_ptr_ = altCount;
@@ -275,6 +277,10 @@ void McmcMachinery::initializePropIBD() {
 
 
 void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) {
+    for (auto const &value : this->currentProp_){
+        cout << value << " ";
+    }
+    cout << endl;
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++) {
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
@@ -285,9 +291,15 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
         }
         this->sampleMcmcEvent(useIBD);
     }
+
     #ifndef RBUILD
         clog << "\r" << " MCMC step" << setw(4) << 100 << "% completed ("<<this->mcmcJob<<")"<<endl;
     #endif
+    for (auto const &value : this->currentProp_){
+        cout << value << " ";
+    }
+    cout << endl;
+
     this->mcmcSample_->hap = this->currentHap_;
     this->writeLastFwdProb(useIBD);
     this->dEploidIO_->finalProp.clear();
@@ -302,10 +314,13 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
         this->mcmcSample_->siteOfOneMissCopyOne[atSiteI] /= (double)this->maxIteration_;
     }
 
-    //if ( notInR & (this->dEploidIO_->useLasso() == false) ) {
-        //this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, useIBD);
-    //}
+    if ( notInR & ((jobbrief == "lassoK") | (jobbrief == "ibd")) ) {
+cout << "tring to write here" << endl;
 
+        this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, jobbrief, useIBD);
+    }
+
+cout << "stopped here" << endl;
     if ( useIBD == true ) {
         for (size_t atSiteI = 0; atSiteI < nLoci(); atSiteI++ ) {
             this->ibdPath.IBDpathChangeAt[atSiteI] /= (double)this->maxIteration_;

@@ -157,17 +157,17 @@ void DEploidIO::writeLog ( ostream * writeTo ){
                 }
             }
         } else {
-            if (this->useLasso() == false) {
-                (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
-                (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
-            }
-            (*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
+            //if (this->useLasso() == false) {
+                //(*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
+                //(*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
+            //}
+            //(*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
             if ( doExportVcf() ) { (*writeTo) << setw(14) << "Vcf: "  << strExportVcf  << "\n"; }
             if (this->useIBD()){
                 (*writeTo) << " IBD method output saved to:\n";
-                (*writeTo) << setw(14) << "Likelihood: "  << strIbdExportLLK  << "\n";
-                (*writeTo) << setw(14) << "Proportions: " << strIbdExportProp << "\n";
-                (*writeTo) << setw(14) << "Haplotypes: "  << strIbdExportHap  << "\n";
+                (*writeTo) << setw(14) << "Likelihood: "  << this->prefix_ << ".*.llk\n";
+                (*writeTo) << setw(14) << "Proportions: " << this->prefix_ << ".*.prop\n";
+                (*writeTo) << setw(14) << "Haplotypes: "  << this->prefix_ << ".*.hap\n";
             }
             if (this->ibdProbsIntegrated.size()>1){
                 (*writeTo) << setw(14) << "IBD probs: "  << strIbdExportProbs  << "\n\n";

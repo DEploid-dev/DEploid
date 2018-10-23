@@ -88,6 +88,7 @@ class McmcMachinery {
                    Panel *panel_ptr,
                    DEploidIO* dEplioidIO,
                    string mcmcJob,
+                   string jobbrief,
                    McmcSample *mcmcSample,
                    RandomGenerator* rg_,
                    bool useIBD = false );
@@ -96,6 +97,7 @@ class McmcMachinery {
 
  private:
     string mcmcJob;
+    string jobbrief;
     McmcSample* mcmcSample_;
     /* Variables */
     DEploidIO* dEploidIO_;

@@ -104,7 +104,7 @@ class DEploidIO{
     vector < vector <double> > lassoRefCount;
     vector < vector <double> > lassoAltCount;
 
-    void writeHap (vector < vector <double> > &hap, bool useIBD = false);
+    void writeHap (vector < vector <double> > &hap, string jobbrief);
     bool doPrintLassoPanel_;
 
     // Trimming related
@@ -233,10 +233,10 @@ class DEploidIO{
     string dEploidGitVersion_;
     string lassoGitVersion_;
     string compileTime_;
-    string strExportLLK;
-    string strExportHap;
+    //string strExportLLK;
+    //string strExportHap;
     string strExportVcf;
-    string strExportProp;
+    //string strExportProp;
     string strExportLog;
     string strExportRecombProb;
 
@@ -341,8 +341,8 @@ class DEploidIO{
     vector <string> ibdProbsHeader;
     vector <double> ibdProbsIntegrated;
 
-    void writeLLK (McmcSample * mcmcSample, bool useIBD = false);
-    void writeProp (McmcSample * mcmcSample, bool useIBD = false);
+    void writeLLK (McmcSample * mcmcSample, string jobbrief);
+    void writeProp (McmcSample * mcmcSample, string jobbrief);
     void writeVcf (McmcSample * mcmcSample);
     void writeLastSingleFwdProb( vector < vector <double> >& probabilities, size_t chromIndex, size_t strainIndex, bool useIBD );
     void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
@@ -367,7 +367,7 @@ class DEploidIO{
     vector <double> finalSiteOfOneMissCopyOne;
 
 
-    void writeMcmcRelated (McmcSample * mcmcSample, bool useIBD = false);
+    void writeMcmcRelated (McmcSample * mcmcSample, string jobbrief, bool useIBD = false);
     void readPanel();
 
     // Panel related

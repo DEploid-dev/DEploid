@@ -115,14 +115,14 @@ class TestMcmcMachinery: public CppUnit::TestCase {
                                        &this->dEploidIO_->altCount_,
                                        this->dEploidIO_->panel,
                                        this->dEploidIO_,
-                                       "unitTest",
+                                       "unitTest", "ut",
                                        this->mcmcSample_, this->rg_);
         mcmcMachineryIbd_ = new McmcMachinery(&this->dEploidIO_->plaf_,
                                        &this->dEploidIO_->refCount_,
                                        &this->dEploidIO_->altCount_,
                                        this->dEploidIO_->panel,
                                        this->dEploidIO_,
-                                       "unitTest",
+                                       "unitTest", "ut",
                                        this->mcmcSampleIbd_, this->rg_, true);
         nRepeat = 1000000;
         epsilon1 = 0.01;
@@ -147,7 +147,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
                                        &this->dEploidIO_->altCount_,
                                        this->dEploidIO_->panel,
                                        this->dEploidIO_,
-                                       "unit-testing",
+                                       "unit-testing", "ut",
                                        this->mcmcSample_,
                                        this->rg_);
     }

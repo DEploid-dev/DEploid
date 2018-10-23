@@ -97,6 +97,7 @@ int main(int argc, char *argv[]) {
                                                 tmpIO.panel,
                                                 &tmpIO,
                                                 string("DEploid-Lasso learning k"),
+                                                string("lassoK"),
                                                 mcmcSample,
                                                 &rg,
                                                 false);  // use IBD
@@ -113,6 +114,7 @@ int main(int argc, char *argv[]) {
                     cout << endl;
                     dEploidIO.initialProp = initialP;
                     dEploidIO.setKstrain(initialP.size());
+                    dEploidIO.setInitialPropWasGiven(true);
                 }
                 dEploidIO.finalProp.clear() ;
 
@@ -128,6 +130,7 @@ int main(int argc, char *argv[]) {
                                                dEploidIO.panel,
                                                &dEploidIO,
                                                string("DEploid-IBD learning proportion"),
+                                               string("ibd"),
                                                ibdMcmcSample,
                                                &rg,
                                                true);
@@ -193,6 +196,7 @@ int main(int argc, char *argv[]) {
                                             dEploidIO.lassoPanels.at(chromi),
                                             &tmpIO,
                                             job,
+                                            job,
                                             lassoMcmcSample,
                                             &rg,
                                             false);
@@ -208,7 +212,7 @@ int main(int argc, char *argv[]) {
             }
 
 
-            dEploidIO.writeHap(hap, false);
+            dEploidIO.writeHap(hap, "final");
         }
         // Finishing, write log
         dEploidIO.wrapUp();

@@ -276,20 +276,20 @@ void DEploidIO::finalize() {
 
 
 void DEploidIO::removeFilesWithSameName() {
-    strExportProp = this->prefix_ + ".prop";
-    strExportLLK = this->prefix_ + ".llk";
-    strExportHap = this->prefix_ + ".hap";
+    //strExportProp = this->prefix_ + ".prop";
+    //strExportLLK = this->prefix_ + ".llk";
+    //strExportHap = this->prefix_ + ".hap";
 
-    if (this->useIbdOnly()) {
-        strIbdExportProp = this->prefix_ + ".prop";
-        strIbdExportLLK = this->prefix_ + ".llk";
-        strIbdExportHap = this->prefix_ + ".hap";
-    } else {
-        strIbdExportProp = this->prefix_ + ".ibd.prop";
-        strIbdExportLLK = this->prefix_ + ".ibd.llk";
-        strIbdExportHap = this->prefix_ + ".ibd.hap";
-        strIbdExportProbs = this->prefix_ + ".ibd.probs";
-    }
+    //if (this->useIbdOnly()) {
+        //strIbdExportProp = this->prefix_ + ".prop";
+        //strIbdExportLLK = this->prefix_ + ".llk";
+        //strIbdExportHap = this->prefix_ + ".hap";
+    //} else {
+        //strIbdExportProp = this->prefix_ + ".ibd.prop";
+        //strIbdExportLLK = this->prefix_ + ".ibd.llk";
+        //strIbdExportHap = this->prefix_ + ".ibd.hap";
+        //strIbdExportProbs = this->prefix_ + ".ibd.probs";
+    //}
 
     strExportVcf = this->prefix_ + ".vcf";
     if ( compressVcf() ) {
@@ -302,14 +302,14 @@ void DEploidIO::removeFilesWithSameName() {
 
     if ( this->doLsPainting() == false ) {
         if (this->useIBD()) {
-            remove(strIbdExportProp.c_str());
-            remove(strIbdExportLLK.c_str());
-            remove(strIbdExportHap.c_str());
+            //remove(strIbdExportProp.c_str());
+            //remove(strIbdExportLLK.c_str());
+            //remove(strIbdExportHap.c_str());
         }
-        remove(strExportLLK.c_str());
-        remove(strExportHap.c_str());
+        //remove(strExportLLK.c_str());
+        //remove(strExportHap.c_str());
         remove(strExportVcf.c_str());
-        remove(strExportProp.c_str());
+        //remove(strExportProp.c_str());
         remove(strExportExtra.c_str());
         remove(strIbdExportProbs.c_str());
     }
@@ -826,12 +826,12 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
                                    cpFrom.position_.end());
     this->indexOfChromStarts_ = vector <size_t> (cpFrom.indexOfChromStarts_.begin(),
                                    cpFrom.indexOfChromStarts_.end());
-    this->strExportProp = cpFrom.strExportProp;
-    this->strExportLLK = cpFrom.strExportLLK;
-    this->strExportHap = cpFrom.strExportHap;
-    this->strIbdExportProp = cpFrom.strIbdExportProp;
-    this->strIbdExportLLK = cpFrom.strIbdExportLLK;
-    this->strIbdExportHap = cpFrom.strIbdExportHap;
+    //this->strExportProp = cpFrom.strExportProp;
+    //this->strExportLLK = cpFrom.strExportLLK;
+    //this->strExportHap = cpFrom.strExportHap;
+    //this->strIbdExportProp = cpFrom.strIbdExportProp;
+    //this->strIbdExportLLK = cpFrom.strIbdExportLLK;
+    //this->strIbdExportHap = cpFrom.strIbdExportHap;
 }
 
 
