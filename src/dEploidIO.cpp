@@ -934,6 +934,7 @@ void DEploidIO::dEploidLasso() {
             this->writePanel(tmp, chromi, newHeader);
         }
     }
+    this->finalProp.clear();
     for ( auto const& value: this->initialProp ) {
         this->finalProp.push_back(value);
     }
@@ -997,7 +998,6 @@ void DEploidIO::computeObsWsaf() {
 
 
 void DEploidIO::dEploidLassoFullPanel() {
-
     // Filter SNPs first
     this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD();
     this->trimming(this->vcfReaderPtr_->legitVqslodAt);
@@ -1006,13 +1006,16 @@ void DEploidIO::dEploidLassoFullPanel() {
 
     panel = new Panel(*panel);
     this->setIsCopied(false);
-    //panel
     DEploidLASSO dummy(panel->content_, this->obsWsaf_, 250);
     vector <string> newHeader;
     for (size_t i = 0; i < dummy.choiceIdx.size(); i++) {
         newHeader.push_back(panel->header_[dummy.choiceIdx[i]]);
-        //cout << newHeader.back() <<endl;
     }
 }
 
 
+void DEploidIO::ibdTrimming() {
+    // Filter SNPs first
+    this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD();
+    this->trimming(this->vcfReaderPtr_->legitVqslodAt);
+}

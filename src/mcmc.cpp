@@ -65,13 +65,14 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
     //this->propRg_  = new MersenneTwister(this->seed_);
     //this->initialHapRg_ = new MersenneTwister(this->seed_);
     if (useIBD == true) {
-        //this->calcMaxIteration(100, 10, 0.5);
-        this->calcMaxIteration(10, 10, 0.5);
+        this->calcMaxIteration(100, 10, 0.5);
+        //this->calcMaxIteration(10, 10, 0.5);
     } else {
         this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
     }
     this->MN_LOG_TITRE = 0.0;
-    this->SD_LOG_TITRE = (useIBD == true) ? this->dEploidIO_->ibdSigma() : this->dEploidIO_->parameterSigma();
+    //this->SD_LOG_TITRE = (useIBD == true) ? this->dEploidIO_->ibdSigma() : this->dEploidIO_->parameterSigma();
+    this->SD_LOG_TITRE = this->dEploidIO_->parameterSigma();
     this->PROP_SCALE = 40.0;
 
     stdNorm_ = new StandNormalRandomSample(this->seed_);
@@ -277,7 +278,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++) {
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
-        if ( this->currentMcmcIteration_ > 0 && this->currentMcmcIteration_%100 == 0 && showProgress ) {
+        if ( this->currentMcmcIteration_ > 0 && this->currentMcmcIteration_%30 == 0 && showProgress ) {
             #ifndef RBUILD
                 clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->maxIteration_) << "% completed ("<<this->mcmcJob<<")"<<flush;
             #endif
@@ -289,6 +290,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
     #endif
     this->mcmcSample_->hap = this->currentHap_;
     this->writeLastFwdProb(useIBD);
+    this->dEploidIO_->finalProp.clear();
     this->dEploidIO_->finalProp = this->mcmcSample_->proportion.back();
 
     for (size_t atSiteI = 0; atSiteI < nLoci(); atSiteI++ ) {

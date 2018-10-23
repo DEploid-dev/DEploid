@@ -85,7 +85,6 @@ int main(int argc, char *argv[]) {
         } else {
             MersenneTwister rg(dEploidIO.randomSeed());
             if (dEploidIO.useIBD()) {  // ibd
-
                 if (dEploidIO.usePanel()){
                     // lasso before ibd
                     DEploidIO tmpIO(dEploidIO);
@@ -104,23 +103,25 @@ int main(int argc, char *argv[]) {
                     mcmcMachinery.runMcmcChain(true,     // show progress
                                                false);   // use IBD
 
-                    size_t newK = 0;
+                    vector <double> initialP;
                     for (auto const& value : tmpIO.finalProp) {
                         if (value > 0.01) {
-                            newK++;
+                            initialP.push_back(value);
                         }
                         cout<< value << " ";
                     }
                     cout << endl;
-                    dEploidIO.initialProp = tmpIO.finalProp;
-                    dEploidIO.setKstrain(newK);
+                    dEploidIO.initialProp = initialP;
+                    dEploidIO.setKstrain(initialP.size());
                 }
                 dEploidIO.finalProp.clear() ;
-                cout << "proportion size = " << dEploidIO.finalProp.size() << endl;
+
+
 
                 McmcSample * ibdMcmcSample = new McmcSample();
                 // MersenneTwister ibdRg(dEploidIO.randomSeed());
-
+                //DEploidIO tmpIO(dEploidIO);
+                //tmpIO.ibdTrimming();
                 McmcMachinery ibdMcmcMachinery(&dEploidIO.plaf_,
                                                &dEploidIO.refCount_,
                                                &dEploidIO.altCount_,
@@ -160,10 +161,20 @@ int main(int argc, char *argv[]) {
             //dEploidIO.paintIBD();
             //delete mcmcSample;
 
+            dEploidIO.initialProp.clear();
+            for (auto const& value : dEploidIO.finalProp) {
+                dEploidIO.initialProp.push_back(value);
+            }
+
             dEploidIO.setDoUpdateProp(false);
+
             dEploidIO.dEploidLasso();
+
+
             //MersenneTwister lassoRg(dEploidIO.randomSeed());
             DEploidIO tmpIO(dEploidIO);
+
+
             vector < vector <double> > hap;
             for (size_t chromi = 0;
                  chromi < dEploidIO.indexOfChromStarts_.size();
@@ -195,8 +206,9 @@ int main(int argc, char *argv[]) {
                 }
                 delete lassoMcmcSample;
             }
-            dEploidIO.writeHap(hap, false);
 
+
+            dEploidIO.writeHap(hap, false);
         }
         // Finishing, write log
         dEploidIO.wrapUp();
