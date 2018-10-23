@@ -109,13 +109,14 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     if ( forbidCopyFromSame_ ){ (*writeTo) << " Update pair haplotypes move forbid copying from the same strain!!! \n"; }
     (*writeTo) << setw(20) << " Miss copy prob: "   << this->missCopyProb_ << "\n";
     (*writeTo) << setw(20) << " Avrg Cent Morgan: " << this->averageCentimorganDistance_ << "\n";
-    (*writeTo) << setw(20) << " G: "               << this->parameterG() << "\n";
+    (*writeTo) << setw(20) << " G: "                << this->parameterG() << "\n";
     if (this->useIBD()){
-    (*writeTo) << setw(20) << " IBD sigma: "               << this->ibdSigma() << "\n";
+    (*writeTo) << setw(20) << " IBD sigma: "        << this->ibdSigma() << "\n";
     } else {
-    (*writeTo) << setw(20) << " sigma: "               << this->parameterSigma() << "\n";
+    (*writeTo) << setw(20) << " sigma: "            << this->parameterSigma() << "\n";
     }
     (*writeTo) << setw(20) << " ScalingFactor: "    << this->scalingFactor() << "\n";
+    (*writeTo) << setw(20) << " VQSLOD:        "    << this->vqslod() << "\n";
     if ( this->initialPropWasGiven() ){
         (*writeTo) << setw(20) << " Initial prob: " ;
         for ( size_t i = 0; i < this->initialProp.size(); i++ ){

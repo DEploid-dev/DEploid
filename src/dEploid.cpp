@@ -83,13 +83,31 @@ int main(int argc, char *argv[]) {
             //}
             //dEploidIO.writeHap(hap, false);
         } else {
+
+            DEploidIO orginalCopyOfDeploidIO(dEploidIO);
+
+
             MersenneTwister rg(dEploidIO.randomSeed());
             if (dEploidIO.useIBD()) {  // ibd
+
+
+            // #################################################################
+            // #################################################################
+            // ###################### DEploid-LASSO ############################
+            // #################################################################
+            // #################################################################
+            // #################################################################
+
+
                 if (dEploidIO.usePanel()){
                     // lasso before ibd
                     DEploidIO tmpIO(dEploidIO);
                     tmpIO.dEploidLassoFullPanel();
 
+cout << tmpIO.plaf_.size() << endl;
+cout << tmpIO.refCount_.size() << endl;
+cout << tmpIO.altCount_.size() << endl;
+cout << tmpIO.panel->content_.size() <<endl;
                     McmcSample * mcmcSample = new McmcSample();
                     McmcMachinery mcmcMachinery(&tmpIO.plaf_,
                                                 &tmpIO.refCount_,
@@ -116,19 +134,25 @@ int main(int argc, char *argv[]) {
                     dEploidIO.setKstrain(initialP.size());
                     dEploidIO.setInitialPropWasGiven(true);
                 }
-                dEploidIO.finalProp.clear() ;
 
 
+
+            // #################################################################
+            // #################################################################
+            // ###################### DEploid-IBD   ############################
+            // #################################################################
+            // #################################################################
+            // #################################################################
 
                 McmcSample * ibdMcmcSample = new McmcSample();
                 // MersenneTwister ibdRg(dEploidIO.randomSeed());
-                //DEploidIO tmpIO(dEploidIO);
-                //tmpIO.ibdTrimming();
-                McmcMachinery ibdMcmcMachinery(&dEploidIO.plaf_,
-                                               &dEploidIO.refCount_,
-                                               &dEploidIO.altCount_,
-                                               dEploidIO.panel,
-                                               &dEploidIO,
+                DEploidIO tmpIO2(dEploidIO);
+                tmpIO2.ibdTrimming();
+                McmcMachinery ibdMcmcMachinery(&tmpIO2.plaf_,
+                                               &tmpIO2.refCount_,
+                                               &tmpIO2.altCount_,
+                                               tmpIO2.panel,
+                                               &tmpIO2,
                                                string("DEploid-IBD learning proportion"),
                                                string("ibd"),
                                                ibdMcmcSample,
@@ -141,9 +165,9 @@ int main(int argc, char *argv[]) {
                     // dEploidIO.finalProp = tmpIO.initialProp;
                 // }
 
-                // dEploidIO.initialProp = tmpIO.initialProp;
-                // dEploidIO.setInitialPropWasGiven(true);
-                // dEploidIO.setDoUpdateProp(false);
+                 dEploidIO.initialProp = tmpIO2.initialProp;
+                 dEploidIO.setInitialPropWasGiven(true);
+                 dEploidIO.setDoUpdateProp(false);
                 delete ibdMcmcSample;
             }
 
@@ -169,23 +193,27 @@ int main(int argc, char *argv[]) {
                 dEploidIO.initialProp.push_back(value);
             }
 
+            // #################################################################
+            // #################################################################
+            // ###################### DEploid-LASSO ############################
+            // #################################################################
+            // #################################################################
+            // #################################################################
+
             dEploidIO.setDoUpdateProp(false);
-
             dEploidIO.dEploidLasso();
-
-
             //MersenneTwister lassoRg(dEploidIO.randomSeed());
-            DEploidIO tmpIO(dEploidIO);
+            //DEploidIO tmpIO(dEploidIO);
 
 
             vector < vector <double> > hap;
             for (size_t chromi = 0;
                  chromi < dEploidIO.indexOfChromStarts_.size();
                  chromi++ ) {
-                tmpIO.position_.clear();
-                tmpIO.position_.push_back(dEploidIO.position_.at(chromi));
-                tmpIO.indexOfChromStarts_.clear();
-                tmpIO.indexOfChromStarts_.push_back(0);
+                orginalCopyOfDeploidIO.position_.clear();
+                orginalCopyOfDeploidIO.position_.push_back(dEploidIO.position_.at(chromi));
+                orginalCopyOfDeploidIO.indexOfChromStarts_.clear();
+                orginalCopyOfDeploidIO.indexOfChromStarts_.push_back(0);
                 McmcSample * lassoMcmcSample = new McmcSample();
                 string job = string("DEploid-Lasso learning chromosome ");
                 job.append(dEploidIO.chrom_[chromi]).append(" haplotypes");
@@ -194,7 +222,7 @@ int main(int argc, char *argv[]) {
                                             &dEploidIO.lassoRefCount.at(chromi),
                                             &dEploidIO.lassoAltCount.at(chromi),
                                             dEploidIO.lassoPanels.at(chromi),
-                                            &tmpIO,
+                                            &orginalCopyOfDeploidIO,
                                             job,
                                             job,
                                             lassoMcmcSample,

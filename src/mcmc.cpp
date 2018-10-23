@@ -46,6 +46,7 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
                               McmcSample *mcmcSample,
                               RandomGenerator* rg_,
                               bool useIBD ) {  // initialiseMCMCmachinery
+    cout << "plaf.size()"  << plaf->size() << endl;
     this->mcmcJob = mcmcJob;
     this->jobbrief = jobbrief;
     this->plaf_ptr_ = plaf;
@@ -67,14 +68,14 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
     //this->propRg_  = new MersenneTwister(this->seed_);
     //this->initialHapRg_ = new MersenneTwister(this->seed_);
     if (useIBD == true) {
-        this->calcMaxIteration(100, 10, 0.5);
-        //this->calcMaxIteration(10, 10, 0.5);
+        //this->calcMaxIteration(100, 10, 0.5);
+        this->calcMaxIteration(10, 10, 0.5);
     } else {
         this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
     }
     this->MN_LOG_TITRE = 0.0;
-    //this->SD_LOG_TITRE = (useIBD == true) ? this->dEploidIO_->ibdSigma() : this->dEploidIO_->parameterSigma();
-    this->SD_LOG_TITRE = this->dEploidIO_->parameterSigma();
+    this->SD_LOG_TITRE = (useIBD == true) ? this->dEploidIO_->ibdSigma() : this->dEploidIO_->parameterSigma();
+    //this->SD_LOG_TITRE = this->dEploidIO_->parameterSigma();
     this->PROP_SCALE = 40.0;
 
     stdNorm_ = new StandNormalRandomSample(this->seed_);
@@ -301,7 +302,8 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
     cout << endl;
 
     this->mcmcSample_->hap = this->currentHap_;
-    this->writeLastFwdProb(useIBD);
+
+    //this->writeLastFwdProb(useIBD);
     this->dEploidIO_->finalProp.clear();
     this->dEploidIO_->finalProp = this->mcmcSample_->proportion.back();
 
@@ -315,12 +317,9 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
     }
 
     if ( notInR & ((jobbrief == "lassoK") | (jobbrief == "ibd")) ) {
-cout << "tring to write here" << endl;
-
         this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, jobbrief, useIBD);
     }
 
-cout << "stopped here" << endl;
     if ( useIBD == true ) {
         for (size_t atSiteI = 0; atSiteI < nLoci(); atSiteI++ ) {
             this->ibdPath.IBDpathChangeAt[atSiteI] /= (double)this->maxIteration_;

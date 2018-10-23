@@ -28,8 +28,10 @@
 
 void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample, string jobbrief, bool useIBD){
     this->writeProp( mcmcSample, jobbrief);
-    this->writeLLK( mcmcSample, jobbrief);
+    this->writeLLK(mcmcSample, jobbrief);
+    cout <<"hap"<<endl;
     this->writeHap(mcmcSample->hap, jobbrief);
+    cout <<"hap2"<<endl;
 
     if ( useIBD == false ){
         this->writeVcf( mcmcSample );

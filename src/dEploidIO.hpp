@@ -165,6 +165,7 @@ class DEploidIO{
     bool useIbdOnly_;
     bool useLasso_;
 
+    double vqslod_;
     vector <double> obsWsaf_;
     vector <size_t> wsafGt0At_;
     size_t nLoci_;
@@ -334,6 +335,9 @@ class DEploidIO{
     bool initialHapWasGiven() const { return initialHapWasGiven_; }
 
     bool randomSeedWasGiven() const {return this->randomSeedWasGiven_; }
+
+    void setVqslod ( const double setTo ) { this->vqslod_ = setTo; }
+    double vqslod() const { return this->vqslod_; }
 
     // log and export resutls
     void writeRecombProb ( Panel * panel );

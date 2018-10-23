@@ -48,7 +48,6 @@ class TxtReader : public VariantIndex {
     // Members
     string fileName;
     // content is a matrix of n.loci by n.strains, i.e. content length is n.loci
-    vector < vector < double > > content_;
     vector < vector < double > > keptContent_;
     // info_ only refers to the first column of the content
     vector <double> info_;
@@ -66,6 +65,7 @@ class TxtReader : public VariantIndex {
     void reshapeContentToInfo();
 
  public:  // move the following to private
+    vector < vector < double > > content_;
     TxtReader() {}
     virtual void readFromFile(const char inchar[]) {
         this->readFromFileBase(inchar); }

@@ -237,7 +237,7 @@ void VcfReader::removeMarkers() {
 void VcfReader::findLegitSnpsGivenVQSLOD(double vqslodThreshold) {
     assert(legitVqslodAt.size() == 0);
     for (size_t i = 0; i < this->vqslod.size(); i++) {
-        if (this->vqslod[i] > 0) {
+        if (this->vqslod[i] > vqslodThreshold) {
             this->legitVqslodAt.push_back(i);
         }
     }

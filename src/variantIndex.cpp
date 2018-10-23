@@ -89,6 +89,54 @@ void VariantIndex::findAndKeepMarkers(ExcludeMarker* excludedMarkers) {
 }
 
 
+void VariantIndex::findWhoToBeKeptGivenIndex(
+         const vector <size_t> & givenIndex) {
+    dout << " Starts findWhoToBeKeptGivenIndex " << endl;
+    assert(this->indexOfContentToBeKept.size() == 0);
+    indexOfContentToBeKept = vector <size_t> (givenIndex.begin(),
+                                              givenIndex.end());
+    //assert(this->indexOfPosToBeKept.size() == 0);
+    vector <string> oldChrom = vector <string> (chrom_.begin(), chrom_.end());
+    this->chrom_.clear();
+
+    vector < vector < int > > oldposition = this->position_;
+    this->position_.clear();
+
+    for (size_t chromI = 0; chromI < oldChrom.size(); chromI++) {
+        dout << "   Going through chrom "<< oldChrom[chromI] << endl;
+        size_t hapIndex = indexOfChromStarts_[chromI];
+        vector <int> newTrimmedPos;
+        for (size_t posI = 0; posI < oldposition[chromI].size(); posI++) {
+            if (std::find(givenIndex.begin(),givenIndex.end(), hapIndex)
+                    != givenIndex.end()){
+                if (newTrimmedPos.size() == 0) {
+                    this->chrom_.push_back(oldChrom[chromI]);
+                }
+                newTrimmedPos.push_back(oldposition[chromI][posI]);
+            }
+
+            hapIndex++;
+        }
+        this->position_.push_back(newTrimmedPos);
+    }
+
+    //assert(indexOfPosToBeKept.size() == this->chrom_.size());
+
+    dout << indexOfContentToBeKept.size() << " sites need to be Kept " << endl;
+}
+
+
+void VariantIndex::findAndKeepMarkersGivenIndex(
+        const vector <size_t> & givenIndex) {
+    this->setDoneGetIndexOfChromStarts(false);
+    dout << " findAndKeepMarkersGivenIndex called " << givenIndex.size() <<endl;
+    this->findWhoToBeKeptGivenIndex(givenIndex);
+    //this->removePositions();
+    this->getIndexOfChromStarts();
+    this->removeMarkers();
+}
+
+
 void VariantIndex::removePositions() {
     assert(this->keptPosition_.size() == (size_t)0);
     for (size_t chromI = 0; chromI < this->chrom_.size(); chromI++) {
