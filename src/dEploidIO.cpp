@@ -60,15 +60,12 @@ DEploidIO::~DEploidIO() {
     if (this->isCopied()){
         return;
     }
-
     if ( this->excludedMarkers != NULL ) {
         delete this->excludedMarkers;
     }
-
     if ( this->vcfReaderPtr_ != NULL ) {
         delete this->vcfReaderPtr_;
     }
-
     if ( this->panel != NULL ) {
         delete panel;
     }
@@ -1006,6 +1003,8 @@ void DEploidIO::dEploidLassoFullPanel() {
 
     panel = new Panel(*panel);
     this->setIsCopied(false);
+    this->excludedMarkers = NULL;
+    this->vcfReaderPtr_ = NULL;
     DEploidLASSO dummy(panel->content_, this->obsWsaf_, 250);
     vector <string> newHeader;
     for (size_t i = 0; i < dummy.choiceIdx.size(); i++) {
