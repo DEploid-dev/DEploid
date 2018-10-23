@@ -29,9 +29,7 @@
 void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample, string jobbrief, bool useIBD){
     this->writeProp( mcmcSample, jobbrief);
     this->writeLLK(mcmcSample, jobbrief);
-    cout <<"hap"<<endl;
     this->writeHap(mcmcSample->hap, jobbrief);
-    cout <<"hap2"<<endl;
 
     if ( useIBD == false ){
         this->writeVcf( mcmcSample );
@@ -96,6 +94,7 @@ void DEploidIO::writeHap(vector < vector <double> > &hap, string jobbrief){
 
     size_t siteIndex = 0;
     for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
+        dout << "chrom " << chromI << " length " << position_[chromI].size() << endl;
         for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
             ofstreamExportTmp << chrom_[chromI] << "\t" << (int)position_[chromI][posI] << "\t";
             for ( size_t ii = 0; ii < hap[siteIndex].size(); ii++){

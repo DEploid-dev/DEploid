@@ -121,6 +121,7 @@ class DEploidIO{
     void setKstrain ( const size_t setTo ) { this->kStrain_ = setTo;}
     bool usePanel() const { return usePanel_; }
     vector <string> chrom_;
+    size_t kStrain() const { return this->kStrain_;}
 
   private:
     void core();
@@ -388,7 +389,6 @@ class DEploidIO{
 
     void setNLoci ( const size_t setTo ) { this->nLoci_ = setTo;}
     size_t nLoci() const { return this->nLoci_; }
-    size_t kStrain() const { return this->kStrain_;}
     void setKStrainWasManuallySet ( const size_t setTo ) { this->kStrainWasManuallySet_ = setTo; }
     bool kStrainWasSetByHap() const { return this->kStrainWasSetByHap_; }
     void setKStrainWasSetByHap ( const size_t setTo ) { this->kStrainWasSetByHap_ = setTo; }

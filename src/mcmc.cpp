@@ -46,7 +46,6 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
                               McmcSample *mcmcSample,
                               RandomGenerator* rg_,
                               bool useIBD ) {  // initialiseMCMCmachinery
-    cout << "plaf.size()"  << plaf->size() << endl;
     this->mcmcJob = mcmcJob;
     this->jobbrief = jobbrief;
     this->plaf_ptr_ = plaf;

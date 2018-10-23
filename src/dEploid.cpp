@@ -104,10 +104,6 @@ int main(int argc, char *argv[]) {
                     DEploidIO tmpIO(dEploidIO);
                     tmpIO.dEploidLassoFullPanel();
 
-cout << tmpIO.plaf_.size() << endl;
-cout << tmpIO.refCount_.size() << endl;
-cout << tmpIO.altCount_.size() << endl;
-cout << tmpIO.panel->content_.size() <<endl;
                     McmcSample * mcmcSample = new McmcSample();
                     McmcMachinery mcmcMachinery(&tmpIO.plaf_,
                                                 &tmpIO.refCount_,
@@ -166,6 +162,7 @@ cout << tmpIO.panel->content_.size() <<endl;
                 // }
 
                  dEploidIO.initialProp = tmpIO2.initialProp;
+                 dEploidIO.finalProp = tmpIO2.initialProp;
                  dEploidIO.setInitialPropWasGiven(true);
                  dEploidIO.setDoUpdateProp(false);
                 delete ibdMcmcSample;
@@ -188,10 +185,11 @@ cout << tmpIO.panel->content_.size() <<endl;
             //dEploidIO.paintIBD();
             //delete mcmcSample;
 
-            dEploidIO.initialProp.clear();
-            for (auto const& value : dEploidIO.finalProp) {
-                dEploidIO.initialProp.push_back(value);
-            }
+            //dEploidIO.initialProp.clear();
+            //for (auto const& value : dEploidIO.finalProp) {
+                //cout << value << endl;
+                //dEploidIO.initialProp.push_back(value);
+            //}
 
             // #################################################################
             // #################################################################
@@ -203,17 +201,24 @@ cout << tmpIO.panel->content_.size() <<endl;
             dEploidIO.setDoUpdateProp(false);
             dEploidIO.dEploidLasso();
             //MersenneTwister lassoRg(dEploidIO.randomSeed());
-            //DEploidIO tmpIO(dEploidIO);
 
 
+            DEploidIO dEploidLassoIO(dEploidIO);
+
+
+            dEploidLassoIO.initialProp = dEploidIO.initialProp;
+            dEploidLassoIO.setDoUpdateProp(false);
+            dEploidLassoIO.setInitialPropWasGiven(true);
+            dEploidLassoIO.setKstrain(dEploidIO.kStrain());
             vector < vector <double> > hap;
             for (size_t chromi = 0;
                  chromi < dEploidIO.indexOfChromStarts_.size();
                  chromi++ ) {
-                orginalCopyOfDeploidIO.position_.clear();
-                orginalCopyOfDeploidIO.position_.push_back(dEploidIO.position_.at(chromi));
-                orginalCopyOfDeploidIO.indexOfChromStarts_.clear();
-                orginalCopyOfDeploidIO.indexOfChromStarts_.push_back(0);
+                dEploidLassoIO.position_.clear();
+                dEploidLassoIO.position_.push_back(dEploidIO.position_.at(chromi));
+                dEploidLassoIO.indexOfChromStarts_.clear();
+                dEploidLassoIO.indexOfChromStarts_.push_back(0);
+
                 McmcSample * lassoMcmcSample = new McmcSample();
                 string job = string("DEploid-Lasso learning chromosome ");
                 job.append(dEploidIO.chrom_[chromi]).append(" haplotypes");
@@ -222,7 +227,7 @@ cout << tmpIO.panel->content_.size() <<endl;
                                             &dEploidIO.lassoRefCount.at(chromi),
                                             &dEploidIO.lassoAltCount.at(chromi),
                                             dEploidIO.lassoPanels.at(chromi),
-                                            &orginalCopyOfDeploidIO,
+                                            &dEploidLassoIO,
                                             job,
                                             job,
                                             lassoMcmcSample,

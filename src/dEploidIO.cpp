@@ -1014,16 +1014,11 @@ void DEploidIO::dEploidLassoFullPanel() {
     // Filter SNPs first
     this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
     this->trimming(this->vcfReaderPtr_->legitVqslodAt);
-cout <<this->plaf_.size() << endl;
     this->computeObsWsaf();
-
 
     panel = new Panel(*panel);
     this->panel->findAndKeepMarkersGivenIndex(
                                         this->vcfReaderPtr_->legitVqslodAt);
-cout << "going to do lasso now "<<endl;
-cout << this->panel->content_.size() <<endl;
-
 
     DEploidLASSO dummy(panel->content_, this->obsWsaf_, 250);
     vector <string> newHeader;
@@ -1031,7 +1026,6 @@ cout << this->panel->content_.size() <<endl;
         newHeader.push_back(panel->header_[dummy.choiceIdx[i]]);
 
     }
-    cout << "dEploidLassoFullPanel over" << endl;
     this->setIsCopied(false);
     this->excludedMarkers = NULL;
     this->vcfReaderPtr_ = NULL;
