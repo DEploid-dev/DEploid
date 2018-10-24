@@ -42,7 +42,7 @@ function test_noRepeat {
   valgrind --error-exitcode=1 --leak-check=full -q --gen-suppressions=yes ./dEploid $@ > /dev/null
   if [ $? -ne 0 ]; then
     echo ""
-    echo "Valgrind check of \"./dEploid $@ \" failed."
+    echo "Valgrind check of \"valgrind --error-exitcode=1 --leak-check=full -q --gen-suppressions=yes ./dEploid $@ \" failed."
     exit 1
   fi
 
