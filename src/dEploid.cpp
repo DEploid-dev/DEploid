@@ -82,130 +82,77 @@ int main(int argc, char *argv[]) {
                 //delete lassoMcmcSample;
             //}
             //dEploidIO.writeHap(hap, false);
-        } else {
-
-            DEploidIO orginalCopyOfDeploidIO(dEploidIO);
-
-
+        } else if (dEploidIO.useIBD()) {  // ibd
             MersenneTwister rg(dEploidIO.randomSeed());
-            if (dEploidIO.useIBD()) {  // ibd
+            if (dEploidIO.usePanel()){
+                // #################################################################
+                // ################# DEploid-LASSO to learn K ######################
+                // #################################################################
+                DEploidIO tmpIO(dEploidIO);
+                tmpIO.dEploidLassoFullPanel();
 
+                McmcSample * mcmcSample = new McmcSample();
+                McmcMachinery mcmcMachinery(&tmpIO.plaf_,
+                                            &tmpIO.refCount_,
+                                            &tmpIO.altCount_,
+                                            tmpIO.panel,
+                                            &tmpIO,
+                                            string("DEploid-Lasso learning k"),
+                                            string("lassoK"),
+                                            mcmcSample,
+                                            &rg,
+                                            false);  // use IBD
+                mcmcMachinery.runMcmcChain(true,     // show progress
+                                           false);   // use IBD
 
-            // #################################################################
-            // #################################################################
-            // ###################### DEploid-LASSO ############################
-            // #################################################################
-            // #################################################################
-            // #################################################################
-
-
-                if (dEploidIO.usePanel()){
-                    // lasso before ibd
-                    DEploidIO tmpIO(dEploidIO);
-                    tmpIO.dEploidLassoFullPanel();
-
-                    McmcSample * mcmcSample = new McmcSample();
-                    McmcMachinery mcmcMachinery(&tmpIO.plaf_,
-                                                &tmpIO.refCount_,
-                                                &tmpIO.altCount_,
-                                                tmpIO.panel,
-                                                &tmpIO,
-                                                string("DEploid-Lasso learning k"),
-                                                string("lassoK"),
-                                                mcmcSample,
-                                                &rg,
-                                                false);  // use IBD
-                    mcmcMachinery.runMcmcChain(true,     // show progress
-                                               false);   // use IBD
-
-                    vector <double> initialP;
-                    for (auto const& value : tmpIO.finalProp) {
-                        if (value > 0.01) {
-                            initialP.push_back(value);
-                        }
-                        cout<< value << " ";
+                vector <double> initialP;
+                for (auto const& value : tmpIO.finalProp) {
+                    if (value > 0.01) {
+                        initialP.push_back(value);
                     }
-                    cout << endl;
-                    dEploidIO.initialProp = initialP;
-                    dEploidIO.setKstrain(initialP.size());
-                    dEploidIO.setInitialPropWasGiven(true);
+                    cout<< value << " ";
                 }
-
-
-
-            // #################################################################
+                cout << endl;
+                dEploidIO.initialProp = initialP;
+                dEploidIO.setKstrain(initialP.size());
+                dEploidIO.setInitialPropWasGiven(true);
+            }
             // #################################################################
             // ###################### DEploid-IBD   ############################
             // #################################################################
-            // #################################################################
-            // #################################################################
+            McmcSample * ibdMcmcSample = new McmcSample();
+            DEploidIO tmpIO2(dEploidIO);
+            tmpIO2.ibdTrimming();
+            McmcMachinery ibdMcmcMachinery(&tmpIO2.plaf_,
+                                           &tmpIO2.refCount_,
+                                           &tmpIO2.altCount_,
+                                           tmpIO2.panel,
+                                           &tmpIO2,
+                                           string("DEploid-IBD learning proportion"),
+                                           string("ibd"),
+                                           ibdMcmcSample,
+                                           &rg,
+                                           true);
+            ibdMcmcMachinery.runMcmcChain(true,   // show progress
+                                          true);  // use IBD
+            // if (dEploidIO.useIbdOnly()) {
+                // tmpIO.paintIBD();
+                // dEploidIO.finalProp = tmpIO.initialProp;
+            // }
 
-                McmcSample * ibdMcmcSample = new McmcSample();
-                // MersenneTwister ibdRg(dEploidIO.randomSeed());
-                DEploidIO tmpIO2(dEploidIO);
-                tmpIO2.ibdTrimming();
-                McmcMachinery ibdMcmcMachinery(&tmpIO2.plaf_,
-                                               &tmpIO2.refCount_,
-                                               &tmpIO2.altCount_,
-                                               tmpIO2.panel,
-                                               &tmpIO2,
-                                               string("DEploid-IBD learning proportion"),
-                                               string("ibd"),
-                                               ibdMcmcSample,
-                                               &rg,
-                                               true);
-                ibdMcmcMachinery.runMcmcChain(true,   // show progress
-                                              true);  // use IBD
-                // if (dEploidIO.useIbdOnly()) {
-                    // tmpIO.paintIBD();
-                    // dEploidIO.finalProp = tmpIO.initialProp;
-                // }
+             dEploidIO.initialProp = tmpIO2.initialProp;
+             dEploidIO.finalProp = tmpIO2.initialProp;
+             dEploidIO.setInitialPropWasGiven(true);
+             dEploidIO.setDoUpdateProp(false);
+             delete ibdMcmcSample;
 
-                 dEploidIO.initialProp = tmpIO2.initialProp;
-                 dEploidIO.finalProp = tmpIO2.initialProp;
-                 dEploidIO.setInitialPropWasGiven(true);
-                 dEploidIO.setDoUpdateProp(false);
-                delete ibdMcmcSample;
-            }
-
-            //McmcSample * mcmcSample = new McmcSample();
-            //MersenneTwister rg(dEploidIO.randomSeed());
-
-            //McmcMachinery mcmcMachinery(&dEploidIO.plaf_,
-                                        //&dEploidIO.refCount_,
-                                        //&dEploidIO.altCount_,
-                                        //dEploidIO.panel,
-                                        //&dEploidIO,
-                                        //mcmcSample,
-                                        //&rg,
-                                        //false);  // use IBD
-            //mcmcMachinery.runMcmcChain(true,     // show progress
-                                       //false);   // use IBD
-
-            //dEploidIO.paintIBD();
-            //delete mcmcSample;
-
-            //dEploidIO.initialProp.clear();
-            //for (auto const& value : dEploidIO.finalProp) {
-                //cout << value << endl;
-                //dEploidIO.initialProp.push_back(value);
-            //}
-
-            // #################################################################
             // #################################################################
             // ###################### DEploid-LASSO ############################
             // #################################################################
-            // #################################################################
-            // #################################################################
-
-            dEploidIO.setDoUpdateProp(false);
+            // *** Frist split the reference panel etc
             dEploidIO.dEploidLasso();
-            //MersenneTwister lassoRg(dEploidIO.randomSeed());
-
 
             DEploidIO dEploidLassoIO(dEploidIO);
-
-
             dEploidLassoIO.initialProp = dEploidIO.initialProp;
             dEploidLassoIO.setDoUpdateProp(false);
             dEploidLassoIO.setInitialPropWasGiven(true);
@@ -235,6 +182,7 @@ int main(int argc, char *argv[]) {
                                             false);
                 lassoMcmcMachinery.runMcmcChain(true,   // show progress
                                                 false);  // use IBD
+                // *** Append haplotypes to the end
                 for (size_t snpi = 0;
                      snpi < lassoMcmcSample->hap.size(); snpi++) {
                     hap.push_back(vector <double> (
@@ -243,15 +191,30 @@ int main(int argc, char *argv[]) {
                 }
                 delete lassoMcmcSample;
             }
-
-
             dEploidIO.writeHap(hap, "final");
+        } else {
+            McmcSample * mcmcSample = new McmcSample();
+            MersenneTwister rg(dEploidIO.randomSeed());
+            McmcMachinery mcmcMachinery(&dEploidIO.plaf_,
+                                &dEploidIO.refCount_,
+                                &dEploidIO.altCount_,
+                                dEploidIO.panel,
+                                &dEploidIO,
+                                "DEploid first version",
+                                "DEploid 1.0",
+                                mcmcSample,
+                                &rg,
+                                false);  // use IBD
+            mcmcMachinery.runMcmcChain(true,     // show progress
+                               false);   // use IBD
+            dEploidIO.paintIBD();
+            dEploidIO.writeHap(mcmcSample->hap, "final");
         }
         // Finishing, write log
         dEploidIO.wrapUp();
     }
     catch (const exception &e) {
-      std::cerr << "Error: " << e.what() << std::endl;
-      return EXIT_FAILURE;
+        std::cerr << "Error: " << e.what() << std::endl;
+        return EXIT_FAILURE;
     }
 }

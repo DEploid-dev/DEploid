@@ -426,7 +426,6 @@ class DEploidIO{
     void trimVec(vector <double> &vec, vector <size_t> &idx);
     void trimming(vector <size_t> & trimmingCriteria);
     void computeObsWsaf();
-
 };
 
 #endif
