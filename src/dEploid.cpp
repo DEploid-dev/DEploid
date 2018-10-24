@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
                 }
                 delete lassoMcmcSample;
             }
-            dEploidIO.writeHap(hap, false);
+            dEploidIO.writeHap(hap, "lasso");
         } else if (dEploidIO.useIBD()) {  // ibd
             MersenneTwister rg(dEploidIO.randomSeed());
             if (dEploidIO.usePanel()) {
