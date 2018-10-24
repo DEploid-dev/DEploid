@@ -5,7 +5,7 @@ wget --no-check-certificate https://github.com/mcveanlab/DEploid/archive/${previ
 tar -xf ${previousVersionTag}.tar.gz
 cd DEploid-${previousVersion}; ./bootstrap; make; cd ..
 
-sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel data/testData/labStrains.test.panel.txt -seed 1 -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -vcfOut"
+sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel data/testData/labStrains.test.panel.txt -seed 1 -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -vcfOut -k 2"
 ./dEploid ${sameFlags} -o current
 ./DEploid-${previousVersion}/dEploid ${sameFlags} -o previous
 
