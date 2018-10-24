@@ -95,7 +95,7 @@ void VariantIndex::findWhoToBeKeptGivenIndex(
     assert(this->indexOfContentToBeKept.size() == 0);
     indexOfContentToBeKept = vector <size_t> (givenIndex.begin(),
                                               givenIndex.end());
-    //assert(this->indexOfPosToBeKept.size() == 0);
+    // assert(this->indexOfPosToBeKept.size() == 0);
     vector <string> oldChrom = vector <string> (chrom_.begin(), chrom_.end());
     this->chrom_.clear();
 
@@ -107,8 +107,8 @@ void VariantIndex::findWhoToBeKeptGivenIndex(
         size_t hapIndex = indexOfChromStarts_[chromI];
         vector <int> newTrimmedPos;
         for (size_t posI = 0; posI < oldposition[chromI].size(); posI++) {
-            if (std::find(givenIndex.begin(),givenIndex.end(), hapIndex)
-                    != givenIndex.end()){
+            if (std::find(givenIndex.begin(), givenIndex.end(), hapIndex)
+                    != givenIndex.end()) {
                 if (newTrimmedPos.size() == 0) {
                     this->chrom_.push_back(oldChrom[chromI]);
                 }
@@ -120,7 +120,7 @@ void VariantIndex::findWhoToBeKeptGivenIndex(
         this->position_.push_back(newTrimmedPos);
     }
 
-    //assert(indexOfPosToBeKept.size() == this->chrom_.size());
+    // assert(indexOfPosToBeKept.size() == this->chrom_.size());
 
     dout << indexOfContentToBeKept.size() << " sites need to be Kept " << endl;
 }
@@ -131,7 +131,6 @@ void VariantIndex::findAndKeepMarkersGivenIndex(
     this->setDoneGetIndexOfChromStarts(false);
     dout << " findAndKeepMarkersGivenIndex called " << givenIndex.size() <<endl;
     this->findWhoToBeKeptGivenIndex(givenIndex);
-    //this->removePositions();
     this->getIndexOfChromStarts();
     this->removeMarkers();
 }
