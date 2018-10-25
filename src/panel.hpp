@@ -69,7 +69,8 @@ class Panel: public TxtReader{
           vector < double > pRecRec,
           vector < double > pRecNoRec,
           vector < double > pNoRecNoRec,
-          vector < vector < double > > content);
+          vector < vector < double > > content,
+          vector < string > header);
     Panel(const Panel &copyFrom);
 
     //Panel(const char inchar[] );
@@ -85,6 +86,10 @@ class Panel: public TxtReader{
     void buildExamplePanelContent();
     void buildExamplePanel1();
     void buildExamplePanel2();
+
+    void trimVec(vector <double> &vec, const vector <size_t> &idx);
+    //void findWhoToBeKeptGivenIndex(const vector <size_t> & givenIndex);
+    void findAndKeepMarkersGivenIndex(const vector <size_t> & givenIndex);
 
   public:
     virtual ~Panel() {};

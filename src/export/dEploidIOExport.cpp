@@ -338,6 +338,9 @@ void DEploidIO::paintIBD(){
     this->ibdProbsHeader = tmpIBDpath.getIBDprobsHeader();
     this->getIBDprobsIntegrated(tmpIBDpath.fwdbwd);
 
+    //cout <<
+
+
 for ( size_t stateI = 0; stateI < this->ibdProbsHeader.size(); stateI++ ){
 cout << setw(14) << this->ibdProbsHeader[stateI] << ": " << this->ibdProbsIntegrated[stateI] << "\n";
 }

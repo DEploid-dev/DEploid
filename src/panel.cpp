@@ -40,7 +40,8 @@ Panel::Panel(vector < double > pRec,
              vector < double > pRecRec,
              vector < double > pRecNoRec,
              vector < double > pNoRecNoRec,
-             vector < vector < double > > content) {
+             vector < vector < double > > content,
+             vector < string > header) {
              this->pRec_ = vector <double> (pRec.begin(), pRec.end());
     this->pRecEachHap_ = vector <double> (pRecEachHap.begin(),
                                           pRecEachHap.end());
@@ -56,6 +57,7 @@ Panel::Panel(vector < double > pRec,
         this->content_.push_back(vector <double> (content[i].begin(),
                                                   content[i].end()));
     }
+    this->header_ = vector <string> (header.begin(), header.end());
     this->setTruePanelSize(this->content_[0].size());
     assert(this->pRec_.size() == this->pRecEachHap_.size());
     assert(this->pRec_.size() == this->content_.size());
@@ -74,6 +76,8 @@ Panel::Panel(const Panel &copyFrom){
     position_ = vector < vector < int> > (copyFrom.position_.begin(),
                                           copyFrom.position_.end());
 
+    this->pRec_ = vector<double>(copyFrom.pRec_.begin(),
+                                 copyFrom.pRec_.end());
     this->pRecEachHap_ = vector <double> (copyFrom.pRecEachHap_.begin(),
                                           copyFrom.pRecEachHap_.end());
     this->pNoRec_ = vector <double> (copyFrom.pNoRec_.begin(),
@@ -254,6 +258,35 @@ void Panel::updatePanelWithHaps(size_t inbreedingPanelSizeSetTo, size_t excluded
 }
 
 
+void Panel::trimVec(vector <double> &vec, const vector <size_t> &idx) {
+    vector <double> ret;
+    for (auto const& value : idx){
+        ret.push_back(vec[value]);
+    }
+    //return ret;
+    vec.clear();
+    for (auto const& value : ret){
+        vec.push_back(value);
+    }
+}
+
+
+void Panel::findAndKeepMarkersGivenIndex(
+        const vector <size_t> & givenIndex) {
+    this->setDoneGetIndexOfChromStarts(false);
+    dout << " findAndKeepMarkersGivenIndex called " << givenIndex.size() <<endl;
+    this->findWhoToBeKeptGivenIndex(givenIndex);
+    this->getIndexOfChromStarts();
+    this->removeMarkers();
+    this->trimVec(this->pRec_, givenIndex);
+    this->trimVec(this->pRecEachHap_, givenIndex);
+    this->trimVec(this->pNoRec_, givenIndex);
+    this->trimVec(this->pRecRec_, givenIndex);
+    this->trimVec(this->pRecNoRec_, givenIndex);
+    this->trimVec(this->pNoRecNoRec_, givenIndex);
+}
+
+
 void IBDrecombProbs::computeRecombProbs( double averageCentimorganDistance, double G, bool useConstRecomb, double constRecombProb ) {
     assert(pRec_.size() == 0 );
     assert(pNoRec_.size() == 0 );
@@ -276,7 +309,6 @@ void IBDrecombProbs::computeRecombProbs( double averageCentimorganDistance, doub
     assert(pRec_.size() == this->nLoci_ );
     assert(pNoRec_.size() == this->nLoci_ );
 }
-
 
 
 //vector<vector<double>> outtrans(out[0].size(),

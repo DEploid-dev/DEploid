@@ -105,7 +105,7 @@ void McmcMachinery::initializeMcmcChain(bool useIBD) {
     dout << "###########################################"<< endl;
     dout << "#            Initialization               #"<< endl;
     dout << "###########################################"<< endl;
-    cout << "plaf.size() " << plaf_ptr_->size() <<"   "<< endl;
+    cout << "plaf.size() " << plaf_ptr_->size() <<"   " << "Panel size = " << this->panel_->truePanelSize() << endl;
     this->initializeTitre();
     this->currentLogPriorTitre_ = this->calcLogPriorTitre(this->currentTitre_);
     this->initializeHap();

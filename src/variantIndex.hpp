@@ -77,7 +77,6 @@ class VariantIndex {
     void removePositions();
     void checkSortedPositions(string fileName);
     void findAndKeepMarkers(ExcludeMarker* excludedMarkers);
-    void findAndKeepMarkersGivenIndex(const vector <size_t> & givenIndex);
     virtual void removeMarkers();
     // For removing markers and positions
     void findWhoToBeKept(ExcludeMarker* excludedMarkers);

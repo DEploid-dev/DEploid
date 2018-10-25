@@ -246,14 +246,14 @@ void VcfReader::findLegitSnpsGivenVQSLOD(double vqslodThreshold) {
 }
 
 
-void VcfReader::findLegitSnpsGivenVQSLODandWsfGt0(double vqslodThreshold) {
-    assert(legitVqslodAt.size() == 0);
-    for (size_t i = 0; i < this->vqslod.size(); i++) {
-        if (this->vqslod[i] > vqslodThreshold & this->altCount[i] > 0) {
-            this->legitVqslodAt.push_back(i);
-        }
-    }
-}
+//void VcfReader::findLegitSnpsGivenVQSLODandWsfGt0(double vqslodThreshold) {
+    //assert(legitVqslodAt.size() == 0);
+    //for (size_t i = 0; i < this->vqslod.size(); i++) {
+        //if (this->vqslod[i] > vqslodThreshold & this->altCount[i] > 0) {
+            //this->legitVqslodAt.push_back(i);
+        //}
+    //}
+//}
 
 
 VariantLine::VariantLine(string tmpLine) {

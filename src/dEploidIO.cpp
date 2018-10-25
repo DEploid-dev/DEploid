@@ -926,7 +926,8 @@ void DEploidIO::dEploidLasso() {
                             vecFromTo(this->panel->pRecRec_, start, end),
                             vecFromTo(this->panel->pRecNoRec_, start, end),
                             vecFromTo(this->panel->pNoRecNoRec_, start, end),
-                            dummy.reducedPanel);
+                            dummy.reducedPanel,
+                            this->panel->header_);
         lassoPanels.push_back(tmp);
         lassoPlafs.push_back(vecFromTo(plaf_, start, end));
         lassoRefCount.push_back(vecFromTo(refCount_, start, end));
@@ -1011,21 +1012,26 @@ void DEploidIO::computeObsWsaf() {
 
 
 void DEploidIO::dEploidLassoFullPanel() {
-    // Filter SNPs first
-    this->vcfReaderPtr_->findLegitSnpsGivenVQSLODandWsfGt0(this->vqslod());
-    //this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
+    // Filter SNPs first, restrict to wsaf > 0 don't work ...
+    this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
+    //this->vcfReaderPtr_->findLegitSnpsGivenVQSLODandWsfGt0(this->vqslod());
     this->trimming(this->vcfReaderPtr_->legitVqslodAt);
     this->computeObsWsaf();
 
-    panel = new Panel(*panel);
-    this->panel->findAndKeepMarkersGivenIndex(
-                                        this->vcfReaderPtr_->legitVqslodAt);
-
-    DEploidLASSO dummy(panel->content_, this->obsWsaf_, 250);
+    Panel tmpPanel(*panel);
+    tmpPanel.findAndKeepMarkersGivenIndex(this->vcfReaderPtr_->legitVqslodAt);
+    DEploidLASSO dummy(tmpPanel.content_, this->obsWsaf_, 250);
+    panel = new Panel(tmpPanel.pRec_,
+                      tmpPanel.pRecEachHap_,
+                      tmpPanel.pNoRec_,
+                      tmpPanel.pRecRec_,
+                      tmpPanel.pRecNoRec_,
+                      tmpPanel.pNoRecNoRec_,
+                      dummy.reducedPanel,
+                      tmpPanel.header_);
     vector <string> newHeader;
     for (size_t i = 0; i < dummy.choiceIdx.size(); i++) {
         newHeader.push_back(panel->header_[dummy.choiceIdx[i]]);
-
     }
     this->setIsCopied(false);
     this->excludedMarkers = NULL;

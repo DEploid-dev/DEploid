@@ -126,16 +126,6 @@ void VariantIndex::findWhoToBeKeptGivenIndex(
 }
 
 
-void VariantIndex::findAndKeepMarkersGivenIndex(
-        const vector <size_t> & givenIndex) {
-    this->setDoneGetIndexOfChromStarts(false);
-    dout << " findAndKeepMarkersGivenIndex called " << givenIndex.size() <<endl;
-    this->findWhoToBeKeptGivenIndex(givenIndex);
-    this->getIndexOfChromStarts();
-    this->removeMarkers();
-}
-
-
 void VariantIndex::removePositions() {
     assert(this->keptPosition_.size() == (size_t)0);
     for (size_t chromI = 0; chromI < this->chrom_.size(); chromI++) {
@@ -170,6 +160,7 @@ void VariantIndex::getIndexOfChromStarts() {
 void VariantIndex::init() {
     this->setDoneGetIndexOfChromStarts(false);
 }
+
 
 void VariantIndex::removeMarkers() { throw VirtualFunctionShouldNotBeCalled();}
 

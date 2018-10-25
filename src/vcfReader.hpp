@@ -170,7 +170,7 @@ class VcfReader : public VariantIndex {
     void readHeader();
     void checkFeilds();
     void findLegitSnpsGivenVQSLOD(double vqslodThreshold);
-    void findLegitSnpsGivenVQSLODandWsfGt0(double vqslodThreshold);
+    //void findLegitSnpsGivenVQSLODandWsfGt0(double vqslodThreshold);
 
     void getChromList();
     void removeMarkers();

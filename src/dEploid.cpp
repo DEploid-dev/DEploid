@@ -122,39 +122,43 @@ int main(int argc, char *argv[]) {
                 dEploidIO.setKstrain(initialP.size());
                 dEploidIO.setInitialPropWasGiven(true);
 
-                tmpIO.paintIBD();
+                if (dEploidIO.initialProp.size()>1){
+                    tmpIO.paintIBD();
+                }
             }
-            // #################################################################
-            // ###################### DEploid-IBD   ############################
-            // #################################################################
-            McmcSample * ibdMcmcSample = new McmcSample();
-            DEploidIO tmpIO2(dEploidIO);
-            tmpIO2.ibdTrimming();
-            McmcMachinery ibdMcmcMachinery(&tmpIO2.plaf_,
-                                   &tmpIO2.refCount_,
-                                   &tmpIO2.altCount_,
-                                   tmpIO2.panel,
-                                   &tmpIO2,
-                                   string("DEploid-IBD learning proportion"),
-                                   string("ibd"),
-                                   ibdMcmcSample,
-                                   &rg,
-                                   true);
-            ibdMcmcMachinery.runMcmcChain(true,   // show progress
-                                          true);  // use IBD
-            // if (dEploidIO.useIbdOnly()) {
-                // tmpIO.paintIBD();
-                // dEploidIO.finalProp = tmpIO.initialProp;
-            // }
 
-            tmpIO2.paintIBD();
+            if (dEploidIO.initialProp.size()>1) {
+                // #################################################################
+                // ###################### DEploid-IBD   ############################
+                // #################################################################
+                McmcSample * ibdMcmcSample = new McmcSample();
+                DEploidIO tmpIO2(dEploidIO);
+                tmpIO2.ibdTrimming();
+                McmcMachinery ibdMcmcMachinery(&tmpIO2.plaf_,
+                                       &tmpIO2.refCount_,
+                                       &tmpIO2.altCount_,
+                                       tmpIO2.panel,
+                                       &tmpIO2,
+                                       string("DEploid-IBD learning proportion"),
+                                       string("ibd"),
+                                       ibdMcmcSample,
+                                       &rg,
+                                       true);
+                ibdMcmcMachinery.runMcmcChain(true,   // show progress
+                                              true);  // use IBD
+                // if (dEploidIO.useIbdOnly()) {
+                    // tmpIO.paintIBD();
+                    // dEploidIO.finalProp = tmpIO.initialProp;
+                // }
 
-             dEploidIO.initialProp = tmpIO2.initialProp;
-             dEploidIO.finalProp = tmpIO2.initialProp;
-             dEploidIO.setInitialPropWasGiven(true);
-             dEploidIO.setDoUpdateProp(false);
-             delete ibdMcmcSample;
+                tmpIO2.paintIBD();
 
+                dEploidIO.initialProp = tmpIO2.initialProp;
+                dEploidIO.finalProp = tmpIO2.initialProp;
+                dEploidIO.setInitialPropWasGiven(true);
+                dEploidIO.setDoUpdateProp(false);
+                delete ibdMcmcSample;
+            }
             // #################################################################
             // ###################### DEploid-LASSO ############################
             // #################################################################
