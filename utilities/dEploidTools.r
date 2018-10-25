@@ -192,7 +192,8 @@ fun.dEploidPrefix <- function ( prefix ){
                     llkFileName.lassoK  = paste(prefix, ".lassoK.llk",    sep = ""),
                     propFileName.ibd = paste(prefix, ".ibd.prop",   sep = ""),
                     hapFileName.ibd = paste(prefix, ".ibd.hap",    sep = ""),
-                    llkFileName.ibd = paste(prefix, ".ibd.llk",    sep = "")
+                    llkFileName.ibd = paste(prefix, ".ibd.llk",    sep = ""),
+                    hapFileName.final = paste(prefix, ".final.hap",    sep = "")
 #                    dicLogFileName  = paste(prefix, "dic.log", sep = "")
                     ) )
 
@@ -366,25 +367,55 @@ fun.interpretDEploid.LassoIBD <- function (coverage, PLAF, dEploidPrefix, prefix
     alt = coverage$altCount
 
     dEploidOutput = fun.dEploidPrefix(dEploidPrefix)
-
-    png ( paste ( prefix, ".interpretDEploidFigure.lassoIBD.png", sep = "" ),  width = 1500, height = 500)
     cexSize = 2.5
+
+    png ( paste ( prefix, ".interpretDEploidFigure.lassoIBD.altVsRef.png", sep = "" ),  width = 1500, height = 500)
     par(mar = c(5,7,7,4))
     par( mfrow = c(1,3) )
     plotAltVsRef ( ref, alt, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
     # lassoK
     hap.lassoK = read.table(dEploidOutput$hapFileName.lassoK, header=T)
-    lassoK.pos = paste(hap.lassoK$CHROM, hap.lassoK$POS, sep = "-")
-    includeLogic = which( paste(coverage$CHROM, coverage$POS) %in% paste(hap.lassoK$CHROM, hap.lassoK$POS) )
-    plotAltVsRef ( ref[includeLogic], alt[includeLogic], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    includeLogic.lassoK = which( paste(coverage$CHROM, coverage$POS) %in% paste(hap.lassoK$CHROM, hap.lassoK$POS) )
+    plotAltVsRef ( ref[includeLogic.lassoK], alt[includeLogic.lassoK], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
     # IBD
     hap.ibd = read.table(dEploidOutput$hapFileName.ibd, header=T)
-    lassoK.pos = paste(hap.ibd$CHROM, hap.ibd$POS, sep = "-")
-    includeLogic = which( paste(coverage$CHROM, coverage$POS) %in% paste(hap.ibd$CHROM, hap.ibd$POS) )
-    plotAltVsRef(ref[includeLogic], alt[includeLogic], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    includeLogic.ibd = which( paste(coverage$CHROM, coverage$POS) %in% paste(hap.ibd$CHROM, hap.ibd$POS) )
+#    print(includeLogic.ibd)
+    plotAltVsRef(ref[includeLogic.ibd], alt[includeLogic.ibd], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    dev.off()
+
+    obsWSAF = computeObsWSAF ( alt, ref )
+    png ( paste ( prefix, ".interpretDEploidFigure.lassoIBD.wsaf_hist.png", sep = "" ),  width = 1500, height = 500)
+    par(mar = c(5,7,7,4))
+    par( mfrow = c(1,3) )
+    histWSAF (obsWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    histWSAF (obsWSAF[includeLogic.lassoK], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    histWSAF (obsWSAF[includeLogic.ibd], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
     dev.off()
 
 
+    if (exclude$excludeBool){
+        excludeLogic = ( paste(coverage$CHROM, coverage$POS) %in% paste(exclude$excludeTable$CHROM, exclude$excludeTable$POS) )
+        excludeindex = which(excludeLogic)
+        includeindex = which(!excludeLogic)
+        obsWSAF = obsWSAF[includeindex]
+        PLAF = PLAF[includeindex]
+#        ref = ref[includeindex]
+#        alt = alt[includeindex]
+    }
+
+
+    tmpProp = read.table(dEploidOutput$propFileName.ibd, header=F)
+    prop = as.numeric(tmpProp[dim(tmpProp)[1],])
+    hap = as.matrix(read.table(dEploidOutput$hapFileName.final, header=T)[,-c(1,2)] )
+    expWSAF = hap %*% prop
+    png(paste(prefix, ".interpretDEploidFigure.lassoIBD.wsaf.png", sep = "" ),  width = 1500, height = 500)
+    par(mar = c(5,7,7,4))
+    par( mfrow = c(1,3) )
+    plotWSAFvsPLAF(PLAF, obsWSAF, expWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    plotWSAFvsPLAF(PLAF[includeLogic.lassoK], obsWSAF[includeLogic.lassoK], expWSAF[includeLogic.lassoK], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    plotWSAFvsPLAF(PLAF[includeLogic.ibd], obsWSAF[includeLogic.ibd], expWSAF[includeLogic.ibd], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    dev.off()
 }
 
 

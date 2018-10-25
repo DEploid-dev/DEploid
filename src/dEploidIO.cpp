@@ -1012,7 +1012,8 @@ void DEploidIO::computeObsWsaf() {
 
 void DEploidIO::dEploidLassoFullPanel() {
     // Filter SNPs first
-    this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
+    this->vcfReaderPtr_->findLegitSnpsGivenVQSLODandWsfGt0(this->vqslod());
+    //this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
     this->trimming(this->vcfReaderPtr_->legitVqslodAt);
     this->computeObsWsaf();
 

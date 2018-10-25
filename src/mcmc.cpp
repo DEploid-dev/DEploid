@@ -67,8 +67,8 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
     //this->propRg_  = new MersenneTwister(this->seed_);
     //this->initialHapRg_ = new MersenneTwister(this->seed_);
     if (useIBD == true) {
-        //this->calcMaxIteration(100, 10, 0.5);
-        this->calcMaxIteration(10, 10, 0.5);
+        this->calcMaxIteration(100, 10, 0.5);
+        //this->calcMaxIteration(10, 10, 0.5);
     } else {
         this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
     }
@@ -105,7 +105,7 @@ void McmcMachinery::initializeMcmcChain(bool useIBD) {
     dout << "###########################################"<< endl;
     dout << "#            Initialization               #"<< endl;
     dout << "###########################################"<< endl;
-
+    cout << "plaf.size() " << plaf_ptr_->size() << endl;
     this->initializeTitre();
     this->currentLogPriorTitre_ = this->calcLogPriorTitre(this->currentTitre_);
     this->initializeHap();
