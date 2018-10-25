@@ -153,7 +153,6 @@ int main(int argc, char *argv[]) {
 
                 tmpIO2.paintIBD();
 
-
                 vector <double> initialP;
                 for (auto const& value : tmpIO2.finalProp) {
                     if (value > 0.01) {
@@ -215,6 +214,8 @@ int main(int argc, char *argv[]) {
                 }
                 delete lassoMcmcSample;
             }
+
+            dEploidIO.paintIBD();
             dEploidIO.writeHap(hap, "final");
         } else {
             McmcSample * mcmcSample = new McmcSample();

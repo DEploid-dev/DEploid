@@ -916,17 +916,30 @@ void DEploidIO::dEploidLasso() {
         vector <double> wsaf = lassoComputeObsWsaf(start, length);
         vector < vector <double> > tmpPanel = lassoSubsetPanel(start, length);
         DEploidLASSO dummy(tmpPanel, wsaf, 250);
+
+        size_t maxNumPanel = 15;
+        // Use the first 15 strains in the panel
         vector <string> newHeader;
-        for (size_t i = 0; i < dummy.choiceIdx.size(); i++) {
+        for (size_t i = 0; i < min(dummy.choiceIdx.size(), maxNumPanel); i++) {
             newHeader.push_back(panel->header_[dummy.choiceIdx[i]]);
         }
+
+        vector < vector <double> > newPanel;
+        for (size_t i = 0; i < dummy.reducedPanel.size(); i++) {
+            vector <double> tmpRow;
+            for (size_t j = 0; j < min(dummy.choiceIdx.size(), maxNumPanel); j++) {
+                tmpRow.push_back(dummy.reducedPanel[i][j]);
+            }
+            newPanel.push_back(tmpRow);
+        }
+
         Panel * tmp = new Panel(vecFromTo(this->panel->pRec_, start, end),
                             vecFromTo(this->panel->pRecEachHap_, start, end),
                             vecFromTo(this->panel->pNoRec_, start, end),
                             vecFromTo(this->panel->pRecRec_, start, end),
                             vecFromTo(this->panel->pRecNoRec_, start, end),
                             vecFromTo(this->panel->pNoRecNoRec_, start, end),
-                            dummy.reducedPanel,
+                            newPanel,
                             this->panel->header_);
         lassoPanels.push_back(tmp);
         lassoPlafs.push_back(vecFromTo(plaf_, start, end));
@@ -1021,18 +1034,32 @@ void DEploidIO::dEploidLassoFullPanel() {
     Panel tmpPanel(*panel);
     tmpPanel.findAndKeepMarkersGivenIndex(this->vcfReaderPtr_->legitVqslodAt);
     DEploidLASSO dummy(tmpPanel.content_, this->obsWsaf_, 250);
+
+    size_t maxNumPanel = 10;
+    // Use the first 10 strains in the panel
+    vector <string> newHeader;
+    for (size_t i = 0; i < min(dummy.choiceIdx.size(), maxNumPanel); i++) {
+        newHeader.push_back(panel->header_[dummy.choiceIdx[i]]);
+    }
+
+    vector < vector <double> > newPanel;
+    for (size_t i = 0; i < dummy.reducedPanel.size(); i++) {
+        vector <double> tmpRow;
+        for (size_t j = 0; j < min(dummy.choiceIdx.size(), maxNumPanel); j++) {
+            tmpRow.push_back(dummy.reducedPanel[i][j]);
+        }
+        newPanel.push_back(tmpRow);
+    }
+
     panel = new Panel(tmpPanel.pRec_,
                       tmpPanel.pRecEachHap_,
                       tmpPanel.pNoRec_,
                       tmpPanel.pRecRec_,
                       tmpPanel.pRecNoRec_,
                       tmpPanel.pNoRecNoRec_,
-                      dummy.reducedPanel,
-                      tmpPanel.header_);
-    vector <string> newHeader;
-    for (size_t i = 0; i < dummy.choiceIdx.size(); i++) {
-        newHeader.push_back(panel->header_[dummy.choiceIdx[i]]);
-    }
+                      newPanel,
+                      newHeader);
+
     this->setIsCopied(false);
     this->excludedMarkers = NULL;
     this->vcfReaderPtr_ = NULL;
