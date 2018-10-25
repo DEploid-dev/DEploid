@@ -337,6 +337,11 @@ void DEploidIO::paintIBD(){
     this->ibdLLK_ = tmpIBDpath.bestPath(goodProp);
     this->ibdProbsHeader = tmpIBDpath.getIBDprobsHeader();
     this->getIBDprobsIntegrated(tmpIBDpath.fwdbwd);
-    this->writeIBDpostProb(tmpIBDpath.fwdbwd, this->ibdProbsHeader);
+
+for ( size_t stateI = 0; stateI < this->ibdProbsHeader.size(); stateI++ ){
+cout << setw(14) << this->ibdProbsHeader[stateI] << ": " << this->ibdProbsIntegrated[stateI] << "\n";
+}
+
+    //this->writeIBDpostProb(tmpIBDpath.fwdbwd, this->ibdProbsHeader);
 }
 

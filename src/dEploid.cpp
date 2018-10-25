@@ -93,6 +93,7 @@ int main(int argc, char *argv[]) {
                 // ################# DEploid-LASSO to learn K ##################
                 // #############################################################
                 DEploidIO tmpIO(dEploidIO);
+                //tmpIO.setDoAllowInbreeding(true);
                 tmpIO.dEploidLassoFullPanel();
 
                 McmcSample * mcmcSample = new McmcSample();
@@ -120,6 +121,8 @@ int main(int argc, char *argv[]) {
                 dEploidIO.initialProp = initialP;
                 dEploidIO.setKstrain(initialP.size());
                 dEploidIO.setInitialPropWasGiven(true);
+
+                tmpIO.paintIBD();
             }
             // #################################################################
             // ###################### DEploid-IBD   ############################
@@ -143,6 +146,8 @@ int main(int argc, char *argv[]) {
                 // tmpIO.paintIBD();
                 // dEploidIO.finalProp = tmpIO.initialProp;
             // }
+
+            tmpIO2.paintIBD();
 
              dEploidIO.initialProp = tmpIO2.initialProp;
              dEploidIO.finalProp = tmpIO2.initialProp;

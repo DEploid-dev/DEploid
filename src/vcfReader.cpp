@@ -63,6 +63,7 @@ void VcfReader::checkFileCompressed() {
     fclose(f);
 }
 
+
 void VcfReader::init(string fileName) {
     /*! Initialize other VcfReader class members
      */
@@ -235,6 +236,7 @@ void VcfReader::removeMarkers() {
 
 
 void VcfReader::findLegitSnpsGivenVQSLOD(double vqslodThreshold) {
+    this->legitVqslodAt.clear();
     assert(legitVqslodAt.size() == 0);
     for (size_t i = 0; i < this->vqslod.size(); i++) {
         if (this->vqslod[i] > vqslodThreshold) {
@@ -401,7 +403,3 @@ void VariantLine::extract_field_VARIANT() {
         field_index++;
     }
 }
-
-
-
-

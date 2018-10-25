@@ -1035,6 +1035,15 @@ void DEploidIO::dEploidLassoFullPanel() {
 
 void DEploidIO::ibdTrimming() {
     // Filter SNPs first
-    //this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
+    //cout << "here" <<endl;
+    this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
+    //cout << "stop here" <<endl;
     this->trimming(this->vcfReaderPtr_->legitVqslodAt);
+    panel = new Panel(*panel);
+    this->panel->findAndKeepMarkersGivenIndex(
+                                        this->vcfReaderPtr_->legitVqslodAt);
+
+    this->setIsCopied(false);
+    this->excludedMarkers = NULL;
+    this->vcfReaderPtr_ = NULL;
 }
