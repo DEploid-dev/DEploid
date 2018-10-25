@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
                     if (value > 0.01) {
                         initialP.push_back(value);
                     }
-                    cout<< value << " ";
+                    //cout<< value << " ";
                 }
                 cout << endl;
                 dEploidIO.initialProp = initialP;
@@ -153,8 +153,18 @@ int main(int argc, char *argv[]) {
 
                 tmpIO2.paintIBD();
 
-                dEploidIO.initialProp = tmpIO2.initialProp;
-                dEploidIO.finalProp = tmpIO2.initialProp;
+
+                vector <double> initialP;
+                for (auto const& value : tmpIO2.finalProp) {
+                    if (value > 0.01) {
+                        initialP.push_back(value);
+                    }
+                    //cout<< value << " ";
+                }
+                cout << endl;
+                dEploidIO.initialProp = initialP;
+                dEploidIO.finalProp = initialP;
+                dEploidIO.setKstrain(initialP.size());
                 dEploidIO.setInitialPropWasGiven(true);
                 dEploidIO.setDoUpdateProp(false);
                 delete ibdMcmcSample;
