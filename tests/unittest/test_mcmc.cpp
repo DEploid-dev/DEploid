@@ -332,15 +332,15 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL(nRepeat, this->mcmcMachinery_->mcmcSample_->proportion.size());
         CPPUNIT_ASSERT_EQUAL(nRepeat, this->mcmcMachinery_->mcmcSample_->sumLLKs.size());
         CPPUNIT_ASSERT_EQUAL(nRepeat, this->mcmcMachinery_->mcmcSample_->moves.size());
-        vector <size_t> counter(3, 0);
+        vector <size_t> counter(4, 0);
         for(size_t i = 0; i < nRepeat; i++) {
             counter[this->mcmcMachinery_->mcmcSample_->moves[i]] += 1;
         }
-        for(size_t i = 0; i < 3; i++) {
-            CPPUNIT_ASSERT_DOUBLES_EQUAL(0.333333,(double)counter[i]/(double)nRepeat, epsilon2);
+        for(size_t i = 0; i < 4; i++) {
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25,(double)counter[i]/(double)nRepeat, epsilon2);
         }
 
-        // IBD
+        //// IBD
         CPPUNIT_ASSERT_NO_THROW(this->mcmcMachineryIbd_->setKstrain(3));
         CPPUNIT_ASSERT_NO_THROW(this->mcmcMachineryIbd_->calcMaxIteration(100, 1, 0.5));
         CPPUNIT_ASSERT_NO_THROW(this->mcmcMachineryIbd_->runMcmcChain(true, true));
