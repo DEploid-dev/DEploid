@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
                 // ################# DEploid-LASSO to learn K ##################
                 // #############################################################
                 DEploidIO tmpIO(dEploidIO);
-                //tmpIO.setDoAllowInbreeding(true);
+                // tmpIO.setDoAllowInbreeding(true);
                 tmpIO.dEploidLassoFullPanel();
 
                 McmcSample * mcmcSample = new McmcSample();
@@ -115,35 +115,34 @@ int main(int argc, char *argv[]) {
                     if (value > 0.01) {
                         initialP.push_back(value);
                     }
-                    //cout<< value << " ";
                 }
                 cout << endl;
                 dEploidIO.initialProp = initialP;
                 dEploidIO.setKstrain(initialP.size());
                 dEploidIO.setInitialPropWasGiven(true);
 
-                if (dEploidIO.initialProp.size()>1){
+                if (dEploidIO.initialProp.size() > 1) {
                     tmpIO.paintIBD();
                 }
             }
 
-            if (dEploidIO.initialProp.size()>1) {
-                // #################################################################
-                // ###################### DEploid-IBD   ############################
-                // #################################################################
+            if (dEploidIO.initialProp.size() > 1) {
+                // #############################################################
+                // ###################### DEploid-IBD   ########################
+                // #############################################################
                 McmcSample * ibdMcmcSample = new McmcSample();
                 DEploidIO tmpIO2(dEploidIO);
                 tmpIO2.ibdTrimming();
                 McmcMachinery ibdMcmcMachinery(&tmpIO2.plaf_,
-                                       &tmpIO2.refCount_,
-                                       &tmpIO2.altCount_,
-                                       tmpIO2.panel,
-                                       &tmpIO2,
-                                       string("DEploid-IBD learning proportion"),
-                                       string("ibd"),
-                                       ibdMcmcSample,
-                                       &rg,
-                                       true);
+                                      &tmpIO2.refCount_,
+                                      &tmpIO2.altCount_,
+                                      tmpIO2.panel,
+                                      &tmpIO2,
+                                      string("DEploid-IBD learning proportion"),
+                                      string("ibd"),
+                                      ibdMcmcSample,
+                                      &rg,
+                                      true);
                 ibdMcmcMachinery.runMcmcChain(true,   // show progress
                                               true);  // use IBD
                 // if (dEploidIO.useIbdOnly()) {
@@ -158,7 +157,6 @@ int main(int argc, char *argv[]) {
                     if (value > 0.01) {
                         initialP.push_back(value);
                     }
-                    //cout<< value << " ";
                 }
                 cout << endl;
                 dEploidIO.initialProp = initialP;
