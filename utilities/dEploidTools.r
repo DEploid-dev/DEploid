@@ -400,6 +400,8 @@ fun.interpretDEploid.LassoIBD <- function (coverage, PLAF, dEploidPrefix, prefix
         includeindex = which(!excludeLogic)
         obsWSAF = obsWSAF[includeindex]
         PLAF = PLAF[includeindex]
+        includeLogic.lassoK = which( paste(coverage$CHROM[includeindex], coverage$POS[includeindex]) %in% paste(hap.lassoK$CHROM, hap.lassoK$POS) )
+        includeLogic.ibd = which( paste(coverage$CHROM[includeindex], coverage$POS[includeindex]) %in% paste(hap.ibd$CHROM, hap.ibd$POS) )
 #        ref = ref[includeindex]
 #        alt = alt[includeindex]
     }

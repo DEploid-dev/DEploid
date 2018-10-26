@@ -1032,6 +1032,7 @@ void DEploidIO::dEploidLassoFullPanel() {
     this->computeObsWsaf();
 
     Panel tmpPanel(*panel);
+    tmpPanel.computeRecombProbs(this->averageCentimorganDistance(), this->parameterG(), true, 0.0000001, this->forbidCopyFromSame());
     tmpPanel.findAndKeepMarkersGivenIndex(this->vcfReaderPtr_->legitVqslodAt);
     DEploidLASSO dummy(tmpPanel.content_, this->obsWsaf_, 250);
 
@@ -1041,6 +1042,8 @@ void DEploidIO::dEploidLassoFullPanel() {
     for (size_t i = 0; i < min(dummy.choiceIdx.size(), maxNumPanel); i++) {
         newHeader.push_back(panel->header_[dummy.choiceIdx[i]]);
     }
+newHeader.push_back("3d7");
+//cout <<newHeader.size()<<endl;
 
     vector < vector <double> > newPanel;
     for (size_t i = 0; i < dummy.reducedPanel.size(); i++) {
@@ -1048,6 +1051,7 @@ void DEploidIO::dEploidLassoFullPanel() {
         for (size_t j = 0; j < min(dummy.choiceIdx.size(), maxNumPanel); j++) {
             tmpRow.push_back(dummy.reducedPanel[i][j]);
         }
+tmpRow.push_back(static_cast<int>(0));
         newPanel.push_back(tmpRow);
     }
 

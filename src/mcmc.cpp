@@ -105,7 +105,10 @@ void McmcMachinery::initializeMcmcChain(bool useIBD) {
     dout << "###########################################"<< endl;
     dout << "#            Initialization               #"<< endl;
     dout << "###########################################"<< endl;
-    cout << "plaf.size() " << plaf_ptr_->size() <<"   " << "Panel size = " << this->panel_->truePanelSize() << endl;
+    cout << "plaf.size() " << plaf_ptr_->size() <<"   ";
+    if (panel_ != NULL) {
+        cout << "Panel size = " << this->panel_->truePanelSize() << endl;
+    }
     this->initializeTitre();
     this->currentLogPriorTitre_ = this->calcLogPriorTitre(this->currentTitre_);
     this->initializeHap();
@@ -205,7 +208,7 @@ void McmcMachinery::initializellk() {
 }
 
 
-void McmcMachinery::initializeProp( ) {
+void McmcMachinery::initializeProp() {
     assert( this->currentProp_.size() == (size_t)0 );
     this->currentProp_ = ( this->dEploidIO_ -> initialPropWasGiven()) ?
                           this->dEploidIO_ ->initialProp:
@@ -237,6 +240,7 @@ void McmcMachinery::initializeTitre() {
     if ( this->dEploidIO_->doUpdateProp() ) {
         for ( size_t k = 0; k < this->kStrain_; k++) {
             this->currentTitre_[k] = this->initialTitreNormalVariable();
+            //this->currentTitre_[k] = 10.0;
         }
     }
     assert( currentTitre_.size() == this->kStrain_);
@@ -281,6 +285,46 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
         cout << value << " ";
     }
     cout << endl;
+
+    //if (useIBD != true){
+        //#ifndef RBUILD
+            //clog << "Pretraining ..." << endl;
+        //#endif
+
+        //for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->mcmcThresh_ ; currentMcmcIteration_++) {
+            //if ( this->currentMcmcIteration_ > 0 && this->currentMcmcIteration_%30 == 0 && showProgress ) {
+                //#ifndef RBUILD
+                    //clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->mcmcThresh_) << "% completed ("<<this->mcmcJob<<")"<<flush;
+                //#endif
+            //}
+            //this->sampleMcmcEvent(useIBD);
+            //for (auto const& vv : this->currentProp_){
+                //cout << vv << "  ";
+            //}
+            //cout << endl;
+
+        //}
+
+            //for (auto const& value : this->currentProp_) {
+                //if ((value > 0.01) & (value < 0.2)) {
+                    //cout << "Switch sigma " << endl;
+                    //this->currentTitre_.clear();
+                    //this->initializeTitre();
+                    //this->currentProp_.clear();
+                    //this->initializeProp( );
+                    //this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
+
+                    //for (auto const& vv : this->currentProp_){
+                        //cout << vv << "  ";
+                    //}
+                    //cout << endl;
+                    //this->SD_LOG_TITRE = 10.0;
+                    //break;
+                //}
+            //}
+
+    //}
+
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++) {
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
@@ -290,6 +334,10 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
             #endif
         }
         this->sampleMcmcEvent(useIBD);
+                    //for (auto const& vv : this->currentProp_){
+                        //cout << vv << "  ";
+                    //}
+                    //cout << endl;
     }
 
     #ifndef RBUILD
@@ -409,13 +457,25 @@ void McmcMachinery::sampleMcmcEvent( bool useIBD ) {
         ibdSampleMcmcEventStep();
         assert(doutProp());
     } else {
-        this->eventInt_ = this->mcmcEventRg_->sampleInt(3);
+        this->eventInt_ = this->mcmcEventRg_->sampleInt(4);
         if ( (this->eventInt_ == 0) && (this->dEploidIO_->doUpdateProp() == true) ) {
             this->updateProportion();
         } else if ( (this->eventInt_ == 1) && (this->dEploidIO_->doUpdateSingle() == true) ) {
-            this->updateSingleHap();
+            this->updateSingleHap(this->panel_);
         } else if ( (this->eventInt_ == 2) && (this->dEploidIO_->doUpdatePair() == true) ) {
-            this->updatePairHaps();
+            this->updatePairHaps(this->panel_);
+        } else if ( (this->eventInt_ == 3) && (this->dEploidIO_->doUpdateSingle() == true) ) {
+            this->updateSingleHap(NULL);
+            this->updateSingleHap(NULL);
+            this->updateSingleHap(NULL);
+            this->updateSingleHap(NULL);
+            //this->updatePairHaps(NULL);
+            //this->updatePairHaps(this->panel_);
+        //} else if ( (this->eventInt_ == 4) && (this->dEploidIO_->doUpdatePair() == true) ) {
+            ////this->updatePairHaps(NULL);
+            //this->updateSingleHap(NULL);
+            //this->updatePairHaps(this->panel_);
+            //this->updateProportion();
         }
     }
 
@@ -600,7 +660,7 @@ vector <double> McmcMachinery::calcTmpTitre() {
 }
 
 
-void McmcMachinery::updateSingleHap() {
+void McmcMachinery::updateSingleHap(Panel *useThisPanel) {
     dout << " Update Single Hap "<<endl;
     this->findUpdatingStrainSingle();
 
@@ -618,7 +678,7 @@ void McmcMachinery::updateSingleHap() {
                                   this->currentExpectedWsaf_,
                                   this->currentProp_, this->currentHap_, this->hapRg_,
                                   start, length,
-                                  this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
+                                  useThisPanel, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
                                   this->strainIndex_);
 
         if ( this->dEploidIO_->doAllowInbreeding() == true ) {
@@ -645,7 +705,7 @@ void McmcMachinery::updateSingleHap() {
 }
 
 
-void McmcMachinery::updatePairHaps() {
+void McmcMachinery::updatePairHaps(Panel *useThisPanel) {
     if ( this->kStrain() == 1 ) {
         return;
     }
@@ -664,7 +724,7 @@ void McmcMachinery::updatePairHaps() {
                                 this->currentExpectedWsaf_,
                                 this->currentProp_, this->currentHap_, this->hapRg_,
                                 start, length,
-                                this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
+                                useThisPanel, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
                                 this->dEploidIO_->forbidCopyFromSame(),
                                 this->strainIndex1_,
                                 this->strainIndex2_);

@@ -204,12 +204,12 @@ class McmcMachinery {
     vector <double> calcTmpTitre();
     double deltaLLKs ( vector <double> &newLLKs );
 
-    void updateSingleHap();
-    void findUpdatingStrainSingle( );
+    void updateSingleHap(Panel *useThisPanel);
+    void findUpdatingStrainSingle();
 
-    void updatePairHaps();
+    void updatePairHaps(Panel *useThisPanel);
     //vector <size_t> sampleNoReplace(MersenneTwister* rg, vector <double> & proportion, size_t nSample );
-    void findUpdatingStrainPair( );
+    void findUpdatingStrainPair();
 
     /* Debug */
     bool doutProp();

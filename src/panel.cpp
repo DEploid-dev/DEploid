@@ -126,6 +126,13 @@ void Panel::checkForExceptions( size_t nLoci, string panelFileName ) {
 
 
 void Panel::computeRecombProbs( double averageCentimorganDistance, double G, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame ) {
+    pRec_.clear();
+    pRecEachHap_.clear();
+    pNoRec_.clear();
+    pRecRec_.clear();
+    pRecNoRec_.clear();
+    pNoRecNoRec_.clear();
+
     assert(pRec_.size() == 0 );
     assert(pRecEachHap_.size() == 0 );
     assert(pNoRec_.size() == 0 );
