@@ -124,6 +124,7 @@ int main(int argc, char *argv[]) {
                 if (dEploidIO.initialProp.size() > 1) {
                     tmpIO.paintIBD();
                 }
+                delete mcmcSample;
             }
 
             if (dEploidIO.initialProp.size() > 1) {
@@ -232,6 +233,7 @@ int main(int argc, char *argv[]) {
                                false);   // use IBD
             dEploidIO.paintIBD();
             dEploidIO.writeHap(mcmcSample->hap, "final");
+            delete mcmcSample;
         }
         // Finishing, write log
         dEploidIO.wrapUp();
