@@ -1,3 +1,4 @@
+src/mcmc.hpp
 tests/unittest/test_dEploidIO.cpp
 src/dEploid.cpp
 src/variantIndex.cpp

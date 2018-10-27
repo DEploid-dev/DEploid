@@ -535,7 +535,8 @@ void McmcMachinery::ibdUpdateHaplotypesFromPrior() {
 }
 
 
-void McmcMachinery::ibdUpdateProportionGivenHap(vector <double> &llkAtAllSites) {
+void McmcMachinery::ibdUpdateProportionGivenHap(
+                        vector <double> &llkAtAllSites) {
     for (size_t i = 0; i < kStrain(); i++) {
         double v0 = this->currentTitre_[i];
         vector <double> oldProp = this->currentProp_;
