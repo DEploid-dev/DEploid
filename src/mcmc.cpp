@@ -334,10 +334,8 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
             #endif
         }
         this->sampleMcmcEvent(useIBD);
-                    //for (auto const& vv : this->currentProp_){
-                        //cout << vv << "  ";
-                    //}
-                    //cout << endl;
+
+        //printArray(this->currentProp_);
     }
 
     #ifndef RBUILD
@@ -469,7 +467,7 @@ void McmcMachinery::sampleMcmcEvent( bool useIBD ) {
             this->updateSingleHap(NULL);
             this->updateSingleHap(NULL);
             this->updateSingleHap(NULL);
-            //this->updatePairHaps(NULL);
+
             //this->updatePairHaps(this->panel_);
         //} else if ( (this->eventInt_ == 4) && (this->dEploidIO_->doUpdatePair() == true) ) {
             ////this->updatePairHaps(NULL);
@@ -653,10 +651,23 @@ double McmcMachinery::deltaLLKs ( vector <double> &newLLKs ) {
 
 vector <double> McmcMachinery::calcTmpTitre() {
     vector <double> tmpTitre;
+
+    size_t tmpEvet = this->mcmcEventRg_->sampleInt(2);
+
+if (tmpEvet == 0){
+
     for ( size_t k = 0; k < this->kStrain_; k++) {
         double dt = this->deltaXnormalVariable();
         tmpTitre.push_back( currentTitre_[k] + dt );
     }
+} else {
+    double dt;
+    for ( size_t k = 0; k < this->kStrain_-1; k++) {
+        dt = this->deltaXnormalVariable();
+        tmpTitre.push_back( currentTitre_[k] + dt );
+    }
+    tmpTitre.push_back( currentTitre_.back() + dt );
+}
     return tmpTitre;
 }
 

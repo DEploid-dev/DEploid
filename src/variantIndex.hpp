@@ -74,6 +74,7 @@ class VariantIndex {
     // Methods
     void init();
     void getIndexOfChromStarts();
+    void getIndexOfChromStartsHalf();
     void removePositions();
     void checkSortedPositions(string fileName);
     void findAndKeepMarkers(ExcludeMarker* excludedMarkers);
@@ -81,6 +82,7 @@ class VariantIndex {
     // For removing markers and positions
     void findWhoToBeKept(ExcludeMarker* excludedMarkers);
     void findWhoToBeKeptGivenIndex(const vector <size_t> & givenIndex);
+    void findWhoToBeKeptGivenIndexHalf(const vector <size_t> & givenIndex);
 
  public:
     VariantIndex();

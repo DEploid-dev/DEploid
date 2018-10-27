@@ -90,6 +90,7 @@ class Panel: public TxtReader{
     void trimVec(vector <double> &vec, const vector <size_t> &idx);
     //void findWhoToBeKeptGivenIndex(const vector <size_t> & givenIndex);
     void findAndKeepMarkersGivenIndex(const vector <size_t> & givenIndex);
+    void findAndKeepMarkersGivenIndexHalf(const vector <size_t> & givenIndex);
 
   public:
     virtual ~Panel() {};

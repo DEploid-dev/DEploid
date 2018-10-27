@@ -141,7 +141,7 @@ void DEploidIO::init() {
     this->setDoExportVcf(false);
     this->setDoComputeLLK(false);
     this->setVqslod(8.0);
-
+    this->setLassoMaxNumPanel(100);
     #ifdef COMPILEDATE
         compileTime_ = COMPILEDATE;
     #else
@@ -421,6 +421,8 @@ void DEploidIO::parse () {
             this->setParameterSigma(readNextInput<double>());
         } else if ( *argv_i == "-ibdSigma" ) {
             this->setIBDSigma(readNextInput<double>());
+        } else if ( *argv_i == "-lassoMaxPanel" ) {
+            this->setLassoMaxNumPanel(readNextInput<size_t>());
         } else if ( *argv_i == "-recomb" ) {
             this->constRecombProb_ = readNextInput<double>();
             this->useConstRecomb_ = true;
@@ -830,6 +832,7 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->indexOfChromStarts_ = vector <size_t> (cpFrom.indexOfChromStarts_.begin(),
                                    cpFrom.indexOfChromStarts_.end());
     this->setVqslod(cpFrom.vqslod());
+    this->setLassoMaxNumPanel(cpFrom.lassoMaxNumPanel());
     //this->strExportProp = cpFrom.strExportProp;
     //this->strExportLLK = cpFrom.strExportLLK;
     //this->strExportHap = cpFrom.strExportHap;
@@ -1008,8 +1011,52 @@ void DEploidIO::trimming(vector <size_t> & trimmingCriteria) {
             indexOfChromStarts_.back()+this->position_[tmpChrom].size());
     }
     assert(indexOfChromStarts_.size() == this->chrom_.size());
+}
 
 
+
+void DEploidIO::trimmingHalf(vector <size_t> & trimmingCriteria) {
+    this->trimVec(this->refCount_, trimmingCriteria);
+    this->trimVec(this->altCount_, trimmingCriteria);
+    this->trimVec(this->plaf_, trimmingCriteria);
+
+    this->setNLoci(this->plaf_.size());
+
+    vector <string> oldChrom = vector <string> (chrom_.begin(), chrom_.end());
+    this->chrom_.clear();
+
+    vector < vector < int > > oldposition = this->position_;
+    this->position_.clear();
+
+    for (size_t chromI = 0; chromI < oldChrom.size(); chromI++) {
+        if (chromI > 10) {
+        //if (chromI%2 == 0) {
+            size_t hapIndex = indexOfChromStarts_[chromI];
+            vector <int> newTrimmedPos;
+            for (size_t posI = 0; posI < oldposition[chromI].size(); posI++) {
+                if (std::find(trimmingCriteria.begin(),trimmingCriteria.end(), hapIndex)
+                        != trimmingCriteria.end()){
+                    if (newTrimmedPos.size() == 0) {
+                        this->chrom_.push_back(oldChrom[chromI]);
+                    }
+                    newTrimmedPos.push_back(oldposition[chromI][posI]);
+                }
+
+                hapIndex++;
+            }
+            this->position_.push_back(newTrimmedPos);
+        }
+    }
+
+    this->indexOfChromStarts_.clear();
+    assert(indexOfChromStarts_.size() == 0);
+    this->indexOfChromStarts_.push_back((size_t)0);
+    for (size_t tmpChrom = 0;
+            indexOfChromStarts_.size() < this->chrom_.size(); tmpChrom++ ) {
+        indexOfChromStarts_.push_back(
+            indexOfChromStarts_.back()+this->position_[tmpChrom].size());
+    }
+    assert(indexOfChromStarts_.size() == this->chrom_.size());
 }
 
 
@@ -1026,20 +1073,27 @@ void DEploidIO::computeObsWsaf() {
 
 void DEploidIO::dEploidLassoFullPanel() {
     // Filter SNPs first, restrict to wsaf > 0 don't work ...
-    this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
+    this->vcfReaderPtr_->findLegitSnpsGivenVQSLODHalf(this->vqslod());
+    //this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
     //this->vcfReaderPtr_->findLegitSnpsGivenVQSLODandWsfGt0(this->vqslod());
-    this->trimming(this->vcfReaderPtr_->legitVqslodAt);
+
+    //this->trimming(this->vcfReaderPtr_->legitVqslodAt);
+    this->trimmingHalf(this->vcfReaderPtr_->legitVqslodAt);
     this->computeObsWsaf();
 
     Panel tmpPanel(*panel);
     tmpPanel.computeRecombProbs(this->averageCentimorganDistance(), this->parameterG(), true, 0.0000001, this->forbidCopyFromSame());
-    tmpPanel.findAndKeepMarkersGivenIndex(this->vcfReaderPtr_->legitVqslodAt);
+    //tmpPanel.findAndKeepMarkersGivenIndex(this->vcfReaderPtr_->legitVqslodAt);
+    tmpPanel.findAndKeepMarkersGivenIndexHalf(this->vcfReaderPtr_->legitVqslodAt);
     DEploidLASSO dummy(tmpPanel.content_, this->obsWsaf_, 250);
 
-    size_t maxNumPanel = 10;
+    for (size_t i = 0; i < dummy.choiceIdx.size(); i++) {
+        cout << i << " " << dummy.devRatio[i]<<endl;
+    }
+    //size_t maxNumPanel = 10;
     // Use the first 10 strains in the panel
     vector <string> newHeader;
-    for (size_t i = 0; i < min(dummy.choiceIdx.size(), maxNumPanel); i++) {
+    for (size_t i = 0; i < min(dummy.choiceIdx.size(), lassoMaxNumPanel()); i++) {
         newHeader.push_back(panel->header_[dummy.choiceIdx[i]]);
     }
 newHeader.push_back("3d7");
@@ -1048,7 +1102,7 @@ newHeader.push_back("3d7");
     vector < vector <double> > newPanel;
     for (size_t i = 0; i < dummy.reducedPanel.size(); i++) {
         vector <double> tmpRow;
-        for (size_t j = 0; j < min(dummy.choiceIdx.size(), maxNumPanel); j++) {
+        for (size_t j = 0; j < min(dummy.choiceIdx.size(), lassoMaxNumPanel()); j++) {
             tmpRow.push_back(dummy.reducedPanel[i][j]);
         }
 tmpRow.push_back(static_cast<int>(0));

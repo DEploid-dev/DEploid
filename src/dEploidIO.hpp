@@ -122,6 +122,7 @@ class DEploidIO{
     bool usePanel() const { return usePanel_; }
     vector <string> chrom_;
     size_t kStrain() const { return this->kStrain_;}
+    size_t lassoMaxNumPanel_;
 
   private:
     void core();
@@ -333,6 +334,9 @@ class DEploidIO{
     bool pleaseCheckInitialP() const { return pleaseCheckInitialP_; }
     void setPleaseCheckInitialP(const bool setTo) {this->pleaseCheckInitialP_ = setTo; }
 
+    size_t lassoMaxNumPanel() const { return this->lassoMaxNumPanel_; }
+    void setLassoMaxNumPanel(const size_t setTo) {this->lassoMaxNumPanel_ = setTo; }
+
     bool initialHapWasGiven() const { return initialHapWasGiven_; }
 
     bool randomSeedWasGiven() const {return this->randomSeedWasGiven_; }
@@ -425,6 +429,7 @@ class DEploidIO{
 
     void trimVec(vector <double> &vec, vector <size_t> &idx);
     void trimming(vector <size_t> & trimmingCriteria);
+    void trimmingHalf(vector <size_t> & trimmingCriteria);
     void computeObsWsaf();
 };
 

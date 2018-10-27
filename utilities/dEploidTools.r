@@ -411,12 +411,24 @@ fun.interpretDEploid.LassoIBD <- function (coverage, PLAF, dEploidPrefix, prefix
     prop = as.numeric(tmpProp[dim(tmpProp)[1],])
     hap = as.matrix(read.table(dEploidOutput$hapFileName.final, header=T)[,-c(1,2)] )
     expWSAF = hap %*% prop
-    png(paste(prefix, ".interpretDEploidFigure.lassoIBD.wsaf.png", sep = "" ),  width = 1500, height = 500)
+    png(paste(prefix, ".interpretDEploidFigure.lassoIBD.wsafVsPlaf.png", sep = "" ),  width = 1500, height = 500)
     par(mar = c(5,7,7,4))
     par( mfrow = c(1,3) )
     plotWSAFvsPLAF(PLAF, obsWSAF, expWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
     plotWSAFvsPLAF(PLAF[includeLogic.lassoK], obsWSAF[includeLogic.lassoK], expWSAF[includeLogic.lassoK], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
     plotWSAFvsPLAF(PLAF[includeLogic.ibd], obsWSAF[includeLogic.ibd], expWSAF[includeLogic.ibd], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    dev.off()
+
+
+    png(paste(prefix, ".interpretDEploidFigure.lassoIBD.wsaf.png", sep = "" ),  width = 1500, height = 500)
+    par(mar = c(5,7,7,4))
+    par( mfrow = c(1,3) )
+    tmpTitle = fun.getWSAF.corr (obsWSAF, expWSAF, "")
+    plotObsExpWSAF ( obsWSAF, expWSAF, tmpTitle, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    tmpTitle = fun.getWSAF.corr (obsWSAF[includeLogic.lassoK], expWSAF[includeLogic.lassoK], "")
+    plotObsExpWSAF ( obsWSAF[includeLogic.lassoK], expWSAF[includeLogic.lassoK], tmpTitle, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    tmpTitle = fun.getWSAF.corr (obsWSAF[includeLogic.ibd], expWSAF[includeLogic.ibd], "")
+    plotObsExpWSAF ( obsWSAF[includeLogic.ibd], expWSAF[includeLogic.ibd], tmpTitle, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
     dev.off()
 }
 

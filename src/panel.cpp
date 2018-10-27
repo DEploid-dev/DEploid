@@ -294,6 +294,21 @@ void Panel::findAndKeepMarkersGivenIndex(
 }
 
 
+void Panel::findAndKeepMarkersGivenIndexHalf(
+        const vector <size_t> & givenIndex) {
+    this->setDoneGetIndexOfChromStarts(false);
+    dout << " findAndKeepMarkersGivenIndex called " << givenIndex.size() <<endl;
+    this->findWhoToBeKeptGivenIndexHalf(givenIndex);
+    this->getIndexOfChromStartsHalf();
+    this->removeMarkers();
+    this->trimVec(this->pRec_, givenIndex);
+    this->trimVec(this->pRecEachHap_, givenIndex);
+    this->trimVec(this->pNoRec_, givenIndex);
+    this->trimVec(this->pRecRec_, givenIndex);
+    this->trimVec(this->pRecNoRec_, givenIndex);
+    this->trimVec(this->pNoRecNoRec_, givenIndex);
+}
+
 void IBDrecombProbs::computeRecombProbs( double averageCentimorganDistance, double G, bool useConstRecomb, double constRecombProb ) {
     assert(pRec_.size() == 0 );
     assert(pNoRec_.size() == 0 );
