@@ -222,11 +222,11 @@ void McmcMachinery::initializeProp() {
 }
 
 
-double McmcMachinery::calcLogPriorTitre( vector <double> &tmpTitre ) {
+double McmcMachinery::calcLogPriorTitre(const vector <double> &tmpTitre) {
     //sum(dnorm(titre, MN_LOG_TITRE, SD_LOG_TITRE, log=TRUE));
     vector <double> tmp;
     for ( auto const& value: tmpTitre ) {
-        tmp.push_back( log(normal_pdf(value, MN_LOG_TITRE, SD_LOG_TITRE)) );
+        tmp.push_back(log(normal_pdf(value, MN_LOG_TITRE, SD_LOG_TITRE)));
     }
     return sumOfVec(tmp);
 }
@@ -247,7 +247,7 @@ void McmcMachinery::initializeTitre() {
 }
 
 
-vector <double> McmcMachinery::titre2prop(vector <double> & tmpTitre) {
+vector <double> McmcMachinery::titre2prop(const vector <double> & tmpTitre) {
     vector <double> tmpExpTitre;
     for ( auto const& value: tmpTitre ) {
         tmpExpTitre.push_back( exp(value) );
@@ -570,9 +570,7 @@ vector <double> McmcMachinery::computeLlkAtAllSites(double err) {
 }
 
 
-
-
-vector <double> McmcMachinery::calcExpectedWsaf( vector <double> &proportion ) {
+vector <double> McmcMachinery::calcExpectedWsaf(const vector <double> &proportion ) {
     //assert ( sumOfVec(proportion) == 1.0); // this fails ...
     vector <double> expectedWsaf (this->nLoci_, 0.0);
     for ( size_t i = 0; i < currentHap_.size(); i++ ) {
@@ -653,21 +651,23 @@ vector <double> McmcMachinery::calcTmpTitre() {
     vector <double> tmpTitre;
 
     size_t tmpEvet = this->mcmcEventRg_->sampleInt(2);
-
-if (tmpEvet == 0){
-
-    for ( size_t k = 0; k < this->kStrain_; k++) {
-        double dt = this->deltaXnormalVariable();
-        tmpTitre.push_back( currentTitre_[k] + dt );
+/*
+    if (tmpEvet == 0){
+*/
+        for ( size_t k = 0; k < this->kStrain_; k++) {
+            double dt = this->deltaXnormalVariable();
+            tmpTitre.push_back( currentTitre_[k] + dt );
+        }
+/*
+    } else {
+        double dt;
+        for ( size_t k = 0; k < this->kStrain_-1; k++) {
+            dt = this->deltaXnormalVariable();
+            tmpTitre.push_back( currentTitre_[k] + dt );
+        }
+        tmpTitre.push_back( currentTitre_.back() + dt );
     }
-} else {
-    double dt;
-    for ( size_t k = 0; k < this->kStrain_-1; k++) {
-        dt = this->deltaXnormalVariable();
-        tmpTitre.push_back( currentTitre_[k] + dt );
-    }
-    tmpTitre.push_back( currentTitre_.back() + dt );
-}
+*/
     return tmpTitre;
 }
 

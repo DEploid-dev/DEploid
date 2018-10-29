@@ -36,9 +36,6 @@
 #ifndef MCMC
 #define MCMC
 
-using namespace std;
-
-
 class McmcSample {
 #ifdef UNITTEST
   friend class TestMcmcMachinery;
@@ -170,10 +167,10 @@ class McmcMachinery {
     void initializellk();
     void initializeExpectedWsaf();
 
-    vector <double> calcExpectedWsaf(vector <double> &proportion);
-    vector <double> titre2prop(vector <double> & tmpTitre);
+    vector <double> calcExpectedWsaf(const vector <double> &proportion);
+    vector <double> titre2prop(const vector <double> &tmpTitre);
 
-    double calcLogPriorTitre(vector <double> &tmpTitre);
+    double calcLogPriorTitre(const vector <double> &tmpTitre);
     double rBernoulli(double p);
 
     void printArray(vector <double> array) {

@@ -1,3 +1,4 @@
+src/mcmc.cpp
 src/dEploidIO.cpp
 src/dEploidIO.hpp
 src/mcmc.cpp
