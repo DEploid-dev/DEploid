@@ -78,6 +78,7 @@ class DEploidIO{
     void getIBDprobsIntegrated(vector < vector <double> > &prob);
     // Lasso related
     void dEploidLasso();
+    void dEploidLassoTrimfirst();
     vector <double> finalProp;
     void dEploidLassoFullPanel();
 

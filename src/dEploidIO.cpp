@@ -1070,6 +1070,20 @@ void DEploidIO::computeObsWsaf() {
 }
 
 
+void DEploidIO::dEploidLassoTrimfirst() {
+    this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
+    this->trimming(this->vcfReaderPtr_->legitVqslodAt);
+
+    panel = new Panel (*panel);
+    panel->computeRecombProbs(this->averageCentimorganDistance(), this->parameterG(), true, 0.0000001, this->forbidCopyFromSame());
+    panel->findAndKeepMarkersGivenIndex(this->vcfReaderPtr_->legitVqslodAt);
+    this->dEploidLasso();
+    this->setIsCopied(false);
+    this->excludedMarkers = NULL;
+    this->vcfReaderPtr_ = NULL;
+}
+
+
 
 void DEploidIO::dEploidLassoFullPanel() {
     // Filter SNPs first, restrict to wsaf > 0 don't work ...

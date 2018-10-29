@@ -281,50 +281,7 @@ void McmcMachinery::initializePropIBD() {
 
 
 void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) {
-    for (auto const &value : this->currentProp_){
-        cout << value << " ";
-    }
-    cout << endl;
-
-    //if (useIBD != true){
-        //#ifndef RBUILD
-            //clog << "Pretraining ..." << endl;
-        //#endif
-
-        //for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->mcmcThresh_ ; currentMcmcIteration_++) {
-            //if ( this->currentMcmcIteration_ > 0 && this->currentMcmcIteration_%30 == 0 && showProgress ) {
-                //#ifndef RBUILD
-                    //clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->mcmcThresh_) << "% completed ("<<this->mcmcJob<<")"<<flush;
-                //#endif
-            //}
-            //this->sampleMcmcEvent(useIBD);
-            //for (auto const& vv : this->currentProp_){
-                //cout << vv << "  ";
-            //}
-            //cout << endl;
-
-        //}
-
-            //for (auto const& value : this->currentProp_) {
-                //if ((value > 0.01) & (value < 0.2)) {
-                    //cout << "Switch sigma " << endl;
-                    //this->currentTitre_.clear();
-                    //this->initializeTitre();
-                    //this->currentProp_.clear();
-                    //this->initializeProp( );
-                    //this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
-
-                    //for (auto const& vv : this->currentProp_){
-                        //cout << vv << "  ";
-                    //}
-                    //cout << endl;
-                    //this->SD_LOG_TITRE = 10.0;
-                    //break;
-                //}
-            //}
-
-    //}
-
+    printArray(this->currentProp_);
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++) {
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
@@ -341,10 +298,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
     #ifndef RBUILD
         clog << "\r" << " MCMC step" << setw(4) << 100 << "% completed ("<<this->mcmcJob<<")"<<endl;
     #endif
-    for (auto const &value : this->currentProp_){
-        cout << value << " ";
-    }
-    cout << endl;
+    printArray(this->currentProp_);
 
     this->mcmcSample_->hap = this->currentHap_;
 
@@ -373,13 +327,14 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
         //this->dEploidIO_->ibdProbsHeader = getIBDprobsHeader();
         //this->dEploidIO_->ibdProbsIntegrated = getIBDprobsIntegrated(reshapedProbs);
         //this->dEploidIO_->writeIBDpostProb(reshapedProbs, this->dEploidIO_->ibdProbsHeader);
-        clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
+        //clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
         this->dEploidIO_->initialProp = averageProportion(this->mcmcSample_->proportion);
         this->dEploidIO_->setInitialPropWasGiven(true);
         this->dEploidIO_->setDoUpdateProp(false);
         //this->dEploidIO_->initialHap = this->mcmcSample_->hap;
         //this->dEploidIO_->setInitialHapWasGiven(true);
     }
+    clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
 
     this->computeDiagnostics();
     dout << "###########################################"<< endl;
