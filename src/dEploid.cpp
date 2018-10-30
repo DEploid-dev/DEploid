@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
                 //}
                 //delete mcmcSample;
 
-
+                ChooseK chooseK;
 
                 DEploidIO toLearnK(dEploidIO);
                 toLearnK.dEploidLassoTrimfirst();
@@ -137,6 +137,7 @@ int main(int argc, char *argv[]) {
                 //toLearnK.setKstrain(dEploidIO.kStrain());
                 //vector < vector <double> > hap;
                 for (size_t chromi = 0;
+                     //chromi < 6;
                      chromi < toLearnK.indexOfChromStarts_.size();
                      chromi++ ) {
                     toLearnKtmp.position_.clear();
@@ -170,14 +171,14 @@ int main(int argc, char *argv[]) {
                     //}
                     toLearnKtmp.initialProp = toLearnKtmp.finalProp;
                     toLearnKtmp.setInitialPropWasGiven(true);
-
+                    chooseK.appendProportions(toLearnKtmp.finalProp);
                     delete lassoMcmcSample;
                 }
-
+                //chooseK.findKmode();
 
                 dEploidIO.initialProp.clear();
-                //vector <double> initialP;
-                for (auto const& value : toLearnKtmp.finalProp) {
+                vector <double> initialP = chooseK.chosenP();
+                for (auto const& value : initialP) {
                     if (value > 0.01) {
                         dEploidIO.initialProp.push_back(value);
                     }
@@ -240,8 +241,7 @@ int main(int argc, char *argv[]) {
             dEploidLassoIO.setKstrain(dEploidIO.kStrain());
             vector < vector <double> > hap;
             for (size_t chromi = 0;
-                 //chromi < dEploidIO.indexOfChromStarts_.size();
-                 chromi < 6;
+                 chromi < dEploidIO.indexOfChromStarts_.size();
                  chromi++ ) {
                 dEploidLassoIO.position_.clear();
                 dEploidLassoIO.position_.push_back(

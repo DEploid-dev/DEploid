@@ -434,4 +434,24 @@ class DEploidIO{
     void computeObsWsaf();
 };
 
+
+class ChooseK {
+ public:
+    ChooseK() {this->haveChosenP_ = false;}
+    ~ChooseK() {}
+    void appendProportions(const vector <double> &p);
+    size_t chosenK() const {
+        assert(this->haveChosenP_ == true);
+        return this->max_at_+1; }
+    vector <double> chosenP();
+
+ private:
+    void findKmode();
+    vector < vector<double> > proportions_;
+    vector < size_t > ks;
+    void gatherKs();
+    size_t max_at_;
+    bool haveChosenP_;
+};
+
 #endif
