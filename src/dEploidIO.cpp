@@ -920,19 +920,19 @@ void DEploidIO::dEploidLasso() {
         vector < vector <double> > tmpPanel = lassoSubsetPanel(start, length);
         DEploidLASSO dummy(tmpPanel, wsaf, 250);
 
-        size_t maxNumPanel = 15;
-        // Use the first 15 strains in the panel
         vector <string> newHeader;
-        for (size_t i = 0; i < min(dummy.choiceIdx.size(), maxNumPanel); i++) {
+        for (size_t i = 0; i < min(dummy.choiceIdx.size(), lassoMaxNumPanel()); i++) {
             newHeader.push_back(panel->header_[dummy.choiceIdx[i]]);
         }
+newHeader.push_back("3d7");
 
         vector < vector <double> > newPanel;
         for (size_t i = 0; i < dummy.reducedPanel.size(); i++) {
             vector <double> tmpRow;
-            for (size_t j = 0; j < min(dummy.choiceIdx.size(), maxNumPanel); j++) {
+            for (size_t j = 0; j < min(dummy.choiceIdx.size(), lassoMaxNumPanel()); j++) {
                 tmpRow.push_back(dummy.reducedPanel[i][j]);
             }
+tmpRow.push_back(static_cast<int>(0));
             newPanel.push_back(tmpRow);
         }
 
