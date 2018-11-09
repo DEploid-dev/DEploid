@@ -141,13 +141,16 @@ class VcfReader : public VariantIndex {
     explicit VcfReader(string fileName);  // parse in exclude sites
     ~VcfReader() {}
 
+    // Members and Methods
+    vector <string> headerLines;  // calling from python, need to be public
+    vector <double> refCount;  // calling from python, need to be public
+    vector <double> altCount;  // calling from python, need to be public
+    vector <double> vqslod;  // calling from python, need to be public
+    void finalize();  // calling from python, need to be public
+
  private:
     vector <VariantLine> variants;
     vector <VariantLine> keptVariants;
-    vector <double> refCount;
-    vector <double> altCount;
-    vector <double> vqslod;
-    vector <string> headerLines;
     string fileName_;
     ifstream inFile;
     igzstream inFileGz;
@@ -162,7 +165,6 @@ class VcfReader : public VariantIndex {
 
     // Methods
     void init(string fileName);
-    void finalize();
     void readVariants();
     void readHeader();
     void checkFeilds();
