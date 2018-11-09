@@ -62,6 +62,46 @@ Panel::Panel(vector < double > pRec,
 }
 
 
+Panel::Panel(const Panel &copyFrom){
+    nLoci_ = copyFrom.nLoci_;
+
+    chrom_ = vector <string> (copyFrom.chrom_.begin(), copyFrom.chrom_.end());
+
+    indexOfChromStarts_ = vector < size_t > (
+        copyFrom.indexOfChromStarts_.begin(),
+        copyFrom.indexOfChromStarts_.end());
+
+    position_ = vector < vector < int> > (copyFrom.position_.begin(),
+                                          copyFrom.position_.end());
+
+    this->pRecEachHap_ = vector <double> (copyFrom.pRecEachHap_.begin(),
+                                          copyFrom.pRecEachHap_.end());
+    this->pNoRec_ = vector <double> (copyFrom.pNoRec_.begin(),
+                                     copyFrom.pNoRec_.end());
+    this->pRecRec_ = vector <double> (copyFrom.pRecRec_.begin(),
+                                      copyFrom.pRecRec_.end());
+    this->pRecNoRec_ = vector <double> (copyFrom.pRecNoRec_.begin(),
+                                        copyFrom.pRecNoRec_.end());
+    this->pNoRecNoRec_ = vector <double> (copyFrom.pNoRecNoRec_.begin(),
+                                          copyFrom.pNoRecNoRec_.end());
+    for (size_t i = 0; i < copyFrom.content_.size(); i++) {
+        this->content_.push_back(vector <double> (copyFrom.content_[i].begin(),
+                                                  copyFrom.content_[i].end()));
+    }
+    this->setTruePanelSize(this->content_[0].size());
+
+    truePanelSize_ = copyFrom.truePanelSize_;
+
+    inbreedingPanelSize_ = copyFrom.inbreedingPanelSize_;
+
+    fileName = copyFrom.fileName;
+    for (size_t i = 0; i < copyFrom.header_.size(); i++){
+        header_.push_back(copyFrom.header_[i]);
+    }
+}
+
+
+
 void Panel::readFromFile( const char inchar[] ) {
     this->readFromFileBase( inchar );
     this->setTruePanelSize( this->nInfoLines_ );

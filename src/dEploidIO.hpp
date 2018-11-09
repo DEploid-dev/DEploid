@@ -79,6 +79,7 @@ class DEploidIO{
     // Lasso related
     void dEploidLasso();
     vector <double> finalProp;
+    void dEploidLassoFullPanel();
 
     // Log
     void wrapUp();
@@ -116,6 +117,8 @@ class DEploidIO{
     vector <double> initialProp;
     void setDoUpdateProp ( const bool setTo ) { this->doUpdateProp_ = setTo; }
     void setInitialPropWasGiven(const bool setTo) {this->initialPropWasGiven_ = setTo; }
+
+    void setKstrain ( const size_t setTo ) { this->kStrain_ = setTo;}
 
   private:
     void core();
@@ -381,7 +384,6 @@ class DEploidIO{
 
     void setNLoci ( const size_t setTo ) { this->nLoci_ = setTo;}
     size_t nLoci() const { return this->nLoci_; }
-    void setKstrain ( const size_t setTo ) { this->kStrain_ = setTo;}
     size_t kStrain() const { return this->kStrain_;}
     void setKStrainWasManuallySet ( const size_t setTo ) { this->kStrainWasManuallySet_ = setTo; }
     bool kStrainWasSetByHap() const { return this->kStrainWasSetByHap_; }
@@ -417,6 +419,9 @@ class DEploidIO{
     vector < vector <double> > lassoSubsetPanel(size_t segmentStartIndex, size_t nLoci);
     void writePanel(Panel *panel, size_t chromi, vector <string> hdr);
 
+    void trimVec(vector <double> &vec, vector <size_t> &idx);
+    void trimming(vector <size_t> & trimmingCriteria);
+    void computeObsWsaf();
 
 };
 

@@ -53,25 +53,19 @@ class VariantIndex {
 
  private:
     // Members
+    size_t nLoci_;
+    bool doneGetIndexOfChromStarts_;
     vector <string> chrom_;
     vector < size_t > indexOfChromStarts_;
     vector < vector < int> > position_;
     vector < vector < int> > keptPosition_;
-    size_t nLoci_;
-
-    // For removing markers and positions
-    void findWhoToBeKept(ExcludeMarker* excludedMarkers);
-    void findWhoToBeKeptWsafGt0(const vector <size_t> & wsafGt0At);
-
-    virtual void removeMarkers();
-
     /* Index of content/info will be kept */
     vector < size_t > indexOfContentToBeKept;
     /* Index of positions entry to be kept,
      * this will have the same size as this->chrom_, */
     vector < vector < size_t > > indexOfPosToBeKept;
 
-    bool doneGetIndexOfChromStarts_;
+    // Getter and Setter
     bool doneGetIndexOfChromStarts() const {
         return doneGetIndexOfChromStarts_; }
     void setDoneGetIndexOfChromStarts(const bool setTo) {
@@ -84,6 +78,10 @@ class VariantIndex {
     void checkSortedPositions(string fileName);
     void findAndKeepMarkers(ExcludeMarker* excludedMarkers);
     void findAndKeepMarkersAtWsafGt0(const vector <size_t> & wsafGt0At);
+    virtual void removeMarkers();
+    // For removing markers and positions
+    void findWhoToBeKept(ExcludeMarker* excludedMarkers);
+    void findWhoToBeKeptGivenIndex(const vector <size_t> & givenIndex);
 
  public:
     VariantIndex();

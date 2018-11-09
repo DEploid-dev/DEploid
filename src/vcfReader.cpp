@@ -234,6 +234,17 @@ void VcfReader::removeMarkers() {
 }
 
 
+void VcfReader::findLegitSnpsGivenVQSLOD(double vqslodThreshold) {
+    assert(legitVqslodAt.size() == 0);
+    for (size_t i = 0; i < this->vqslod.size(); i++) {
+        if (this->vqslod[i] > 0) {
+            this->legitVqslodAt.push_back(i);
+        }
+    }
+    std::cout << "legitVqslodAt size = " << legitVqslodAt.size() << std::endl;
+}
+
+
 VariantLine::VariantLine(string tmpLine) {
     this->init(tmpLine);
 
@@ -381,5 +392,7 @@ void VariantLine::extract_field_VARIANT() {
         field_index++;
     }
 }
+
+
 
 

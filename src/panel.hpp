@@ -70,6 +70,8 @@ class Panel: public TxtReader{
           vector < double > pRecNoRec,
           vector < double > pNoRecNoRec,
           vector < vector < double > > content);
+    Panel(const Panel &copyFrom);
+
     //Panel(const char inchar[] );
 
     // Methods

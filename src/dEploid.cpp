@@ -84,8 +84,38 @@ int main(int argc, char *argv[]) {
             dEploidIO.writeHap(hap, false);
         } else {
             if (dEploidIO.useIBD()) {  // ibd
+                // lasso before ibd
+                DEploidIO tmpIO(dEploidIO);
+                tmpIO.dEploidLassoFullPanel();
+
+                McmcSample * mcmcSample = new McmcSample();
+                MersenneTwister rg(tmpIO.randomSeed());
+
+                McmcMachinery mcmcMachinery(&tmpIO.plaf_,
+                                            &tmpIO.refCount_,
+                                            &tmpIO.altCount_,
+                                            tmpIO.panel,
+                                            &tmpIO,
+                                            mcmcSample,
+                                            &rg,
+                                            false);  // use IBD
+                mcmcMachinery.runMcmcChain(true,     // show progress
+                                           false);   // use IBD
+
+                size_t newK = 0;
+                for (auto const& value : tmpIO.finalProp) {
+                    if (value > 0.01) {
+                        newK++;
+                    }
+                    cout<< value << " ";
+                }
+                cout << endl;
+
+                dEploidIO.initialProp = tmpIO.finalProp;
+                dEploidIO.setKstrain(newK);
+
                 McmcSample * ibdMcmcSample = new McmcSample();
-                MersenneTwister ibdRg(dEploidIO.randomSeed());
+                // MersenneTwister ibdRg(dEploidIO.randomSeed());
 
                 McmcMachinery ibdMcmcMachinery(&dEploidIO.plaf_,
                                                &dEploidIO.refCount_,
@@ -93,7 +123,7 @@ int main(int argc, char *argv[]) {
                                                dEploidIO.panel,
                                                &dEploidIO,
                                                ibdMcmcSample,
-                                               &ibdRg,
+                                               &rg,
                                                true);
                 ibdMcmcMachinery.runMcmcChain(true,   // show progress
                                               true);  // use IBD
