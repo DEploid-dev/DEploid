@@ -596,7 +596,7 @@ void McmcMachinery::updateProportion() {
 }
 
 
-double McmcMachinery::deltaLLKs ( vector <double> &newLLKs ) {
+double McmcMachinery::deltaLLKs (const vector <double> &newLLKs ) {
     vector <double> tmpdiff = vecDiff ( newLLKs,  this->currentLLks_);
     return sumOfVec(tmpdiff);
 }

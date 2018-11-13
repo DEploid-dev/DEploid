@@ -212,7 +212,7 @@ class McmcMachinery {
     /* Moves */
     void updateProportion();
     vector <double> calcTmpTitre();
-    double deltaLLKs(vector <double> &newLLKs);
+    double deltaLLKs(const vector <double> &newLLKs);
 
     void updateSingleHap(Panel *useThisPanel);
     void findUpdatingStrainSingle();

@@ -22,9 +22,9 @@ script:
   - make check
   - if [ $TRAVIS_OS_NAME == linux ]; then ./tests/test_binary.sh; fi
   - ./tests/testPOS.sh
-  - ./tests/test_binaryVcfVsTxt.sh
-  - ./tests/test-against-previous-version.sh
-  - ./tests/test_binaryReproducible.sh
+  #- ./tests/test_binaryVcfVsTxt.sh
+  #- ./tests/test-against-previous-version.sh
+  #- ./tests/test_binaryReproducible.sh
   - if [ $TRAVIS_OS_NAME == linux ]; then cd docs/doxygen; doxygen Doxyfile; cd ../..; fi
 
 after_success:
