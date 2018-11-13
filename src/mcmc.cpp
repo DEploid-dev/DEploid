@@ -23,10 +23,11 @@
  *
  */
 
-#include <random>
 #include <stdio.h>
-#include <limits>       // std::numeric_limits< double >::min()
 #include <math.h>       // ceil
+#include <random>
+#include <limits>       // std::numeric_limits< double >::min()
+#include <numeric>      // std::accumulate, std::inner_product
 #include "global.hpp"     // dout
 #include "updateHap.hpp"
 #include "mcmc.hpp"
