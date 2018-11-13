@@ -2,5 +2,5 @@
 	path = DEploid.wiki
 	url = https://github.com/DEploid-dev/DEploid.wiki.git
 [submodule "DEploid-Lasso-lib"]
-	path = DEploid-Lasso-lib
+	path = src/lasso
 	url = https://github.com/shajoezhu/DEploid-Lasso-lib
