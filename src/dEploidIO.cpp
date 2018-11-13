@@ -30,7 +30,7 @@
 #include "updateHap.hpp"  // chromPainting
 #include "dEploidIO.hpp"
 #include "ibd.hpp"
-#include "lasso/dEploidLasso.hpp"
+#include "lasso/src/dEploidLasso.hpp"
 
 DEploidIO::DEploidIO() {
     this->init();
