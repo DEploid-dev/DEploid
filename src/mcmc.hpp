@@ -193,7 +193,7 @@ class McmcMachinery {
     IBDpath ibdPath;
 
     vector <double> computeLlkAtAllSites(double err = 0.01);
-    vector <double> averageProportion(vector < vector <double> > &proportion);
+    vector <double> averageProportion();
 
     void ibdInitializeEssentials();
     void makeLlkSurf(vector <double> altCount,
@@ -205,7 +205,8 @@ class McmcMachinery {
     void initializePropIBD();
     void ibdSamplePath(vector <double> statePrior);
     void ibdUpdateHaplotypesFromPrior();
-    void ibdUpdateProportionGivenHap(vector <double> &llkAtAllSites);
+    vector <double> ibdUpdateProportionGivenHap(
+        const vector <double> &llkAtAllSites);
     // vector <double> getIBDprobsIntegrated(vector < vector <double> > &prob);
 
 

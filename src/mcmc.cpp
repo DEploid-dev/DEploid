@@ -328,7 +328,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
         //this->dEploidIO_->ibdProbsIntegrated = getIBDprobsIntegrated(reshapedProbs);
         //this->dEploidIO_->writeIBDpostProb(reshapedProbs, this->dEploidIO_->ibdProbsHeader);
         //clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
-        this->dEploidIO_->initialProp = averageProportion(this->mcmcSample_->proportion);
+        this->dEploidIO_->initialProp = averageProportion();
         this->dEploidIO_->setInitialPropWasGiven(true);
         this->dEploidIO_->setDoUpdateProp(false);
         //this->dEploidIO_->initialHap = this->mcmcSample_->hap;
@@ -390,14 +390,14 @@ void McmcMachinery::computeDiagnostics() {
 
 }
 
-vector <double> McmcMachinery::averageProportion(vector < vector <double> > &proportion ) {
-    assert(proportion.size()>0);
+vector <double> McmcMachinery::averageProportion() {
+    assert(this->mcmcSample_->proportion.size()>0);
     vector <double> ret(this->kStrain());
     for ( size_t i = 0; i < kStrain(); i++ ) {
-        for (vector <double> p : proportion) {
+        for (vector <double> p : this->mcmcSample_->proportion) {
             ret[i] += p[i];
         }
-        ret[i] /= (1.0*proportion.size());
+        ret[i] /= (1.0*this->mcmcSample_->proportion.size());
     }
     (void)normalizeBySum(ret);
     return ret;
@@ -470,11 +470,11 @@ void McmcMachinery::ibdSampleMcmcEventStep() {
     this->ibdUpdateHaplotypesFromPrior();
     vector <double> llkAtAllSites = computeLlkAtAllSites();
     ////#Given current haplotypes, sample titres 1 by 1 using MH
-    this->ibdUpdateProportionGivenHap(llkAtAllSites);
+    vector <double> updatedllkAtAllSites = this->ibdUpdateProportionGivenHap(llkAtAllSites);
     // Compute new theta after all proportion and haplotypes are up to date.
     this->ibdPath.computeAndUpdateTheta();
 
-    this->currentLLks_ = llkAtAllSites;
+    this->currentLLks_ = updatedllkAtAllSites;
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
@@ -488,8 +488,9 @@ void McmcMachinery::ibdUpdateHaplotypesFromPrior() {
 }
 
 
-void McmcMachinery::ibdUpdateProportionGivenHap(
-                        vector <double> &llkAtAllSites) {
+vector <double> McmcMachinery::ibdUpdateProportionGivenHap(
+                        const vector <double> &llkAtAllSites) {
+    vector <double> ret(llkAtAllSites.begin(), llkAtAllSites.end());
     for (size_t i = 0; i < kStrain(); i++) {
         double v0 = this->currentTitre_[i];
         vector <double> oldProp = this->currentProp_;
@@ -498,16 +499,19 @@ void McmcMachinery::ibdUpdateProportionGivenHap(
         this->currentProp_ = this->titre2prop(this->currentTitre_);
         vector <double> vv = computeLlkAtAllSites();
         double rr = normal_pdf( this->currentTitre_[i], 0, 1) /
-                    normal_pdf( v0, 0, 1) * exp( sumOfVec(vv) - sumOfVec(llkAtAllSites));
+                    normal_pdf( v0, 0, 1) * exp( sumOfVec(vv) - sumOfVec(ret));
 
         if ( this->propRg_->sample() < rr) {
-            llkAtAllSites = vv;
+            //llkAtAllSites = vv;
+            ret.clear();
+            ret = vv;
             acceptUpdate++;
         } else {
             this->currentTitre_[i] = v0;
             this->currentProp_ = oldProp;
         }
     }
+    return ret;
 }
 
 

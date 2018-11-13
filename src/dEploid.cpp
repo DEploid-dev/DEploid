@@ -92,52 +92,13 @@ int main(int argc, char *argv[]) {
                 // #############################################################
                 // ################# DEploid-LASSO to learn K ##################
                 // #############################################################
-                //DEploidIO tmpIO(dEploidIO);
-                //// tmpIO.setDoAllowInbreeding(true);
-                //tmpIO.dEploidLassoFullPanel();
-
-                //McmcSample * mcmcSample = new McmcSample();
-                //McmcMachinery mcmcMachinery(&tmpIO.plaf_,
-                                            //&tmpIO.refCount_,
-                                            //&tmpIO.altCount_,
-                                            //tmpIO.panel,
-                                            //&tmpIO,
-                                            //string("DEploid-Lasso learning k"),
-                                            //string("lassoK"),
-                                            //mcmcSample,
-                                            //&rg,
-                                            //false);  // use IBD
-                //mcmcMachinery.runMcmcChain(true,     // show progress
-                                           //false);   // use IBD
-
-                //vector <double> initialP;
-                //for (auto const& value : tmpIO.finalProp) {
-                    //if (value > 0.01) {
-                        //initialP.push_back(value);
-                    //}
-                //}
-                //cout << endl;
-                //dEploidIO.initialProp = initialP;
-                //dEploidIO.setKstrain(initialP.size());
-                //dEploidIO.setInitialPropWasGiven(true);
-
-                //if (dEploidIO.initialProp.size() > 1) {
-                    //tmpIO.paintIBD();
-                //}
-                //delete mcmcSample;
 
                 ChooseK chooseK;
 
                 DEploidIO toLearnK(dEploidIO);
                 toLearnK.dEploidLassoTrimfirst();
                 DEploidIO toLearnKtmp(dEploidIO);
-                //toLearnK.initialProp = dEploidIO.initialProp;
-                //toLearnK.setDoUpdateProp(false);
-                //toLearnK.setInitialPropWasGiven(true);
-                //toLearnK.setKstrain(dEploidIO.kStrain());
-                //vector < vector <double> > hap;
                 for (size_t chromi = 0;
-                     //chromi < 6;
                      chromi < toLearnK.indexOfChromStarts_.size();
                      chromi++ ) {
                     toLearnKtmp.position_.clear();
@@ -150,31 +111,24 @@ int main(int argc, char *argv[]) {
                     string job = string("DEploid-Lasso learning K ");
                     job.append(toLearnK.chrom_[chromi]).append(" leanrning K");
                     McmcMachinery lassoMcmcMachinery(
-                                                &toLearnK.lassoPlafs.at(chromi),
-                                                &toLearnK.lassoRefCount.at(chromi),
-                                                &toLearnK.lassoAltCount.at(chromi),
-                                                toLearnK.lassoPanels.at(chromi),
-                                                &toLearnKtmp,
-                                                job,
-                                                job,
-                                                lassoMcmcSample,
-                                                &rg,
-                                                false);
+                                            &toLearnK.lassoPlafs.at(chromi),
+                                            &toLearnK.lassoRefCount.at(chromi),
+                                            &toLearnK.lassoAltCount.at(chromi),
+                                            toLearnK.lassoPanels.at(chromi),
+                                            &toLearnKtmp,
+                                            job,
+                                            job,
+                                            lassoMcmcSample,
+                                            &rg,
+                                            false);
                     lassoMcmcMachinery.runMcmcChain(true,   // show progress
                                                     false);  // use IBD
-                    //// *** Append haplotypes to the end
-                    //for (size_t snpi = 0;
-                         //snpi < lassoMcmcSample->hap.size(); snpi++) {
-                        //hap.push_back(vector <double> (
-                                            //lassoMcmcSample->hap[snpi].begin(),
-                                            //lassoMcmcSample->hap[snpi].end()));
-                    //}
                     toLearnKtmp.initialProp = toLearnKtmp.finalProp;
                     toLearnKtmp.setInitialPropWasGiven(true);
                     chooseK.appendProportions(toLearnKtmp.finalProp);
                     delete lassoMcmcSample;
                 }
-                //chooseK.findKmode();
+                // chooseK.findKmode();
 
                 dEploidIO.initialProp.clear();
                 vector <double> initialP = chooseK.chosenP();
@@ -185,8 +139,6 @@ int main(int argc, char *argv[]) {
                 }
                 dEploidIO.setKstrain(dEploidIO.initialProp.size());
                 dEploidIO.setInitialPropWasGiven(true);
-
-
             }
             if (dEploidIO.initialProp.size() > 1) {
                 // #############################################################

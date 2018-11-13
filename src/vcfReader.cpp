@@ -250,14 +250,15 @@ void VcfReader::findLegitSnpsGivenVQSLODHalf(double vqslodThreshold) {
     this->legitVqslodAt.clear();
     assert(legitVqslodAt.size() == 0);
 
-    for (size_t chromI = 0; chromI < this->indexOfChromStarts_.size(); chromI++) {
+    for (size_t chromI = 0;
+         chromI < this->indexOfChromStarts_.size(); chromI++) {
         size_t start = this->indexOfChromStarts_[chromI];
         size_t length = this->position_[chromI].size();
-        //if (chromI%2 == 0) {
+        // if (chromI%2 == 0) {
         if (chromI > 10) {
             for ( size_t ii = start ; ii < (start+length); ii++ ) {
                 if (this->vqslod[ii] > vqslodThreshold) {
-                    //std::cout << ii <<std::endl;
+                    // std::cout << ii <<std::endl;
                     this->legitVqslodAt.push_back(ii);
                 }
             }

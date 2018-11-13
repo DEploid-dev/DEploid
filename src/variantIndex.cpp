@@ -140,15 +140,12 @@ void VariantIndex::findWhoToBeKeptGivenIndexHalf(
     this->position_.clear();
 
     for (size_t chromI = 0; chromI < oldChrom.size(); chromI++) {
-        //if (chromI%2 == 0) {
+        // if (chromI%2 == 0) {
         if (chromI > 10) {
-
             dout << "   Going through chrom "<< oldChrom[chromI] << " ";
             size_t hapIndex = indexOfChromStarts_[chromI];
             vector <int> newTrimmedPos;
             for (size_t posI = 0; posI < oldposition[chromI].size(); posI++) {
-
-
                 if (std::find(givenIndex.begin(), givenIndex.end(), hapIndex)
                         != givenIndex.end()) {
                     if (newTrimmedPos.size() == 0) {
@@ -158,14 +155,15 @@ void VariantIndex::findWhoToBeKeptGivenIndexHalf(
                 }
                 hapIndex++;
             }
-            //std::cout << newTrimmedPos.size () << endl;
+            // std::cout << newTrimmedPos.size () << endl;
             this->position_.push_back(newTrimmedPos);
         }
     }
 
     // assert(indexOfPosToBeKept.size() == this->chrom_.size());
 
-    dout << indexOfContentToBeKept.size() << " sites need to be Kept, with " << this->chrom_.size() << endl;
+    dout << indexOfContentToBeKept.size() << " sites need to be Kept, with "
+         << this->chrom_.size() << endl;
 }
 
 
