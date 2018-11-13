@@ -352,14 +352,14 @@ class TestMcmcMachinery: public CppUnit::TestCase {
 
     void testAverageProportion() {
         CPPUNIT_ASSERT_NO_THROW(this->mcmcMachinery_->setKstrain(4));
-        vector < vector <double> > proportionMat;
-        proportionMat.push_back(vector<double>({0.1, 0.2, 0.3, 0.4}));
-        proportionMat.push_back(vector<double>({0.11, 0.22, 0.28, 0.39}));
-        proportionMat.push_back(vector<double>({0.09, 0.21, 0.32, 0.41}));
-        proportionMat.push_back(vector<double>({0.12, 0.18, 0.29, 0.37}));
-        proportionMat.push_back(vector<double>({0.08, 0.19, 0.31, 0.43}));
+        CPPUNIT_ASSERT_EQUAL(this->mcmcSample_->proportion.size(), 0);
+        this->mcmcSample_->proportion.push_back(vector<double>({0.1, 0.2, 0.3, 0.4}));
+        this->mcmcSample_->proportion.push_back(vector<double>({0.11, 0.22, 0.28, 0.39}));
+        this->mcmcSample_->proportion.push_back(vector<double>({0.09, 0.21, 0.32, 0.41}));
+        this->mcmcSample_->proportion.push_back(vector<double>({0.12, 0.18, 0.29, 0.37}));
+        this->mcmcSample_->proportion.push_back(vector<double>({0.08, 0.19, 0.31, 0.43}));
 
-        vector <double> tmp = this->mcmcMachinery_->averageProportion(proportionMat);
+        vector <double> tmp = this->mcmcMachinery_->averageProportion();
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.1, tmp[0], epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.2, tmp[1], epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.3, tmp[2], epsilon3);
