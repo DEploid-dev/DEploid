@@ -694,7 +694,7 @@ vector <double> IBDpath::computeLlkOfStatesAtSiteI(vector<double> proportion,
     for ( double llk : llks ) {
         double normalized = exp(llk-maxllk);
         if ( normalized == 0 ) {
-            //normalized = std::numeric_limits< double >::min();
+            // normalized = std::numeric_limits< double >::min();
             normalized = 2.22507e-308;
         }
         ret.push_back(normalized);
