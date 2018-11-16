@@ -5,21 +5,23 @@ sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testDat
 
 gzip -d vcf.vcf.gz
 
-diff txt.prop vcf.prop
+jobBrief="classic"
+
+diff txt.${jobBrief}.prop vcf.${jobBrief}.prop
 if [ $? -ne 0 ]; then
   echo ""
   echo "Proportion unequal"
   exit 1
 fi
 
-diff txt.llk vcf.llk
+diff txt.${jobBrief}.llk vcf.${jobBrief}.llk
 if [ $? -ne 0 ]; then
   echo ""
   echo "Likelihood unequal"
   exit 1
 fi
 
-diff txt.hap vcf.hap
+diff txt.${jobBrief}.hap vcf.${jobBrief}.hap
 if [ $? -ne 0 ]; then
   echo ""
   echo "Haplotypes unequal"
@@ -37,7 +39,7 @@ fi
 
 # Because of exclude, do not compare vcf columns 1 to 9
 
-tail -n +2 txt.hap | cut -f 1-2 > txtHap1to2
+tail -n +2 txt.${jobBrief}.hap | cut -f 1-2 > txtHap1to2
 grep -v "#" txt.vcf | cut -f 1-2 > txtVcf1to2
 diff txtHap1to2 txtVcf1to2
 if [ $? -ne 0 ]; then

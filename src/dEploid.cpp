@@ -229,7 +229,7 @@ int main(int argc, char *argv[]) {
 
             dEploidIO.paintIBD();
             dEploidIO.writeHap(hap, "final");
-        } else { // classic version, with IBD flag
+        } else {  // classic version, with IBD flag
             if (dEploidIO.useIBD()) {  // ibd
                 McmcSample * ibdMcmcSample = new McmcSample();
                 MersenneTwister ibdRg(dEploidIO.randomSeed());
@@ -253,7 +253,7 @@ int main(int argc, char *argv[]) {
                                 dEploidIO.panel,
                                 &dEploidIO,
                                 "DEploid classic version",
-                                "classic", // brief
+                                "classic",  // brief
                                 mcmcSample,
                                 &rg,
                                 false);  // use IBD
