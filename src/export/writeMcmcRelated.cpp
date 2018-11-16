@@ -32,7 +32,7 @@ void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample, string jobbrief, bool
     this->writeHap(mcmcSample->hap, jobbrief);
 
     if ( useIBD == false ){
-        this->writeVcf( mcmcSample );
+        this->writeVcf(mcmcSample, jobbrief);
         this->siteOfTwoSwitchOne = mcmcSample->siteOfTwoSwitchOne;
         this->siteOfTwoMissCopyOne = mcmcSample->siteOfTwoMissCopyOne;
         this->siteOfTwoSwitchTwo = mcmcSample->siteOfTwoSwitchTwo;
@@ -139,8 +139,14 @@ void DEploidIO::writePanel(Panel *panel, size_t chromI, vector <string> hdr){
 
 
 
-void DEploidIO::writeVcf( McmcSample * mcmcSample ){
+void DEploidIO::writeVcf(McmcSample * mcmcSample, string jobbrief){
     if ( !doExportVcf() ) return;
+
+    this->strExportVcf = this->prefix_ + "." + jobbrief + ".vcf";
+    if ( compressVcf() ) {
+        strExportVcf += ".gz";
+    }
+    remove(strExportVcf.c_str());
 
     ogzstream ogstreamExport;
     ostream * writeTo;

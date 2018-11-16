@@ -357,7 +357,7 @@ class DEploidIO{
 
     void writeLLK (McmcSample * mcmcSample, string jobbrief);
     void writeProp (McmcSample * mcmcSample, string jobbrief);
-    void writeVcf (McmcSample * mcmcSample);
+    void writeVcf (McmcSample * mcmcSample, string jobbrief);
     void writeLastSingleFwdProb( vector < vector <double> >& probabilities, size_t chromIndex, size_t strainIndex, bool useIBD );
     void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
     void writeLog (ostream * writeTo );

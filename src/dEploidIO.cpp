@@ -293,10 +293,7 @@ void DEploidIO::removeFilesWithSameName() {
         //strIbdExportProbs = this->prefix_ + ".ibd.probs";
     //}
 
-    strExportVcf = this->prefix_ + ".vcf";
-    if ( compressVcf() ) {
-        strExportVcf += ".gz";
-    }
+
     strExportLog =  this->prefix_ + ((this->doLsPainting()) ? ".painting":"") + ".log";
     strExportRecombProb = this->prefix_ + ".recomb";
 
@@ -310,7 +307,7 @@ void DEploidIO::removeFilesWithSameName() {
         }
         //remove(strExportLLK.c_str());
         //remove(strExportHap.c_str());
-        remove(strExportVcf.c_str());
+        //remove(strExportVcf.c_str());
         //remove(strExportProp.c_str());
         remove(strExportExtra.c_str());
         remove(strIbdExportProbs.c_str());
