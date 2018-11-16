@@ -123,6 +123,7 @@ void DEploidIO::init() {
     this->setUseIBD( false );
     this->setUseIbdOnly(false);
     this->setUseLasso( false );
+    this->setUseBestPractice(false);
     this->setDoExportSwitchMissCopy ( true );
     this->setDoAllowInbreeding( false );
     this->mcmcBurn_ = 0.5;
@@ -464,6 +465,8 @@ void DEploidIO::parse () {
             this->readInitialHaps();
         } else if ( *argv_i == "-ibd" ) {
             this->setUseIBD(true);
+        } else if (*argv_i == "-best") {
+            this->setUseBestPractice(true);
         } else if ( *argv_i == "-ibdonly" ) {
             this->setUseIBD(true);
             this->setUseIbdOnly(true);
@@ -1153,60 +1156,4 @@ void DEploidIO::ibdTrimming() {
     this->vcfReaderPtr_ = NULL;
 }
 
-
-void ChooseK::appendProportions(const vector <double> &p) {
-    this->proportions_.push_back(vector<double>(p.begin(), p.end()));
-}
-
-
-void ChooseK::gatherKs() {
-    assert(this->ks.size() == 0);
-    for (auto const& vec : this->proportions_) {
-        size_t k = 0;
-        for (auto const& v : vec) {
-            if (v > 0.01) {
-                k++;
-            }
-        }
-        ks.push_back(k);
-    }
-    assert(this->ks.size() == this->proportions_.size());
-}
-
-
-void ChooseK::findKmode() {
-    this->gatherKs();
-
-    vector <size_t> uniqueK;
-    for (size_t i = 0; i < this->proportions_[0].size(); i++) {
-        uniqueK.push_back(i+1);
-    }
-    size_t maxCount = 0;
-    this->max_at_ = 0;
-    vector <size_t> kCount(uniqueK.size(), 0);
-    for (auto const& k : ks) {
-        kCount[k-1]++;
-        cout <<k<<" " <<kCount[k-1]<<endl;
-        if (kCount[k-1] > maxCount) {
-            max_at_ = k-1;
-            maxCount = kCount[max_at_];
-        }
-    }
-
-    cout << "k most frequent: " << max_at_+1
-         << " with " << maxCount << "count" << endl;
-}
-
-
-vector <double> ChooseK::chosenP() {
-    this->findKmode();
-    size_t idx = max_at_;
-    for (size_t i = idx; i < this->ks.size(); i++) {
-        if (ks[i] == ks[idx]) {
-            idx = i;
-        }
-    }
-    this->haveChosenP_ = true;
-    return this->proportions_[idx];
-}
 

@@ -26,7 +26,7 @@
 #include <iostream>  // std::cout
 #include "mcmc.hpp"
 #include "dEploidIO.hpp"
-
+#include "chooseK.hpp"
 
 int main(int argc, char *argv[]) {
     try {
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
                 delete lassoMcmcSample;
             }
             dEploidIO.writeHap(hap, "lasso");
-        } else if (dEploidIO.useIBD()) {  // ibd
+        } else if (dEploidIO.useBestPractice()) {  // best practice
             MersenneTwister rg(dEploidIO.randomSeed());
             if (dEploidIO.usePanel()) {
                 // #############################################################
@@ -229,7 +229,22 @@ int main(int argc, char *argv[]) {
 
             dEploidIO.paintIBD();
             dEploidIO.writeHap(hap, "final");
-        } else {
+        } else { // classic version, with IBD flag
+            if (dEploidIO.useIBD()) {  // ibd
+                McmcSample * ibdMcmcSample = new McmcSample();
+                MersenneTwister ibdRg(dEploidIO.randomSeed());
+                McmcMachinery ibdMcmcMachinery(&dEploidIO.plaf_,
+                                               &dEploidIO.refCount_,
+                                               &dEploidIO.altCount_,
+                                               dEploidIO.panel,
+                                               &dEploidIO,
+                                               "DEploid-IBD",
+                                               "DEploid-IBD",
+                                               ibdMcmcSample,
+                                               &ibdRg,
+                                               true);
+            }
+
             McmcSample * mcmcSample = new McmcSample();
             MersenneTwister rg(dEploidIO.randomSeed());
             McmcMachinery mcmcMachinery(&dEploidIO.plaf_,
@@ -237,7 +252,7 @@ int main(int argc, char *argv[]) {
                                 &dEploidIO.altCount_,
                                 dEploidIO.panel,
                                 &dEploidIO,
-                                "DEploid first version",
+                                "DEploid classic version",
                                 "",
                                 mcmcSample,
                                 &rg,

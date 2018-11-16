@@ -73,6 +73,7 @@ class DEploidIO{
     bool useIBD() const { return this->useIBD_;}
     bool useIbdOnly() const { return this->useIbdOnly_;}
     bool useLasso() const { return this->useLasso_;}
+    bool useBestPractice() const { return this->useBestPractice_;}
     void paintIBD();
     double ibdLLK_;
     void getIBDprobsIntegrated(vector < vector <double> > &prob);
@@ -164,9 +165,11 @@ class DEploidIO{
     bool doAllowInbreeding_;
     bool doLsPainting_;
     bool doIbdPainting_;
+
     bool useIBD_;
     bool useIbdOnly_;
     bool useLasso_;
+    bool useBestPractice_;
 
     double vqslod_;
     vector <double> obsWsaf_;
@@ -329,6 +332,7 @@ class DEploidIO{
     void setUseIBD( const bool setTo) { this->useIBD_ = setTo; }
     void setUseIbdOnly(const bool setTo) { this->useIbdOnly_ = setTo;}
     void setUseLasso( const bool setTo) { this->useLasso_ = setTo; }
+    void setUseBestPractice ( const bool setTo) {this->useBestPractice_ = setTo;}
 
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
 
@@ -432,26 +436,6 @@ class DEploidIO{
     void trimming(vector <size_t> & trimmingCriteria);
     void trimmingHalf(vector <size_t> & trimmingCriteria);
     void computeObsWsaf();
-};
-
-
-class ChooseK {
- public:
-    ChooseK() {this->haveChosenP_ = false;}
-    ~ChooseK() {}
-    void appendProportions(const vector <double> &p);
-    size_t chosenK() const {
-        assert(this->haveChosenP_ == true);
-        return this->max_at_+1; }
-    vector <double> chosenP();
-
- private:
-    void findKmode();
-    vector < vector<double> > proportions_;
-    vector < size_t > ks;
-    void gatherKs();
-    size_t max_at_;
-    bool haveChosenP_;
 };
 
 #endif

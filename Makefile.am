@@ -22,6 +22,7 @@ common_LDADD = -lz
 common_src = src/random/fastfunc.cpp \
 			 src/random/random_generator.cpp \
 			 src/random/mersenne_twister.cpp \
+			 src/chooseK.cpp \
 			 src/ibd.cpp \
 			 src/mcmc.cpp \
 			 src/panel.cpp \
