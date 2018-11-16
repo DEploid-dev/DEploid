@@ -352,7 +352,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
 
     void testAverageProportion() {
         CPPUNIT_ASSERT_NO_THROW(this->mcmcMachinery_->setKstrain(4));
-        CPPUNIT_ASSERT_EQUAL(this->mcmcSample_->proportion.size(), 0);
+        CPPUNIT_ASSERT_EQUAL(this->mcmcSample_->proportion.size(), static_cast<size_t>(0));
         this->mcmcSample_->proportion.push_back(vector<double>({0.1, 0.2, 0.3, 0.4}));
         this->mcmcSample_->proportion.push_back(vector<double>({0.11, 0.22, 0.28, 0.39}));
         this->mcmcSample_->proportion.push_back(vector<double>({0.09, 0.21, 0.32, 0.41}));
