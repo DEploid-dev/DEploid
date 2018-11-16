@@ -253,7 +253,7 @@ int main(int argc, char *argv[]) {
                                 dEploidIO.panel,
                                 &dEploidIO,
                                 "DEploid classic version",
-                                "",
+                                "classic", // brief
                                 mcmcSample,
                                 &rg,
                                 false);  // use IBD
