@@ -301,7 +301,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
 
     this->mcmcSample_->hap = this->currentHap_;
 
-    //this->writeLastFwdProb(useIBD);
+    this->writeLastFwdProb(useIBD);
     this->dEploidIO_->finalProp.clear();
     this->dEploidIO_->finalProp = this->mcmcSample_->proportion.back();
 
