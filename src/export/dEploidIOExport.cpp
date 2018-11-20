@@ -100,22 +100,26 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         if (this->useIBD()){
             (*writeTo) << setw(19) << "  IBD Method used: YES" << "\n";
         }
-        (*writeTo) << setw(19) << " Update Prop: "   << (this->doUpdateProp()  ? "YES":"NO") << "\n";
-        (*writeTo) << setw(19) << " Update Single: " << (this->doUpdateSingle()? "YES":"NO") << "\n";
-        (*writeTo) << setw(19) << " Update Pair: "   << (this->doUpdatePair()  ? "YES":"NO") << "\n";
+        (*writeTo) << setw(19) << " Update Prop: "
+                   << (this->doUpdateProp()  ? "YES":"NO") << "\n";
+        (*writeTo) << setw(19) << " Update Single: "
+                   << (this->doUpdateSingle()? "YES":"NO") << "\n";
+        (*writeTo) << setw(19) << " Update Pair: "
+                   << (this->doUpdatePair()  ? "YES":"NO") << "\n";
         (*writeTo) << "\n";
     }
     (*writeTo) << "Other parameters:"<< "\n";
     if ( forbidCopyFromSame_ ){ (*writeTo) << " Update pair haplotypes move forbid copying from the same strain!!! \n"; }
     (*writeTo) << setw(20) << " Miss copy prob: "   << this->missCopyProb_ << "\n";
     (*writeTo) << setw(20) << " Avrg Cent Morgan: " << this->averageCentimorganDistance_ << "\n";
-    (*writeTo) << setw(20) << " G: "               << this->parameterG() << "\n";
+    (*writeTo) << setw(20) << " G: "                << this->parameterG() << "\n";
     if (this->useIBD()){
-    (*writeTo) << setw(20) << " IBD sigma: "               << this->ibdSigma() << "\n";
+    (*writeTo) << setw(20) << " IBD sigma: "        << this->ibdSigma() << "\n";
     } else {
-    (*writeTo) << setw(20) << " sigma: "               << this->parameterSigma() << "\n";
+    (*writeTo) << setw(20) << " sigma: "            << this->parameterSigma() << "\n";
     }
     (*writeTo) << setw(20) << " ScalingFactor: "    << this->scalingFactor() << "\n";
+    (*writeTo) << setw(20) << " VQSLOD:        "    << this->vqslod() << "\n";
     if ( this->initialPropWasGiven() ){
         (*writeTo) << setw(20) << " Initial prob: " ;
         for ( size_t i = 0; i < this->initialProp.size(); i++ ){
@@ -157,17 +161,17 @@ void DEploidIO::writeLog ( ostream * writeTo ){
                 }
             }
         } else {
-            if (this->useLasso() == false) {
-                (*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
-                (*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
-            }
-            (*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
+            //if (this->useLasso() == false) {
+                //(*writeTo) << setw(14) << "Likelihood: "  << strExportLLK  << "\n";
+                //(*writeTo) << setw(14) << "Proportions: " << strExportProp << "\n";
+            //}
+            //(*writeTo) << setw(14) << "Haplotypes: "  << strExportHap  << "\n";
             if ( doExportVcf() ) { (*writeTo) << setw(14) << "Vcf: "  << strExportVcf  << "\n"; }
             if (this->useIBD()){
                 (*writeTo) << " IBD method output saved to:\n";
-                (*writeTo) << setw(14) << "Likelihood: "  << strIbdExportLLK  << "\n";
-                (*writeTo) << setw(14) << "Proportions: " << strIbdExportProp << "\n";
-                (*writeTo) << setw(14) << "Haplotypes: "  << strIbdExportHap  << "\n";
+                (*writeTo) << setw(14) << "Likelihood: "  << this->prefix_ << ".*.llk\n";
+                (*writeTo) << setw(14) << "Proportions: " << this->prefix_ << ".*.prop\n";
+                (*writeTo) << setw(14) << "Haplotypes: "  << this->prefix_ << ".*.hap\n";
             }
             if (this->ibdProbsIntegrated.size()>1){
                 (*writeTo) << setw(14) << "IBD probs: "  << strIbdExportProbs  << "\n\n";
@@ -228,28 +232,28 @@ void DEploidIO::writeEventCount(){
     for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
         for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
             ofstreamExportTmp << chrom_[chromI] << "\t"
-                              << (int)position_[chromI][posI] << "\t"
+                          << (int)position_[chromI][posI] << "\t"
 
-                              << this->IBDpathChangeAt[siteIndex] << "\t"
-                              << this->finalIBDpathChangeAt[siteIndex] << "\t"
+                          << this->IBDpathChangeAt[siteIndex] << "\t"
+                          << this->finalIBDpathChangeAt[siteIndex] << "\t"
 
-                              << this->siteOfTwoSwitchOne[siteIndex] << "\t"
-                              << this->finalSiteOfTwoSwitchOne[siteIndex] << "\t"
+                          << this->siteOfTwoSwitchOne[siteIndex] << "\t"
+                          << this->finalSiteOfTwoSwitchOne[siteIndex] << "\t"
 
-                              << this->siteOfTwoMissCopyOne[siteIndex] << "\t"
-                              << this->finalSiteOfTwoMissCopyOne[siteIndex] << "\t"
+                          << this->siteOfTwoMissCopyOne[siteIndex] << "\t"
+                          << this->finalSiteOfTwoMissCopyOne[siteIndex] << "\t"
 
-                              << this->siteOfTwoSwitchTwo[siteIndex] << "\t"
-                              << this->finalSiteOfTwoSwitchTwo[siteIndex] << "\t"
+                          << this->siteOfTwoSwitchTwo[siteIndex] << "\t"
+                          << this->finalSiteOfTwoSwitchTwo[siteIndex] << "\t"
 
-                              << this->siteOfTwoMissCopyTwo[siteIndex] << "\t"
-                              << this->finalSiteOfTwoMissCopyTwo[siteIndex] << "\t"
+                          << this->siteOfTwoMissCopyTwo[siteIndex] << "\t"
+                          << this->finalSiteOfTwoMissCopyTwo[siteIndex] << "\t"
 
-                              << this->siteOfOneSwitchOne[siteIndex] << "\t"
-                              << this->finalSiteOfOneSwitchOne[siteIndex] << "\t"
+                          << this->siteOfOneSwitchOne[siteIndex] << "\t"
+                          << this->finalSiteOfOneSwitchOne[siteIndex] << "\t"
 
-                              << this->siteOfOneMissCopyOne[siteIndex] << "\t"
-                              << this->finalSiteOfOneMissCopyOne[siteIndex] << endl;
+                          << this->siteOfOneMissCopyOne[siteIndex] << "\t"
+                          << this->finalSiteOfOneMissCopyOne[siteIndex] << endl;
             siteIndex++;
         }
     }
@@ -324,10 +328,10 @@ void DEploidIO::paintIBD(){
     tmpDEploidIO.nLoci_= this->nLoci();
     tmpDEploidIO.position_ = this->position_;
     tmpDEploidIO.chrom_ = this->chrom_;
-    //tmpDEploidIO.useConstRecomb_ = true;
-    //tmpDEploidIO.constRecombProb_ = 0.000001;
+    // tmpDEploidIO.useConstRecomb_ = true;
+    // tmpDEploidIO.constRecombProb_ = 0.000001;
 
-    //tmpDEploidIO.writeLog (&std::cout);
+    // tmpDEploidIO.writeLog (&std::cout);
 
     MersenneTwister tmpRg(this->randomSeed());
     IBDpath tmpIBDpath;
@@ -336,6 +340,13 @@ void DEploidIO::paintIBD(){
     this->ibdLLK_ = tmpIBDpath.bestPath(goodProp);
     this->ibdProbsHeader = tmpIBDpath.getIBDprobsHeader();
     this->getIBDprobsIntegrated(tmpIBDpath.fwdbwd);
+
+
+    for ( size_t stateI = 0; stateI < this->ibdProbsHeader.size(); stateI++ ){
+        cout << setw(14) << this->ibdProbsHeader[stateI] << ": "
+             << this->ibdProbsIntegrated[stateI] << "\n";
+    }
+
     this->writeIBDpostProb(tmpIBDpath.fwdbwd, this->ibdProbsHeader);
 }
 

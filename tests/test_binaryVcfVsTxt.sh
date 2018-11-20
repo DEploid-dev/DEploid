@@ -3,23 +3,26 @@ sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testDat
 ./dEploid ${sameFlags} -vcf data/testData/PG0390-C.test.vcf.gz -o vcf -z || exit 1
 ./dEploid ${sameFlags} -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -o txt || exit 1
 
-gzip -d vcf.vcf.gz
+jobBrief="classic"
 
-diff txt.prop vcf.prop
+gzip -d vcf.${jobBrief}.vcf.gz
+
+
+diff txt.${jobBrief}.prop vcf.${jobBrief}.prop
 if [ $? -ne 0 ]; then
   echo ""
   echo "Proportion unequal"
   exit 1
 fi
 
-diff txt.llk vcf.llk
+diff txt.${jobBrief}.llk vcf.${jobBrief}.llk
 if [ $? -ne 0 ]; then
   echo ""
   echo "Likelihood unequal"
   exit 1
 fi
 
-diff txt.hap vcf.hap
+diff txt.${jobBrief}.hap vcf.${jobBrief}.hap
 if [ $? -ne 0 ]; then
   echo ""
   echo "Haplotypes unequal"
@@ -27,7 +30,7 @@ if [ $? -ne 0 ]; then
 fi
 
 grep "##" data/testData/PG0390-C.test.vcf > originalHeader
-head -165 vcf.vcf > newHeader
+head -165 vcf.${jobBrief}.vcf > newHeader
 diff originalHeader newHeader
 if [ $? -ne 0 ]; then
   echo ""
@@ -37,8 +40,8 @@ fi
 
 # Because of exclude, do not compare vcf columns 1 to 9
 
-tail -n +2 txt.hap | cut -f 1-2 > txtHap1to2
-grep -v "#" txt.vcf | cut -f 1-2 > txtVcf1to2
+tail -n +2 txt.${jobBrief}.hap | cut -f 1-2 > txtHap1to2
+grep -v "#" txt.${jobBrief}.vcf | cut -f 1-2 > txtVcf1to2
 diff txtHap1to2 txtVcf1to2
 if [ $? -ne 0 ]; then
   echo ""
@@ -46,8 +49,8 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-tail -n +2 txt.hap | cut -f 3- > txtHap
-grep -v "#" vcf.vcf | cut -f 10- > newVcfHap
+tail -n +2 txt.${jobBrief}.hap | cut -f 3- > txtHap
+grep -v "#" vcf.${jobBrief}.vcf | cut -f 10- > newVcfHap
 diff txtHap newVcfHap
 if [ $? -ne 0 ]; then
   echo ""
@@ -55,7 +58,7 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-grep -v "#" txt.vcf | cut -f 10- > newTxtHap
+grep -v "#" txt.${jobBrief}.vcf | cut -f 10- > newTxtHap
 diff txtHap newTxtHap
 if [ $? -ne 0 ]; then
   echo ""

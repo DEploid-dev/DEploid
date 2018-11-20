@@ -89,6 +89,84 @@ void VariantIndex::findAndKeepMarkers(ExcludeMarker* excludedMarkers) {
 }
 
 
+void VariantIndex::findWhoToBeKeptGivenIndex(
+         const vector <size_t> & givenIndex) {
+    dout << " Starts findWhoToBeKeptGivenIndex " << endl;
+    assert(this->indexOfContentToBeKept.size() == 0);
+    indexOfContentToBeKept = vector <size_t> (givenIndex.begin(),
+                                              givenIndex.end());
+    // assert(this->indexOfPosToBeKept.size() == 0);
+    vector <string> oldChrom = vector <string> (chrom_.begin(), chrom_.end());
+    this->chrom_.clear();
+
+    vector < vector < int > > oldposition = this->position_;
+    this->position_.clear();
+
+    for (size_t chromI = 0; chromI < oldChrom.size(); chromI++) {
+        dout << "   Going through chrom "<< oldChrom[chromI] << endl;
+        size_t hapIndex = indexOfChromStarts_[chromI];
+        vector <int> newTrimmedPos;
+        for (size_t posI = 0; posI < oldposition[chromI].size(); posI++) {
+            if (std::find(givenIndex.begin(), givenIndex.end(), hapIndex)
+                    != givenIndex.end()) {
+                if (newTrimmedPos.size() == 0) {
+                    this->chrom_.push_back(oldChrom[chromI]);
+                }
+                newTrimmedPos.push_back(oldposition[chromI][posI]);
+            }
+
+            hapIndex++;
+        }
+        this->position_.push_back(newTrimmedPos);
+    }
+
+    // assert(indexOfPosToBeKept.size() == this->chrom_.size());
+
+    dout << indexOfContentToBeKept.size() << " sites need to be Kept " << endl;
+}
+
+
+void VariantIndex::findWhoToBeKeptGivenIndexHalf(
+         const vector <size_t> & givenIndex) {
+    dout << " Starts findWhoToBeKeptGivenIndexHalf " << endl;
+    assert(this->indexOfContentToBeKept.size() == 0);
+    indexOfContentToBeKept = vector <size_t> (givenIndex.begin(),
+                                              givenIndex.end());
+    // assert(this->indexOfPosToBeKept.size() == 0);
+    vector <string> oldChrom = vector <string> (chrom_.begin(), chrom_.end());
+    this->chrom_.clear();
+
+    vector < vector < int > > oldposition = this->position_;
+    this->position_.clear();
+
+    for (size_t chromI = 0; chromI < oldChrom.size(); chromI++) {
+        // if (chromI%2 == 0) {
+        if (chromI > 10) {
+            dout << "   Going through chrom "<< oldChrom[chromI] << " ";
+            size_t hapIndex = indexOfChromStarts_[chromI];
+            vector <int> newTrimmedPos;
+            for (size_t posI = 0; posI < oldposition[chromI].size(); posI++) {
+                if (std::find(givenIndex.begin(), givenIndex.end(), hapIndex)
+                        != givenIndex.end()) {
+                    if (newTrimmedPos.size() == 0) {
+                        this->chrom_.push_back(oldChrom[chromI]);
+                    }
+                    newTrimmedPos.push_back(oldposition[chromI][posI]);
+                }
+                hapIndex++;
+            }
+            // std::cout << newTrimmedPos.size () << endl;
+            this->position_.push_back(newTrimmedPos);
+        }
+    }
+
+    // assert(indexOfPosToBeKept.size() == this->chrom_.size());
+
+    dout << indexOfContentToBeKept.size() << " sites need to be Kept, with "
+         << this->chrom_.size() << endl;
+}
+
+
 void VariantIndex::removePositions() {
     assert(this->keptPosition_.size() == (size_t)0);
     for (size_t chromI = 0; chromI < this->chrom_.size(); chromI++) {
@@ -120,9 +198,25 @@ void VariantIndex::getIndexOfChromStarts() {
 }
 
 
+void VariantIndex::getIndexOfChromStartsHalf() {
+    assert(this->doneGetIndexOfChromStarts_ == false);
+    this->indexOfChromStarts_.clear();
+    assert(indexOfChromStarts_.size() == 0);
+    this->indexOfChromStarts_.push_back((size_t)0);
+    for (size_t tmpChrom = 0;
+            indexOfChromStarts_.size() < this->chrom_.size(); tmpChrom++ ) {
+            indexOfChromStarts_.push_back(
+                indexOfChromStarts_.back()+this->position_[tmpChrom].size());
+    }
+    assert(indexOfChromStarts_.size() == this->chrom_.size());
+    this->setDoneGetIndexOfChromStarts(true);
+}
+
+
 void VariantIndex::init() {
     this->setDoneGetIndexOfChromStarts(false);
 }
+
 
 void VariantIndex::removeMarkers() { throw VirtualFunctionShouldNotBeCalled();}
 

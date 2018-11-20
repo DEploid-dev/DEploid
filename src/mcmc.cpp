@@ -41,9 +41,13 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
                               vector <double> * altCount,
                               Panel *panel_ptr,
                               DEploidIO* dEploidIO,
+                              string mcmcJob,
+                              string jobbrief,
                               McmcSample *mcmcSample,
                               RandomGenerator* rg_,
                               bool useIBD ) {  // initialiseMCMCmachinery
+    this->mcmcJob = mcmcJob;
+    this->jobbrief = jobbrief;
     this->plaf_ptr_ = plaf;
     this->refCount_ptr_ = refCount;
     this->altCount_ptr_ = altCount;
@@ -64,11 +68,13 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
     //this->initialHapRg_ = new MersenneTwister(this->seed_);
     if (useIBD == true) {
         this->calcMaxIteration(100, 10, 0.5);
+        //this->calcMaxIteration(10, 10, 0.5);
     } else {
         this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
     }
     this->MN_LOG_TITRE = 0.0;
     this->SD_LOG_TITRE = (useIBD == true) ? this->dEploidIO_->ibdSigma() : this->dEploidIO_->parameterSigma();
+    //this->SD_LOG_TITRE = this->dEploidIO_->parameterSigma();
     this->PROP_SCALE = 40.0;
 
     stdNorm_ = new StandNormalRandomSample(this->seed_);
@@ -99,7 +105,10 @@ void McmcMachinery::initializeMcmcChain(bool useIBD) {
     dout << "###########################################"<< endl;
     dout << "#            Initialization               #"<< endl;
     dout << "###########################################"<< endl;
-
+    cout << "plaf.size() " << plaf_ptr_->size() <<"   ";
+    if (panel_ != NULL) {
+        cout << "Panel size = " << this->panel_->truePanelSize() << endl;
+    }
     this->initializeTitre();
     this->currentLogPriorTitre_ = this->calcLogPriorTitre(this->currentTitre_);
     this->initializeHap();
@@ -142,6 +151,7 @@ void McmcMachinery::initializeHap() {
     assert( currentHap_.size() == 0);
     if ( this->dEploidIO_ -> initialHapWasGiven() ) {
         this->currentHap_ = this->dEploidIO_->initialHap;
+        cout << "given initial hap ?" << endl;
     } else {
         for ( size_t i = 0; i < this->plaf_ptr_->size(); i++ ) {
             double currentPlaf = this->plaf_ptr_->at(i);
@@ -198,7 +208,7 @@ void McmcMachinery::initializellk() {
 }
 
 
-void McmcMachinery::initializeProp( ) {
+void McmcMachinery::initializeProp() {
     assert( this->currentProp_.size() == (size_t)0 );
     this->currentProp_ = ( this->dEploidIO_ -> initialPropWasGiven()) ?
                           this->dEploidIO_ ->initialProp:
@@ -212,11 +222,11 @@ void McmcMachinery::initializeProp( ) {
 }
 
 
-double McmcMachinery::calcLogPriorTitre( vector <double> &tmpTitre ) {
+double McmcMachinery::calcLogPriorTitre(const vector <double> &tmpTitre) {
     //sum(dnorm(titre, MN_LOG_TITRE, SD_LOG_TITRE, log=TRUE));
     vector <double> tmp;
     for ( auto const& value: tmpTitre ) {
-        tmp.push_back( log(normal_pdf(value, MN_LOG_TITRE, SD_LOG_TITRE)) );
+        tmp.push_back(log(normal_pdf(value, MN_LOG_TITRE, SD_LOG_TITRE)));
     }
     return sumOfVec(tmp);
 }
@@ -230,13 +240,14 @@ void McmcMachinery::initializeTitre() {
     if ( this->dEploidIO_->doUpdateProp() ) {
         for ( size_t k = 0; k < this->kStrain_; k++) {
             this->currentTitre_[k] = this->initialTitreNormalVariable();
+            //this->currentTitre_[k] = 10.0;
         }
     }
     assert( currentTitre_.size() == this->kStrain_);
 }
 
 
-vector <double> McmcMachinery::titre2prop(vector <double> & tmpTitre) {
+vector <double> McmcMachinery::titre2prop(const vector <double> & tmpTitre) {
     vector <double> tmpExpTitre;
     for ( auto const& value: tmpTitre ) {
         tmpExpTitre.push_back( exp(value) );
@@ -270,22 +281,28 @@ void McmcMachinery::initializePropIBD() {
 
 
 void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) {
-
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++) {
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
-        if ( this->currentMcmcIteration_ > 0 && this->currentMcmcIteration_%100 == 0 && showProgress ) {
+        if ( this->currentMcmcIteration_ > 0 && this->currentMcmcIteration_%30 == 0 && showProgress ) {
             #ifndef RBUILD
-                clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->maxIteration_) << "% completed."<<flush;
+                clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->maxIteration_) << "% completed ("<<this->mcmcJob<<")"<<flush;
             #endif
         }
         this->sampleMcmcEvent(useIBD);
+
+        //printArray(this->currentProp_);
     }
+
     #ifndef RBUILD
-        clog << "\r" << " MCMC step" << setw(4) << 100 << "% completed."<<endl;
+        clog << "\r" << " MCMC step" << setw(4) << 100 << "% completed ("<<this->mcmcJob<<")"<<endl;
     #endif
+    printArray(this->currentProp_);
+
     this->mcmcSample_->hap = this->currentHap_;
+
     this->writeLastFwdProb(useIBD);
+    this->dEploidIO_->finalProp.clear();
     this->dEploidIO_->finalProp = this->mcmcSample_->proportion.back();
 
     for (size_t atSiteI = 0; atSiteI < nLoci(); atSiteI++ ) {
@@ -297,8 +314,8 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
         this->mcmcSample_->siteOfOneMissCopyOne[atSiteI] /= (double)this->maxIteration_;
     }
 
-    if ( notInR & (this->dEploidIO_->useLasso() == false) ) {
-        this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, useIBD);
+    if ( notInR & ((jobbrief == "lassoK") | (jobbrief == "ibd") | (jobbrief == "classic")) ) { // notInPython
+        this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, jobbrief, useIBD);
     }
 
     if ( useIBD == true ) {
@@ -309,13 +326,15 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
         //this->dEploidIO_->ibdProbsHeader = getIBDprobsHeader();
         //this->dEploidIO_->ibdProbsIntegrated = getIBDprobsIntegrated(reshapedProbs);
         //this->dEploidIO_->writeIBDpostProb(reshapedProbs, this->dEploidIO_->ibdProbsHeader);
-        clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
-        this->dEploidIO_->initialProp = averageProportion(this->mcmcSample_->proportion);
+        //clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
+        this->dEploidIO_->initialProp = averageProportion();
         this->dEploidIO_->setInitialPropWasGiven(true);
         this->dEploidIO_->setDoUpdateProp(false);
-        this->dEploidIO_->initialHap = this->mcmcSample_->hap;
-        this->dEploidIO_->setInitialHapWasGiven(true);
+        //this->dEploidIO_->initialHap = this->mcmcSample_->hap;
+        //this->dEploidIO_->setInitialHapWasGiven(true);
     }
+    clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
+
     this->computeDiagnostics();
     dout << "###########################################"<< endl;
     dout << "#            MCMC RUN finished            #"<< endl;
@@ -367,17 +386,17 @@ void McmcMachinery::computeDiagnostics() {
     this->dEploidIO_->setdicByTheta(dicByTheta);
     //DIC.WSAF.bar = -2 * sum(thetallk)
     //return (  mean(-2*tmpllk) + (mean(-2*tmpllk) - DIC.WSAF.bar) ) # D_bar + pD, where pD = D_bar - D_theta, and D_bar = mean(D_theta)
-
 }
 
-vector <double> McmcMachinery::averageProportion(vector < vector <double> > &proportion ) {
-    assert(proportion.size()>0);
+
+vector <double> McmcMachinery::averageProportion() {
+    assert(this->mcmcSample_->proportion.size()>0);
     vector <double> ret(this->kStrain());
     for ( size_t i = 0; i < kStrain(); i++ ) {
-        for (vector <double> p : proportion) {
+        for (vector <double> p : this->mcmcSample_->proportion) {
             ret[i] += p[i];
         }
-        ret[i] /= (1.0*proportion.size());
+        ret[i] /= (1.0*this->mcmcSample_->proportion.size());
     }
     (void)normalizeBySum(ret);
     return ret;
@@ -389,14 +408,28 @@ void McmcMachinery::sampleMcmcEvent( bool useIBD ) {
     if ( useIBD == true ) {
         ibdSampleMcmcEventStep();
         assert(doutProp());
-    } else {
+    } else if (this->jobbrief == "classic"){
         this->eventInt_ = this->mcmcEventRg_->sampleInt(3);
         if ( (this->eventInt_ == 0) && (this->dEploidIO_->doUpdateProp() == true) ) {
             this->updateProportion();
         } else if ( (this->eventInt_ == 1) && (this->dEploidIO_->doUpdateSingle() == true) ) {
-            this->updateSingleHap();
+            this->updateSingleHap(this->panel_);
         } else if ( (this->eventInt_ == 2) && (this->dEploidIO_->doUpdatePair() == true) ) {
-            this->updatePairHaps();
+            this->updatePairHaps(this->panel_);
+        }
+    }else {  // Best practice
+        this->eventInt_ = this->mcmcEventRg_->sampleInt(4);
+        if ( (this->eventInt_ == 0) && (this->dEploidIO_->doUpdateProp() == true) ) {
+            this->updateProportion();
+        } else if ( (this->eventInt_ == 1) && (this->dEploidIO_->doUpdateSingle() == true) ) {
+            this->updateSingleHap(this->panel_);
+        } else if ( (this->eventInt_ == 2) && (this->dEploidIO_->doUpdatePair() == true) ) {
+            this->updatePairHaps(this->panel_);
+        } else if ( (this->eventInt_ == 3) && (this->dEploidIO_->doUpdateSingle() == true) ) {
+            this->updateSingleHap(NULL);
+            this->updateSingleHap(NULL);
+            this->updateSingleHap(NULL);
+            this->updateSingleHap(NULL);
         }
     }
 
@@ -438,11 +471,11 @@ void McmcMachinery::ibdSampleMcmcEventStep() {
     this->ibdUpdateHaplotypesFromPrior();
     vector <double> llkAtAllSites = computeLlkAtAllSites();
     ////#Given current haplotypes, sample titres 1 by 1 using MH
-    this->ibdUpdateProportionGivenHap(llkAtAllSites);
+    vector <double> updatedllkAtAllSites = this->ibdUpdateProportionGivenHap(llkAtAllSites);
     // Compute new theta after all proportion and haplotypes are up to date.
     this->ibdPath.computeAndUpdateTheta();
 
-    this->currentLLks_ = llkAtAllSites;
+    this->currentLLks_ = updatedllkAtAllSites;
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
@@ -456,7 +489,9 @@ void McmcMachinery::ibdUpdateHaplotypesFromPrior() {
 }
 
 
-void McmcMachinery::ibdUpdateProportionGivenHap(vector <double> &llkAtAllSites) {
+vector <double> McmcMachinery::ibdUpdateProportionGivenHap(
+                        const vector <double> &llkAtAllSites) {
+    vector <double> ret(llkAtAllSites.begin(), llkAtAllSites.end());
     for (size_t i = 0; i < kStrain(); i++) {
         double v0 = this->currentTitre_[i];
         vector <double> oldProp = this->currentProp_;
@@ -465,16 +500,19 @@ void McmcMachinery::ibdUpdateProportionGivenHap(vector <double> &llkAtAllSites) 
         this->currentProp_ = this->titre2prop(this->currentTitre_);
         vector <double> vv = computeLlkAtAllSites();
         double rr = normal_pdf( this->currentTitre_[i], 0, 1) /
-                    normal_pdf( v0, 0, 1) * exp( sumOfVec(vv) - sumOfVec(llkAtAllSites));
+                    normal_pdf( v0, 0, 1) * exp( sumOfVec(vv) - sumOfVec(ret));
 
         if ( this->propRg_->sample() < rr) {
-            llkAtAllSites = vv;
+            //llkAtAllSites = vv;
+            ret.clear();
+            ret = vv;
             acceptUpdate++;
         } else {
             this->currentTitre_[i] = v0;
             this->currentProp_ = oldProp;
         }
     }
+    return ret;
 }
 
 
@@ -492,9 +530,7 @@ vector <double> McmcMachinery::computeLlkAtAllSites(double err) {
 }
 
 
-
-
-vector <double> McmcMachinery::calcExpectedWsaf( vector <double> &proportion ) {
+vector <double> McmcMachinery::calcExpectedWsaf(const vector <double> &proportion ) {
     //assert ( sumOfVec(proportion) == 1.0); // this fails ...
     vector <double> expectedWsaf (this->nLoci_, 0.0);
     for ( size_t i = 0; i < currentHap_.size(); i++ ) {
@@ -565,7 +601,7 @@ void McmcMachinery::updateProportion() {
 }
 
 
-double McmcMachinery::deltaLLKs ( vector <double> &newLLKs ) {
+double McmcMachinery::deltaLLKs (const vector <double> &newLLKs ) {
     vector <double> tmpdiff = vecDiff ( newLLKs,  this->currentLLks_);
     return sumOfVec(tmpdiff);
 }
@@ -573,15 +609,30 @@ double McmcMachinery::deltaLLKs ( vector <double> &newLLKs ) {
 
 vector <double> McmcMachinery::calcTmpTitre() {
     vector <double> tmpTitre;
-    for ( size_t k = 0; k < this->kStrain_; k++) {
-        double dt = this->deltaXnormalVariable();
-        tmpTitre.push_back( currentTitre_[k] + dt );
+
+    //size_t tmpEvet = this->mcmcEventRg_->sampleInt(2);
+/*
+    if (tmpEvet == 0){
+*/
+        for ( size_t k = 0; k < this->kStrain_; k++) {
+            double dt = this->deltaXnormalVariable();
+            tmpTitre.push_back( currentTitre_[k] + dt );
+        }
+/*
+    } else {
+        double dt;
+        for ( size_t k = 0; k < this->kStrain_-1; k++) {
+            dt = this->deltaXnormalVariable();
+            tmpTitre.push_back( currentTitre_[k] + dt );
+        }
+        tmpTitre.push_back( currentTitre_.back() + dt );
     }
+*/
     return tmpTitre;
 }
 
 
-void McmcMachinery::updateSingleHap() {
+void McmcMachinery::updateSingleHap(Panel *useThisPanel) {
     dout << " Update Single Hap "<<endl;
     this->findUpdatingStrainSingle();
 
@@ -599,7 +650,7 @@ void McmcMachinery::updateSingleHap() {
                                   this->currentExpectedWsaf_,
                                   this->currentProp_, this->currentHap_, this->hapRg_,
                                   start, length,
-                                  this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
+                                  useThisPanel, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
                                   this->strainIndex_);
 
         if ( this->dEploidIO_->doAllowInbreeding() == true ) {
@@ -626,7 +677,7 @@ void McmcMachinery::updateSingleHap() {
 }
 
 
-void McmcMachinery::updatePairHaps() {
+void McmcMachinery::updatePairHaps(Panel *useThisPanel) {
     if ( this->kStrain() == 1 ) {
         return;
     }
@@ -645,7 +696,7 @@ void McmcMachinery::updatePairHaps() {
                                 this->currentExpectedWsaf_,
                                 this->currentProp_, this->currentHap_, this->hapRg_,
                                 start, length,
-                                this->panel_, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
+                                useThisPanel, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
                                 this->dEploidIO_->forbidCopyFromSame(),
                                 this->strainIndex1_,
                                 this->strainIndex2_);
@@ -669,7 +720,6 @@ void McmcMachinery::updatePairHaps() {
             this->mcmcSample_->currentsiteOfTwoMissCopyOne[start+siteI] = updating.siteOfTwoMissCopyOne[siteI];
             this->mcmcSample_->currentsiteOfTwoSwitchTwo[start+siteI] = updating.siteOfTwoSwitchTwo[siteI];
             this->mcmcSample_->currentsiteOfTwoMissCopyTwo[start+siteI] = updating.siteOfTwoMissCopyTwo[siteI];
-
         }
     }
 

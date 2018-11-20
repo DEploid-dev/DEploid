@@ -5,11 +5,13 @@ wget --no-check-certificate https://github.com/mcveanlab/DEploid/archive/${previ
 tar -xf ${previousVersionTag}.tar.gz
 cd DEploid-${previousVersion}; ./bootstrap; make; cd ..
 
-sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel data/testData/labStrains.test.panel.txt -seed 1 -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -vcfOut"
+jobBrief="classic"
+
+sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -panel data/testData/labStrains.test.panel.txt -seed 1 -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -vcfOut -k 2 -sigma 2"
 ./dEploid ${sameFlags} -o current
 ./DEploid-${previousVersion}/dEploid ${sameFlags} -o previous
 
-diff current.prop previous.prop
+diff current.${jobBrief}.prop previous.prop
 if [ $? -ne 0 ]; then
   echo ""
   echo "Proportion unequal"
@@ -20,11 +22,11 @@ fi
 echo ${PWD}
 
 
-sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -noPanel -ibd -seed 1 -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -vcfOut -k 2"
+sameFlags="-exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -noPanel -ibd -seed 1 -ref data/testData/PG0390-C.test.ref -alt data/testData/PG0390-C.test.alt -vcfOut -k 2 -sigma 2 -ibdSigma 0.1"
 ./dEploid ${sameFlags} -o current
 ./DEploid-${previousVersion}/dEploid ${sameFlags} -o previous
 
-diff current.prop previous.prop
+diff current.${jobBrief}.prop previous.prop
 if [ $? -ne 0 ]; then
   echo ""
   echo "Proportion unequal"

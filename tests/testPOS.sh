@@ -3,8 +3,11 @@
 -alt data/testData/PG0390-C.test.alt \
 -plaf data/testData/labStrains.test.PLAF.txt \
 -panel data/testData/labStrains.test.panel.txt -o tmp -exportPostProb -k 2
-cut -f 1 tmp.hap | tail -n+2 > tmpCHROM
-cut -f 2 tmp.hap | tail -n+2 > tmpPOS
+
+jobBrief="classic"
+
+cut -f 1 tmp.${jobBrief}.hap | tail -n+2 > tmpCHROM
+cut -f 2 tmp.${jobBrief}.hap | tail -n+2 > tmpPOS
 
 
 cut -f 1 data/testData/PG0390-C.test.ref  | tail -n+2 > trueCHROM

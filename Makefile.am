@@ -22,6 +22,7 @@ common_LDADD = -lz
 common_src = src/random/fastfunc.cpp \
 			 src/random/random_generator.cpp \
 			 src/random/mersenne_twister.cpp \
+			 src/chooseK.cpp \
 			 src/ibd.cpp \
 			 src/mcmc.cpp \
 			 src/panel.cpp \
@@ -76,7 +77,7 @@ io_unit_tests_LDADD    = -lcppunit -ldl $(common_LDADD)
 
 current_unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_runner.cpp \
-					 tests/unittest/test_vcfReader.cpp
+					 tests/unittest/test_mcmc.cpp
 
 current_unit_tests_CXXFLAGS = $(common_flags) -DNDEBUG -DUNITTEST -Wno-write-strings --coverage
 current_unit_tests_LDADD    = -lcppunit -ldl $(common_LDADD)

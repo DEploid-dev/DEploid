@@ -151,6 +151,7 @@ class VcfReader : public VariantIndex {
  private:
     vector <VariantLine> variants;
     vector <VariantLine> keptVariants;
+    vector <size_t> legitVqslodAt;
     string fileName_;
     ifstream inFile;
     igzstream inFileGz;
@@ -168,6 +169,8 @@ class VcfReader : public VariantIndex {
     void readVariants();
     void readHeader();
     void checkFeilds();
+    void findLegitSnpsGivenVQSLOD(double vqslodThreshold);
+    void findLegitSnpsGivenVQSLODHalf(double vqslodThreshold);
 
     void getChromList();
     void removeMarkers();

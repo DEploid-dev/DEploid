@@ -73,12 +73,15 @@ class DEploidIO{
     bool useIBD() const { return this->useIBD_;}
     bool useIbdOnly() const { return this->useIbdOnly_;}
     bool useLasso() const { return this->useLasso_;}
+    bool useBestPractice() const { return this->useBestPractice_;}
     void paintIBD();
     double ibdLLK_;
     void getIBDprobsIntegrated(vector < vector <double> > &prob);
     // Lasso related
     void dEploidLasso();
+    void dEploidLassoTrimfirst();
     vector <double> finalProp;
+    void dEploidLassoFullPanel();
 
     // Log
     void wrapUp();
@@ -103,7 +106,7 @@ class DEploidIO{
     vector < vector <double> > lassoRefCount;
     vector < vector <double> > lassoAltCount;
 
-    void writeHap (vector < vector <double> > &hap, bool useIBD = false);
+    void writeHap (vector < vector <double> > &hap, string jobbrief);
     bool doPrintLassoPanel_;
 
     // Trimming related
@@ -116,6 +119,12 @@ class DEploidIO{
     vector <double> initialProp;
     void setDoUpdateProp ( const bool setTo ) { this->doUpdateProp_ = setTo; }
     void setInitialPropWasGiven(const bool setTo) {this->initialPropWasGiven_ = setTo; }
+
+    void setKstrain ( const size_t setTo ) { this->kStrain_ = setTo;}
+    bool usePanel() const { return usePanel_; }
+    vector <string> chrom_;
+    size_t kStrain() const { return this->kStrain_;}
+    size_t lassoMaxNumPanel_;
 
   private:
     void core();
@@ -156,11 +165,13 @@ class DEploidIO{
     bool doAllowInbreeding_;
     bool doLsPainting_;
     bool doIbdPainting_;
+
     bool useIBD_;
     bool useIbdOnly_;
     bool useLasso_;
+    bool useBestPractice_;
 
-    vector <string> chrom_;
+    double vqslod_;
     vector <double> obsWsaf_;
     vector <size_t> wsafGt0At_;
     size_t nLoci_;
@@ -229,10 +240,10 @@ class DEploidIO{
     string dEploidGitVersion_;
     string lassoGitVersion_;
     string compileTime_;
-    string strExportLLK;
-    string strExportHap;
+    //string strExportLLK;
+    //string strExportHap;
     string strExportVcf;
-    string strExportProp;
+    //string strExportProp;
     string strExportLog;
     string strExportRecombProb;
 
@@ -321,15 +332,22 @@ class DEploidIO{
     void setUseIBD( const bool setTo) { this->useIBD_ = setTo; }
     void setUseIbdOnly(const bool setTo) { this->useIbdOnly_ = setTo;}
     void setUseLasso( const bool setTo) { this->useLasso_ = setTo; }
+    void setUseBestPractice ( const bool setTo) {this->useBestPractice_ = setTo;}
 
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
 
     bool pleaseCheckInitialP() const { return pleaseCheckInitialP_; }
     void setPleaseCheckInitialP(const bool setTo) {this->pleaseCheckInitialP_ = setTo; }
 
+    size_t lassoMaxNumPanel() const { return this->lassoMaxNumPanel_; }
+    void setLassoMaxNumPanel(const size_t setTo) {this->lassoMaxNumPanel_ = setTo; }
+
     bool initialHapWasGiven() const { return initialHapWasGiven_; }
 
     bool randomSeedWasGiven() const {return this->randomSeedWasGiven_; }
+
+    void setVqslod ( const double setTo ) { this->vqslod_ = setTo; }
+    double vqslod() const { return this->vqslod_; }
 
     // log and export resutls
     void writeRecombProb ( Panel * panel );
@@ -337,9 +355,9 @@ class DEploidIO{
     vector <string> ibdProbsHeader;
     vector <double> ibdProbsIntegrated;
 
-    void writeLLK (McmcSample * mcmcSample, bool useIBD = false);
-    void writeProp (McmcSample * mcmcSample, bool useIBD = false);
-    void writeVcf (McmcSample * mcmcSample);
+    void writeLLK (McmcSample * mcmcSample, string jobbrief);
+    void writeProp (McmcSample * mcmcSample, string jobbrief);
+    void writeVcf (McmcSample * mcmcSample, string jobbrief);
     void writeLastSingleFwdProb( vector < vector <double> >& probabilities, size_t chromIndex, size_t strainIndex, bool useIBD );
     void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
     void writeLog (ostream * writeTo );
@@ -363,11 +381,10 @@ class DEploidIO{
     vector <double> finalSiteOfOneMissCopyOne;
 
 
-    void writeMcmcRelated (McmcSample * mcmcSample, bool useIBD = false);
+    void writeMcmcRelated (McmcSample * mcmcSample, string jobbrief, bool useIBD = false);
     void readPanel();
 
     // Panel related
-    bool usePanel() const { return usePanel_; }
     string panelFileName_;
     double parameterG_;
     void setParameterG ( const double setTo ) { this->parameterG_ = setTo; }
@@ -381,8 +398,6 @@ class DEploidIO{
 
     void setNLoci ( const size_t setTo ) { this->nLoci_ = setTo;}
     size_t nLoci() const { return this->nLoci_; }
-    void setKstrain ( const size_t setTo ) { this->kStrain_ = setTo;}
-    size_t kStrain() const { return this->kStrain_;}
     void setKStrainWasManuallySet ( const size_t setTo ) { this->kStrainWasManuallySet_ = setTo; }
     bool kStrainWasSetByHap() const { return this->kStrainWasSetByHap_; }
     void setKStrainWasSetByHap ( const size_t setTo ) { this->kStrainWasSetByHap_ = setTo; }
@@ -417,7 +432,10 @@ class DEploidIO{
     vector < vector <double> > lassoSubsetPanel(size_t segmentStartIndex, size_t nLoci);
     void writePanel(Panel *panel, size_t chromi, vector <string> hdr);
 
-
+    void trimVec(vector <double> &vec, vector <size_t> &idx);
+    void trimming(vector <size_t> & trimmingCriteria);
+    void trimmingHalf(vector <size_t> & trimmingCriteria);
+    void computeObsWsaf();
 };
 
 #endif

@@ -83,7 +83,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->usePanel(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->precision_, (size_t)8);
         CPPUNIT_ASSERT(dEploidIOptr->prefix_ == "pf3k-dEploid");
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->kStrain_, (size_t)5);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->kStrain_, (size_t)4);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->nMcmcSample_, (size_t)800);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdateProp(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdatePair(), true);

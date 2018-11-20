@@ -1,7 +1,6 @@
 src/dEploidIO.cpp
 src/dEploidIO.hpp
 src/mcmc.cpp
-src/mcmc.hpp
 src/panel.cpp
 src/panel.hpp
 src/updateHap.cpp

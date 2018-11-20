@@ -60,15 +60,12 @@ DEploidIO::~DEploidIO() {
     if (this->isCopied()){
         return;
     }
-
     if ( this->excludedMarkers != NULL ) {
         delete this->excludedMarkers;
     }
-
     if ( this->vcfReaderPtr_ != NULL ) {
         delete this->vcfReaderPtr_;
     }
-
     if ( this->panel != NULL ) {
         delete panel;
     }
@@ -115,7 +112,7 @@ void DEploidIO::init() {
     this->setKStrainWasManuallySet(false);
     this->setKStrainWasSetByHap(false);
     this->setKStrainWasSetByProp(false);
-    this->setKstrain(5);
+    this->setKstrain(4);  // From DEploid-Lasso, set default K to 4.
     this->nMcmcSample_ = 800;
     this->setDoUpdateProp( true );
     this->setDoUpdatePair( true );
@@ -126,6 +123,7 @@ void DEploidIO::init() {
     this->setUseIBD( false );
     this->setUseIbdOnly(false);
     this->setUseLasso( false );
+    this->setUseBestPractice(false);
     this->setDoExportSwitchMissCopy ( true );
     this->setDoAllowInbreeding( false );
     this->mcmcBurn_ = 0.5;
@@ -143,7 +141,8 @@ void DEploidIO::init() {
     this->vcfReaderPtr_ = NULL;
     this->setDoExportVcf(false);
     this->setDoComputeLLK(false);
-
+    this->setVqslod(8.0);
+    this->setLassoMaxNumPanel(100);
     #ifdef COMPILEDATE
         compileTime_ = COMPILEDATE;
     #else
@@ -218,7 +217,6 @@ void DEploidIO::finalize() {
         if ( this->excludeSites() ) {
             this->vcfReaderPtr_->findAndKeepMarkers (excludedMarkers);
         }
-
         this->vcfReaderPtr_->finalize(); // Finalize after remove variantlines
         this->refCount_ = this->vcfReaderPtr_->refCount;
         this->altCount_ = this->vcfReaderPtr_->altCount;
@@ -280,25 +278,22 @@ void DEploidIO::finalize() {
 
 
 void DEploidIO::removeFilesWithSameName() {
-    strExportProp = this->prefix_ + ".prop";
-    strExportLLK = this->prefix_ + ".llk";
-    strExportHap = this->prefix_ + ".hap";
+    //strExportProp = this->prefix_ + ".prop";
+    //strExportLLK = this->prefix_ + ".llk";
+    //strExportHap = this->prefix_ + ".hap";
 
-    if (this->useIbdOnly()) {
-        strIbdExportProp = this->prefix_ + ".prop";
-        strIbdExportLLK = this->prefix_ + ".llk";
-        strIbdExportHap = this->prefix_ + ".hap";
-    } else {
-        strIbdExportProp = this->prefix_ + ".ibd.prop";
-        strIbdExportLLK = this->prefix_ + ".ibd.llk";
-        strIbdExportHap = this->prefix_ + ".ibd.hap";
+    //if (this->useIbdOnly()) {
+        //strIbdExportProp = this->prefix_ + ".prop";
+        //strIbdExportLLK = this->prefix_ + ".llk";
+        //strIbdExportHap = this->prefix_ + ".hap";
+    //} else {
+        //strIbdExportProp = this->prefix_ + ".ibd.prop";
+        //strIbdExportLLK = this->prefix_ + ".ibd.llk";
+        //strIbdExportHap = this->prefix_ + ".ibd.hap";
         strIbdExportProbs = this->prefix_ + ".ibd.probs";
-    }
+    //}
 
-    strExportVcf = this->prefix_ + ".vcf";
-    if ( compressVcf() ) {
-        strExportVcf += ".gz";
-    }
+
     strExportLog =  this->prefix_ + ((this->doLsPainting()) ? ".painting":"") + ".log";
     strExportRecombProb = this->prefix_ + ".recomb";
 
@@ -306,14 +301,14 @@ void DEploidIO::removeFilesWithSameName() {
 
     if ( this->doLsPainting() == false ) {
         if (this->useIBD()) {
-            remove(strIbdExportProp.c_str());
-            remove(strIbdExportLLK.c_str());
-            remove(strIbdExportHap.c_str());
+            //remove(strIbdExportProp.c_str());
+            //remove(strIbdExportLLK.c_str());
+            //remove(strIbdExportHap.c_str());
         }
-        remove(strExportLLK.c_str());
-        remove(strExportHap.c_str());
-        remove(strExportVcf.c_str());
-        remove(strExportProp.c_str());
+        //remove(strExportLLK.c_str());
+        //remove(strExportHap.c_str());
+        //remove(strExportVcf.c_str());
+        //remove(strExportProp.c_str());
         remove(strExportExtra.c_str());
         remove(strIbdExportProbs.c_str());
     }
@@ -418,10 +413,14 @@ void DEploidIO::parse () {
             this->scalingFactor_ = readNextInput<double>() ;
         } else if ( *argv_i == "-G" ) {
             this->setParameterG(readNextInput<double>());
+        } else if ( *argv_i == "-vqslod" ) {
+            this->setVqslod(readNextInput<double>());
         } else if ( *argv_i == "-sigma" ) {
             this->setParameterSigma(readNextInput<double>());
         } else if ( *argv_i == "-ibdSigma" ) {
             this->setIBDSigma(readNextInput<double>());
+        } else if ( *argv_i == "-lassoMaxPanel" ) {
+            this->setLassoMaxNumPanel(readNextInput<size_t>());
         } else if ( *argv_i == "-recomb" ) {
             this->constRecombProb_ = readNextInput<double>();
             this->useConstRecomb_ = true;
@@ -463,6 +462,8 @@ void DEploidIO::parse () {
             this->readInitialHaps();
         } else if ( *argv_i == "-ibd" ) {
             this->setUseIBD(true);
+        } else if (*argv_i == "-best") {
+            this->setUseBestPractice(true);
         } else if ( *argv_i == "-ibdonly" ) {
             this->setUseIBD(true);
             this->setUseIbdOnly(true);
@@ -581,8 +582,9 @@ void DEploidIO::printVersion(std::ostream& out) {
 
 void DEploidIO::printHelp(std::ostream& out) {
     out << endl
-        << "dEploid " << VERSION
-        << endl
+        << "dEploid " << VERSION << endl
+        << endl;
+    out << "Contact: Joe Zhu <joe.zhu@bdi.ox.ac.uk>" << endl
         << endl;
     out << "Usage:"
         << endl;
@@ -606,11 +608,13 @@ void DEploidIO::printHelp(std::ostream& out) {
     out << setw(20) << "-forbidUpdatePair"   << "  --  " << "Forbid MCMC moves to update pair haplotypes."<<endl;
     out << setw(20) << "-initialP FLT ..."   << "  --  " << "Initialize proportions."<<endl;
     out << endl;
+    out << "Note: Please `man docs/_build/man/dEploid.1' for the manual." << endl;
+    out << endl;
     out << "Examples:" << endl;
     out << endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel"<< endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanelExclude -noPanel"<< endl;
-    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CPanelExclude -panel data/testData/labStrains.test.panel.txt" << endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CPanelExclude -panel data/testData/labStrains.test.panel.txt -ibd" << endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CPanelExclude -panel data/testData/labStrains.test.panel.txt -painting PG0390-CPanelExclude.hap" << endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel -k 2 -ibd -nSample 250 -rate 8 -burn 0.67" <<endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -ibdPainting -initialP 0.2 0.8" <<endl;
@@ -827,12 +831,14 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
                                    cpFrom.position_.end());
     this->indexOfChromStarts_ = vector <size_t> (cpFrom.indexOfChromStarts_.begin(),
                                    cpFrom.indexOfChromStarts_.end());
-    this->strExportProp = cpFrom.strExportProp;
-    this->strExportLLK = cpFrom.strExportLLK;
-    this->strExportHap = cpFrom.strExportHap;
-    this->strIbdExportProp = cpFrom.strIbdExportProp;
-    this->strIbdExportLLK = cpFrom.strIbdExportLLK;
-    this->strIbdExportHap = cpFrom.strIbdExportHap;
+    this->setVqslod(cpFrom.vqslod());
+    this->setLassoMaxNumPanel(cpFrom.lassoMaxNumPanel());
+    //this->strExportProp = cpFrom.strExportProp;
+    //this->strExportLLK = cpFrom.strExportLLK;
+    //this->strExportHap = cpFrom.strExportHap;
+    //this->strIbdExportProp = cpFrom.strIbdExportProp;
+    //this->strIbdExportLLK = cpFrom.strIbdExportLLK;
+    //this->strIbdExportHap = cpFrom.strIbdExportHap;
 }
 
 
@@ -913,17 +919,31 @@ void DEploidIO::dEploidLasso() {
         vector <double> wsaf = lassoComputeObsWsaf(start, length);
         vector < vector <double> > tmpPanel = lassoSubsetPanel(start, length);
         DEploidLASSO dummy(tmpPanel, wsaf, 250);
+
         vector <string> newHeader;
-        for (size_t i = 0; i < dummy.choiceIdx.size(); i++) {
+        for (size_t i = 0; i < min(dummy.choiceIdx.size(), lassoMaxNumPanel()); i++) {
             newHeader.push_back(panel->header_[dummy.choiceIdx[i]]);
         }
+newHeader.push_back("3d7");
+
+        vector < vector <double> > newPanel;
+        for (size_t i = 0; i < dummy.reducedPanel.size(); i++) {
+            vector <double> tmpRow;
+            for (size_t j = 0; j < min(dummy.choiceIdx.size(), lassoMaxNumPanel()); j++) {
+                tmpRow.push_back(dummy.reducedPanel[i][j]);
+            }
+tmpRow.push_back(static_cast<int>(0));
+            newPanel.push_back(tmpRow);
+        }
+
         Panel * tmp = new Panel(vecFromTo(this->panel->pRec_, start, end),
                             vecFromTo(this->panel->pRecEachHap_, start, end),
                             vecFromTo(this->panel->pNoRec_, start, end),
                             vecFromTo(this->panel->pRecRec_, start, end),
                             vecFromTo(this->panel->pRecNoRec_, start, end),
                             vecFromTo(this->panel->pNoRecNoRec_, start, end),
-                            dummy.reducedPanel);
+                            newPanel,
+                            this->panel->header_);
         lassoPanels.push_back(tmp);
         lassoPlafs.push_back(vecFromTo(plaf_, start, end));
         lassoRefCount.push_back(vecFromTo(refCount_, start, end));
@@ -932,9 +952,205 @@ void DEploidIO::dEploidLasso() {
             this->writePanel(tmp, chromi, newHeader);
         }
     }
+    this->finalProp.clear();
     for ( auto const& value: this->initialProp ) {
         this->finalProp.push_back(value);
     }
+}
+
+
+void DEploidIO::trimVec(vector <double> &vec, vector <size_t> &idx) {
+    vector <double> ret;
+    for (auto const& value : idx){
+        ret.push_back(vec[value]);
+    }
+    //return ret;
+    vec.clear();
+    for (auto const& value : ret){
+        vec.push_back(value);
+    }
+}
+
+
+void DEploidIO::trimming(vector <size_t> & trimmingCriteria) {
+    this->trimVec(this->refCount_, trimmingCriteria);
+    this->trimVec(this->altCount_, trimmingCriteria);
+    this->trimVec(this->plaf_, trimmingCriteria);
+
+    this->setNLoci(this->plaf_.size());
+
+    vector <string> oldChrom = vector <string> (chrom_.begin(), chrom_.end());
+    this->chrom_.clear();
+
+    vector < vector < int > > oldposition = this->position_;
+    this->position_.clear();
+
+    for (size_t chromI = 0; chromI < oldChrom.size(); chromI++) {
+        size_t hapIndex = indexOfChromStarts_[chromI];
+        vector <int> newTrimmedPos;
+        for (size_t posI = 0; posI < oldposition[chromI].size(); posI++) {
+            if (std::find(trimmingCriteria.begin(),trimmingCriteria.end(), hapIndex)
+                    != trimmingCriteria.end()){
+                if (newTrimmedPos.size() == 0) {
+                    this->chrom_.push_back(oldChrom[chromI]);
+                }
+                newTrimmedPos.push_back(oldposition[chromI][posI]);
+            }
+
+            hapIndex++;
+        }
+        this->position_.push_back(newTrimmedPos);
+    }
+
+    this->indexOfChromStarts_.clear();
+    assert(indexOfChromStarts_.size() == 0);
+    this->indexOfChromStarts_.push_back((size_t)0);
+    for (size_t tmpChrom = 0;
+            indexOfChromStarts_.size() < this->chrom_.size(); tmpChrom++ ) {
+        indexOfChromStarts_.push_back(
+            indexOfChromStarts_.back()+this->position_[tmpChrom].size());
+    }
+    assert(indexOfChromStarts_.size() == this->chrom_.size());
+}
+
+
+
+void DEploidIO::trimmingHalf(vector <size_t> & trimmingCriteria) {
+    this->trimVec(this->refCount_, trimmingCriteria);
+    this->trimVec(this->altCount_, trimmingCriteria);
+    this->trimVec(this->plaf_, trimmingCriteria);
+
+    this->setNLoci(this->plaf_.size());
+
+    vector <string> oldChrom = vector <string> (chrom_.begin(), chrom_.end());
+    this->chrom_.clear();
+
+    vector < vector < int > > oldposition = this->position_;
+    this->position_.clear();
+
+    for (size_t chromI = 0; chromI < oldChrom.size(); chromI++) {
+        if (chromI > 10) {
+        //if (chromI%2 == 0) {
+            size_t hapIndex = indexOfChromStarts_[chromI];
+            vector <int> newTrimmedPos;
+            for (size_t posI = 0; posI < oldposition[chromI].size(); posI++) {
+                if (std::find(trimmingCriteria.begin(),trimmingCriteria.end(), hapIndex)
+                        != trimmingCriteria.end()){
+                    if (newTrimmedPos.size() == 0) {
+                        this->chrom_.push_back(oldChrom[chromI]);
+                    }
+                    newTrimmedPos.push_back(oldposition[chromI][posI]);
+                }
+
+                hapIndex++;
+            }
+            this->position_.push_back(newTrimmedPos);
+        }
+    }
+
+    this->indexOfChromStarts_.clear();
+    assert(indexOfChromStarts_.size() == 0);
+    this->indexOfChromStarts_.push_back((size_t)0);
+    for (size_t tmpChrom = 0;
+            indexOfChromStarts_.size() < this->chrom_.size(); tmpChrom++ ) {
+        indexOfChromStarts_.push_back(
+            indexOfChromStarts_.back()+this->position_[tmpChrom].size());
+    }
+    assert(indexOfChromStarts_.size() == this->chrom_.size());
+}
+
+
+void DEploidIO::computeObsWsaf() {
+    assert(this->obsWsaf_.size() == 0);
+    for ( size_t i = 0; i < this->nLoci(); i++) {
+        this->obsWsaf_.push_back(this->altCount_[i] /
+            (this->refCount_[i] + this->altCount_[i] + 0.00000000000001));
+    }
+    assert(this->obsWsaf_.size() == this->nLoci());
+}
+
+
+void DEploidIO::dEploidLassoTrimfirst() {
+    this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
+    this->trimming(this->vcfReaderPtr_->legitVqslodAt);
+
+    panel = new Panel (*panel);
+    panel->computeRecombProbs(this->averageCentimorganDistance(), this->parameterG(), true, 0.0000001, this->forbidCopyFromSame());
+    panel->findAndKeepMarkersGivenIndex(this->vcfReaderPtr_->legitVqslodAt);
+    this->dEploidLasso();
+    this->setIsCopied(false);
+    this->excludedMarkers = NULL;
+    this->vcfReaderPtr_ = NULL;
+}
+
+
+
+void DEploidIO::dEploidLassoFullPanel() {
+    // Filter SNPs first, restrict to wsaf > 0 don't work ...
+    this->vcfReaderPtr_->findLegitSnpsGivenVQSLODHalf(this->vqslod());
+    //this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
+    //this->vcfReaderPtr_->findLegitSnpsGivenVQSLODandWsfGt0(this->vqslod());
+
+    //this->trimming(this->vcfReaderPtr_->legitVqslodAt);
+    this->trimmingHalf(this->vcfReaderPtr_->legitVqslodAt);
+    this->computeObsWsaf();
+
+    Panel tmpPanel(*panel);
+    tmpPanel.computeRecombProbs(this->averageCentimorganDistance(), this->parameterG(), true, 0.0000001, this->forbidCopyFromSame());
+    //tmpPanel.findAndKeepMarkersGivenIndex(this->vcfReaderPtr_->legitVqslodAt);
+    tmpPanel.findAndKeepMarkersGivenIndexHalf(this->vcfReaderPtr_->legitVqslodAt);
+    DEploidLASSO dummy(tmpPanel.content_, this->obsWsaf_, 250);
+
+    for (size_t i = 0; i < dummy.choiceIdx.size(); i++) {
+        cout << i << " " << dummy.devRatio[i]<<endl;
+    }
+    //size_t maxNumPanel = 10;
+    // Use the first 10 strains in the panel
+    vector <string> newHeader;
+    for (size_t i = 0; i < min(dummy.choiceIdx.size(), lassoMaxNumPanel()); i++) {
+        newHeader.push_back(panel->header_[dummy.choiceIdx[i]]);
+    }
+newHeader.push_back("3d7");
+//cout <<newHeader.size()<<endl;
+
+    vector < vector <double> > newPanel;
+    for (size_t i = 0; i < dummy.reducedPanel.size(); i++) {
+        vector <double> tmpRow;
+        for (size_t j = 0; j < min(dummy.choiceIdx.size(), lassoMaxNumPanel()); j++) {
+            tmpRow.push_back(dummy.reducedPanel[i][j]);
+        }
+tmpRow.push_back(static_cast<int>(0));
+        newPanel.push_back(tmpRow);
+    }
+
+    panel = new Panel(tmpPanel.pRec_,
+                      tmpPanel.pRecEachHap_,
+                      tmpPanel.pNoRec_,
+                      tmpPanel.pRecRec_,
+                      tmpPanel.pRecNoRec_,
+                      tmpPanel.pNoRecNoRec_,
+                      newPanel,
+                      newHeader);
+
+    this->setIsCopied(false);
+    this->excludedMarkers = NULL;
+    this->vcfReaderPtr_ = NULL;
+}
+
+
+void DEploidIO::ibdTrimming() {
+    // Filter SNPs first
+    //cout << "here" <<endl;
+    this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
+    //cout << "stop here" <<endl;
+    this->trimming(this->vcfReaderPtr_->legitVqslodAt);
+    panel = new Panel(*panel);
+    this->panel->findAndKeepMarkersGivenIndex(
+                                        this->vcfReaderPtr_->legitVqslodAt);
+
+    this->setIsCopied(false);
+    this->excludedMarkers = NULL;
+    this->vcfReaderPtr_ = NULL;
 }
 
 

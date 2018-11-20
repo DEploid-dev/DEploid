@@ -26,6 +26,7 @@
 #include <vector>
 #include <iostream>
 #include <iomanip>      // std::setw
+#include <string>
 #include "random/mersenne_twister.hpp"
 #include "dEploidIO.hpp"
 #include "panel.hpp"
@@ -35,9 +36,6 @@
 #ifndef MCMC
 #define MCMC
 
-using namespace std;
-
-
 class McmcSample {
 #ifdef UNITTEST
   friend class TestMcmcMachinery;
@@ -45,7 +43,7 @@ class McmcSample {
   friend class McmcMachinery;
   friend class DEploidIO;
   friend class RMcmcSample;
-  public:
+ public:
     McmcSample();
     ~McmcSample();
     void clear() {
@@ -70,44 +68,51 @@ class McmcSample {
     vector < vector <double> > proportion;
     vector < vector <double> > hap;
     vector < double > sumLLKs;
-  private:
+
+ private:
     vector < int > moves;
 };
 
 
 class McmcMachinery {
 #ifdef UNITTEST
-  friend class TestMcmcMachinery;
+    friend class TestMcmcMachinery;
 #endif
-  friend class DEploidIO;
-  public:
-    //McmcMachinery();
-    McmcMachinery( vector <double> * plaf,
-                   vector <double> * refCount,
-                   vector <double> * altCount,
-                   Panel *panel_ptr,
-                   DEploidIO* dEplioidIO,
-                   McmcSample *mcmcSample,
-                   RandomGenerator* rg_,
-                   bool useIBD = false );
+    friend class DEploidIO;
+ public:
+    // McmcMachinery();
+    McmcMachinery(vector <double> * plaf,
+                  vector <double> * refCount,
+                  vector <double> * altCount,
+                  Panel *panel_ptr,
+                  DEploidIO* dEplioidIO,
+                  string mcmcJob,
+                  string jobbrief,
+                  McmcSample *mcmcSample,
+                  RandomGenerator* rg_,
+                  bool useIBD = false);
     ~McmcMachinery();
-    void runMcmcChain( bool showProgress = true, bool useIBD = false, bool notInR = true );
+    void runMcmcChain(bool showProgress = true,
+                      bool useIBD = false,
+                      bool notInR = true);
 
-  private:
+ private:
+    string mcmcJob;
+    string jobbrief;
     McmcSample* mcmcSample_;
-  /* Variables */
+    /* Variables */
     DEploidIO* dEploidIO_;
     vector <double> * plaf_ptr_;
     vector <double> * refCount_ptr_;
     vector <double> * altCount_ptr_;
     Panel* panel_;
     size_t kStrain_;
-    void setKstrain ( const size_t setTo ) { this->kStrain_ = setTo;}
-    size_t kStrain() const { return this->kStrain_;}
+    void setKstrain(const size_t setTo) {this->kStrain_ = setTo;}
+    size_t kStrain() const {return this->kStrain_;}
 
     size_t nLoci_;
-    void setNLoci ( const size_t setTo ) { this->nLoci_ = setTo;}
-    size_t nLoci() const { return this->nLoci_; }
+    void setNLoci(const size_t setTo) {this->nLoci_ = setTo;}
+    size_t nLoci() const {return this->nLoci_;}
 
     double burnIn_;
     size_t maxIteration_;
@@ -125,12 +130,18 @@ class McmcMachinery {
     RandomGenerator* propRg_;
     RandomGenerator* initialHapRg_;
 
-    //std::normal_distribution<double>* initialTitre_normal_distribution_;// (MN_LOG_TITRE, SD_LOG_TITRE);
-    //std::normal_distribution<double>* deltaX_normal_distribution_;// (0, 1/PROP_SCALE);
+    // std::normal_distribution<double>* initialTitre_normal_distribution_;
+    // (MN_LOG_TITRE, SD_LOG_TITRE);
+    // std::normal_distribution<double>* deltaX_normal_distribution_;
+    // (0, 1/PROP_SCALE);
     StandNormalRandomSample* stdNorm_;
-    double initialTitreNormalVariable() { return this->stdNorm_->genReal() * SD_LOG_TITRE + MN_LOG_TITRE; }
-    //double deltaXnormalVariable() { return this->stdNorm_->genReal() * 1.0/PROP_SCALE + MN_LOG_TITRE; }
-    double deltaXnormalVariable() { return this->stdNorm_->genReal() * SD_LOG_TITRE* 1.0/PROP_SCALE + MN_LOG_TITRE; }
+    double initialTitreNormalVariable() {
+        return this->stdNorm_->genReal() * SD_LOG_TITRE + MN_LOG_TITRE; }
+    // double deltaXnormalVariable() {
+    //    return this->stdNorm_->genReal() * 1.0/PROP_SCALE + MN_LOG_TITRE; }
+    double deltaXnormalVariable() {
+        return this->stdNorm_->genReal() *
+                        SD_LOG_TITRE* 1.0/PROP_SCALE + MN_LOG_TITRE; }
     double MN_LOG_TITRE;
     double SD_LOG_TITRE;
     double PROP_SCALE;
@@ -144,9 +155,11 @@ class McmcMachinery {
     vector < double > currentExpectedWsaf_;
     vector < double > cumExpectedWsaf_;
 
-  /* Methods */
-    void calcMaxIteration( size_t nSample, size_t McmcMachineryRate, double burnIn );
-   /* Initialize */
+    /* Methods */
+    void calcMaxIteration(size_t nSample,
+                          size_t McmcMachineryRate,
+                          double burnIn);
+    /* Initialize */
     void initializeMcmcChain(bool useIBD);
     void initializeProp();
     void initializeTitre();
@@ -154,14 +167,14 @@ class McmcMachinery {
     void initializellk();
     void initializeExpectedWsaf();
 
-    vector <double> calcExpectedWsaf(vector <double> &proportion );
-    vector <double> titre2prop(vector <double> & tmpTitre);
+    vector <double> calcExpectedWsaf(const vector <double> &proportion);
+    vector <double> titre2prop(const vector <double> &tmpTitre);
 
-    double calcLogPriorTitre( vector <double> &tmpTitre);
+    double calcLogPriorTitre(const vector <double> &tmpTitre);
     double rBernoulli(double p);
 
-    void printArray ( vector <double> array ) {
-        for (auto const& value: array) {
+    void printArray(vector <double> array) {
+        for (auto const& value : array) {
             cout << value << " ";
         }
         cout << endl;
@@ -171,43 +184,47 @@ class McmcMachinery {
     void recordMcmcMachinery();
     bool recordingMcmcBool_;
     void writeLastFwdProb(bool useIBD);
-    void updateReferencePanel(size_t inbreedingPanelSizeSetTo, size_t excludedStrain);
+    void updateReferencePanel(size_t inbreedingPanelSizeSetTo,
+                              size_t excludedStrain);
     void initializeUpdateReferencePanel(size_t inbreedingPanelSizeSetTo);
     void computeDiagnostics();
 
-   /* IBD */
+    /* IBD */
     IBDpath ibdPath;
 
     vector <double> computeLlkAtAllSites(double err = 0.01);
-    vector <double> averageProportion(vector < vector <double> > &proportion );
+    vector <double> averageProportion();
 
     void ibdInitializeEssentials();
     void makeLlkSurf(vector <double> altCount,
                      vector <double> refCount,
                      double scalingConst = 100.0,
                      double err = 0.01,
-                     size_t gridSize=99);
+                     size_t gridSize = 99);
     void ibdSampleMcmcEventStep();
     void initializePropIBD();
     void ibdSamplePath(vector <double> statePrior);
     void ibdUpdateHaplotypesFromPrior();
-    void ibdUpdateProportionGivenHap(vector <double> &llkAtAllSites);
-    //vector <double> getIBDprobsIntegrated(vector < vector <double> > &prob);
+    vector <double> ibdUpdateProportionGivenHap(
+        const vector <double> &llkAtAllSites);
+    // vector <double> getIBDprobsIntegrated(vector < vector <double> > &prob);
 
 
-  /* Moves */
+    /* Moves */
     void updateProportion();
-     vector <double> calcTmpTitre();
-     double deltaLLKs ( vector <double> &newLLKs );
+    vector <double> calcTmpTitre();
+    double deltaLLKs(const vector <double> &newLLKs);
 
-    void updateSingleHap();
-     void findUpdatingStrainSingle( );
+    void updateSingleHap(Panel *useThisPanel);
+    void findUpdatingStrainSingle();
 
-    void updatePairHaps();
-     //vector <size_t> sampleNoReplace(MersenneTwister* rg, vector <double> & proportion, size_t nSample );
-     void findUpdatingStrainPair( );
+    void updatePairHaps(Panel *useThisPanel);
+    /* vector <size_t> sampleNoReplace(MersenneTwister* rg,
+     *         vector <double> & proportion, size_t nSample );
+     */
+    void findUpdatingStrainPair();
 
-  /* Debug */
+    /* Debug */
     bool doutProp();
     bool doutLLK();
     int acceptUpdate;

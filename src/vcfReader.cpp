@@ -63,6 +63,7 @@ void VcfReader::checkFileCompressed() {
     fclose(f);
 }
 
+
 void VcfReader::init(string fileName) {
     /*! Initialize other VcfReader class members
      */
@@ -234,6 +235,38 @@ void VcfReader::removeMarkers() {
 }
 
 
+void VcfReader::findLegitSnpsGivenVQSLOD(double vqslodThreshold) {
+    this->legitVqslodAt.clear();
+    assert(legitVqslodAt.size() == 0);
+    for (size_t i = 0; i < this->vqslod.size(); i++) {
+        if (this->vqslod[i] > vqslodThreshold) {
+            this->legitVqslodAt.push_back(i);
+        }
+    }
+}
+
+
+void VcfReader::findLegitSnpsGivenVQSLODHalf(double vqslodThreshold) {
+    this->legitVqslodAt.clear();
+    assert(legitVqslodAt.size() == 0);
+
+    for (size_t chromI = 0;
+         chromI < this->indexOfChromStarts_.size(); chromI++) {
+        size_t start = this->indexOfChromStarts_[chromI];
+        size_t length = this->position_[chromI].size();
+        // if (chromI%2 == 0) {
+        if (chromI > 10) {
+            for ( size_t ii = start ; ii < (start+length); ii++ ) {
+                if (this->vqslod[ii] > vqslodThreshold) {
+                    // std::cout << ii <<std::endl;
+                    this->legitVqslodAt.push_back(ii);
+                }
+            }
+        }
+    }
+}
+
+
 VariantLine::VariantLine(string tmpLine) {
     this->init(tmpLine);
 
@@ -383,3 +416,13 @@ void VariantLine::extract_field_VARIANT() {
 }
 
 
+/*
+void VcfReader::findLegitSnpsGivenVQSLODandWsfGt0(double vqslodThreshold) {
+    assert(legitVqslodAt.size() == 0);
+    for (size_t i = 0; i < this->vqslod.size(); i++) {
+        if (this->vqslod[i] > vqslodThreshold & this->altCount[i] > 0) {
+            this->legitVqslodAt.push_back(i);
+        }
+    }
+}
+*/

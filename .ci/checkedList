@@ -1,3 +1,4 @@
+src/mcmc.hpp
 tests/unittest/test_dEploidIO.cpp
 src/dEploid.cpp
 src/variantIndex.cpp
@@ -13,3 +14,5 @@ src/debug/mcmcDebug.cpp
 src/debug/vcfReaderDebug.cpp
 src/global.hpp
 tests/unittest/test_vcfReader.cpp
+src/chooseK.hpp
+src/chooseK.cpp

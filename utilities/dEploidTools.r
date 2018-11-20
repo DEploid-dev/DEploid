@@ -179,10 +179,24 @@ fun.dEploidPrefix <- function ( prefix ){
         stop ("dEprefix ungiven!!!")
     }
 
-    return ( list ( propFileName = paste(prefix, ".prop",   sep = ""),
-                    hapFileName  = paste(prefix, ".hap",    sep = ""),
-                    llkFileName  = paste(prefix, ".llk",    sep = ""),
-                    dicLogFileName  = paste(prefix, "dic.log", sep = "") ) )
+#    return ( list ( propFileName = paste(prefix, ".prop",   sep = ""),
+#                    hapFileName  = paste(prefix, ".hap",    sep = ""),
+#                    llkFileName  = paste(prefix, ".llk",    sep = ""),
+#                    dicLogFileName  = paste(prefix, "dic.log", sep = "") ) )
+
+#lassoK
+#ibd
+
+    return ( list ( propFileName.lassoK = paste(prefix, ".lassoK.prop",   sep = ""),
+                    hapFileName.lassoK  = paste(prefix, ".lassoK.hap",    sep = ""),
+                    llkFileName.lassoK  = paste(prefix, ".lassoK.llk",    sep = ""),
+                    propFileName.ibd = paste(prefix, ".ibd.prop",   sep = ""),
+                    hapFileName.ibd = paste(prefix, ".ibd.hap",    sep = ""),
+                    llkFileName.ibd = paste(prefix, ".ibd.llk",    sep = ""),
+                    hapFileName.final = paste(prefix, ".final.hap",    sep = "")
+#                    dicLogFileName  = paste(prefix, "dic.log", sep = "")
+                    ) )
+
 }
 
 
@@ -258,8 +272,8 @@ fun.getllk.dic <- function ( llkTable, ref, alt, expWSAF, logFileName ){
     dic.by.var = fun.dic.by.llk.var (llk)
     dic.by.theta = fun.dic.by.theta ( llk, fun.llk(ref, alt, expWSAF))
 
-    cat ( "dic.by.var: ", dic.by.var, "\n", file = logFileName, append = T)
-    cat ( "dic.by.theta: ", dic.by.theta, "\n", file = logFileName, append = T)
+#    cat ( "dic.by.var: ", dic.by.var, "\n", file = logFileName, append = T)
+#    cat ( "dic.by.theta: ", dic.by.theta, "\n", file = logFileName, append = T)
     return (paste("LLK sd:", round(llk_sd, digits = 4),
                   ",\ndic.by.var: ",round(dic.by.var),
                   ", dic.by.theta: ",round(dic.by.theta)))
@@ -269,7 +283,7 @@ fun.getllk.dic <- function ( llkTable, ref, alt, expWSAF, logFileName ){
 fun.getWSAF.corr <- function( obsWSAF, expWSAF, dicLogFileName ){
     currentWSAFcov  = cov(obsWSAF, expWSAF)
     currentWSAFcorr = cor(obsWSAF, expWSAF)
-    cat ( "corr: ",  currentWSAFcorr, "\n", file = dicLogFileName)
+#    cat ( "corr: ",  currentWSAFcorr, "\n", file = dicLogFileName)
 
     return (paste("Sample Freq (cov =",format(currentWSAFcov,digits=4), "corr = ", format(currentWSAFcorr,digits=4),")"))
 }
@@ -344,6 +358,77 @@ fun.dataExplore <- function (coverage, PLAF, prefix = "", pdfBool, threshold = 0
 
     plotWSAFvsPLAF ( PLAF, obsWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize, potentialOutliers = badGuys  )
 
+    dev.off()
+}
+
+
+fun.interpretDEploid.LassoIBD <- function (coverage, PLAF, dEploidPrefix, prefix = "", exclude, pdfBool ) {
+    ref = coverage$refCount
+    alt = coverage$altCount
+
+    dEploidOutput = fun.dEploidPrefix(dEploidPrefix)
+    cexSize = 2.5
+
+    png ( paste ( prefix, ".interpretDEploidFigure.lassoIBD.altVsRef.png", sep = "" ),  width = 1500, height = 500)
+    par(mar = c(5,7,7,4))
+    par( mfrow = c(1,3) )
+    plotAltVsRef ( ref, alt, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    # lassoK
+    hap.lassoK = read.table(dEploidOutput$hapFileName.lassoK, header=T)
+    includeLogic.lassoK = which( paste(coverage$CHROM, coverage$POS) %in% paste(hap.lassoK$CHROM, hap.lassoK$POS) )
+    plotAltVsRef ( ref[includeLogic.lassoK], alt[includeLogic.lassoK], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    # IBD
+    hap.ibd = read.table(dEploidOutput$hapFileName.ibd, header=T)
+    includeLogic.ibd = which( paste(coverage$CHROM, coverage$POS) %in% paste(hap.ibd$CHROM, hap.ibd$POS) )
+#    print(includeLogic.ibd)
+    plotAltVsRef(ref[includeLogic.ibd], alt[includeLogic.ibd], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    dev.off()
+
+    obsWSAF = computeObsWSAF ( alt, ref )
+    png ( paste ( prefix, ".interpretDEploidFigure.lassoIBD.wsaf_hist.png", sep = "" ),  width = 1500, height = 500)
+    par(mar = c(5,7,7,4))
+    par( mfrow = c(1,3) )
+    histWSAF (obsWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    histWSAF (obsWSAF[includeLogic.lassoK], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    histWSAF (obsWSAF[includeLogic.ibd], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    dev.off()
+
+
+    if (exclude$excludeBool){
+        excludeLogic = ( paste(coverage$CHROM, coverage$POS) %in% paste(exclude$excludeTable$CHROM, exclude$excludeTable$POS) )
+        excludeindex = which(excludeLogic)
+        includeindex = which(!excludeLogic)
+        obsWSAF = obsWSAF[includeindex]
+        PLAF = PLAF[includeindex]
+        includeLogic.lassoK = which( paste(coverage$CHROM[includeindex], coverage$POS[includeindex]) %in% paste(hap.lassoK$CHROM, hap.lassoK$POS) )
+        includeLogic.ibd = which( paste(coverage$CHROM[includeindex], coverage$POS[includeindex]) %in% paste(hap.ibd$CHROM, hap.ibd$POS) )
+#        ref = ref[includeindex]
+#        alt = alt[includeindex]
+    }
+
+
+    tmpProp = read.table(dEploidOutput$propFileName.ibd, header=F)
+    prop = as.numeric(tmpProp[dim(tmpProp)[1],])
+    hap = as.matrix(read.table(dEploidOutput$hapFileName.final, header=T)[,-c(1,2)] )
+    expWSAF = hap %*% prop
+    png(paste(prefix, ".interpretDEploidFigure.lassoIBD.wsafVsPlaf.png", sep = "" ),  width = 1500, height = 500)
+    par(mar = c(5,7,7,4))
+    par( mfrow = c(1,3) )
+    plotWSAFvsPLAF(PLAF, obsWSAF, expWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    plotWSAFvsPLAF(PLAF[includeLogic.lassoK], obsWSAF[includeLogic.lassoK], expWSAF[includeLogic.lassoK], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    plotWSAFvsPLAF(PLAF[includeLogic.ibd], obsWSAF[includeLogic.ibd], expWSAF[includeLogic.ibd], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    dev.off()
+
+
+    png(paste(prefix, ".interpretDEploidFigure.lassoIBD.wsaf.png", sep = "" ),  width = 1500, height = 500)
+    par(mar = c(5,7,7,4))
+    par( mfrow = c(1,3) )
+    tmpTitle = fun.getWSAF.corr (obsWSAF, expWSAF, "")
+    plotObsExpWSAF ( obsWSAF, expWSAF, tmpTitle, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    tmpTitle = fun.getWSAF.corr (obsWSAF[includeLogic.lassoK], expWSAF[includeLogic.lassoK], "")
+    plotObsExpWSAF ( obsWSAF[includeLogic.lassoK], expWSAF[includeLogic.lassoK], tmpTitle, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
+    tmpTitle = fun.getWSAF.corr (obsWSAF[includeLogic.ibd], expWSAF[includeLogic.ibd], "")
+    plotObsExpWSAF ( obsWSAF[includeLogic.ibd], expWSAF[includeLogic.ibd], tmpTitle, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
     dev.off()
 }
 
