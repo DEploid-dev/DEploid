@@ -112,30 +112,3 @@ void DEploidIO::writeLastSingleFwdProb( vector < vector <double> >& probabilitie
 }
 
 
-//void DEploidIO::writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex ){
-    //ofstreamExportFwdProb.open( strExportPairFwdProb.c_str(), ios::out | ios::app | ios::binary );
-    //if ( chromIndex == 0 ){ // Print header
-        //ofstreamExportFwdProb << "CHROM" << "\t" << "POS" << "\t";;
-        //for ( size_t ii = 0; ii < updatePair.fwdProbs_[0].size(); ii++){
-            //for ( size_t ij = 0; ij < updatePair.fwdProbs_[0][ii].size(); ij++){
-                //ofstreamExportFwdProb << (ii+1) << "X" << (ij+1);
-                //ofstreamExportFwdProb << ((((ii+1) * (ij+1)) < (updatePair.fwdProbs_[0].size()*updatePair.fwdProbs_[0][ii].size()))  ? "\t" : "\n") ;
-            //}
-        //}
-    //}
-
-    //size_t siteIndex = 0;
-    //for ( size_t posI = 0; posI < position_[chromIndex].size(); posI++){
-        //ofstreamExportFwdProb << chrom_[chromIndex] << "\t" << (int)position_[chromIndex][posI] << "\t";
-        //for ( size_t ii = 0; ii < updatePair.fwdProbs_[siteIndex].size(); ii++){
-            //for ( size_t ij = 0; ij < updatePair.fwdProbs_[siteIndex][ii].size(); ij++){
-                //ofstreamExportFwdProb << updatePair.fwdProbs_[siteIndex][ii][ij];
-                //ofstreamExportFwdProb << ((((ii+1) * (ij+1)) < (updatePair.fwdProbs_[0].size()*updatePair.fwdProbs_[0][ii].size()))  ? "\t" : "\n") ;
-            //}
-        //}
-        //siteIndex++;
-    //}
-
-    //ofstreamExportFwdProb.close();
-//}
-

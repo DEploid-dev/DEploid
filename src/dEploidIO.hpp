@@ -70,10 +70,13 @@ class DEploidIO{
     bool doIbdPainting() const { return this->doIbdPainting_; }
     bool doComputeLLK() const { return this->doComputeLLK_; }
     void computeLLKfromInitialHap();
+
+    // choose which version of deploid to use
     bool useIBD() const { return this->useIBD_;}
     bool useIbdOnly() const { return this->useIbdOnly_;}
     bool useLasso() const { return this->useLasso_;}
     bool useBestPractice() const { return this->useBestPractice_;}
+
     void paintIBD();
     double ibdLLK_;
     void getIBDprobsIntegrated(vector < vector <double> > &prob);
