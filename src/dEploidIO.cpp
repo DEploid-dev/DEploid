@@ -290,7 +290,7 @@ void DEploidIO::removeFilesWithSameName() {
         //strIbdExportProp = this->prefix_ + ".ibd.prop";
         //strIbdExportLLK = this->prefix_ + ".ibd.llk";
         //strIbdExportHap = this->prefix_ + ".ibd.hap";
-        //strIbdExportProbs = this->prefix_ + ".ibd.probs";
+        strIbdExportProbs = this->prefix_ + ".ibd.probs";
     //}
 
 

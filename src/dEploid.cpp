@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
             dEploidIO.chromPainting();
         } else if (dEploidIO.doIbdPainting()) {
             dEploidIO.paintIBD();
-        } else if (dEploidIO.useLasso()) {
+        } else if (dEploidIO.useLasso()) {  // DEploid-Lasso
             dEploidIO.dEploidLasso();
             MersenneTwister lassoRg(dEploidIO.randomSeed());
             DEploidIO tmpIO(dEploidIO);
@@ -229,7 +229,7 @@ int main(int argc, char *argv[]) {
 
             dEploidIO.paintIBD();
             dEploidIO.writeHap(hap, "final");
-        } else {  // classic version, with IBD flag
+        } else {  // classic version, and DEploid-IBD
             if (dEploidIO.useIBD()) {  // ibd
                 McmcSample * ibdMcmcSample = new McmcSample();
                 MersenneTwister ibdRg(dEploidIO.randomSeed());

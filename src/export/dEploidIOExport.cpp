@@ -100,9 +100,12 @@ void DEploidIO::writeLog ( ostream * writeTo ){
         if (this->useIBD()){
             (*writeTo) << setw(19) << "  IBD Method used: YES" << "\n";
         }
-        (*writeTo) << setw(19) << " Update Prop: "   << (this->doUpdateProp()  ? "YES":"NO") << "\n";
-        (*writeTo) << setw(19) << " Update Single: " << (this->doUpdateSingle()? "YES":"NO") << "\n";
-        (*writeTo) << setw(19) << " Update Pair: "   << (this->doUpdatePair()  ? "YES":"NO") << "\n";
+        (*writeTo) << setw(19) << " Update Prop: "
+                   << (this->doUpdateProp()  ? "YES":"NO") << "\n";
+        (*writeTo) << setw(19) << " Update Single: "
+                   << (this->doUpdateSingle()? "YES":"NO") << "\n";
+        (*writeTo) << setw(19) << " Update Pair: "
+                   << (this->doUpdatePair()  ? "YES":"NO") << "\n";
         (*writeTo) << "\n";
     }
     (*writeTo) << "Other parameters:"<< "\n";
@@ -229,28 +232,28 @@ void DEploidIO::writeEventCount(){
     for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
         for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
             ofstreamExportTmp << chrom_[chromI] << "\t"
-                              << (int)position_[chromI][posI] << "\t"
+                          << (int)position_[chromI][posI] << "\t"
 
-                              << this->IBDpathChangeAt[siteIndex] << "\t"
-                              << this->finalIBDpathChangeAt[siteIndex] << "\t"
+                          << this->IBDpathChangeAt[siteIndex] << "\t"
+                          << this->finalIBDpathChangeAt[siteIndex] << "\t"
 
-                              << this->siteOfTwoSwitchOne[siteIndex] << "\t"
-                              << this->finalSiteOfTwoSwitchOne[siteIndex] << "\t"
+                          << this->siteOfTwoSwitchOne[siteIndex] << "\t"
+                          << this->finalSiteOfTwoSwitchOne[siteIndex] << "\t"
 
-                              << this->siteOfTwoMissCopyOne[siteIndex] << "\t"
-                              << this->finalSiteOfTwoMissCopyOne[siteIndex] << "\t"
+                          << this->siteOfTwoMissCopyOne[siteIndex] << "\t"
+                          << this->finalSiteOfTwoMissCopyOne[siteIndex] << "\t"
 
-                              << this->siteOfTwoSwitchTwo[siteIndex] << "\t"
-                              << this->finalSiteOfTwoSwitchTwo[siteIndex] << "\t"
+                          << this->siteOfTwoSwitchTwo[siteIndex] << "\t"
+                          << this->finalSiteOfTwoSwitchTwo[siteIndex] << "\t"
 
-                              << this->siteOfTwoMissCopyTwo[siteIndex] << "\t"
-                              << this->finalSiteOfTwoMissCopyTwo[siteIndex] << "\t"
+                          << this->siteOfTwoMissCopyTwo[siteIndex] << "\t"
+                          << this->finalSiteOfTwoMissCopyTwo[siteIndex] << "\t"
 
-                              << this->siteOfOneSwitchOne[siteIndex] << "\t"
-                              << this->finalSiteOfOneSwitchOne[siteIndex] << "\t"
+                          << this->siteOfOneSwitchOne[siteIndex] << "\t"
+                          << this->finalSiteOfOneSwitchOne[siteIndex] << "\t"
 
-                              << this->siteOfOneMissCopyOne[siteIndex] << "\t"
-                              << this->finalSiteOfOneMissCopyOne[siteIndex] << endl;
+                          << this->siteOfOneMissCopyOne[siteIndex] << "\t"
+                          << this->finalSiteOfOneMissCopyOne[siteIndex] << endl;
             siteIndex++;
         }
     }
@@ -325,10 +328,10 @@ void DEploidIO::paintIBD(){
     tmpDEploidIO.nLoci_= this->nLoci();
     tmpDEploidIO.position_ = this->position_;
     tmpDEploidIO.chrom_ = this->chrom_;
-    //tmpDEploidIO.useConstRecomb_ = true;
-    //tmpDEploidIO.constRecombProb_ = 0.000001;
+    // tmpDEploidIO.useConstRecomb_ = true;
+    // tmpDEploidIO.constRecombProb_ = 0.000001;
 
-    //tmpDEploidIO.writeLog (&std::cout);
+    // tmpDEploidIO.writeLog (&std::cout);
 
     MersenneTwister tmpRg(this->randomSeed());
     IBDpath tmpIBDpath;
@@ -340,9 +343,10 @@ void DEploidIO::paintIBD(){
 
 
     for ( size_t stateI = 0; stateI < this->ibdProbsHeader.size(); stateI++ ){
-        cout << setw(14) << this->ibdProbsHeader[stateI] << ": " << this->ibdProbsIntegrated[stateI] << "\n";
+        cout << setw(14) << this->ibdProbsHeader[stateI] << ": "
+             << this->ibdProbsIntegrated[stateI] << "\n";
     }
 
-    //this->writeIBDpostProb(tmpIBDpath.fwdbwd, this->ibdProbsHeader);
+    this->writeIBDpostProb(tmpIBDpath.fwdbwd, this->ibdProbsHeader);
 }
 
