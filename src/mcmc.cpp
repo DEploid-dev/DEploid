@@ -281,7 +281,6 @@ void McmcMachinery::initializePropIBD() {
 
 
 void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) {
-    printArray(this->currentProp_);
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++) {
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
@@ -387,8 +386,8 @@ void McmcMachinery::computeDiagnostics() {
     this->dEploidIO_->setdicByTheta(dicByTheta);
     //DIC.WSAF.bar = -2 * sum(thetallk)
     //return (  mean(-2*tmpllk) + (mean(-2*tmpllk) - DIC.WSAF.bar) ) # D_bar + pD, where pD = D_bar - D_theta, and D_bar = mean(D_theta)
-
 }
+
 
 vector <double> McmcMachinery::averageProportion() {
     assert(this->mcmcSample_->proportion.size()>0);
@@ -409,7 +408,16 @@ void McmcMachinery::sampleMcmcEvent( bool useIBD ) {
     if ( useIBD == true ) {
         ibdSampleMcmcEventStep();
         assert(doutProp());
-    } else {
+    } else if (this->jobbrief == "classic"){
+        this->eventInt_ = this->mcmcEventRg_->sampleInt(3);
+        if ( (this->eventInt_ == 0) && (this->dEploidIO_->doUpdateProp() == true) ) {
+            this->updateProportion();
+        } else if ( (this->eventInt_ == 1) && (this->dEploidIO_->doUpdateSingle() == true) ) {
+            this->updateSingleHap(this->panel_);
+        } else if ( (this->eventInt_ == 2) && (this->dEploidIO_->doUpdatePair() == true) ) {
+            this->updatePairHaps(this->panel_);
+        }
+    }else {  // Best practice
         this->eventInt_ = this->mcmcEventRg_->sampleInt(4);
         if ( (this->eventInt_ == 0) && (this->dEploidIO_->doUpdateProp() == true) ) {
             this->updateProportion();
@@ -422,13 +430,6 @@ void McmcMachinery::sampleMcmcEvent( bool useIBD ) {
             this->updateSingleHap(NULL);
             this->updateSingleHap(NULL);
             this->updateSingleHap(NULL);
-
-            //this->updatePairHaps(this->panel_);
-        //} else if ( (this->eventInt_ == 4) && (this->dEploidIO_->doUpdatePair() == true) ) {
-            ////this->updatePairHaps(NULL);
-            //this->updateSingleHap(NULL);
-            //this->updatePairHaps(this->panel_);
-            //this->updateProportion();
         }
     }
 
@@ -609,7 +610,7 @@ double McmcMachinery::deltaLLKs (const vector <double> &newLLKs ) {
 vector <double> McmcMachinery::calcTmpTitre() {
     vector <double> tmpTitre;
 
-    size_t tmpEvet = this->mcmcEventRg_->sampleInt(2);
+    //size_t tmpEvet = this->mcmcEventRg_->sampleInt(2);
 /*
     if (tmpEvet == 0){
 */
@@ -719,7 +720,6 @@ void McmcMachinery::updatePairHaps(Panel *useThisPanel) {
             this->mcmcSample_->currentsiteOfTwoMissCopyOne[start+siteI] = updating.siteOfTwoMissCopyOne[siteI];
             this->mcmcSample_->currentsiteOfTwoSwitchTwo[start+siteI] = updating.siteOfTwoSwitchTwo[siteI];
             this->mcmcSample_->currentsiteOfTwoMissCopyTwo[start+siteI] = updating.siteOfTwoMissCopyTwo[siteI];
-
         }
     }
 

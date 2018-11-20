@@ -36,7 +36,7 @@ jobs:
             ./tests/test_binary.sh
             ./tests/testPOS.sh
             ./tests/test_binaryVcfVsTxt.sh
-            #./tests/test-against-previous-version.sh
+            ./tests/test-against-previous-version.sh
             ./tests/test_binaryReproducible.sh
         #- valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
     #- coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
@@ -77,7 +77,7 @@ jobs:
             ./tests/test_binary.sh
             ./tests/testPOS.sh
             ./tests/test_binaryVcfVsTxt.sh
-            #./tests/test-against-previous-version.sh
+            ./tests/test-against-previous-version.sh
             ./tests/test_binaryReproducible.sh
 
   "18.04":

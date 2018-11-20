@@ -243,6 +243,9 @@ int main(int argc, char *argv[]) {
                                                ibdMcmcSample,
                                                &ibdRg,
                                                true);
+                ibdMcmcMachinery.runMcmcChain(true,   // show progress
+                                              true);  // use IBD
+                delete ibdMcmcSample;
             }
 
             McmcSample * mcmcSample = new McmcSample();
