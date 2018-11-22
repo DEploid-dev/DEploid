@@ -143,6 +143,13 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     (*writeTo) << setw(14) << "Start at: "  << startingTime_  ;
     (*writeTo) << setw(14) << "End at: "    << endTime_  ;
     (*writeTo) << "\n";
+    if (this->useBestPractice()){
+        (*writeTo) << "Confidence: " << endl;
+        (*writeTo) << setw(14) << "k: "
+                   << this->chooseK.confidence() * 100 << "%" << endl;
+        (*writeTo) << "\n";
+    }
+
     if ( this->doComputeLLK() ){
         (*writeTo) << "Input likelihood: " << llkFromInitialHap_;
         (*writeTo) << "\n";

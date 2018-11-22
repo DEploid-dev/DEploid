@@ -26,7 +26,6 @@
 #include <iostream>  // std::cout
 #include "mcmc.hpp"
 #include "dEploidIO.hpp"
-#include "chooseK.hpp"
 
 int main(int argc, char *argv[]) {
     try {
@@ -88,58 +87,57 @@ int main(int argc, char *argv[]) {
             dEploidIO.writeHap(hap, "lasso");
         } else if (dEploidIO.useBestPractice()) {  // best practice
             MersenneTwister rg(dEploidIO.randomSeed());
-            if (dEploidIO.usePanel()) {
+
                 // #############################################################
                 // ################# DEploid-LASSO to learn K ##################
                 // #############################################################
 
-                ChooseK chooseK;
 
-                DEploidIO toLearnK(dEploidIO);
-                toLearnK.dEploidLassoTrimfirst();
-                DEploidIO toLearnKtmp(dEploidIO);
-                for (size_t chromi = 0;
-                     chromi < toLearnK.indexOfChromStarts_.size();
-                     chromi++ ) {
-                    toLearnKtmp.position_.clear();
-                    toLearnKtmp.position_.push_back(
-                                                toLearnK.position_.at(chromi));
-                    toLearnKtmp.indexOfChromStarts_.clear();
-                    toLearnKtmp.indexOfChromStarts_.push_back(0);
+            DEploidIO toLearnK(dEploidIO);
+            toLearnK.dEploidLassoTrimfirst();
+            DEploidIO toLearnKtmp(dEploidIO);
+            for (size_t chromi = 0;
+                 chromi < toLearnK.indexOfChromStarts_.size();
+                 chromi++ ) {
+                toLearnKtmp.position_.clear();
+                toLearnKtmp.position_.push_back(
+                                            toLearnK.position_.at(chromi));
+                toLearnKtmp.indexOfChromStarts_.clear();
+                toLearnKtmp.indexOfChromStarts_.push_back(0);
 
-                    McmcSample * lassoMcmcSample = new McmcSample();
-                    string job = string("DEploid-Lasso learning K ");
-                    job.append(toLearnK.chrom_[chromi]).append(" leanrning K");
-                    McmcMachinery lassoMcmcMachinery(
-                                            &toLearnK.lassoPlafs.at(chromi),
-                                            &toLearnK.lassoRefCount.at(chromi),
-                                            &toLearnK.lassoAltCount.at(chromi),
-                                            toLearnK.lassoPanels.at(chromi),
-                                            &toLearnKtmp,
-                                            job,
-                                            job,
-                                            lassoMcmcSample,
-                                            &rg,
-                                            false);
-                    lassoMcmcMachinery.runMcmcChain(true,   // show progress
-                                                    false);  // use IBD
-                    toLearnKtmp.initialProp = toLearnKtmp.finalProp;
-                    toLearnKtmp.setInitialPropWasGiven(true);
-                    chooseK.appendProportions(toLearnKtmp.finalProp);
-                    delete lassoMcmcSample;
-                }
-                // chooseK.findKmode();
-
-                dEploidIO.initialProp.clear();
-                vector <double> initialP = chooseK.chosenP();
-                for (auto const& value : initialP) {
-                    if (value > 0.01) {
-                        dEploidIO.initialProp.push_back(value);
-                    }
-                }
-                dEploidIO.setKstrain(dEploidIO.initialProp.size());
-                dEploidIO.setInitialPropWasGiven(true);
+                McmcSample * lassoMcmcSample = new McmcSample();
+                string job = string("DEploid-Lasso learning K ");
+                job.append(toLearnK.chrom_[chromi]).append(" leanrning K");
+                McmcMachinery lassoMcmcMachinery(
+                                        &toLearnK.lassoPlafs.at(chromi),
+                                        &toLearnK.lassoRefCount.at(chromi),
+                                        &toLearnK.lassoAltCount.at(chromi),
+                                        toLearnK.lassoPanels.at(chromi),
+                                        &toLearnKtmp,
+                                        job,
+                                        job,
+                                        lassoMcmcSample,
+                                        &rg,
+                                        false);
+                lassoMcmcMachinery.runMcmcChain(true,   // show progress
+                                                false);  // use IBD
+                toLearnKtmp.initialProp = toLearnKtmp.finalProp;
+                toLearnKtmp.setInitialPropWasGiven(true);
+                dEploidIO.chooseK.appendProportions(toLearnKtmp.finalProp);
+                delete lassoMcmcSample;
             }
+            // chooseK.findKmode();
+
+            dEploidIO.initialProp.clear();
+            vector <double> initialP = dEploidIO.chooseK.chosenP();
+            for (auto const& value : initialP) {
+                if (value > 0.01) {
+                    dEploidIO.initialProp.push_back(value);
+                }
+            }
+            dEploidIO.setKstrain(dEploidIO.initialProp.size());
+            dEploidIO.setInitialPropWasGiven(true);
+
             if (dEploidIO.initialProp.size() > 1) {
                 // #############################################################
                 // ###################### DEploid-IBD   ########################

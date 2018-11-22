@@ -33,6 +33,7 @@
 #include "exceptions.hpp"
 #include "panel.hpp"
 #include "vcfReader.hpp"
+#include "chooseK.hpp"
 
 
 #ifndef PARAM
@@ -59,6 +60,8 @@ class DEploidIO{
     DEploidIO(const std::string &arg);
     DEploidIO(int argc, char *argv[]);
     ~DEploidIO ();
+
+    ChooseK chooseK;
 
     void printHelp(std::ostream& out);
     bool help() const { return help_; }

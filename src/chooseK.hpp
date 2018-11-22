@@ -31,22 +31,26 @@ using std::vector;
 #define CHOOSEK
 
 class ChooseK {
+  friend class DEploidIO;
  public:
-    ChooseK() {this->haveChosenP_ = false;}
-    ~ChooseK() {}
     void appendProportions(const vector <double> &p);
-    size_t chosenK() const {
-        assert(this->haveChosenP_ == true);
-        return this->max_at_+1; }
     vector <double> chosenP();
 
  private:
+    ChooseK() {this->haveChosenP_ = false;}
+    ~ChooseK() {}
+    size_t chosenK() const {
+        assert(this->haveChosenP_ == true);
+        return this->max_at_+1; }
+
     void findKmode();
     vector < vector<double> > proportions_;
     vector < size_t > ks;
     void gatherKs();
     size_t max_at_;
     bool haveChosenP_;
+    double confidence_;
+    double confidence() const { return this->confidence_; }
 };
 
 #endif

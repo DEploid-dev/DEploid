@@ -25,6 +25,7 @@
 
 #include <cstddef>
 #include <iostream>
+#include "global.hpp"
 #include "chooseK.hpp"
 
 using std::cout;
@@ -62,15 +63,17 @@ void ChooseK::findKmode() {
     vector <size_t> kCount(uniqueK.size(), 0);
     for (auto const& k : ks) {
         kCount[k-1]++;
-        cout << k << " " << kCount[k-1] << endl;
+        dout << k << " " << kCount[k-1] << endl;
         if (kCount[k-1] > maxCount) {
             max_at_ = k-1;
             maxCount = kCount[max_at_];
         }
     }
 
-    cout << "k most frequent: " << max_at_+1
+    dout << "k most frequent: " << max_at_+1
          << " with " << maxCount << "count" << endl;
+    this->confidence_ = static_cast<double>(maxCount) /
+                        static_cast<double>(ks.size());
 }
 
 
