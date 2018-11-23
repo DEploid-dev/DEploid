@@ -33,6 +33,10 @@ void DEploidIO::wrapUp(){
     // Get End time before writing the log
     this->getTime(false);
 
+    if (this->useBestPractice()){
+        this->writeChooseKProportion();
+    }
+
     this->writeLog (&std::cout);
 
     ofstreamExportTmp.open( strExportLog.c_str(), ios::out | ios::app | ios::binary );
@@ -143,6 +147,13 @@ void DEploidIO::writeLog ( ostream * writeTo ){
     (*writeTo) << setw(14) << "Start at: "  << startingTime_  ;
     (*writeTo) << setw(14) << "End at: "    << endTime_  ;
     (*writeTo) << "\n";
+    if (this->useBestPractice()){
+        (*writeTo) << "Confidence: " << endl;
+        (*writeTo) << setw(14) << "k: "
+                   << this->chooseK.confidence() * 100 << "%" << endl;
+        (*writeTo) << "\n";
+    }
+
     if ( this->doComputeLLK() ){
         (*writeTo) << "Input likelihood: " << llkFromInitialHap_;
         (*writeTo) << "\n";
@@ -350,3 +361,17 @@ void DEploidIO::paintIBD(){
     this->writeIBDpostProb(tmpIBDpath.fwdbwd, this->ibdProbsHeader);
 }
 
+
+void DEploidIO::writeChooseKProportion() {
+    string fileName = this->prefix_ + ".chooseK.prop";
+    ofstreamExportTmp.open(fileName.c_str(), ios::out | ios::binary);
+    ostream * writeTo = &ofstreamExportTmp;
+    for (size_t i = 0; i < this->chooseK.proportions_.size(); i++) {
+        for (size_t ii = 0; ii < this->chooseK.proportions_[i].size(); ii++) {
+            (*writeTo)  << this->chooseK.proportions_[i][ii];
+            (*writeTo)  << (ii == (this->chooseK.proportions_[i].size()-1) ?
+                        "\n":"\t");
+        }
+    }
+    ofstreamExportTmp.close();
+}

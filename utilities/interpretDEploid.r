@@ -33,33 +33,33 @@ myPlafInfo = extractPLAF( myInput$plafFileName )
 
 myExcludeInfo = fun.extract.exclude (myInput$excludeFileName, myInput$excludeBool)
 
-fun.interpretDEploid.LassoIBD(myCoverageInfo, myPlafInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool)
-
-
-
-
-if ( myInput$skip1Bool == FALSE ){
-    fun.interpretDEploid.1 (myCoverageInfo, myPlafInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool)
-}
-
-fun.interpretDEploid.2 (myCoverageInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool)
-
-fun.interpretDEploid.3 (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool, myInput$inbreedingBool)
-
-fun.interpretDEploid.4 (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool)
-
-if (myInput$ringBool == TRUE){
-    fun.interpretDEploid.2 (myCoverageInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool, myInput$ringBool)
-    fun.interpretDEploid.3.ring (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool, myInput$inbreedingBool, myCoverageInfo, myExcludeInfo, myInput$ringDecreasingOrder, myInput$trackHeight, myInput$transformP)
-}
-
-if (myInput$ibdBool == TRUE){
+if (myInput$dEploid_v == "best") {
+    fun.interpretDEploid.best(myCoverageInfo, myPlafInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool)
+    fun.interpretDEploid.2 (myCoverageInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool, ringBool = FALSE, myInput$dEploid_v)
+} else {
     if ( myInput$skip1Bool == FALSE ){
-        fun.interpretDEploid.1 (myCoverageInfo, myPlafInfo, paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myExcludeInfo, myInput$pdfBool)
+        fun.interpretDEploid.1 (myCoverageInfo, myPlafInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool)
     }
 
-    fun.interpretDEploid.2 (myCoverageInfo, paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myExcludeInfo, myInput$pdfBool)
+    fun.interpretDEploid.2 (myCoverageInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool)
 
-    fun.interpretDEploid.3 (paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myInput$pdfBool, myInput$inbreedingBool)
+    fun.interpretDEploid.3 (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool, myInput$inbreedingBool)
 
+    fun.interpretDEploid.4 (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool)
+
+    if (myInput$ringBool == TRUE){
+        fun.interpretDEploid.2 (myCoverageInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool, myInput$ringBool)
+        fun.interpretDEploid.3.ring (myInput$dEploidPrefix, myInput$outPrefix, myInput$pdfBool, myInput$inbreedingBool, myCoverageInfo, myExcludeInfo, myInput$ringDecreasingOrder, myInput$trackHeight, myInput$transformP)
+    }
+
+    if (myInput$ibdBool == TRUE){
+        if ( myInput$skip1Bool == FALSE ){
+            fun.interpretDEploid.1 (myCoverageInfo, myPlafInfo, paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myExcludeInfo, myInput$pdfBool)
+        }
+
+        fun.interpretDEploid.2 (myCoverageInfo, paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myExcludeInfo, myInput$pdfBool)
+
+        fun.interpretDEploid.3 (paste(myInput$dEploidPrefix, ".ibd", sep=""), paste(myInput$outPrefix, ".ibd", sep=""), myInput$pdfBool, myInput$inbreedingBool)
+
+    }
 }

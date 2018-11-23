@@ -33,6 +33,7 @@
 #include "exceptions.hpp"
 #include "panel.hpp"
 #include "vcfReader.hpp"
+#include "chooseK.hpp"
 
 
 #ifndef PARAM
@@ -60,6 +61,8 @@ class DEploidIO{
     DEploidIO(int argc, char *argv[]);
     ~DEploidIO ();
 
+    ChooseK chooseK;
+
     void printHelp(std::ostream& out);
     bool help() const { return help_; }
     void printVersion(std::ostream& out);
@@ -70,10 +73,13 @@ class DEploidIO{
     bool doIbdPainting() const { return this->doIbdPainting_; }
     bool doComputeLLK() const { return this->doComputeLLK_; }
     void computeLLKfromInitialHap();
+
+    // choose which version of deploid to use
     bool useIBD() const { return this->useIBD_;}
     bool useIbdOnly() const { return this->useIbdOnly_;}
     bool useLasso() const { return this->useLasso_;}
     bool useBestPractice() const { return this->useBestPractice_;}
+
     void paintIBD();
     double ibdLLK_;
     void getIBDprobsIntegrated(vector < vector <double> > &prob);
@@ -362,6 +368,7 @@ class DEploidIO{
     void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
     void writeLog (ostream * writeTo );
     void writeEventCount();
+    void writeChooseKProportion();
 
     vector <double> IBDpathChangeAt;
     vector <double> finalIBDpathChangeAt;

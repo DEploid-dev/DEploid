@@ -65,6 +65,7 @@ fun.parse <- function( args ){
     ringBool = FALSE
     ringDecreasingOrder = TRUE
     transformP = FALSE
+    dEploid_v = "classic"
     arg_i = 1
     filter.window = 10
     filter.threshold = 0.995
@@ -125,6 +126,8 @@ fun.parse <- function( args ){
         } else if ( argv == "-reverseRing" ){
             ringBool = TRUE
             ringDecreasingOrder = FALSE
+        } else if ( argv == "-best" ){
+            dEploid_v = "best"
         } else if ( argv == "-trackHeight" ){
             arg_i = fun.local.checkAndIncreaseArgI ( )
             trackHeight = as.numeric(args[arg_i])
@@ -170,33 +173,36 @@ fun.parse <- function( args ){
                     ringBool = ringBool,
                     ringDecreasingOrder = ringDecreasingOrder,
                     trackHeight = trackHeight,
-                    transformP = transformP) )
+                    transformP = transformP,
+                    dEploid_v = dEploid_v) )
 }
 
 
-fun.dEploidPrefix <- function ( prefix ){
+fun.dEploidPrefix <- function (prefix, dEploid_v = "classic" ){
     if ( prefix == "" ){
         stop ("dEprefix ungiven!!!")
     }
 
-#    return ( list ( propFileName = paste(prefix, ".prop",   sep = ""),
-#                    hapFileName  = paste(prefix, ".hap",    sep = ""),
-#                    llkFileName  = paste(prefix, ".llk",    sep = ""),
-#                    dicLogFileName  = paste(prefix, "dic.log", sep = "") ) )
-
-#lassoK
-#ibd
-
-    return ( list ( propFileName.lassoK = paste(prefix, ".lassoK.prop",   sep = ""),
-                    hapFileName.lassoK  = paste(prefix, ".lassoK.hap",    sep = ""),
-                    llkFileName.lassoK  = paste(prefix, ".lassoK.llk",    sep = ""),
+    if (dEploid_v == "classic") {
+        version_suffix = "classic"
+        return ( list ( propFileName = paste(prefix, ".", version_suffix, ".prop",   sep = ""),
+                        hapFileName  = paste(prefix, ".", version_suffix, ".hap",    sep = ""),
+                        llkFileName  = paste(prefix, ".", version_suffix, ".llk",    sep = "")
+    #                    dicLogFileName  = paste(prefix, "dic.log", sep = "")
+                     ) )
+    } else if (dEploid_v == "best") {
+    return ( list ( propFileName.chooseK = paste(prefix, ".chooseK.prop",   sep = ""),
+                    hapFileName.chooseK  = paste(prefix, ".chooseK.hap",    sep = ""),
+                    llkFileName.chooseK  = paste(prefix, ".chooseK.llk",    sep = ""),
                     propFileName.ibd = paste(prefix, ".ibd.prop",   sep = ""),
                     hapFileName.ibd = paste(prefix, ".ibd.hap",    sep = ""),
                     llkFileName.ibd = paste(prefix, ".ibd.llk",    sep = ""),
                     hapFileName.final = paste(prefix, ".final.hap",    sep = "")
 #                    dicLogFileName  = paste(prefix, "dic.log", sep = "")
                     ) )
-
+    } else {
+        return(NULL)
+    }
 }
 
 
@@ -362,37 +368,26 @@ fun.dataExplore <- function (coverage, PLAF, prefix = "", pdfBool, threshold = 0
 }
 
 
-fun.interpretDEploid.LassoIBD <- function (coverage, PLAF, dEploidPrefix, prefix = "", exclude, pdfBool ) {
+fun.interpretDEploid.best <- function (coverage, PLAF, dEploidPrefix, prefix = "", exclude, pdfBool ) {
     ref = coverage$refCount
     alt = coverage$altCount
 
-    dEploidOutput = fun.dEploidPrefix(dEploidPrefix)
+    dEploidOutput = fun.dEploidPrefix(dEploidPrefix, dEploid_v = "best")
     cexSize = 2.5
 
-    png ( paste ( prefix, ".interpretDEploidFigure.lassoIBD.altVsRef.png", sep = "" ),  width = 1500, height = 500)
+    png ( paste ( prefix, ".interpretDEploidFigure.1.png", sep = "" ),  width = 1500, height = 3750)
     par(mar = c(5,7,7,4))
-    par( mfrow = c(1,3) )
+    par( mfrow = c(5,2) )
+    ##################################################################################################
+    hap.chooseK = read.table(dEploidOutput$hapFileName.chooseK, header=T)
+    includeLogic.chooseK = which( paste(coverage$CHROM, coverage$POS) %in% paste(hap.chooseK$CHROM, hap.chooseK$POS) )
+    plotAltVsRef ( ref[includeLogic.chooseK], alt[includeLogic.chooseK], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
     plotAltVsRef ( ref, alt, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
-    # lassoK
-    hap.lassoK = read.table(dEploidOutput$hapFileName.lassoK, header=T)
-    includeLogic.lassoK = which( paste(coverage$CHROM, coverage$POS) %in% paste(hap.lassoK$CHROM, hap.lassoK$POS) )
-    plotAltVsRef ( ref[includeLogic.lassoK], alt[includeLogic.lassoK], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
-    # IBD
-    hap.ibd = read.table(dEploidOutput$hapFileName.ibd, header=T)
-    includeLogic.ibd = which( paste(coverage$CHROM, coverage$POS) %in% paste(hap.ibd$CHROM, hap.ibd$POS) )
-#    print(includeLogic.ibd)
-    plotAltVsRef(ref[includeLogic.ibd], alt[includeLogic.ibd], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
-    dev.off()
 
+    ##################################################################################################
     obsWSAF = computeObsWSAF ( alt, ref )
-    png ( paste ( prefix, ".interpretDEploidFigure.lassoIBD.wsaf_hist.png", sep = "" ),  width = 1500, height = 500)
-    par(mar = c(5,7,7,4))
-    par( mfrow = c(1,3) )
+    histWSAF (obsWSAF[includeLogic.chooseK], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
     histWSAF (obsWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
-    histWSAF (obsWSAF[includeLogic.lassoK], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
-    histWSAF (obsWSAF[includeLogic.ibd], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
-    dev.off()
-
 
     if (exclude$excludeBool){
         excludeLogic = ( paste(coverage$CHROM, coverage$POS) %in% paste(exclude$excludeTable$CHROM, exclude$excludeTable$POS) )
@@ -400,35 +395,27 @@ fun.interpretDEploid.LassoIBD <- function (coverage, PLAF, dEploidPrefix, prefix
         includeindex = which(!excludeLogic)
         obsWSAF = obsWSAF[includeindex]
         PLAF = PLAF[includeindex]
-        includeLogic.lassoK = which( paste(coverage$CHROM[includeindex], coverage$POS[includeindex]) %in% paste(hap.lassoK$CHROM, hap.lassoK$POS) )
-        includeLogic.ibd = which( paste(coverage$CHROM[includeindex], coverage$POS[includeindex]) %in% paste(hap.ibd$CHROM, hap.ibd$POS) )
-#        ref = ref[includeindex]
-#        alt = alt[includeindex]
+        includeLogic.chooseK = which( paste(coverage$CHROM[includeindex], coverage$POS[includeindex]) %in% paste(hap.chooseK$CHROM, hap.chooseK$POS) )
     }
 
+    ##################################################################################################
+    pp = read.table(dEploidOutput$propFileName.ibd, header=F)
+    p = read.table(dEploidOutput$propFileName.chooseK, sep ="\t", header=F)
+    barplot(t(p), border=F, space=0)
+    barplot(t(pp), border=F, space=0)
 
-    tmpProp = read.table(dEploidOutput$propFileName.ibd, header=F)
-    prop = as.numeric(tmpProp[dim(tmpProp)[1],])
+    ##################################################################################################
+    prop = as.numeric(pp[dim(pp)[1],])
     hap = as.matrix(read.table(dEploidOutput$hapFileName.final, header=T)[,-c(1,2)] )
     expWSAF = hap %*% prop
-    png(paste(prefix, ".interpretDEploidFigure.lassoIBD.wsafVsPlaf.png", sep = "" ),  width = 1500, height = 500)
-    par(mar = c(5,7,7,4))
-    par( mfrow = c(1,3) )
+    plotWSAFvsPLAF(PLAF[includeLogic.chooseK], obsWSAF[includeLogic.chooseK], expWSAF[includeLogic.chooseK], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
     plotWSAFvsPLAF(PLAF, obsWSAF, expWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
-    plotWSAFvsPLAF(PLAF[includeLogic.lassoK], obsWSAF[includeLogic.lassoK], expWSAF[includeLogic.lassoK], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
-    plotWSAFvsPLAF(PLAF[includeLogic.ibd], obsWSAF[includeLogic.ibd], expWSAF[includeLogic.ibd], cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
-    dev.off()
 
-
-    png(paste(prefix, ".interpretDEploidFigure.lassoIBD.wsaf.png", sep = "" ),  width = 1500, height = 500)
-    par(mar = c(5,7,7,4))
-    par( mfrow = c(1,3) )
+    ##################################################################################################
+    tmpTitle = fun.getWSAF.corr (obsWSAF[includeLogic.chooseK], expWSAF[includeLogic.chooseK], "")
+    plotObsExpWSAF ( obsWSAF[includeLogic.chooseK], expWSAF[includeLogic.chooseK], tmpTitle, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
     tmpTitle = fun.getWSAF.corr (obsWSAF, expWSAF, "")
     plotObsExpWSAF ( obsWSAF, expWSAF, tmpTitle, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
-    tmpTitle = fun.getWSAF.corr (obsWSAF[includeLogic.lassoK], expWSAF[includeLogic.lassoK], "")
-    plotObsExpWSAF ( obsWSAF[includeLogic.lassoK], expWSAF[includeLogic.lassoK], tmpTitle, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
-    tmpTitle = fun.getWSAF.corr (obsWSAF[includeLogic.ibd], expWSAF[includeLogic.ibd], "")
-    plotObsExpWSAF ( obsWSAF[includeLogic.ibd], expWSAF[includeLogic.ibd], tmpTitle, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize )
     dev.off()
 }
 
@@ -560,11 +547,16 @@ plot.wsaf.vs.index <- function ( coverage, expWSAF = c(), expWSAFChrom = c(), ex
 }
 
 
-fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclude, pdfBool, ringBool = FALSE ){
-    dEploidOutput = fun.dEploidPrefix ( dEploidPrefix )
-    tmpProp = read.table(dEploidOutput$propFileName, header=F)
+fun.interpretDEploid.2 <- function ( coverage, dEploidPrefix, prefix = "", exclude, pdfBool, ringBool = FALSE, dEploid_v = "classic"){
+    dEploidOutput = fun.dEploidPrefix(dEploidPrefix, dEploid_v)
+    if (dEploid_v == "classic") {
+        tmpProp = read.table(dEploidOutput$propFileName, header=F)
+        hapInfo = read.table(dEploidOutput$hapFileName, header=T)
+    } else if (dEploid_v == "best") {
+        tmpProp = read.table(dEploidOutput$propFileName.ibd, header=F)
+        hapInfo = read.table(dEploidOutput$hapFileName.final, header=T)
+    }
     prop = as.numeric(tmpProp[dim(tmpProp)[1],])
-    hapInfo = read.table(dEploidOutput$hapFileName, header=T)
     hapChrom = hapInfo[,1]
     hap = as.matrix(hapInfo[,-c(1,2)])
     expWSAF = hap %*%prop
