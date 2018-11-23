@@ -88,10 +88,11 @@ int main(int argc, char *argv[]) {
         } else if (dEploidIO.useBestPractice()) {  // best practice
             MersenneTwister rg(dEploidIO.randomSeed());
 
-                // #############################################################
-                // ################# DEploid-LASSO to learn K ##################
-                // #############################################################
+            // #############################################################
+            // ################# DEploid-LASSO to learn K ##################
+            // #############################################################
 
+            vector < vector <double> > chooseKhap;
 
             DEploidIO toLearnK(dEploidIO);
             toLearnK.dEploidLassoTrimfirst();
@@ -124,10 +125,20 @@ int main(int argc, char *argv[]) {
                 toLearnKtmp.initialProp = toLearnKtmp.finalProp;
                 toLearnKtmp.setInitialPropWasGiven(true);
                 dEploidIO.chooseK.appendProportions(toLearnKtmp.finalProp);
+
+                for (size_t snpi = 0;
+                    snpi < lassoMcmcSample->hap.size(); snpi++) {
+                    chooseKhap.push_back(vector <double> (
+                                        lassoMcmcSample->hap[snpi].begin(),
+                                        lassoMcmcSample->hap[snpi].end()));
+                }
+
                 delete lassoMcmcSample;
             }
-            // chooseK.findKmode();
+            // Gathering haplotype information
+            toLearnK.writeHap(chooseKhap, "chooseK");
 
+            // Gathering proportion information
             dEploidIO.initialProp.clear();
             vector <double> initialP = dEploidIO.chooseK.chosenP();
             for (auto const& value : initialP) {
