@@ -368,6 +368,7 @@ class DEploidIO{
     void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
     void writeLog (ostream * writeTo );
     void writeEventCount();
+    void writeChooseKProportion();
 
     vector <double> IBDpathChangeAt;
     vector <double> finalIBDpathChangeAt;

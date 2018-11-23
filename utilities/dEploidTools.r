@@ -179,14 +179,14 @@ fun.dEploidPrefix <- function ( prefix ){
         stop ("dEprefix ungiven!!!")
     }
 
-#    return ( list ( propFileName = paste(prefix, ".prop",   sep = ""),
-#                    hapFileName  = paste(prefix, ".hap",    sep = ""),
-#                    llkFileName  = paste(prefix, ".llk",    sep = ""),
-#                    dicLogFileName  = paste(prefix, "dic.log", sep = "") ) )
-
-#lassoK
-#ibd
-
+    if (TRUE) {
+        version_suffix = "classic"
+        return ( list ( propFileName = paste(prefix, ".", version_suffix, ".prop",   sep = ""),
+                        hapFileName  = paste(prefix, ".", version_suffix, ".hap",    sep = ""),
+                        llkFileName  = paste(prefix, ".", version_suffix, ".llk",    sep = "")
+    #                    dicLogFileName  = paste(prefix, "dic.log", sep = "")
+                     ) )
+    } else if (FALSE) {
     return ( list ( propFileName.lassoK = paste(prefix, ".lassoK.prop",   sep = ""),
                     hapFileName.lassoK  = paste(prefix, ".lassoK.hap",    sep = ""),
                     llkFileName.lassoK  = paste(prefix, ".lassoK.llk",    sep = ""),
@@ -196,7 +196,9 @@ fun.dEploidPrefix <- function ( prefix ){
                     hapFileName.final = paste(prefix, ".final.hap",    sep = "")
 #                    dicLogFileName  = paste(prefix, "dic.log", sep = "")
                     ) )
-
+    } else {
+        return(NULL)
+    }
 }
 
 

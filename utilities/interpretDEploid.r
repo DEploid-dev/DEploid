@@ -33,10 +33,9 @@ myPlafInfo = extractPLAF( myInput$plafFileName )
 
 myExcludeInfo = fun.extract.exclude (myInput$excludeFileName, myInput$excludeBool)
 
-fun.interpretDEploid.LassoIBD(myCoverageInfo, myPlafInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool)
-
-
-
+if (FALSE) {
+    fun.interpretDEploid.LassoIBD(myCoverageInfo, myPlafInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool)
+}
 
 if ( myInput$skip1Bool == FALSE ){
     fun.interpretDEploid.1 (myCoverageInfo, myPlafInfo, myInput$dEploidPrefix, myInput$outPrefix, myExcludeInfo, myInput$pdfBool)
