@@ -929,7 +929,7 @@ void DEploidIO::dEploidLasso() {
         for (size_t i = 0; i < min(dummy.choiceIdx.size(), lassoMaxNumPanel()); i++) {
             newHeader.push_back(panel->header_[dummy.choiceIdx[i]]);
         }
-newHeader.push_back("3d7");
+        newHeader.push_back("3d7");
 
         vector < vector <double> > newPanel;
         for (size_t i = 0; i < dummy.reducedPanel.size(); i++) {
@@ -937,7 +937,7 @@ newHeader.push_back("3d7");
             for (size_t j = 0; j < min(dummy.choiceIdx.size(), lassoMaxNumPanel()); j++) {
                 tmpRow.push_back(dummy.reducedPanel[i][j]);
             }
-tmpRow.push_back(static_cast<int>(0));
+            tmpRow.push_back(static_cast<int>(0));
             newPanel.push_back(tmpRow);
         }
 
@@ -1075,7 +1075,7 @@ void DEploidIO::computeObsWsaf() {
 }
 
 
-void DEploidIO::dEploidLassoTrimfirst() {
+void DEploidIO::dEploidLassoTrimfirst() {  // This is trimming using VQSLOD
     this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
     this->trimming(this->vcfReaderPtr_->legitVqslodAt);
 
