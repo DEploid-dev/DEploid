@@ -342,10 +342,14 @@ fun.dataExplore <- function (coverage, PLAF, prefix = "", pdfBool, threshold = 0
         pdf ( paste ( prefix, "altVsRefAndWSAFvsPLAF.pdf", sep = "" ), width = 30, height = 20)
     } else {
         cexSize = 2.5
-        png ( paste ( prefix, "altVsRefAndWSAFvsPLAF.png", sep = "" ), width = 1800, height = 1200)
+        png ( paste ( prefix, "altVsRefAndWSAFvsPLAF.png", sep = "" ), width = 1800, height = 1500)
     }
 
-    layout(matrix(c(1,1,1,2,3,4), 2, 3, byrow = TRUE))
+    layout(matrix(c(1,1,1,
+                    1,1,1,
+                    2,3,4,
+                    2,3,4,
+                    5,5,5), 5, 3, byrow = TRUE))
     par(mar = c(5,7,7,4))
 
     badGuys = plot.total.coverage(ref, alt, coverage$CHROM, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize, threshold, window.size)
@@ -364,6 +368,17 @@ fun.dataExplore <- function (coverage, PLAF, prefix = "", pdfBool, threshold = 0
 
     plotWSAFvsPLAF ( PLAF, obsWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize, potentialOutliers = badGuys  )
 
+    plot(obsWSAF, cex.lab = cexSize, cex.main = cexSize, cex.axis = cexSize, ylab = "WSAF", type = "n")
+    chromSize = table(coverage$CHROM)
+    pf_x = c(0, cumsum(chromSize))
+    pf_chromCol = (as.numeric(as.factor(names(chromSize))) %% 2 )
+    pf_chromCol[pf_chromCol==1] = NA
+    pf_chromCol[pf_chromCol==0] = 8
+    rect(pf_x[-1],
+         0,
+         pf_x[-length(pf_x)],
+         1, col = pf_chromCol)
+    points(obsWSAF, cex = 0.5)
     dev.off()
 }
 
