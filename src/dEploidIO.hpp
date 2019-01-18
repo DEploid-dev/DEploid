@@ -71,6 +71,7 @@ class DEploidIO{
     void chromPainting ();
     bool doLsPainting() const { return this->doLsPainting_; }
     bool doIbdPainting() const { return this->doIbdPainting_; }
+    bool doIbdViterbiPainting() const { return this->doIbdViterbiPainting_;}
     bool doComputeLLK() const { return this->doComputeLLK_; }
     void computeLLKfromInitialHap();
 
@@ -81,6 +82,7 @@ class DEploidIO{
     bool useBestPractice() const { return this->useBestPractice_;}
 
     void paintIBD();
+    void paintIBDviterbi();
     double ibdLLK_;
     void getIBDprobsIntegrated(vector < vector <double> > &prob);
     // Lasso related
@@ -171,6 +173,7 @@ class DEploidIO{
     bool doAllowInbreeding_;
     bool doLsPainting_;
     bool doIbdPainting_;
+    bool doIbdViterbiPainting_;
 
     bool useIBD_;
     bool useIbdOnly_;
@@ -257,6 +260,7 @@ class DEploidIO{
     string strIbdExportLLK;
     string strIbdExportHap;
     string strIbdExportProbs;
+    string strIbdExportViterbi;
 
     string strExportSingleFwdProbPrefix;
     string strExportPairFwdProb;
@@ -335,6 +339,8 @@ class DEploidIO{
 
     void setDoLsPainting ( const bool setTo ) { this->doLsPainting_ = setTo; }
     void setDoIbdPainting ( const bool setTo ) { this->doIbdPainting_ = setTo; }
+    void setDoIbdViterbiPainting ( const bool setTo ) { this->doIbdViterbiPainting_ = setTo; }
+
     void setUseIBD( const bool setTo) { this->useIBD_ = setTo; }
     void setUseIbdOnly(const bool setTo) { this->useIbdOnly_ = setTo;}
     void setUseLasso( const bool setTo) { this->useLasso_ = setTo; }
@@ -358,6 +364,7 @@ class DEploidIO{
     // log and export resutls
     void writeRecombProb ( Panel * panel );
     void writeIBDpostProb(vector < vector <double> > & reshapedProbs, vector <string> header);
+    void writeIBDviterbi(vector <size_t> & viterbiState);
     vector <string> ibdProbsHeader;
     vector <double> ibdProbsIntegrated;
 

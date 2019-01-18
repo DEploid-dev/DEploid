@@ -309,6 +309,36 @@ void DEploidIO::writeIBDpostProb(vector < vector <double> > & reshapedProbs, vec
 }
 
 
+void DEploidIO::writeIBDviterbi(vector <size_t> & viterbiState){
+    ostream * writeTo;
+    #ifdef UNITTEST
+        writeTo = &std::cout;
+    #endif
+
+    #ifndef UNITTEST
+        ofstreamExportTmp.open( strIbdExportViterbi.c_str(), ios::out | ios::app | ios::binary );
+        writeTo = &ofstreamExportTmp;
+    #endif
+
+    (*writeTo) << "CHROM" << "\t" << "POS" << "\t" << "viterbi" << "\n" ;
+
+    size_t siteIndex = 0;
+    for ( size_t chromIndex = 0; chromIndex < position_.size(); chromIndex++){
+        for ( size_t posI = 0; posI < position_[chromIndex].size(); posI++){
+            (*writeTo) << chrom_[chromIndex] << "\t"
+                       << (int)position_[chromIndex][posI] << "\t"
+                       << (int)viterbiState[siteIndex] << "\n";
+            siteIndex++;
+        }
+    }
+    assert(siteIndex == nLoci());
+
+    #ifndef UNITTEST
+        ofstreamExportTmp.close();
+    #endif
+}
+
+
 void DEploidIO::paintIBD(){
     vector <double> goodProp;
     vector <size_t> goodStrainIdx;
@@ -359,6 +389,57 @@ void DEploidIO::paintIBD(){
     }
 
     this->writeIBDpostProb(tmpIBDpath.fwdbwd, this->ibdProbsHeader);
+}
+
+
+void DEploidIO::paintIBDviterbi(){
+    cout << "paintIBDviterbi start"<<endl;
+
+    vector <double> goodProp;
+    vector <size_t> goodStrainIdx;
+
+    if ( this->doIbdViterbiPainting() ){
+        this->finalProp = this->initialProp;
+    }
+
+    for ( size_t i = 0; i < this->finalProp.size(); i++){
+        if (this->finalProp[i] > 0.01){
+            goodProp.push_back(this->finalProp[i]);
+            goodStrainIdx.push_back(i);
+        }
+    }
+
+    if (goodProp.size() == 1){
+        return;
+    }
+
+    DEploidIO tmpDEploidIO; // (*this);
+    tmpDEploidIO.setKstrain(goodProp.size());
+    tmpDEploidIO.setInitialPropWasGiven(true);
+    tmpDEploidIO.initialProp = goodProp;
+    tmpDEploidIO.finalProp = goodProp;
+    tmpDEploidIO.refCount_ = this->refCount_;
+    tmpDEploidIO.altCount_ = this->altCount_;
+    tmpDEploidIO.plaf_ = this->plaf_;
+    tmpDEploidIO.nLoci_= this->nLoci();
+    tmpDEploidIO.position_ = this->position_;
+    tmpDEploidIO.chrom_ = this->chrom_;
+    // tmpDEploidIO.useConstRecomb_ = true;
+    // tmpDEploidIO.constRecombProb_ = 0.000001;
+
+    // tmpDEploidIO.writeLog (&std::cout);
+
+    MersenneTwister tmpRg(this->randomSeed());
+    IBDpath tmpIBDpath;
+    tmpIBDpath.init(tmpDEploidIO, &tmpRg);
+
+    //tmpIBDpath.buildPathProbabilityForPainting(goodProp);
+    //tmpIBDpath.findViterbiPath(goodProp);
+    this->ibdLLK_ = tmpIBDpath.findViterbiPath(goodProp);//''tmpIBDpath.bestPath(goodProp);
+    //this->ibdProbsHeader = tmpIBDpath.getIBDprobsHeader();
+    //this->getIBDprobsIntegrated(tmpIBDpath.fm);
+
+    this->writeIBDviterbi(tmpIBDpath.ibdConfigurePath);
 }
 
 

@@ -510,6 +510,48 @@ double IBDpath::bestPath(vector <double> proportion, double err) {
 }
 
 
+double IBDpath::findViterbiPath(vector <double> proportion, double err) {
+
+    vector <double> effectiveKPrior = vector <double> (this->hprior.nPattern(),
+                                                1.0/this->hprior.nPattern());
+    vector <double> statePrior = this->computeStatePrior(effectiveKPrior);
+    // First building the path likelihood
+    this->computeIbdPathFwdProb(proportion, statePrior);
+    // Reshape Fwd
+    vector < vector <double>> reshapedFwd = reshapeProbs(this->fm);
+
+    for ( size_t i = 0; i < nLoci(); i++ ) {
+        vector <double > prob = reshapedFwd[i];
+        size_t indx = distance(prob.begin(),
+                       max_element(prob.begin(), prob.end()));
+        ibdConfigurePath[i] = indx;
+    }
+
+    double sumLLK = 0.0;
+    for (size_t i = 0; i < nLoci(); i++) {
+        vector <double> tmp;
+        for (size_t j = 0; j < fm[i].size(); j++) {
+            tmp.push_back(exp(log(fm[i][j])));
+        }
+        normalizeBySum(tmp);
+        size_t indx = distance(tmp.begin(),
+                               max_element(tmp.begin(), tmp.end()));
+
+        vector <int> hSetI = this->hprior.hSet[indx];
+        double qs = 0;
+        for (size_t j = 0; j < this->kStrain(); j++) {
+            qs += static_cast<double>(hSetI[j]) * proportion[j];
+        }
+        double qs2 = qs*(1-err) + (1-qs)*err;
+
+        if ( (qs > 0) & (qs < 1) ) {
+            sumLLK += logBetaPdf(qs2, this->llkSurf[i][0], this->llkSurf[i][1]);
+        }
+    }
+    return sumLLK;
+}
+
+
 void IBDpath::combineFwdBwd(const vector < vector <double>> &reshapedFwd,
                             const vector < vector <double>> &reshapedBwd) {
     for (size_t i = 0; i < nLoci(); i++) {
