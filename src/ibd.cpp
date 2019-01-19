@@ -311,6 +311,7 @@ void IBDpath::init(const DEploidIO &dEploidIO, RandomGenerator* rg) {
 
     // initialize ibdConfigurePath
     this->ibdConfigurePath = vector <size_t> (this->nLoci());
+    this->viterbiPath = vector <size_t> (this->nLoci());
 
     // initialize recombination probabilities;
     this->ibdRecombProbs = IBDrecombProbs(dEploidIO.position_,
@@ -465,6 +466,9 @@ void IBDpath::computeIbdPathFwdProb(vector <double> proportion,
 
         lk = computeLlkOfStatesAtSiteI(proportion, siteI);
         this->updateFmAtSiteI(vPrior, lk);
+
+        viterbiPath[siteI] = distance(fSumState.begin(),
+                       max_element(fSumState.begin(), fSumState.end()));
     }
 }
 
@@ -517,15 +521,6 @@ double IBDpath::findViterbiPath(vector <double> proportion, double err) {
     vector <double> statePrior = this->computeStatePrior(effectiveKPrior);
     // First building the path likelihood
     this->computeIbdPathFwdProb(proportion, statePrior);
-    // Reshape Fwd
-    vector < vector <double>> reshapedFwd = reshapeProbs(this->fm);
-
-    for ( size_t i = 0; i < nLoci(); i++ ) {
-        vector <double > prob = reshapedFwd[i];
-        size_t indx = distance(prob.begin(),
-                       max_element(prob.begin(), prob.end()));
-        ibdConfigurePath[i] = indx;
-    }
 
     double sumLLK = 0.0;
     for (size_t i = 0; i < nLoci(); i++) {

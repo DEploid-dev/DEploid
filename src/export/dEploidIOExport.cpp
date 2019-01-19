@@ -393,8 +393,6 @@ void DEploidIO::paintIBD(){
 
 
 void DEploidIO::paintIBDviterbi(){
-    cout << "paintIBDviterbi start"<<endl;
-
     vector <double> goodProp;
     vector <size_t> goodStrainIdx;
 
@@ -424,8 +422,8 @@ void DEploidIO::paintIBDviterbi(){
     tmpDEploidIO.nLoci_= this->nLoci();
     tmpDEploidIO.position_ = this->position_;
     tmpDEploidIO.chrom_ = this->chrom_;
-    // tmpDEploidIO.useConstRecomb_ = true;
-    // tmpDEploidIO.constRecombProb_ = 0.000001;
+     //tmpDEploidIO.useConstRecomb_ = true;
+     //tmpDEploidIO.constRecombProb_ = 0.000001;
 
     // tmpDEploidIO.writeLog (&std::cout);
 
@@ -439,7 +437,7 @@ void DEploidIO::paintIBDviterbi(){
     //this->ibdProbsHeader = tmpIBDpath.getIBDprobsHeader();
     //this->getIBDprobsIntegrated(tmpIBDpath.fm);
 
-    this->writeIBDviterbi(tmpIBDpath.ibdConfigurePath);
+    this->writeIBDviterbi(tmpIBDpath.viterbiPath);
 }
 
 

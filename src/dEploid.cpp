@@ -49,9 +49,7 @@ int main(int argc, char *argv[]) {
         } else if (dEploidIO.doIbdPainting()) {
             dEploidIO.paintIBD();
         } else if (dEploidIO.doIbdViterbiPainting()) {
-            cout<< "start"<<endl;
             dEploidIO.paintIBDviterbi();
-            cout<< "end"<<endl;
         } else if (dEploidIO.useLasso()) {  // DEploid-Lasso
             dEploidIO.dEploidLasso();
             MersenneTwister lassoRg(dEploidIO.randomSeed());

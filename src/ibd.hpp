@@ -136,6 +136,7 @@ class IBDpath{
     vector < vector <double> > fm;
     vector <double> fSumState;
     vector <size_t> ibdConfigurePath;
+    vector <size_t> viterbiPath;
 
     vector < vector <double> > bwd;
     vector < vector <double> > fwdbwd;
