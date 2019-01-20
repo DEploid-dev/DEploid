@@ -136,6 +136,7 @@ class IBDpath{
     vector < vector <double> > fm;
     vector <double> fSumState;
     vector <size_t> ibdConfigurePath;
+    vector <size_t> viterbiPath;
 
     vector < vector <double> > bwd;
     vector < vector <double> > fwdbwd;
@@ -193,6 +194,7 @@ class IBDpath{
     vector < vector <double> > reshapeProbs(
                               const vector < vector <double> >& probs);
     double bestPath(vector <double> proportion, double err = 0.01);
+    double findViterbiPath(vector <double> proportion, double err = 0.01);
 
  public:
     vector <string> getIBDprobsHeader();

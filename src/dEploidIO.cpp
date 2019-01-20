@@ -120,6 +120,7 @@ void DEploidIO::init() {
     this->setDoExportPostProb( false );
     this->setDoLsPainting( false );
     this->setDoIbdPainting( false );
+    this->setDoIbdViterbiPainting(false);
     this->setUseIBD( false );
     this->setUseIbdOnly(false);
     this->setUseLasso( false );
@@ -189,7 +190,7 @@ void DEploidIO::reInit() {
 
 
 void DEploidIO::finalize() {
-    if ( this->doIbdPainting() | this->doComputeLLK() ) {
+    if ( this->doIbdPainting() | this->doComputeLLK() | this->doIbdViterbiPainting() ) {
         if (!initialPropWasGiven()) {
             throw InitialPropUngiven("");
         }
@@ -291,6 +292,7 @@ void DEploidIO::removeFilesWithSameName() {
         //strIbdExportLLK = this->prefix_ + ".ibd.llk";
         //strIbdExportHap = this->prefix_ + ".ibd.hap";
         strIbdExportProbs = this->prefix_ + ".ibd.probs";
+        strIbdExportViterbi = this->prefix_ + ".viterbi";
     //}
 
 
@@ -311,6 +313,7 @@ void DEploidIO::removeFilesWithSameName() {
         //remove(strExportProp.c_str());
         remove(strExportExtra.c_str());
         remove(strIbdExportProbs.c_str());
+        remove(strIbdExportViterbi.c_str());
     }
 
     if (this->doLsPainting() || this->doExportPostProb() ) {
@@ -476,6 +479,8 @@ void DEploidIO::parse () {
             this->setDoComputeLLK( true );
         } else if ( *argv_i == "-ibdPainting" ) {
             this->setDoIbdPainting( true );
+        } else if ( *argv_i == "-ibdViterbi" ) {
+            this->setDoIbdViterbiPainting( true );
         } else if ( *argv_i == "-skipCheckingInitialP" ) {
             this->setPleaseCheckInitialP(false);
         } else if ( *argv_i == "-initialP" ) {

@@ -320,7 +320,7 @@ void IBDrecombProbs::computeRecombProbs( double averageCentimorganDistance, doub
             geneticDistance = (double)(this->position_[i][j] - this->position_[i][j-1])/averageMorganDistance ;
             //rho = geneticDistance * 2 * Ne;
             rho = geneticDistance * G;
-            double pRecTmp = ( useConstRecomb ) ? constRecombProb : 1.0 - exp(-rho);
+            double pRecTmp = ( useConstRecomb ) ? constRecombProb : (1.0 - exp(-rho));
             this->pRec_.push_back( pRecTmp );
             double pNoRecTmp = 1.0 - pRecTmp;
             this->pNoRec_.push_back( pNoRecTmp );

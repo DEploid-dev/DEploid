@@ -311,6 +311,7 @@ void IBDpath::init(const DEploidIO &dEploidIO, RandomGenerator* rg) {
 
     // initialize ibdConfigurePath
     this->ibdConfigurePath = vector <size_t> (this->nLoci());
+    this->viterbiPath = vector <size_t> (this->nLoci());
 
     // initialize recombination probabilities;
     this->ibdRecombProbs = IBDrecombProbs(dEploidIO.position_,
@@ -465,6 +466,9 @@ void IBDpath::computeIbdPathFwdProb(vector <double> proportion,
 
         lk = computeLlkOfStatesAtSiteI(proportion, siteI);
         this->updateFmAtSiteI(vPrior, lk);
+
+        viterbiPath[siteI] = distance(fSumState.begin(),
+                       max_element(fSumState.begin(), fSumState.end()));
     }
 }
 
@@ -490,6 +494,38 @@ double IBDpath::bestPath(vector <double> proportion, double err) {
         vector <double> tmp;
         for (size_t j = 0; j < fm[i].size(); j++) {
             tmp.push_back(exp(log(fm[i][j])+log(bwd[i][j])));
+        }
+        normalizeBySum(tmp);
+        size_t indx = distance(tmp.begin(),
+                               max_element(tmp.begin(), tmp.end()));
+
+        vector <int> hSetI = this->hprior.hSet[indx];
+        double qs = 0;
+        for (size_t j = 0; j < this->kStrain(); j++) {
+            qs += static_cast<double>(hSetI[j]) * proportion[j];
+        }
+        double qs2 = qs*(1-err) + (1-qs)*err;
+
+        if ( (qs > 0) & (qs < 1) ) {
+            sumLLK += logBetaPdf(qs2, this->llkSurf[i][0], this->llkSurf[i][1]);
+        }
+    }
+    return sumLLK;
+}
+
+
+double IBDpath::findViterbiPath(vector <double> proportion, double err) {
+    vector <double> effectiveKPrior = vector <double> (this->hprior.nPattern(),
+                                                1.0/this->hprior.nPattern());
+    vector <double> statePrior = this->computeStatePrior(effectiveKPrior);
+    // First building the path likelihood
+    this->computeIbdPathFwdProb(proportion, statePrior);
+
+    double sumLLK = 0.0;
+    for (size_t i = 0; i < nLoci(); i++) {
+        vector <double> tmp;
+        for (size_t j = 0; j < fm[i].size(); j++) {
+            tmp.push_back(exp(log(fm[i][j])));
         }
         normalizeBySum(tmp);
         size_t indx = distance(tmp.begin(),
