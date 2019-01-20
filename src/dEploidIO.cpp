@@ -190,7 +190,7 @@ void DEploidIO::reInit() {
 
 
 void DEploidIO::finalize() {
-    if ( this->doIbdPainting() | this->doComputeLLK() ) {
+    if ( this->doIbdPainting() | this->doComputeLLK() | this->doIbdViterbiPainting() ) {
         if (!initialPropWasGiven()) {
             throw InitialPropUngiven("");
         }

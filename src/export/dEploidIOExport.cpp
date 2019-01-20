@@ -369,6 +369,7 @@ void DEploidIO::paintIBD(){
     tmpDEploidIO.nLoci_= this->nLoci();
     tmpDEploidIO.position_ = this->position_;
     tmpDEploidIO.chrom_ = this->chrom_;
+    tmpDEploidIO.setParameterG(this->parameterG());
     // tmpDEploidIO.useConstRecomb_ = true;
     // tmpDEploidIO.constRecombProb_ = 0.000001;
 
@@ -422,6 +423,7 @@ void DEploidIO::paintIBDviterbi(){
     tmpDEploidIO.nLoci_= this->nLoci();
     tmpDEploidIO.position_ = this->position_;
     tmpDEploidIO.chrom_ = this->chrom_;
+    tmpDEploidIO.setParameterG(this->parameterG());
      //tmpDEploidIO.useConstRecomb_ = true;
      //tmpDEploidIO.constRecombProb_ = 0.000001;
 
