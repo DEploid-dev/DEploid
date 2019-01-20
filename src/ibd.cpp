@@ -515,7 +515,6 @@ double IBDpath::bestPath(vector <double> proportion, double err) {
 
 
 double IBDpath::findViterbiPath(vector <double> proportion, double err) {
-
     vector <double> effectiveKPrior = vector <double> (this->hprior.nPattern(),
                                                 1.0/this->hprior.nPattern());
     vector <double> statePrior = this->computeStatePrior(effectiveKPrior);
