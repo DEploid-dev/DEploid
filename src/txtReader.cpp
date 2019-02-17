@@ -33,47 +33,79 @@
 using std::min;
 
 void TxtReader::readFromFileBase(const char inchar[]) {
-    fileName = string(inchar);
-    tmpChromInex_ = -1;
+    this->fileName_ = string(inchar);
+    this->checkFileCompressed();
 
-    ifstream in_file(inchar);
-    string tmp_line;
-    if (in_file.good()) {
-        // skip the first line, which is the header
-        getline(in_file, tmp_line);
-        this->extractHeader(tmp_line);
-        getline(in_file, tmp_line);
-        while (tmp_line.size() > 0) {
-            size_t field_start = 0;
-            size_t field_end = 0;
-            size_t field_index = 0;
-            vector <double> contentRow;
-            while (field_end < tmp_line.size()) {
-                field_end = min(
-                    min(tmp_line.find(',', field_start),
-                        tmp_line.find('\t', field_start)),
-                        tmp_line.find('\n', field_start));
+    if (this->isCompressed()) {
+        this->inFileGz.open(this->fileName_.c_str(), std::ios::in);
+    } else {
+        this->inFile.open(this->fileName_.c_str(), std::ios::in);
+    }
 
-                string tmp_str = tmp_line.substr(field_start,
-                    field_end - field_start);
-                if (field_index > 1) {
-                    contentRow.push_back(strtod(tmp_str.c_str(), NULL));
-                } else if (field_index == 0) {
-                    this->extractChrom(tmp_str);
-                } else if (field_index == 1) {
-                    this->extractPOS(tmp_str);
-                }
-
-                field_start = field_end+1;
-                field_index++;
-            }
-            this->content_.push_back(contentRow);
-            getline(in_file, tmp_line);
+    if (this->isCompressed()) {
+        if (!inFileGz.good()) {
+            throw InvalidInputFile(this->fileName_);
         }
     } else {
-        throw InvalidInputFile(fileName);
+        if (!inFile.good()) {
+            throw InvalidInputFile(this->fileName_);
+        }
     }
-    in_file.close();
+
+    tmpChromInex_ = -1;
+    string tmp_line;
+    // skip the first line, which is the header
+    if (this->isCompressed()) {
+        getline(inFileGz, tmp_line);
+    } else {
+        getline(inFile, tmp_line);
+    }
+    this->extractHeader(tmp_line);
+
+    if (this->isCompressed()) {
+        getline(inFileGz, tmp_line);
+    } else {
+        getline(inFile, tmp_line);
+    }
+
+    while (inFile.good() && tmp_line.size() > 0) {
+        size_t field_start = 0;
+        size_t field_end = 0;
+        size_t field_index = 0;
+        vector <double> contentRow;
+        while (field_end < tmp_line.size()) {
+            field_end = min(
+                min(tmp_line.find(',', field_start),
+                    tmp_line.find('\t', field_start)),
+                    tmp_line.find('\n', field_start));
+
+            string tmp_str = tmp_line.substr(field_start,
+                field_end - field_start);
+            if (field_index > 1) {
+                contentRow.push_back(strtod(tmp_str.c_str(), NULL));
+            } else if (field_index == 0) {
+                this->extractChrom(tmp_str);
+            } else if (field_index == 1) {
+                this->extractPOS(tmp_str);
+            }
+
+            field_start = field_end+1;
+            field_index++;
+        }
+        this->content_.push_back(contentRow);
+
+        if (this->isCompressed()) {
+            getline(inFileGz, tmp_line);
+        } else {
+            getline(inFile, tmp_line);
+        }
+    }
+
+    if (this->isCompressed()) {
+        this->inFileGz.close();
+    } else {
+        this->inFile.close();
+    }
 
     this->position_.push_back(this->tmpPosition_);
 
@@ -88,7 +120,23 @@ void TxtReader::readFromFileBase(const char inchar[]) {
     assert(tmpChromInex_ > -1);
     assert(chrom_.size() == position_.size());
     assert(this->doneGetIndexOfChromStarts_ == true);
-    this->checkSortedPositions(this->fileName);
+    this->checkSortedPositions(this->fileName_);
+}
+
+
+void TxtReader::checkFileCompressed() {
+    FILE *f = NULL;
+    f = fopen(this->fileName_.c_str(), "rb");
+    if (f == NULL) {
+        throw InvalidInputFile(this->fileName_);
+    }
+
+    unsigned char magic[2];
+
+    fread(reinterpret_cast<void *>(magic), 1, 2, f);
+    this->setIsCompressed((static_cast<int>(magic[0]) == 0x1f) &&
+                          (static_cast<int>(magic[1]) == 0x8b));
+    fclose(f);
 }
 
 
@@ -138,18 +186,18 @@ void TxtReader::extractChrom(const string & tmp_str) {
 
 void TxtReader::extractPOS(const string & tmp_str) {
     if (tmp_str.find("e") != std::string::npos) {
-        throw BadScientificNotation(tmp_str, fileName);
+        throw BadScientificNotation(tmp_str, this->fileName_);
     }
 
     if (tmp_str.find("E") != std::string::npos) {
-        throw BadScientificNotation(tmp_str, fileName);
+        throw BadScientificNotation(tmp_str, this->fileName_);
     }
 
     int ret;
     try {
         ret = stoi(tmp_str.c_str(), NULL);
     } catch ( const std::exception &e) {
-        throw BadConversion(tmp_str, fileName);
+        throw BadConversion(tmp_str, this->fileName_);
     }
     this->tmpPosition_.push_back(ret);
 }
