@@ -7,6 +7,7 @@ class TestTxtReader : public CppUnit::TestCase {
     CPPUNIT_TEST( testMainConstructor );
     CPPUNIT_TEST( checkSizeBefore );
     CPPUNIT_TEST( checkInfo );
+    CPPUNIT_TEST(compressed_checkInfo);
     CPPUNIT_TEST( checkRemoveMarkers );
     CPPUNIT_TEST( checkSizeAfter );
     CPPUNIT_TEST( checkSortedPositions );
@@ -132,6 +133,57 @@ class TestTxtReader : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL ( (double)60, this->txtReader_->info_[95-2] );
         CPPUNIT_ASSERT_EQUAL ( (double)60, this->txtReader_->content_[95-2][0] );
     }
+
+
+    void compressed_checkInfo(){
+        TxtReader gztxtReader;
+        gztxtReader.readFromFile("data/testData/txtReaderForTesting.txt.gz" );
+        //Pf3D7_01_v3	93157	0
+        CPPUNIT_ASSERT_EQUAL ( (int)93157, gztxtReader.position_[0][0] );
+        CPPUNIT_ASSERT_EQUAL ( (double)0, gztxtReader.info_[0] );
+        CPPUNIT_ASSERT_EQUAL ( (double)0, gztxtReader.content_[0][0] );
+
+        //Pf3D7_01_v3	95518	46
+        CPPUNIT_ASSERT_EQUAL ( (int)95518, gztxtReader.position_[0][4] );
+        CPPUNIT_ASSERT_EQUAL ( (double)46, gztxtReader.info_[6-2] );
+        CPPUNIT_ASSERT_EQUAL ( (double)46, gztxtReader.content_[6-2][0] );
+
+        //Pf3D7_02_v3	100608	35
+        CPPUNIT_ASSERT_EQUAL ( (int)100608, gztxtReader.position_[1][0] );
+        CPPUNIT_ASSERT_EQUAL ( (double)35, gztxtReader.info_[14-2] );  // it is at line 14 in the file, minus 1 for the header, minus another 1 for 0-indexing
+        CPPUNIT_ASSERT_EQUAL ( (double)35, gztxtReader.content_[14-2][0] );
+
+        //Pf3D7_02_v3	107823	0
+        CPPUNIT_ASSERT_EQUAL ( (int)107823, gztxtReader.position_[1][4] );
+        CPPUNIT_ASSERT_EQUAL ( (double)0, gztxtReader.info_[18-2] );
+        CPPUNIT_ASSERT_EQUAL ( (double)0, gztxtReader.content_[18-2][0] );
+
+        //Pf3D7_02_v3	111040	20
+        CPPUNIT_ASSERT_EQUAL ( (int)111040, gztxtReader.position_[1][5] );
+        CPPUNIT_ASSERT_EQUAL ( (double)20, gztxtReader.info_[19-2] );
+        CPPUNIT_ASSERT_EQUAL ( (double)20, gztxtReader.content_[19-2][0] );
+
+        //Pf3D7_02_v3	114473	49
+        CPPUNIT_ASSERT_EQUAL ( (int)114473, gztxtReader.position_[1][9] );
+        CPPUNIT_ASSERT_EQUAL ( (double)49, gztxtReader.info_[23-2] );
+        CPPUNIT_ASSERT_EQUAL ( (double)49, gztxtReader.content_[23-2][0] );
+
+        //Pf3D7_04_v3	144877	47
+        CPPUNIT_ASSERT_EQUAL ( (int)144877, gztxtReader.position_[3][0] );
+        CPPUNIT_ASSERT_EQUAL ( (double)47, gztxtReader.info_[47-2] );
+        CPPUNIT_ASSERT_EQUAL ( (double)47, gztxtReader.content_[47-2][0] );
+
+        //Pf3D7_06_v3	180170	63
+        CPPUNIT_ASSERT_EQUAL ( (int)180170, gztxtReader.position_[5][0] );
+        CPPUNIT_ASSERT_EQUAL ( (double)63, gztxtReader.info_[91-2] );
+        CPPUNIT_ASSERT_EQUAL ( (double)63, gztxtReader.content_[92-2][0] );
+
+        //Pf3D7_06_v3	180183	60
+        CPPUNIT_ASSERT_EQUAL ( (int)180183, gztxtReader.position_[5][4] );
+        CPPUNIT_ASSERT_EQUAL ( (double)60, gztxtReader.info_[95-2] );
+        CPPUNIT_ASSERT_EQUAL ( (double)60, gztxtReader.content_[95-2][0] );
+    }
+
 
     void checkRemoveMarkers(){
         CPPUNIT_ASSERT_NO_THROW ( this->txtReader_->findAndKeepMarkers (excludedMarkers_) );

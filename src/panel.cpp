@@ -98,7 +98,7 @@ Panel::Panel(const Panel &copyFrom){
 
     inbreedingPanelSize_ = copyFrom.inbreedingPanelSize_;
 
-    fileName = copyFrom.fileName;
+    this->fileName_ = copyFrom.fileName_;
     for (size_t i = 0; i < copyFrom.header_.size(); i++){
         header_.push_back(copyFrom.header_[i]);
     }
