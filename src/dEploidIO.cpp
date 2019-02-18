@@ -1082,6 +1082,15 @@ void DEploidIO::computeObsWsaf() {
 
 
 void DEploidIO::dEploidLassoTrimfirst() {  // This is trimming using VQSLOD
+    if (vcfReaderPtr_ == NULL){
+        panel = new Panel (*panel);
+        panel->computeRecombProbs(this->averageCentimorganDistance(), this->parameterG(), true, 0.0000001, this->forbidCopyFromSame());
+        this->dEploidLasso();
+        this->setIsCopied(false);
+        this->excludedMarkers = NULL;
+        return;
+    }
+
     this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
     this->trimming(this->vcfReaderPtr_->legitVqslodAt);
 
@@ -1150,6 +1159,12 @@ tmpRow.push_back(static_cast<int>(0));
 
 
 void DEploidIO::ibdTrimming() {
+    if (vcfReaderPtr_ == NULL){
+        panel = new Panel(*panel);
+        this->setIsCopied(false);
+        this->excludedMarkers = NULL;
+        return;
+    }
     // Filter SNPs first
     //cout << "here" <<endl;
     this->vcfReaderPtr_->findLegitSnpsGivenVQSLOD(this->vqslod());
