@@ -80,7 +80,7 @@ void ChooseK::findKmode() {
 vector <double> ChooseK::chosenP() {
     this->findKmode();
     size_t idx = 0;
-    if (this->ks.size() > 1){
+    if (this->ks.size() > 1) {
         idx = max_at_;
         for (size_t i = idx; i < this->ks.size(); i++) {
             if (ks[i] == ks[idx]) {
