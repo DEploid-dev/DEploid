@@ -35,6 +35,7 @@ Afterwards you can clone the code from the github repository,
 ```bash
 $ git clone git@github.com:mcveanlab/DEploid.git
 $ cd DEploid
+$ git submodule update --init --recursive --remote
 ```
 
 and build the binary using
