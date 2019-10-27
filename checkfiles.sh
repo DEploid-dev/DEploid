@@ -13,7 +13,7 @@ fi
 OS=`uname -s`
 #echo "operating system is ${OS}"
 # VERSION=$(cat VERSION | tr -d '\n')
-VERSION=v0.1-release
+VERSION=0.1-release
 echo -n "." # echo "ok not git clone, now check plot and figure"
 
 #rm master.tar.gz  # just making sure download the one we actually want to
@@ -21,32 +21,31 @@ echo -n "." # echo "ok not git clone, now check plot and figure"
 extract_submodule_from(){
  account=$1
  submodule=$2
- plactto=$3
+ placeto=$3
  echo "Extract submodule $submodule from account $account, place at $3"
  if [ ! -d ${submodule}_dir ]; then mkdir ${submodule}_dir; fi
  echo -n "." # echo "ok, do something" #
 
  if [[ "${OS}" == "Linux" ]]; then
-   wget --no-check-certificate https://github.com/${account}/${submodule}/archive/${VERSION}.tar.gz -o /dev/null
+   wget --no-check-certificate https://github.com/${account}/${submodule}/archive/v${VERSION}.tar.gz -o /dev/null
  elif [[ "${OS}" == "Darwin"* ]]; then
-   curl -LOk https://github.com/${account}/${submodule}/archive/${VERSION}.tar.gz
+   curl -LOk https://github.com/${account}/${submodule}/archive/v${VERSION}.tar.gz
  else
-   echo "Unknown OS, fail to download package from https://github.com/${account}/${submodule}/archive/${VERSION}.tar.gz"
+   echo "Unknown OS, fail to download package from https://github.com/${account}/${submodule}/archive/v${VERSION}.tar.gz"
    echo "Please contact Joe at sha.joe.zhu@gmail.com if assistance is needed"
    exit 1
  fi
 ls *gz
 
- if [ ! -f ${VERSION}.tar.gz ]; then
-   echo "Error: Download package from https://github.com/${account}/${submodule}/archive/${VERSION}.tar.gz failed"
+ if [ ! -f v${VERSION}.tar.gz ]; then
+   echo "Error: Download package from https://github.com/${account}/${submodule}/archive/v${VERSION}.tar.gz failed"
    echo "Please contact Joe at sha.joe.zhu@gmail.com if assistance is needed"
    exit 1
  fi
- tar -xf ${VERSION}.tar.gz -C ${submodule}_dir
+ tar -xf v${VERSION}.tar.gz -C ${submodule}_dir
  if [ ! -d ${placeto} ]; then mkdir ${placeto}; fi
- # ls  ${submodule}_dir/*
- cp -r ${submodule}_dir/* ${placeto}/
- rm -r ${submodule}_dir ${VERSION}.tar.gz
+ cp -r ${submodule}_dir/${submodule}-${VERSION}/* ${placeto}/
+ rm -r ${submodule}_dir v${VERSION}.tar.gz
 }
 
 
