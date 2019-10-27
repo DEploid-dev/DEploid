@@ -41,7 +41,7 @@ script:
   - if [ $TRAVIS_OS_NAME == linux ]; then cd docs/doxygen; doxygen Doxyfile; cd ../..; fi
   - rm -r *
   - wget --no-check-certificate https://github.com/DEploid-dev/DEploid/archive/master.tar.gz -o /dev/null
-  - tar -xf dev.tar.gz
+  - tar -xf master.tar.gz
   - mv DEploid-dev/* .
   - ./bootstrap
   - make DEploid
