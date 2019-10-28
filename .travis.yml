@@ -44,7 +44,9 @@ script:
   - tar -xf issue309.tar.gz
   - mv DEploid-issue309/* .
   - ./bootstrap
-  - make 
-  - make check
+  - make; make check
+  - cd; cd DEploid-issue309
+  - ./bootstrap
+  - make; make check
 after_success:
   - coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --exclude src/gzstream/ --gcov-options '\-lp'
