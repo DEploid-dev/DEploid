@@ -40,15 +40,15 @@ script:
   - ./tests/test_binaryReproducible.sh
   - if [ $TRAVIS_OS_NAME == linux ]; then cd docs/doxygen; doxygen Doxyfile; cd ../..; fi
   - rm -r *
-  - wget --no-check-certificate https://github.com/DEploid-dev/DEploid/archive/issue309.tar.gz -o /dev/null
-  - tar -xf issue309.tar.gz
-  - cd DEploid-issue309
+  - wget --no-check-certificate https://github.com/DEploid-dev/DEploid/archive/master.tar.gz -o /dev/null
+  - tar -xf master.tar.gz
+  - cd DEploid-master
   - ./bootstrap
   - make; make check
   - cd ..; rm -r *
-  - wget --no-check-certificate https://github.com/DEploid-dev/DEploid/archive/issue309.tar.gz -o /dev/null
-  - tar -xf issue309.tar.gz
-  - mv DEploid-issue309/* .
+  - wget --no-check-certificate https://github.com/DEploid-dev/DEploid/archive/master.tar.gz -o /dev/null
+  - tar -xf master.tar.gz
+  - mv DEploid-master/* .
   - ./bootstrap
   - make; make check
 after_success:
