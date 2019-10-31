@@ -2,9 +2,26 @@
 
 rm -r Makefile Makefile.in autom4te.cache config.* depcomp install-sh missing configure aclocal.m4 .deps INSTALL compile test-driver docs/doxygen/Makefile docs/doxygen/Makefile.in
 
+root_dir=$PWD
+if [ ! -d "${root_dir}/src" ]; then
+  "Error: please execute this script from DEploid root directory"
+  exit 1
+fi
+
+echo -n "Preparing ..."
+echo ""
+echo $root_dir/.git
+# First check if this is downloaded from zip or a git clone
+if [ -d ${root_dir}/.git ]; then
+	# use git submodule to down load files
+	git submodule update --init --recursive
+else
+	./checkfiles.sh
+fi # [-f ${root_dir}/.git]
+echo " done."
+
 
 aclocal
 autoconf
 automake -a
 ./configure
-
