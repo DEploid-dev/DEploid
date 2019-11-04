@@ -126,4 +126,6 @@ utilities/interpretDEploid.r -vcf data/exampleData/PG0400-C.eg.vcf.gz \
 Benchmark
 ---------
 
-Please refer to our paper [Zhu et.al (2017)](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btx530/4091117) section [3 Validation and performance](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btx530/4091117#96977811).
+Please refer to our paper [Zhu et.al (2017)](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btx530/4091117) section [3 Validation and performance](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btx530/4091117#96977811) for benchmarking inference results on number of strains, proportions and haplotype quality.
+
+For the enhanced version -- DEploid-IBD, we compared our results against [Zhu et.al (2017)](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btx530/4091117), and conducted more experiments and validations [Zhu et.al (2019)](https://elifesciences.org/articles/40845#s2).

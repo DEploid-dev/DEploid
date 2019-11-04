@@ -15,7 +15,7 @@ DEploid
    description
    installation
    input
-   output
+   Output
    Pf3k-workflow.md
    FAQ
    Bug-report
@@ -29,4 +29,3 @@ DEploid
 .. * :ref:`genindex`
 .. * :ref:`modindex`
 .. * :ref:`search`
-
