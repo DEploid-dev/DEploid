@@ -87,7 +87,7 @@ clean-local: clean-local-check
 clean-local-check:
 	-rm -rf src/*.gc* tests/unittest/*.gc* src/*.gcov
 
-utilities: utilities/dataExplore.r utilities/interpretDEploid.r
+utilities_SOURCES = utilities/dataExplore.r utilities/interpretDEploid.r
+utilities:
 	sed -i'.bak' -e '/#!\/usr\/bin\/env Rscript/d' -e '/rm(list=ls())/d' utilities/dataExplore.r ; echo "#!/usr/bin/env Rscript" > tmpTxt; echo "rm(list=ls()); dEploidRootDir=\"$(PWD)\"" >> tmpTxt ; cat utilities/dataExplore.r >> tmpTxt ; mv tmpTxt utilities/dataExplore.r; chmod a+x utilities/dataExplore.r;
 	sed -i'.bak' -e '/#!\/usr\/bin\/env Rscript/d' -e '/rm(list=ls())/d' utilities/interpretDEploid.r; echo "#!/usr/bin/env Rscript" > tmpTxt; echo "rm(list=ls()); dEploidRootDir=\"$(PWD)\"" >> tmpTxt ; cat utilities/interpretDEploid.r >> tmpTxt ; mv tmpTxt utilities/interpretDEploid.r; chmod a+x utilities/interpretDEploid.r
-

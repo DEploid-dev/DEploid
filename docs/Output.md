@@ -31,8 +31,17 @@ When flag ``-vcfOut`` is turned on, haplotypes are saved at the final iteration 
 
 When flag ``-exportPostProb`` is turned on, posterior probabilities of the final iteration of strain [i].
 
+### DEploid-IBD
 
-Example of output interpretion
+When "flag" ``-ibd`` is used. 'DEploid' executes first learns the number of strain and their proportions with an identity by descent model ('DEploid-IBD'). Then it fixes the number of strains and proportions and train the haplotypes, and train the haplotypes using the original DEploid algorithm ('DEploid-classic'). The staged output are labelled with ".ibd" and ".classic" respectively, and followed by the prefix.
+
+
+### DEploid-BEST
+
+When "flag" ``-best`` is used. 'DEploid-BEST' executes the deconvolution algorithms in an optimised sequence to best report the number of strains, proportions and haplotypes. The program ('DEploid-Lasso') learns the number of strain with optimised reference panel; ".chooseK" is appended to the prefix for these output (NOTE: likelihood is not tracked in this case). It ('DEploid-IBD') then fixes the number of strains and tune the strain proportions with an identity by descent model; ".ibd" is appended to the prefix for these output. Finally, the program ('DEploid-Lasso') fixes the number of strains and proportions, and uses the optimised reference panel again to train and report the haplotypes; ".final" is appended to the prefix for these output. When  ``-vcfOut`` and ``-exportPostProb`` are applied, these outputs will only associate with the final haplotypes.
+
+
+Example of output interpretation
 ------------------------------
 
 ### Example 1. Standard deconvolution output
