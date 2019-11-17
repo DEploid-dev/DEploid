@@ -115,6 +115,8 @@ class DEploidIO{
     vector < vector <double> > lassoAltCount;
 
     void writeHap (vector < vector <double> > &hap, string jobbrief);
+    void writeVcf (vector < vector <double> > &hap,
+        vector <double> &prop, string jobbrief);
     bool doPrintLassoPanel_;
 
     // Trimming related
@@ -370,7 +372,6 @@ class DEploidIO{
 
     void writeLLK (McmcSample * mcmcSample, string jobbrief);
     void writeProp (McmcSample * mcmcSample, string jobbrief);
-    void writeVcf (McmcSample * mcmcSample, string jobbrief);
     void writeLastSingleFwdProb( vector < vector <double> >& probabilities, size_t chromIndex, size_t strainIndex, bool useIBD );
     void writeLastPairFwdProb( UpdatePairHap & updatePair, size_t chromIndex );
     void writeLog (ostream * writeTo );

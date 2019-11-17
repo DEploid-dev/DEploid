@@ -240,6 +240,7 @@ int main(int argc, char *argv[]) {
 
             dEploidIO.paintIBD();
             dEploidIO.writeHap(hap, "final");
+            dEploidIO.writeVcf(hap, dEploidLassoIO.initialProp, "final");
         } else {  // classic version, and DEploid-IBD
             if (dEploidIO.useIBD()) {  // ibd
                 McmcSample * ibdMcmcSample = new McmcSample();

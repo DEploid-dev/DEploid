@@ -32,7 +32,7 @@ void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample, string jobbrief, bool
     this->writeHap(mcmcSample->hap, jobbrief);
 
     if ( useIBD == false ){
-        this->writeVcf(mcmcSample, jobbrief);
+        this->writeVcf(mcmcSample->hap, mcmcSample->proportion.back(), jobbrief);
         this->siteOfTwoSwitchOne = mcmcSample->siteOfTwoSwitchOne;
         this->siteOfTwoMissCopyOne = mcmcSample->siteOfTwoMissCopyOne;
         this->siteOfTwoSwitchTwo = mcmcSample->siteOfTwoSwitchTwo;
@@ -139,7 +139,9 @@ void DEploidIO::writePanel(Panel *panel, size_t chromI, vector <string> hdr){
 
 
 
-void DEploidIO::writeVcf(McmcSample * mcmcSample, string jobbrief){
+void DEploidIO::writeVcf(vector < vector <double> > &hap,
+    vector <double> &prop,
+    string jobbrief){
     if ( !doExportVcf() ) return;
 
     this->strExportVcf = this->prefix_ + "." + jobbrief + ".vcf";
@@ -174,11 +176,11 @@ void DEploidIO::writeVcf(McmcSample * mcmcSample, string jobbrief){
     (*writeTo) << endl;
 
     // Include proportions
-    for ( size_t ii = 0; ii < kStrain_; ii++){
+    for ( size_t ii = 0; ii < prop.size(); ii++){
         (*writeTo) << "##Proportion of strain "
                    << ( this->useVcf() ? this->vcfReaderPtr_->sampleName : "h" )
                    << "." << (ii+1)
-                   << "=" << mcmcSample->proportion.back()[ii] << endl;
+                   << "=" << prop[ii] << endl;
     }
 
     // HEADER
@@ -222,19 +224,18 @@ void DEploidIO::writeVcf(McmcSample * mcmcSample, string jobbrief){
                            << "GT"                         << "\t";
             }
 
-            for ( size_t ii = 0; ii < mcmcSample->hap[siteIndex].size(); ii++){
-                (*writeTo) << mcmcSample->hap[siteIndex][ii];
-                (*writeTo) << ((ii < (mcmcSample->hap[siteIndex].size()-1)) ? "\t" : "\n") ;
+            for ( size_t ii = 0; ii < hap[siteIndex].size(); ii++){
+                (*writeTo) << hap[siteIndex][ii];
+                (*writeTo) << ((ii < (hap[siteIndex].size()-1)) ? "\t" : "\n") ;
             }
             siteIndex++;
         }
     }
 
-    assert ( siteIndex == mcmcSample->hap.size());
+    assert ( siteIndex == hap.size());
     if ( compressVcf() ){
         ogstreamExport.close();
     } else {
         ofstreamExportTmp.close();
     }
 }
-
