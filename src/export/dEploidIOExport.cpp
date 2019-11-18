@@ -183,6 +183,17 @@ void DEploidIO::writeLog ( ostream * writeTo ){
                 (*writeTo) << setw(14) << "Likelihood: "  << this->prefix_ << ".*.llk\n";
                 (*writeTo) << setw(14) << "Proportions: " << this->prefix_ << ".*.prop\n";
                 (*writeTo) << setw(14) << "Haplotypes: "  << this->prefix_ << ".*.hap\n";
+            } else if(this->useBestPractice()){
+              (*writeTo) << setw(14) << "ChooseK Haps: "  << this->prefix_ << ".chooseK.hap\n";
+              (*writeTo) << setw(14) << "IBD Haps: "  << this->prefix_ << ".ibd.hap\n";
+              (*writeTo) << setw(14) << "Final Haps: "  << this->prefix_ << ".final.hap\n";
+              (*writeTo) << setw(14) << "IBD llks: "  << this->prefix_ << ".ibd.llk\n";
+              (*writeTo) << setw(14) << "Proportions: " << this->prefix_ << ".chooseK.prop\n";
+              (*writeTo) << setw(14) << "IBD props: " << this->prefix_ << ".ibd.prop\n";
+            } else {
+              (*writeTo) << setw(14) << "Likelihood: "  << this->prefix_ << ".llk\n";
+              (*writeTo) << setw(14) << "Proportions: " << this->prefix_ << ".prop\n";
+              (*writeTo) << setw(14) << "Haplotypes: "  << this->prefix_ << ".hap\n";
             }
             if (this->ibdProbsIntegrated.size()>1){
                 (*writeTo) << setw(14) << "IBD probs: "  << strIbdExportProbs  << "\n\n";

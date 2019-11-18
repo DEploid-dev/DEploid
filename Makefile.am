@@ -8,7 +8,7 @@ EXTRA_DIST = bootstrap \
 COMPILEDATE = $(shell date -u | sed -e "s/ /-/g")
 distdir = $(PACKAGE)-$(VERSION)
 
-bin_PROGRAMS = dEploid dEploid_dbg utilities
+bin_PROGRAMS = dEploid dEploid_dbg
 
 man1_MANS = docs/_build/man/dEploid.1
 
@@ -90,4 +90,3 @@ clean-local-check:
 utilities: utilities/dataExplore.r utilities/interpretDEploid.r
 	sed -i'.bak' -e '/#!\/usr\/bin\/env Rscript/d' -e '/rm(list=ls())/d' utilities/dataExplore.r ; echo "#!/usr/bin/env Rscript" > tmpTxt; echo "rm(list=ls()); dEploidRootDir=\"$(PWD)\"" >> tmpTxt ; cat utilities/dataExplore.r >> tmpTxt ; mv tmpTxt utilities/dataExplore.r; chmod a+x utilities/dataExplore.r;
 	sed -i'.bak' -e '/#!\/usr\/bin\/env Rscript/d' -e '/rm(list=ls())/d' utilities/interpretDEploid.r; echo "#!/usr/bin/env Rscript" > tmpTxt; echo "rm(list=ls()); dEploidRootDir=\"$(PWD)\"" >> tmpTxt ; cat utilities/interpretDEploid.r >> tmpTxt ; mv tmpTxt utilities/interpretDEploid.r; chmod a+x utilities/interpretDEploid.r
-
