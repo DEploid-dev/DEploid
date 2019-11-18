@@ -251,7 +251,7 @@ int main(int argc, char *argv[]) {
                                                dEploidIO.panel,
                                                &dEploidIO,
                                                "DEploid-IBD",
-                                               "DEploid-IBD",
+                                               "ibd",
                                                ibdMcmcSample,
                                                &ibdRg,
                                                true);
