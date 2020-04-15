@@ -373,9 +373,11 @@ void VariantLine::extract_field_FORMAT ( ){
     size_t field_end = 0;
     size_t field_index = 0;
 
-    while( field_end < this->formatStr.size() ) {
-        field_end = min( this->formatStr.find(':',feild_start), this->formatStr.find('\n',feild_start) );
-        if ( "AD" == this->formatStr.substr( feild_start, field_end-feild_start ) ){
+    while (field_end < this->formatStr.size()) {
+        field_end = min(this->formatStr.find(':', feild_start),
+                        this->formatStr.find('\n', feild_start));
+        if ( "AD" == this->formatStr.substr(feild_start,
+                                            field_end-feild_start)) {
             adFieldIndex_ = field_index;
             break;
         }
