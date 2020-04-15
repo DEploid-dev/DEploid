@@ -394,11 +394,13 @@ void VariantLine::extract_field_VARIANT ( ){
     size_t field_end = 0;
     int field_index = 0;
 
-    while( field_end < this->tmpStr_.size() ) {
-        field_end = min( this->tmpStr_.find(':',feild_start), this->tmpStr_.find('\n',feild_start) );
-        if ( field_index == adFieldIndex_ ){
-            string adStr = this->tmpStr_.substr( feild_start, field_end-feild_start );
-            size_t commaIndex = adStr.find(',',0);
+    while (field_end < this->tmpStr_.size()) {
+        field_end = min(this->tmpStr_.find(':', feild_start),
+                        this->tmpStr_.find('\n', feild_start));
+        if (field_index == adFieldIndex_) {
+            string adStr = this->tmpStr_.substr(feild_start,
+                                                field_end-feild_start);
+            size_t commaIndex = adStr.find(',', 0);
             ref = stoi(adStr.substr(0, commaIndex) );
             alt = stoi(adStr.substr(commaIndex+1, adStr.size()) );
             break;
