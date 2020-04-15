@@ -31,7 +31,7 @@ using std::endl;
 Panel::Panel():TxtReader() {
     this->setTruePanelSize(0);
     this->setInbreedingPanelSize(0);
-};
+}
 
 
 Panel::Panel(vector < double > pRec,
@@ -110,7 +110,7 @@ void Panel::readFromFile( const char inchar[] ) {
     this->readFromFileBase( inchar );
     this->setTruePanelSize( this->nInfoLines_ );
     this->setInbreedingPanelSize( this->truePanelSize() );
-};
+}
 
 
 void Panel::checkForExceptions( size_t nLoci, string panelFileName ) {

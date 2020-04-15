@@ -40,7 +40,6 @@ VcfReader::VcfReader(string fileName) {
     this->init(fileName);
     this->readHeader();
     this->readVariants();
-
     this->getChromList();
     this->getIndexOfChromStarts();
     assert(this->doneGetIndexOfChromStarts_ == true);
@@ -57,12 +56,12 @@ void VcfReader::checkFileCompressed() {
 
     unsigned char magic[2];
 
-    fread(reinterpret_cast<void *>(magic), 1, 2, f);
+    size_t freadResults = fread(reinterpret_cast<void *>(magic), 1, 2, f);
+    dout << "Check if vcf is compressed " << freadResults << std::endl;
     this->setIsCompressed((static_cast<int>(magic[0]) == 0x1f) &&
-                          (static_cast<int>(magic[1]) == 0x8b));
+                              (static_cast<int>(magic[1]) == 0x8b));
     fclose(f);
 }
-
 
 void VcfReader::init(string fileName) {
     /*! Initialize other VcfReader class members
@@ -71,7 +70,7 @@ void VcfReader::init(string fileName) {
 
     this->checkFileCompressed();
 
-    if (this->isCompressed()) {
+    if ( this->isCompressed() ) {
         this->inFileGz.open(this->fileName_.c_str(), std::ios::in);
     } else {
         this->inFile.open(this->fileName_.c_str(), std::ios::in);
@@ -86,7 +85,7 @@ void VcfReader::finalize() {
         this->vqslod.push_back(this->variants[i].vqslod);
     }
 
-    if (this->isCompressed()) {
+    if ( this->isCompressed() ) {
         this->inFileGz.close();
     } else {
         this->inFile.close();
@@ -129,8 +128,8 @@ void VcfReader::readHeader() {
         }
     }
 
-    dout << " There are "<< this->headerLines.size()
-         << " lines in the header." << std::endl;
+    dout << " There are " << this->headerLines.size()
+         << " lines in the header." <<std::endl;
 }
 
 
@@ -145,7 +144,7 @@ void VcfReader::checkFeilds() {
         this->tmpStr_ = this->tmpLine_.substr(feild_start,
                                               field_end-feild_start);
         string correctFieldValue;
-        switch (field_index) {
+        switch ( field_index ) {
             case 0: correctFieldValue = "#CHROM";  break;
             case 1: correctFieldValue =  "POS";    break;
             case 2: correctFieldValue =  "ID";     break;
@@ -258,7 +257,7 @@ void VcfReader::findLegitSnpsGivenVQSLODHalf(double vqslodThreshold) {
         if (chromI > 10) {
             for ( size_t ii = start ; ii < (start+length); ii++ ) {
                 if (this->vqslod[ii] > vqslodThreshold) {
-                    // std::cout << ii <<std::endl;
+                    // std::cout << ii <<std::std::endl;
                     this->legitVqslodAt.push_back(ii);
                 }
             }
@@ -277,11 +276,11 @@ VariantLine::VariantLine(string tmpLine) {
                                               fieldEnd_-feildStart_);
         switch (fieldIndex_) {
             case 0: this->extract_field_CHROM();   break;
-            case 1: this->extract_field_POS();     break;
-            case 2: this->extract_field_ID();      break;
-            case 3: this->extract_field_REF();     break;
-            case 4: this->extract_field_ALT();     break;
-            case 5: this->extract_field_QUAL();    break;
+            case 1: this->extract_field_POS();    break;
+            case 2: this->extract_field_ID();     break;
+            case 3: this->extract_field_REF() ;   break;
+            case 4: this->extract_field_ALT() ;   break;
+            case 5: this->extract_field_QUAL() ;   break;
             case 6: this->extract_field_FILTER();  break;
             case 7: this->extract_field_INFO();    break;
             case 8: this->extract_field_FORMAT();  break;
@@ -336,7 +335,6 @@ void VariantLine::extract_field_QUAL() {  // Check for PASS
 void VariantLine::extract_field_FILTER() {
     this->filterStr = this->tmpStr_;
 }
-
 
 void VariantLine::extract_field_INFO() {
     this->infoStr = this->tmpStr_;
@@ -414,7 +412,6 @@ void VariantLine::extract_field_VARIANT() {
         field_index++;
     }
 }
-
 
 /*
 void VcfReader::findLegitSnpsGivenVQSLODandWsfGt0(double vqslodThreshold) {

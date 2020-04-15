@@ -66,14 +66,14 @@ void UpdateHap::core(vector <double> &refCount,
                            vector <double> &plaf,
                            vector <double> &expectedWsaf,
                            vector <double> &proportion,
-                           vector < vector <double> > &haplotypes ) { throw VirtualFunctionShouldNotBeCalled();};
-void UpdateHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes) { throw VirtualFunctionShouldNotBeCalled(); };
-void UpdateHap::calcHapLLKs( vector <double> &refCount, vector <double> &altCount) { throw VirtualFunctionShouldNotBeCalled();};
-void UpdateHap::buildEmission( double missCopyProb ) { throw VirtualFunctionShouldNotBeCalled();};
-void UpdateHap::samplePaths() { throw VirtualFunctionShouldNotBeCalled();};
-void UpdateHap::addMissCopying( double missCopyProb ) { throw VirtualFunctionShouldNotBeCalled();};
-void UpdateHap::updateLLK() { throw VirtualFunctionShouldNotBeCalled();};
-void UpdateHap::sampleHapIndependently(vector <double> &plaf) { throw VirtualFunctionShouldNotBeCalled();};
+                           vector < vector <double> > &haplotypes ) { throw VirtualFunctionShouldNotBeCalled();}
+void UpdateHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes) { throw VirtualFunctionShouldNotBeCalled(); }
+void UpdateHap::calcHapLLKs( vector <double> &refCount, vector <double> &altCount) { throw VirtualFunctionShouldNotBeCalled();}
+void UpdateHap::buildEmission( double missCopyProb ) { throw VirtualFunctionShouldNotBeCalled();}
+void UpdateHap::samplePaths() { throw VirtualFunctionShouldNotBeCalled();}
+void UpdateHap::addMissCopying( double missCopyProb ) { throw VirtualFunctionShouldNotBeCalled();}
+void UpdateHap::updateLLK() { throw VirtualFunctionShouldNotBeCalled();}
+void UpdateHap::sampleHapIndependently(vector <double> &plaf) { throw VirtualFunctionShouldNotBeCalled();}
 
 
 UpdateSingleHap::~UpdateSingleHap() {
