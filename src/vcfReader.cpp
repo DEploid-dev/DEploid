@@ -44,6 +44,7 @@ VcfReader::VcfReader(string fileName){
     this->getChromList();
     this->getIndexOfChromStarts();
     assert(this->doneGetIndexOfChromStarts_ == true);
+    this->checkSortedPositions(fileName);
 }
 
 
@@ -56,9 +57,10 @@ void VcfReader::checkFileCompressed(){
 
     unsigned char magic[2];
 
-    size_t freadResults = fread((void *)magic, 1, 2, f);
+    size_t freadResults = fread(reinterpret_cast<void *>(magic), 1, 2, f);
     dout << "Check if vcf is compressed " << freadResults << std::endl;
-    this->setIsCompressed( (int(magic[0]) == 0x1f) && (int(magic[1]) == 0x8b) );
+    this->setIsCompressed((static_cast<int>(magic[0]) == 0x1f) &&
+                              (static_cast<int>(magic[1]) == 0x8b));
     fclose(f);
 }
 
@@ -78,9 +80,10 @@ void VcfReader::init(string fileName) {
 
 
 void VcfReader::finalize(){
-    for ( size_t i = 0; i < this->variants.size(); i++ ){
-        this->refCount.push_back( (double)this->variants[i].ref );
-        this->altCount.push_back( (double)this->variants[i].alt );
+    for (size_t i = 0; i < this->variants.size(); i++) {
+        this->refCount.push_back(static_cast<double>(this->variants[i].ref));
+        this->altCount.push_back(static_cast<double>(this->variants[i].alt));
+        this->vqslod.push_back(this->variants[i].vqslod);
     }
 
     if ( this->isCompressed() ){
