@@ -133,7 +133,8 @@ void TxtReader::checkFileCompressed() {
 
     unsigned char magic[2];
 
-    fread(reinterpret_cast<void *>(magic), 1, 2, f);
+    size_t freadResults = fread(reinterpret_cast<void *>(magic), 1, 2, f);
+    dout << "Check if text file is compressed " << freadResults << std::endl;
     this->setIsCompressed((static_cast<int>(magic[0]) == 0x1f) &&
                           (static_cast<int>(magic[1]) == 0x8b));
     fclose(f);
