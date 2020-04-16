@@ -173,7 +173,13 @@ class McmcMachinery {
     double calcLogPriorTitre(const vector <double> &tmpTitre);
     double rBernoulli(double p);
 
-    void printArray(vector <double> array);
+    void printArray(vector <double> array) {
+        for (auto const& value : array) {
+            dout << value << " ";
+        }
+        dout << endl;
+    }
+
     void sampleMcmcEvent(bool useIBD = false);
     void recordMcmcMachinery();
     bool recordingMcmcBool_;
