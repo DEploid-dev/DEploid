@@ -1122,7 +1122,7 @@ void DEploidIO::dEploidLassoFullPanel() {
     DEploidLASSO dummy(tmpPanel.content_, this->obsWsaf_, 250);
 
     for (size_t i = 0; i < dummy.choiceIdx.size(); i++) {
-        cout << i << " " << dummy.devRatio[i]<<endl;
+        dout << i << " " << dummy.devRatio[i]<<endl;
     }
     //size_t maxNumPanel = 10;
     // Use the first 10 strains in the panel
@@ -1178,5 +1178,3 @@ void DEploidIO::ibdTrimming() {
     this->excludedMarkers = NULL;
     this->vcfReaderPtr_ = NULL;
 }
-
-

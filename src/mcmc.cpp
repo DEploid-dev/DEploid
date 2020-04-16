@@ -105,9 +105,9 @@ void McmcMachinery::initializeMcmcChain(bool useIBD) {
     dout << "###########################################"<< endl;
     dout << "#            Initialization               #"<< endl;
     dout << "###########################################"<< endl;
-    cout << "plaf.size() " << plaf_ptr_->size() <<"   ";
+    dout << "plaf.size() " << plaf_ptr_->size() <<"   ";
     if (panel_ != NULL) {
-        cout << "Panel size = " << this->panel_->truePanelSize() << endl;
+        dout << "Panel size = " << this->panel_->truePanelSize() << endl;
     }
     this->initializeTitre();
     this->currentLogPriorTitre_ = this->calcLogPriorTitre(this->currentTitre_);
@@ -151,7 +151,7 @@ void McmcMachinery::initializeHap() {
     assert( currentHap_.size() == 0);
     if ( this->dEploidIO_ -> initialHapWasGiven() ) {
         this->currentHap_ = this->dEploidIO_->initialHap;
-        cout << "given initial hap ?" << endl;
+        dout << "given initial hap ?" << endl;
     } else {
         for ( size_t i = 0; i < this->plaf_ptr_->size(); i++ ) {
             double currentPlaf = this->plaf_ptr_->at(i);
