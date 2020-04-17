@@ -55,6 +55,10 @@ test-suite.log
 unit_tests
 unit_tests.log
 unit_tests.trs
+current_unit_tests
+io_unit_tests
+io_unit_tests.log
+io_unit_tests.trs
 
 # doxygen
 html/
