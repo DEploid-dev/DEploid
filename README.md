@@ -55,7 +55,7 @@ Docker image
 
 ```bash
 docker pull shajoezhu/deploid
-docker run -v ${PWD}:/DEploid/ -w /DEploid/  shajoezhu/deploid ...
+docker run -v ${PWD}:/tmp/ -w /tmp/  shajoezhu/deploid ...
 ```
 
 Licence
