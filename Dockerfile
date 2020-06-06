@@ -1,4 +1,4 @@
-FROM textlab/ubuntu-essential
+FROM ubuntu:18.04
 MAINTAINER Joe Zhu <sha.joe.zhu@gmail.com>
 RUN apt-get update -qq \
     && apt-get install -qq git build-essential autoconf autoconf-archive libcppunit-dev zlib1g-dev \

@@ -50,6 +50,14 @@ Usage
 Please see the [documentation](http://deploid.readthedocs.io/en/latest/) for further details.
 
 
+Docker image
+------------
+
+```bash
+docker pull shajoezhu/deploid
+docker run -v ${PWD}:/DEploid/ -w /DEploid/  shajoezhu/deploid ...
+```
+
 Licence
 -------
 
@@ -67,4 +75,3 @@ Zhu, J. S., J. A. Hendry, J. Almagro-Garcia, R. D. Pearson, R. Amato, A. Miles, 
 If you use `dEploid` in your work, please cite the program:
 
 Zhu, J. S., J. A. Garcia, G. McVean. (2018) Deconvolution of multiple infections in *Plasmodium falciparum* from high throughput sequencing data. *Bioinformatics* 34(1), 9-15. doi: https://doi.org/10.1093/bioinformatics/btx530.
-
