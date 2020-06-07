@@ -151,8 +151,8 @@ int main(int argc, char *argv[]) {
             dEploidIO.setKstrain(dEploidIO.initialProp.size());
             dEploidIO.setInitialPropWasGiven(true);
 
-            if (dEploidIO.inferBestPracticeP()){
-              if(dEploidIO.initialProp.size() > 1) {
+            if (dEploidIO.inferBestPracticeP()) {
+              if (dEploidIO.initialProp.size() > 1) {
                 // #############################################################
                 // ###################### DEploid-IBD   ########################
                 // #############################################################
@@ -197,11 +197,11 @@ int main(int argc, char *argv[]) {
               dEploidIO.setKstrain(initialP.size());
             }
 
-            if (dEploidIO.inferBestPracticeHap()){
-              // #################################################################
-              // ###################### DEploid-LASSO ############################
-              // #################################################################
-              // *** Frist split the reference panel etc
+            if (dEploidIO.inferBestPracticeHap()) {
+            // #################################################################
+            // ###################### DEploid-LASSO ############################
+            // #################################################################
+            // *** Frist split the reference panel etc
               dEploidIO.dEploidLasso();
 
               DEploidIO dEploidLassoIO(dEploidIO);
@@ -223,16 +223,16 @@ int main(int argc, char *argv[]) {
                   string job = string("DEploid-Lasso learning chromosome ");
                   job.append(dEploidIO.chrom_[chromi]).append(" haplotypes");
                   McmcMachinery lassoMcmcMachinery(
-                                              &dEploidIO.lassoPlafs.at(chromi),
-                                              &dEploidIO.lassoRefCount.at(chromi),
-                                              &dEploidIO.lassoAltCount.at(chromi),
-                                              dEploidIO.lassoPanels.at(chromi),
-                                              &dEploidLassoIO,
-                                              job,
-                                              job,
-                                              lassoMcmcSample,
-                                              &rg,
-                                              false);
+                                            &dEploidIO.lassoPlafs.at(chromi),
+                                            &dEploidIO.lassoRefCount.at(chromi),
+                                            &dEploidIO.lassoAltCount.at(chromi),
+                                            dEploidIO.lassoPanels.at(chromi),
+                                            &dEploidLassoIO,
+                                            job,
+                                            job,
+                                            lassoMcmcSample,
+                                            &rg,
+                                            false);
                   lassoMcmcMachinery.runMcmcChain(true,   // show progress
                                                   false);  // use IBD
                   // *** Append haplotypes to the end
@@ -248,7 +248,7 @@ int main(int argc, char *argv[]) {
               dEploidIO.writeVcf(hap, dEploidLassoIO.initialProp, "final");
             }
 
-            if (dEploidIO.inferBestPracticeP()){
+            if (dEploidIO.inferBestPracticeP()) {
               dEploidIO.paintIBD();
             }
 
