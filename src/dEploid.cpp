@@ -191,10 +191,11 @@ int main(int argc, char *argv[]) {
                 dEploidIO.setInitialPropWasGiven(true);
                 dEploidIO.setDoUpdateProp(false);
                 delete ibdMcmcSample;
+              } else {
+                dEploidIO.finalProp.clear();
+                dEploidIO.finalProp.push_back(1.0);
+                dEploidIO.setKstrain(1);
               }
-            } else {
-              dEploidIO.finalProp = dEploidIO.initialProp;
-              dEploidIO.setKstrain(initialP.size());
             }
 
             if (dEploidIO.inferBestPracticeHap()) {
@@ -247,8 +248,8 @@ int main(int argc, char *argv[]) {
               dEploidIO.writeHap(hap, "final");
               dEploidIO.writeVcf(hap, dEploidLassoIO.initialProp, "final");
             }
-
-            if (dEploidIO.inferBestPracticeP()) {
+            if (dEploidIO.inferBestPracticeP() &
+                (dEploidIO.initialProp.size() > 1)) {
               dEploidIO.paintIBD();
             }
 
