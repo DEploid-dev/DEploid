@@ -125,6 +125,8 @@ void DEploidIO::init() {
     this->setUseIbdOnly(false);
     this->setUseLasso( false );
     this->setUseBestPractice(false);
+    this->setInferBestPracticeP(true);
+    this->setInferBestPracticeHap(true);
     this->setDoExportSwitchMissCopy ( true );
     this->setDoAllowInbreeding( false );
     this->mcmcBurn_ = 0.5;
@@ -467,6 +469,11 @@ void DEploidIO::parse () {
             this->setUseIBD(true);
         } else if (*argv_i == "-best") {
             this->setUseBestPractice(true);
+        } else if (*argv_i == "-bestKonly") {
+            this->setInferBestPracticeP(false);
+            this->setInferBestPracticeHap(false);
+        } else if (*argv_i == "-bestPonly") {
+            this->setInferBestPracticeHap(false);
         } else if ( *argv_i == "-ibdonly" ) {
             this->setUseIBD(true);
             this->setUseIbdOnly(true);

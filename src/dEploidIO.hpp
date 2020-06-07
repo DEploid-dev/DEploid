@@ -80,6 +80,8 @@ class DEploidIO{
     bool useIbdOnly() const { return this->useIbdOnly_;}
     bool useLasso() const { return this->useLasso_;}
     bool useBestPractice() const { return this->useBestPractice_;}
+    bool inferBestPracticeP() const { return this->inferBestPracticeP_;}
+    bool inferBestPracticeHap() const { return this->inferBestPracticeHap_;}
 
     void paintIBD();
     void paintIBDviterbi();
@@ -181,6 +183,8 @@ class DEploidIO{
     bool useIbdOnly_;
     bool useLasso_;
     bool useBestPractice_;
+    bool inferBestPracticeP_;
+    bool inferBestPracticeHap_;
 
     double vqslod_;
     vector <double> obsWsaf_;
@@ -347,6 +351,9 @@ class DEploidIO{
     void setUseIbdOnly(const bool setTo) { this->useIbdOnly_ = setTo;}
     void setUseLasso( const bool setTo) { this->useLasso_ = setTo; }
     void setUseBestPractice ( const bool setTo) {this->useBestPractice_ = setTo;}
+    void setInferBestPracticeP ( const bool setTo) {this->inferBestPracticeP_ = setTo;}
+    void setInferBestPracticeHap ( const bool setTo) {this->inferBestPracticeHap_ = setTo;}
+
 
     bool initialPropWasGiven() const { return initialPropWasGiven_; }
 

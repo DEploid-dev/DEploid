@@ -151,7 +151,8 @@ int main(int argc, char *argv[]) {
             dEploidIO.setKstrain(dEploidIO.initialProp.size());
             dEploidIO.setInitialPropWasGiven(true);
 
-            if (dEploidIO.initialProp.size() > 1) {
+            if (dEploidIO.inferBestPracticeP()){
+              if(dEploidIO.initialProp.size() > 1) {
                 // #############################################################
                 // ###################### DEploid-IBD   ########################
                 // #############################################################
@@ -190,57 +191,67 @@ int main(int argc, char *argv[]) {
                 dEploidIO.setInitialPropWasGiven(true);
                 dEploidIO.setDoUpdateProp(false);
                 delete ibdMcmcSample;
-            }
-            // #################################################################
-            // ###################### DEploid-LASSO ############################
-            // #################################################################
-            // *** Frist split the reference panel etc
-            dEploidIO.dEploidLasso();
-
-            DEploidIO dEploidLassoIO(dEploidIO);
-            dEploidLassoIO.initialProp = dEploidIO.initialProp;
-            dEploidLassoIO.setDoUpdateProp(false);
-            dEploidLassoIO.setInitialPropWasGiven(true);
-            dEploidLassoIO.setKstrain(dEploidIO.kStrain());
-            vector < vector <double> > hap;
-            for (size_t chromi = 0;
-                 chromi < dEploidIO.indexOfChromStarts_.size();
-                 chromi++ ) {
-                dEploidLassoIO.position_.clear();
-                dEploidLassoIO.position_.push_back(
-                                            dEploidIO.position_.at(chromi));
-                dEploidLassoIO.indexOfChromStarts_.clear();
-                dEploidLassoIO.indexOfChromStarts_.push_back(0);
-
-                McmcSample * lassoMcmcSample = new McmcSample();
-                string job = string("DEploid-Lasso learning chromosome ");
-                job.append(dEploidIO.chrom_[chromi]).append(" haplotypes");
-                McmcMachinery lassoMcmcMachinery(
-                                            &dEploidIO.lassoPlafs.at(chromi),
-                                            &dEploidIO.lassoRefCount.at(chromi),
-                                            &dEploidIO.lassoAltCount.at(chromi),
-                                            dEploidIO.lassoPanels.at(chromi),
-                                            &dEploidLassoIO,
-                                            job,
-                                            job,
-                                            lassoMcmcSample,
-                                            &rg,
-                                            false);
-                lassoMcmcMachinery.runMcmcChain(true,   // show progress
-                                                false);  // use IBD
-                // *** Append haplotypes to the end
-                for (size_t snpi = 0;
-                     snpi < lassoMcmcSample->hap.size(); snpi++) {
-                    hap.push_back(vector <double> (
-                                        lassoMcmcSample->hap[snpi].begin(),
-                                        lassoMcmcSample->hap[snpi].end()));
-                }
-                delete lassoMcmcSample;
+              }
+            } else {
+              dEploidIO.finalProp = dEploidIO.initialProp;
+              dEploidIO.setKstrain(initialP.size());
             }
 
-            dEploidIO.paintIBD();
-            dEploidIO.writeHap(hap, "final");
-            dEploidIO.writeVcf(hap, dEploidLassoIO.initialProp, "final");
+            if (dEploidIO.inferBestPracticeHap()){
+              // #################################################################
+              // ###################### DEploid-LASSO ############################
+              // #################################################################
+              // *** Frist split the reference panel etc
+              dEploidIO.dEploidLasso();
+
+              DEploidIO dEploidLassoIO(dEploidIO);
+              dEploidLassoIO.initialProp = dEploidIO.initialProp;
+              dEploidLassoIO.setDoUpdateProp(false);
+              dEploidLassoIO.setInitialPropWasGiven(true);
+              dEploidLassoIO.setKstrain(dEploidIO.kStrain());
+              vector < vector <double> > hap;
+              for (size_t chromi = 0;
+                   chromi < dEploidIO.indexOfChromStarts_.size();
+                   chromi++ ) {
+                  dEploidLassoIO.position_.clear();
+                  dEploidLassoIO.position_.push_back(
+                                              dEploidIO.position_.at(chromi));
+                  dEploidLassoIO.indexOfChromStarts_.clear();
+                  dEploidLassoIO.indexOfChromStarts_.push_back(0);
+
+                  McmcSample * lassoMcmcSample = new McmcSample();
+                  string job = string("DEploid-Lasso learning chromosome ");
+                  job.append(dEploidIO.chrom_[chromi]).append(" haplotypes");
+                  McmcMachinery lassoMcmcMachinery(
+                                              &dEploidIO.lassoPlafs.at(chromi),
+                                              &dEploidIO.lassoRefCount.at(chromi),
+                                              &dEploidIO.lassoAltCount.at(chromi),
+                                              dEploidIO.lassoPanels.at(chromi),
+                                              &dEploidLassoIO,
+                                              job,
+                                              job,
+                                              lassoMcmcSample,
+                                              &rg,
+                                              false);
+                  lassoMcmcMachinery.runMcmcChain(true,   // show progress
+                                                  false);  // use IBD
+                  // *** Append haplotypes to the end
+                  for (size_t snpi = 0;
+                       snpi < lassoMcmcSample->hap.size(); snpi++) {
+                      hap.push_back(vector <double> (
+                                          lassoMcmcSample->hap[snpi].begin(),
+                                          lassoMcmcSample->hap[snpi].end()));
+                  }
+                  delete lassoMcmcSample;
+              }
+              dEploidIO.writeHap(hap, "final");
+              dEploidIO.writeVcf(hap, dEploidLassoIO.initialProp, "final");
+            }
+
+            if (dEploidIO.inferBestPracticeP()){
+              dEploidIO.paintIBD();
+            }
+
         } else {  // classic version, and DEploid-IBD
             if (dEploidIO.useIBD()) {  // ibd
                 McmcSample * ibdMcmcSample = new McmcSample();
