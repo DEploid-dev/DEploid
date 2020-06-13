@@ -81,14 +81,14 @@ vector <double> ChooseK::chosenP() {
     this->findKmode();
     size_t idx = 0;
     if (this->ks.size() > 1) {
-        idx = max_at_;
-        for (size_t i = idx; i < this->ks.size(); i++) {
-            if (ks[i] == ks[idx]) {
+        // idx = max_at_;
+        for (size_t i = 0; i < this->ks.size(); i++) {
+            if (ks[i] == (max_at_+1)) {
                 idx = i;
+                break;
             }
         }
     }
     this->haveChosenP_ = true;
     return this->proportions_[idx];
 }
-
