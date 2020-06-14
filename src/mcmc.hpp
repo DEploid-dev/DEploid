@@ -94,7 +94,8 @@ class McmcMachinery {
     ~McmcMachinery();
     void runMcmcChain(bool showProgress = true,
                       bool useIBD = false,
-                      bool notInR = true);
+                      bool notInR = true,
+                      bool averageP = false);
 
  private:
     string mcmcJob;

@@ -280,7 +280,7 @@ void McmcMachinery::initializePropIBD() {
 }
 
 
-void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) {
+void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR, bool averageP) {
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++) {
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
@@ -304,6 +304,23 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR ) 
     this->writeLastFwdProb(useIBD);
     this->dEploidIO_->finalProp.clear();
     this->dEploidIO_->finalProp = this->mcmcSample_->proportion.back();
+
+    if (averageP){
+      double remainingP = 1.0;
+      this->dEploidIO_->finalProp.clear();
+      for (size_t i = 0; i < (this->mcmcSample_->proportion.back().size()-1); i ++){
+        double strainp = 0.0;
+        size_t np = this->mcmcSample_->proportion.size();
+        for (size_t j = 0; j < np; j++){
+          strainp += this->mcmcSample_->proportion[j][i];
+        }
+        strainp = strainp/(np*1.0);
+        remainingP -= strainp;
+        this->dEploidIO_->finalProp.push_back(strainp);
+      }
+      this->dEploidIO_->finalProp.push_back(remainingP);
+      // this->dEploidIO_->finalProp = this->mcmcSample_->proportion.back();
+    }
 
     for (size_t atSiteI = 0; atSiteI < nLoci(); atSiteI++ ) {
         this->mcmcSample_->siteOfTwoSwitchOne[atSiteI] /= (double)this->maxIteration_;

@@ -123,7 +123,9 @@ int main(int argc, char *argv[]) {
                                         &rg,
                                         false);
                 lassoMcmcMachinery.runMcmcChain(true,   // show progress
-                                                false);  // use IBD
+                                                false,  // use IBD
+                                                true,   // notInR
+                                                true);  // averageP
                 toLearnKtmp.initialProp = toLearnKtmp.finalProp;
                 toLearnKtmp.setInitialPropWasGiven(true);
                 dEploidIO.chooseK.appendProportions(toLearnKtmp.finalProp);
