@@ -137,6 +137,7 @@ class DEploidIO{
     vector <string> chrom_;
     size_t kStrain() const { return this->kStrain_;}
     size_t lassoMaxNumPanel_;
+    double acceptRatio() const { return this->acceptRatio_;}
 
   private:
     void core();
