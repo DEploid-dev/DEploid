@@ -99,10 +99,10 @@ int main(int argc, char *argv[]) {
             DEploidIO toLearnK(dEploidIO);
             toLearnK.dEploidLassoTrimfirst();
             DEploidIO toLearnKtmp(dEploidIO);
-            bool repeatToLearnK = true;
-            while (repeatToLearnK){
-              chooseKhap.clear();
-              int failToAcceptCounter = 0;
+            //bool repeatToLearnK = true;
+            //while (repeatToLearnK){
+              //chooseKhap.clear();
+              //int failToAcceptCounter = 0;
               for (size_t chromi = 0;
                    chromi < toLearnK.indexOfChromStarts_.size();
                    chromi++ ) {
@@ -132,7 +132,9 @@ int main(int argc, char *argv[]) {
                                                   true);  // averageP
                   toLearnKtmp.initialProp = toLearnKtmp.finalProp;
                   toLearnKtmp.setInitialPropWasGiven(true);
-                  dEploidIO.chooseK.appendProportions(toLearnKtmp.finalProp);
+                  if (toLearnKtmp.acceptRatio() != 0){
+                    dEploidIO.chooseK.appendProportions(toLearnKtmp.finalProp);
+                  }
 
                   for (size_t snpi = 0;
                       snpi < lassoMcmcSample->hap.size(); snpi++) {
@@ -142,13 +144,13 @@ int main(int argc, char *argv[]) {
                   }
 
                   delete lassoMcmcSample;
-                  if (toLearnKtmp.acceptRatio() == 0){
-                    failToAcceptCounter++;
-                  }
-              }
-              if (failToAcceptCounter < 8){
-                repeatToLearnK = false;
-              }
+                  //if (toLearnKtmp.acceptRatio() == 0){
+                 //   failToAcceptCounter++;
+                  //}
+              //}
+             // if (failToAcceptCounter < 8){
+               // repeatToLearnK = false;
+              //}
             }
             // Gathering haplotype information
             toLearnK.writeHap(chooseKhap, "chooseK");
