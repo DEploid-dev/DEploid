@@ -99,58 +99,47 @@ int main(int argc, char *argv[]) {
             DEploidIO toLearnK(dEploidIO);
             toLearnK.dEploidLassoTrimfirst();
             DEploidIO toLearnKtmp(dEploidIO);
-            //bool repeatToLearnK = true;
-            //while (repeatToLearnK){
-              //chooseKhap.clear();
-              //int failToAcceptCounter = 0;
-              for (size_t chromi = 0;
-                   chromi < toLearnK.indexOfChromStarts_.size();
-                   chromi++ ) {
-                  toLearnKtmp.position_.clear();
-                  toLearnKtmp.position_.push_back(
-                                              toLearnK.position_.at(chromi));
-                  toLearnKtmp.indexOfChromStarts_.clear();
-                  toLearnKtmp.indexOfChromStarts_.push_back(0);
+            for (size_t chromi = 0;
+                 chromi < toLearnK.indexOfChromStarts_.size();
+                 chromi++ ) {
+                toLearnKtmp.position_.clear();
+                toLearnKtmp.position_.push_back(
+                                            toLearnK.position_.at(chromi));
+                toLearnKtmp.indexOfChromStarts_.clear();
+                toLearnKtmp.indexOfChromStarts_.push_back(0);
 
-                  McmcSample * lassoMcmcSample = new McmcSample();
-                  string job = string("DEploid-Lasso learning K ");
-                  job.append(toLearnK.chrom_[chromi]).append(" leanrning K");
-                  McmcMachinery lassoMcmcMachinery(
-                                          &toLearnK.lassoPlafs.at(chromi),
-                                          &toLearnK.lassoRefCount.at(chromi),
-                                          &toLearnK.lassoAltCount.at(chromi),
-                                          toLearnK.lassoPanels.at(chromi),
-                                          &toLearnKtmp,
-                                          job,
-                                          job,
-                                          lassoMcmcSample,
-                                          &rg,
-                                          false);
-                  lassoMcmcMachinery.runMcmcChain(true,   // show progress
-                                                  false,  // use IBD
-                                                  true,   // notInR
-                                                  true);  // averageP
-                  toLearnKtmp.initialProp = toLearnKtmp.finalProp;
-                  toLearnKtmp.setInitialPropWasGiven(true);
-                  if (toLearnKtmp.acceptRatio() != 0){
-                    dEploidIO.chooseK.appendProportions(toLearnKtmp.finalProp);
-                  }
+                McmcSample * lassoMcmcSample = new McmcSample();
+                string job = string("DEploid-Lasso learning K ");
+                job.append(toLearnK.chrom_[chromi]).append(" leanrning K");
+                McmcMachinery lassoMcmcMachinery(
+                                        &toLearnK.lassoPlafs.at(chromi),
+                                        &toLearnK.lassoRefCount.at(chromi),
+                                        &toLearnK.lassoAltCount.at(chromi),
+                                        toLearnK.lassoPanels.at(chromi),
+                                        &toLearnKtmp,
+                                        job,
+                                        job,
+                                        lassoMcmcSample,
+                                        &rg,
+                                        false);
+                lassoMcmcMachinery.runMcmcChain(true,   // show progress
+                                                false,  // use IBD
+                                                true,   // notInR
+                                                true);  // averageP
+                toLearnKtmp.initialProp = toLearnKtmp.finalProp;
+                toLearnKtmp.setInitialPropWasGiven(true);
+                if (toLearnKtmp.acceptRatio() != 0) {
+                  dEploidIO.chooseK.appendProportions(toLearnKtmp.finalProp);
+                }
 
-                  for (size_t snpi = 0;
-                      snpi < lassoMcmcSample->hap.size(); snpi++) {
-                      chooseKhap.push_back(vector <double> (
-                                          lassoMcmcSample->hap[snpi].begin(),
-                                          lassoMcmcSample->hap[snpi].end()));
-                  }
+                for (size_t snpi = 0;
+                    snpi < lassoMcmcSample->hap.size(); snpi++) {
+                    chooseKhap.push_back(vector <double> (
+                                        lassoMcmcSample->hap[snpi].begin(),
+                                        lassoMcmcSample->hap[snpi].end()));
+                }
 
-                  delete lassoMcmcSample;
-                  //if (toLearnKtmp.acceptRatio() == 0){
-                 //   failToAcceptCounter++;
-                  //}
-              //}
-             // if (failToAcceptCounter < 8){
-               // repeatToLearnK = false;
-              //}
+                delete lassoMcmcSample;
             }
             // Gathering haplotype information
             toLearnK.writeHap(chooseKhap, "chooseK");
