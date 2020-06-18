@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
                   lassoMcmcMachinery.runMcmcChain(true,   // show progress
                                                   false,  // use IBD
                                                   true,   // notInR
-                                                  true);  // averageP
+                                                  false);  // averageP
                   toLearnKtmp.initialProp = toLearnKtmp.finalProp;
                   toLearnKtmp.setInitialPropWasGiven(true);
                   if (toLearnKtmp.acceptRatio() != 0) {
