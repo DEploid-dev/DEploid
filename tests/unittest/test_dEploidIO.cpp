@@ -545,6 +545,23 @@ class TestIO : public CppUnit::TestCase {
                          "-plaf", "data/testData/labStrains.test.PLAF.txt",
                          "-exportPostProb", "-noPanel"};
         CPPUNIT_ASSERT_THROW(DEploidIO(9, argv7), FlagsConflict);
+
+        // best conflict with noPanel
+        char *argv8[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-noPanel", "-best" };
+        CPPUNIT_ASSERT_THROW(DEploidIO(9, argv8), FlagsConflict);
+
+        // noPanel conflict with best
+        char *argv9[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-best", "-noPanel"};
+        CPPUNIT_ASSERT_THROW(DEploidIO(9, argv9), FlagsConflict);
+
     }
 
 

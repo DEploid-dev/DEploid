@@ -379,6 +379,9 @@ void DEploidIO::parse () {
             if ( doAllowInbreeding() ) {
                 throw ( FlagsConflict((*argv_i) , "-inbreeding") );
             }
+            if ( useBestPractice() ) {
+                throw ( FlagsConflict((*argv_i) , "-best") );
+            }
             this->setUsePanel(false);
             this->setDoExportSwitchMissCopy ( false );
         } else if (*argv_i == "-exclude") {
@@ -468,6 +471,9 @@ void DEploidIO::parse () {
         } else if ( *argv_i == "-ibd" ) {
             this->setUseIBD(true);
         } else if (*argv_i == "-best") {
+            if ( usePanel() == false ) {
+                throw ( FlagsConflict((*argv_i) , "-noPanel") );
+            }
             this->setUseBestPractice(true);
         } else if (*argv_i == "-bestKonly") {
             this->setInferBestPracticeP(false);
