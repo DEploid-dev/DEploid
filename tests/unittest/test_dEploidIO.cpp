@@ -561,6 +561,22 @@ class TestIO : public CppUnit::TestCase {
                          "-plaf", "data/testData/labStrains.test.PLAF.txt",
                          "-best", "-noPanel"};
         CPPUNIT_ASSERT_THROW(DEploidIO(9, argv9), FlagsConflict);
+
+        // best conflict with ibd
+        char *argv10[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-ibd", "-best" };
+        CPPUNIT_ASSERT_THROW(DEploidIO(9, argv10), FlagsConflict);
+
+        // ibd conflict with best
+        char *argv11[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-best", "-ibd"};
+        CPPUNIT_ASSERT_THROW(DEploidIO(9, argv11), FlagsConflict);
     }
 
 

@@ -469,10 +469,16 @@ void DEploidIO::parse () {
             this->setDoLsPainting( true );
             this->readInitialHaps();
         } else if ( *argv_i == "-ibd" ) {
+            if ( useBestPractice() ) {
+                throw ( FlagsConflict((*argv_i) , "-best") );
+            }
             this->setUseIBD(true);
         } else if (*argv_i == "-best") {
             if ( usePanel() == false ) {
                 throw ( FlagsConflict((*argv_i) , "-noPanel") );
+            }
+            if ( useIBD() == false ) {
+                throw ( FlagsConflict((*argv_i) , "-ibd") );
             }
             this->setUseBestPractice(true);
         } else if (*argv_i == "-bestKonly") {
@@ -481,6 +487,9 @@ void DEploidIO::parse () {
         } else if (*argv_i == "-bestPonly") {
             this->setInferBestPracticeHap(false);
         } else if ( *argv_i == "-ibdonly" ) {
+            if ( useBestPractice() ) {
+                throw ( FlagsConflict((*argv_i) , "-best") );
+            }
             this->setUseIBD(true);
             this->setUseIbdOnly(true);
         } else if ( *argv_i == "-lasso" ) {
@@ -491,6 +500,9 @@ void DEploidIO::parse () {
         } else if ( *argv_i == "-computeLLK" ) {
             this->setDoComputeLLK( true );
         } else if ( *argv_i == "-ibdPainting" ) {
+            if ( useBestPractice() ) {
+                throw ( FlagsConflict((*argv_i) , "-best") );
+            }
             this->setDoIbdPainting( true );
         } else if ( *argv_i == "-ibdViterbi" ) {
             this->setDoIbdViterbiPainting( true );
