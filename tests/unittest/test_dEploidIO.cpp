@@ -561,7 +561,6 @@ class TestIO : public CppUnit::TestCase {
                          "-plaf", "data/testData/labStrains.test.PLAF.txt",
                          "-best", "-noPanel"};
         CPPUNIT_ASSERT_THROW(DEploidIO(9, argv9), FlagsConflict);
-
     }
 
 
