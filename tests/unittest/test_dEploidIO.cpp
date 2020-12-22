@@ -567,16 +567,16 @@ class TestIO : public CppUnit::TestCase {
                          "-ref", "data/testData/PG0390-C.test.ref",
                          "-alt", "data/testData/PG0390-C.test.alt",
                          "-plaf", "data/testData/labStrains.test.PLAF.txt",
-                         "-ibd", "-best" };
-        CPPUNIT_ASSERT_THROW(DEploidIO(9, argv10), FlagsConflict);
+                         "-ibd", "-best", "-noPanel" };
+        CPPUNIT_ASSERT_THROW(DEploidIO(10, argv10), FlagsConflict);
 
         // ibd conflict with best
         char *argv11[] = { "./dEploid",
                          "-ref", "data/testData/PG0390-C.test.ref",
                          "-alt", "data/testData/PG0390-C.test.alt",
                          "-plaf", "data/testData/labStrains.test.PLAF.txt",
-                         "-best", "-ibd"};
-        CPPUNIT_ASSERT_THROW(DEploidIO(9, argv11), FlagsConflict);
+                         "-best", "-ibd", "-noPanel" };
+        CPPUNIT_ASSERT_THROW(DEploidIO(10, argv11), FlagsConflict);
     }
 
 
