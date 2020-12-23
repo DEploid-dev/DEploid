@@ -618,7 +618,7 @@ void DEploidIO::printHelp(std::ostream& out) {
     out << endl
         << "dEploid " << VERSION << endl
         << endl;
-    out << "Contact: Joe Zhu <joe.zhu@bdi.ox.ac.uk>" << endl
+    out << "Contact: Joe Zhu <sha.joe.zhu@gmail.com>" << endl
         << endl;
     out << "Usage:"
         << endl;
