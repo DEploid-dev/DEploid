@@ -454,6 +454,9 @@ void DEploidIO::parse () {
             this->setDoAllowInbreeding( true );
             this->setDoExportPostProb( true );
         } else if ( *argv_i == "-exportPostProb" ) {
+            if ( useBestPractice() ) {
+                throw ( FlagsConflict((*argv_i) , "-best") );
+            }
             if ( this->usePanel() == false ) {
                 throw ( FlagsConflict((*argv_i) , "-noPanel") );
             }
@@ -474,6 +477,9 @@ void DEploidIO::parse () {
             }
             this->setUseIBD(true);
         } else if (*argv_i == "-best") {
+            if ( doExportPostProb() ) {
+                throw ( FlagsConflict((*argv_i) , "-exportPostProb") );
+            }
             if ( usePanel() == false ) {
                 throw ( FlagsConflict((*argv_i) , "-noPanel") );
             }
@@ -493,6 +499,12 @@ void DEploidIO::parse () {
             this->setUseIBD(true);
             this->setUseIbdOnly(true);
         } else if ( *argv_i == "-lasso" ) {
+            if ( useBestPractice() ) {
+                throw ( FlagsConflict((*argv_i) , "-best") );
+            }
+            if ( doExportPostProb() ) {
+                throw ( FlagsConflict((*argv_i) , "-exportPostProb") );
+            }
             this->setUseLasso(true);
             this->setDoUpdateProp(false);
         } else if ( *argv_i == "-writePanel" ) {
