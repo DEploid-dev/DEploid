@@ -75,7 +75,9 @@ void TxtReader::readFromFileBase(const char inchar[]) {
         vector <double> contentRow;
         while (field_end < tmp_line.size()) {
             field_end = min(
-                min(tmp_line.find(',', field_start),
+                min(
+                    min(tmp_line.find(' ', field_start),
+                    tmp_line.find(',', field_start)),
                     tmp_line.find('\t', field_start)),
                     tmp_line.find('\n', field_start));
 
@@ -148,7 +150,9 @@ void TxtReader::extractHeader(const string &line) {
     size_t field_index = 0;
     while (field_end < line.size()) {
         field_end = min(
-            min(line.find(',', field_start),
+            min(
+                min(line.find(' ', field_start),
+                line.find(',', field_start)),
                 line.find('\t', field_start)),
                 line.find('\n', field_start));
 

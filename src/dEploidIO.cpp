@@ -483,7 +483,7 @@ void DEploidIO::parse () {
             if ( usePanel() == false ) {
                 throw ( FlagsConflict((*argv_i) , "-noPanel") );
             }
-            if ( useIBD() == false ) {
+            if ( useIBD() == true ) {
                 throw ( FlagsConflict((*argv_i) , "-ibd") );
             }
             this->setUseBestPractice(true);
