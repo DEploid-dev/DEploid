@@ -475,6 +475,9 @@ void DEploidIO::parse () {
             if ( useBestPractice() ) {
                 throw ( FlagsConflict((*argv_i) , "-best") );
             }
+            if ( useLasso() == true ) {
+                throw ( FlagsConflict((*argv_i) , "-lasso") );
+            }
             this->setUseIBD(true);
         } else if (*argv_i == "-best") {
             if ( doExportPostProb() ) {
@@ -485,6 +488,9 @@ void DEploidIO::parse () {
             }
             if ( useIBD() == true ) {
                 throw ( FlagsConflict((*argv_i) , "-ibd") );
+            }
+            if ( useLasso() == true ) {
+                throw ( FlagsConflict((*argv_i) , "-lasso") );
             }
             this->setUseBestPractice(true);
         } else if (*argv_i == "-bestKonly") {
@@ -499,6 +505,9 @@ void DEploidIO::parse () {
             this->setUseIBD(true);
             this->setUseIbdOnly(true);
         } else if ( *argv_i == "-lasso" ) {
+            if ( useIBD() == true ) {
+                throw ( FlagsConflict((*argv_i) , "-ibd") );
+            }
             if ( useBestPractice() ) {
                 throw ( FlagsConflict((*argv_i) , "-best") );
             }
@@ -653,6 +662,9 @@ void DEploidIO::printHelp(std::ostream& out) {
     out << setw(20) << "-forbidUpdateSingle" << "  --  " << "Forbid MCMC moves to update single haplotype."<<endl;
     out << setw(20) << "-forbidUpdatePair"   << "  --  " << "Forbid MCMC moves to update pair haplotypes."<<endl;
     out << setw(20) << "-initialP FLT ..."   << "  --  " << "Initialize proportions."<<endl;
+    out << setw(20) << "-ibd"                << "  --  " << "Use DEploid-IBD"<<endl;
+    out << setw(20) << "-lasso"              << "  --  " << "Use DEploid-LASSO"<<endl;
+    out << setw(20) << "-best"               << "  --  " << "Use DEploid-Best-practice"<<endl;
     out << endl;
     out << "Note: Please `man docs/_build/man/dEploid.1' for the manual." << endl;
     out << endl;
@@ -664,9 +676,9 @@ void DEploidIO::printHelp(std::ostream& out) {
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-C-best -panel data/testData/labStrains.test.panel.txt -best" << endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf.gz -exclude data/testData/labStrains.test.exclude.txt.gz -plaf data/testData/labStrains.test.PLAF.txt.gz -o PG0390-C-best -panel data/testData/labStrains.test.panel.txt.gz -best" << endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CPanelExclude -panel data/testData/labStrains.test.panel.txt -painting PG0390-CPanelExclude.hap" << endl;
-    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel -k 2 -ibd -nSample 250 -rate 8 -burn 0.67" <<endl;
-    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -ibdPainting -initialP 0.2 0.8" <<endl;
-    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CLassoExclude -panel data/testData/labStrains.test.panel.txt -lasso -initialP 0.2 0.8 -writePanel" << endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel -k 2 -nSample 250 -rate 8 -burn 0.67 -ibd " <<endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -initialP 0.2 0.8 -ibdPainting" <<endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CLassoExclude -panel data/testData/labStrains.test.panel.txt -initialP 0.2 0.8 -writePanel -lasso" << endl;
 }
 
 
