@@ -156,14 +156,13 @@ void VcfReader::checkFeilds() {
             case 6: correctFieldValue =  "FILTER"; break;
             case 7: correctFieldValue =  "INFO";   break;
             case 8: correctFieldValue =  "FORMAT"; break;
-            //case 9: sampleName = this->tmpStr_;    break;
         }
 
         if (this->tmpStr_ != correctFieldValue && field_index < 9) {
             throw VcfInvalidHeaderFieldNames(correctFieldValue, this->tmpStr_);
         }
 
-        if ((field_index == 9) & (this->sampleName_ == "")){
+        if ((field_index == 9) & (this->sampleName_ == "")) {
             this->sampleName_ = this->tmpStr_;
         }
 
@@ -176,7 +175,7 @@ void VcfReader::checkFeilds() {
         field_index++;
     }  // End of while loop: field_end < line.size()
 
-    if (sampleColumnIndex_ == 0){
+    if (sampleColumnIndex_ == 0) {
         throw InvalidSampleInVcf(this->sampleName_, this->fileName_);
     }
     assert(sampleColumnIndex_ != 0);
@@ -296,7 +295,7 @@ VariantLine::VariantLine(string tmpLine, size_t sampleColumnIndex) {
             case 8: this->extract_field_FORMAT();  break;
         }
 
-        if (fieldIndex_ == this->sampleColumnIndex_){
+        if (fieldIndex_ == this->sampleColumnIndex_) {
             this->extract_field_VARIANT();
             break;
         }

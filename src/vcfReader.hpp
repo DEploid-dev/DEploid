@@ -139,7 +139,8 @@ class VcfReader : public VariantIndex {
   friend class DEploidIO;
  public:
     // Constructors and Destructors
-    explicit VcfReader(string fileName, string sampleName);  // parse in exclude sites
+    explicit VcfReader(string fileName, string sampleName);
+    // parse in exclude sites
     ~VcfReader() {}
 
     // Members and Methods

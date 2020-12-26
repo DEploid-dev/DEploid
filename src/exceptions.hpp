@@ -195,7 +195,8 @@ struct FlagsOrderIncorrect : public InvalidInput{
   // -sample after -vcf
   explicit FlagsOrderIncorrect(string str1, string str2):InvalidInput(str1) {
     this->reason = "Flag: ";
-    throwMsg = this->reason + this->src + string(" should be used after flag ") + str2;
+    throwMsg = this->reason + this->src +
+      string(" should be used after flag ") + str2;
   }
   ~FlagsOrderIncorrect() throw() {}
 };
