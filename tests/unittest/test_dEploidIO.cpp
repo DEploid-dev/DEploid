@@ -577,6 +577,46 @@ class TestIO : public CppUnit::TestCase {
                          "-plaf", "data/testData/labStrains.test.PLAF.txt",
                          "-best", "-ibd", "-noPanel" };
         CPPUNIT_ASSERT_THROW(DEploidIO(10, argv11), FlagsConflict);
+
+        // best conflict with lasso
+        char *argv12[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                         "-lasso", "-best"
+                         };
+        CPPUNIT_ASSERT_THROW(DEploidIO(11, argv12), FlagsConflict);
+
+        // lasso conflict with best
+        char *argv13[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                         "-best", "-lasso"
+                         };
+        CPPUNIT_ASSERT_THROW(DEploidIO(11, argv13), FlagsConflict);
+
+        // lasso conflict with ibd
+        char *argv14[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                         "-ibd", "-lasso"
+                         };
+        CPPUNIT_ASSERT_THROW(DEploidIO(11, argv14), FlagsConflict);
+
+        // ibd conflict with lasso
+        char *argv15[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                         "-lasso", "-ibd"
+                         };
+        CPPUNIT_ASSERT_THROW(DEploidIO(11, argv15), FlagsConflict);
     }
 
 
