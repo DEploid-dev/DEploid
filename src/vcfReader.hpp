@@ -88,14 +88,14 @@ class VariantLine{
   friend class VcfReader;
   friend class DEploidIO;
  public:
-    explicit VariantLine(string tmpLine);
+    explicit VariantLine(string tmpLine, size_t sampleColumnIndex);
     ~VariantLine() {}
 
  private:
     string tmpLine_;
     string tmpStr_;
 
-    void init(string tmpLine);
+    void init(string tmpLine, size_t sampleColumnIndex);
 
     void extract_field_CHROM();
     void extract_field_POS();
@@ -126,6 +126,7 @@ class VariantLine{
     int ref;
     int alt;
     double vqslod;
+    size_t sampleColumnIndex_;
 };
 
 
@@ -138,7 +139,7 @@ class VcfReader : public VariantIndex {
   friend class DEploidIO;
  public:
     // Constructors and Destructors
-    explicit VcfReader(string fileName);  // parse in exclude sites
+    explicit VcfReader(string fileName, string sampleName);  // parse in exclude sites
     ~VcfReader() {}
 
     // Members and Methods
@@ -160,7 +161,8 @@ class VcfReader : public VariantIndex {
     void setIsCompressed(const bool compressed) {
         this->isCompressed_ = compressed; }
     void checkFileCompressed();
-    string sampleName;
+    string sampleName_;
+    size_t sampleColumnIndex_;
     string tmpLine_;
     string tmpStr_;
 

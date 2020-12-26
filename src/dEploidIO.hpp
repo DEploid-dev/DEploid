@@ -148,6 +148,7 @@ class DEploidIO{
     string refFileName_;
     string altFileName_;
     string vcfFileName_;
+    string vcfSampleName_;
     string excludeFileName_;
     string initialHapFileName_;
     string prefix_;
@@ -208,6 +209,10 @@ class DEploidIO{
     bool useVcf_;
     void setUseVcf(const bool useVcf) { this->useVcf_ = useVcf; }
     bool useVcf() const {return this->useVcf_; }
+
+    bool useVcfSample_;
+    void setUseVcfSample(const bool setto) { this->useVcfSample_ = setto; }
+    bool useVcfSample() const {return this->useVcfSample_; }
 
     bool doExportVcf_;
     void setDoExportVcf( const bool exportVcf ) { this->doExportVcf_ = exportVcf; }
