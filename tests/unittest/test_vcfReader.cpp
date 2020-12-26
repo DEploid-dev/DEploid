@@ -39,8 +39,8 @@ class TestVCF : public CppUnit::TestCase {
 
  public:
     void setUp() {
-        this->vcf_ = new VcfReader("data/testData/PG0390-C.test.vcf");
-        this->vcfGz_ = new VcfReader("data/testData/PG0390-C.test.vcf.gz");
+        this->vcf_ = new VcfReader("data/testData/PG0390-C.test.vcf", "PG0390-C");
+        this->vcfGz_ = new VcfReader("data/testData/PG0390-C.test.vcf.gz", "PG0390-C");
         this->eps = 0.00000000001;
     }
 
