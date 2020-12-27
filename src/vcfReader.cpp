@@ -192,7 +192,8 @@ void VcfReader::readVariants() {
         getline(inFile, this->tmpLine_);
     }
     while (inFile.good() && this->tmpLine_.size() > 0) {
-        VariantLine newVariant(this->tmpLine_, this->sampleColumnIndex_, this->extractPlaf_);
+        VariantLine newVariant(this->tmpLine_, this->sampleColumnIndex_,
+            this->extractPlaf_);
         // check variantLine quality
         this->variants.push_back(newVariant);
         if (this->isCompressed()) {
@@ -277,7 +278,8 @@ void VcfReader::findLegitSnpsGivenVQSLODHalf(double vqslodThreshold) {
 }
 
 
-VariantLine::VariantLine(string tmpLine, size_t sampleColumnIndex, bool extractPlaf) {
+VariantLine::VariantLine(string tmpLine, size_t sampleColumnIndex,
+    bool extractPlaf) {
     this->init(tmpLine, sampleColumnIndex, extractPlaf);
 
     while (fieldEnd_ < this->tmpLine_.size()) {
@@ -307,7 +309,8 @@ VariantLine::VariantLine(string tmpLine, size_t sampleColumnIndex, bool extractP
 }
 
 
-void VariantLine::init(string tmpLine, size_t sampleColumnIndex, bool extractPlaf) {
+void VariantLine::init(string tmpLine, size_t sampleColumnIndex,
+    bool extractPlaf) {
     this->tmpLine_ = tmpLine;
     this->feildStart_ = 0;
     this->fieldEnd_ = 0;

@@ -88,7 +88,8 @@ class VariantLine{
   friend class VcfReader;
   friend class DEploidIO;
  public:
-    explicit VariantLine(string tmpLine, size_t sampleColumnIndex, bool extractPlaf = false);
+    explicit VariantLine(string tmpLine, size_t sampleColumnIndex,
+        bool extractPlaf = false);
     ~VariantLine() {}
 
  private:
@@ -141,7 +142,8 @@ class VcfReader : public VariantIndex {
   friend class DEploidIO;
  public:
     // Constructors and Destructors
-    explicit VcfReader(string fileName, string sampleName, bool extractPlaf = false);
+    explicit VcfReader(string fileName, string sampleName,
+        bool extractPlaf = false);
     // parse in exclude sites
     ~VcfReader() {}
 
