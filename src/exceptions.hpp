@@ -125,6 +125,15 @@ struct WrongType : public InvalidInput{
 };
 
 
+struct InvalidSampleInVcf : public InvalidInput{
+  explicit InvalidSampleInVcf(string sample, string vcf):InvalidInput(sample) {
+    this->reason = "Invalid sample name: ";
+    throwMsg = this->reason + this->src + " in " + vcf;
+  }
+  ~InvalidSampleInVcf() throw() {}
+};
+
+
 struct BadScientificNotation : public InvalidInput{
   explicit BadScientificNotation(string str1, string str2):InvalidInput(str1) {
     this->reason = "Bad scientific notation: ";
@@ -178,6 +187,18 @@ struct FlagsConflict : public InvalidInput{
     throwMsg = this->reason + this->src + string(" conflict with flag ") + str2;
   }
   ~FlagsConflict() throw() {}
+};
+
+
+struct FlagsOrderIncorrect : public InvalidInput{
+  // -plafFromVcf after -vcf
+  // -sample after -vcf
+  explicit FlagsOrderIncorrect(string str1, string str2):InvalidInput(str1) {
+    this->reason = "Flag: ";
+    throwMsg = this->reason + this->src +
+      string(" should be used after flag ") + str2;
+  }
+  ~FlagsOrderIncorrect() throw() {}
 };
 
 

@@ -30,6 +30,6 @@
 using std::endl;
 
 bool VcfReader::printSampleName() {
-    dout << "Sample name is " << this->sampleName << endl;
+    dout << "Sample name is " << this->sampleName_ << endl;
     return true;
 }

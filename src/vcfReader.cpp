@@ -35,9 +35,11 @@ using std::min;
 /*! Initialize vcf file, search for the end of the vcf header.
  *  Extract the first block of data ( "buffer_length" lines ) into buff
  */
-VcfReader::VcfReader(string fileName) {
+VcfReader::VcfReader(string fileName, string sampleName) {
     /*! Initialize by read in the vcf header file */
     this->init(fileName);
+    this->sampleName_ = sampleName;
+    this->sampleColumnIndex_ = 0;
     this->readHeader();
     this->readVariants();
     this->getChromList();
@@ -154,14 +156,18 @@ void VcfReader::checkFeilds() {
             case 6: correctFieldValue =  "FILTER"; break;
             case 7: correctFieldValue =  "INFO";   break;
             case 8: correctFieldValue =  "FORMAT"; break;
-            case 9: sampleName = this->tmpStr_;    break;
         }
 
         if (this->tmpStr_ != correctFieldValue && field_index < 9) {
             throw VcfInvalidHeaderFieldNames(correctFieldValue, this->tmpStr_);
         }
 
-        if (field_index == 9) {
+        if ((field_index == 9) & (this->sampleName_ == "")) {
+            this->sampleName_ = this->tmpStr_;
+        }
+
+        if (this->tmpStr_ == this->sampleName_) {
+            sampleColumnIndex_ = field_index;
             break;
         }
 
@@ -169,7 +175,10 @@ void VcfReader::checkFeilds() {
         field_index++;
     }  // End of while loop: field_end < line.size()
 
-    assert(field_index == 9);
+    if (sampleColumnIndex_ == 0) {
+        throw InvalidSampleInVcf(this->sampleName_, this->fileName_);
+    }
+    assert(sampleColumnIndex_ != 0);
     assert(printSampleName());
 }
 
@@ -181,7 +190,7 @@ void VcfReader::readVariants() {
         getline(inFile, this->tmpLine_);
     }
     while (inFile.good() && this->tmpLine_.size() > 0) {
-        VariantLine newVariant(this->tmpLine_);
+        VariantLine newVariant(this->tmpLine_, this->sampleColumnIndex_);
         // check variantLine quality
         this->variants.push_back(newVariant);
         if (this->isCompressed()) {
@@ -266,8 +275,8 @@ void VcfReader::findLegitSnpsGivenVQSLODHalf(double vqslodThreshold) {
 }
 
 
-VariantLine::VariantLine(string tmpLine) {
-    this->init(tmpLine);
+VariantLine::VariantLine(string tmpLine, size_t sampleColumnIndex) {
+    this->init(tmpLine, sampleColumnIndex);
 
     while (fieldEnd_ < this->tmpLine_.size()) {
         fieldEnd_ = min(this->tmpLine_.find('\t', feildStart_),
@@ -284,21 +293,25 @@ VariantLine::VariantLine(string tmpLine) {
             case 6: this->extract_field_FILTER();  break;
             case 7: this->extract_field_INFO();    break;
             case 8: this->extract_field_FORMAT();  break;
-            case 9: this->extract_field_VARIANT(); break;
         }
 
+        if (fieldIndex_ == this->sampleColumnIndex_) {
+            this->extract_field_VARIANT();
+            break;
+        }
         feildStart_ = fieldEnd_+1;
         fieldIndex_++;
     }
 }
 
 
-void VariantLine::init(string tmpLine) {
+void VariantLine::init(string tmpLine, size_t sampleColumnIndex) {
     this->tmpLine_ = tmpLine;
     this->feildStart_ = 0;
     this->fieldEnd_ = 0;
     this->fieldIndex_  = 0;
     this->adFieldIndex_ = -1;
+    this->sampleColumnIndex_ = sampleColumnIndex;
 }
 
 

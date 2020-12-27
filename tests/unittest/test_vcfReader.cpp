@@ -30,6 +30,7 @@
 class TestVCF : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE(TestVCF);
     CPPUNIT_TEST(testMainConstructor);
+    CPPUNIT_TEST(testInvalidSampleInVcf);
     CPPUNIT_TEST_SUITE_END();
 
  private:
@@ -39,8 +40,10 @@ class TestVCF : public CppUnit::TestCase {
 
  public:
     void setUp() {
-        this->vcf_ = new VcfReader("data/testData/PG0390-C.test.vcf");
-        this->vcfGz_ = new VcfReader("data/testData/PG0390-C.test.vcf.gz");
+        this->vcf_ = new VcfReader("data/testData/PG0390-C.test.vcf",
+            "PG0390-C");
+        this->vcfGz_ = new VcfReader("data/testData/PG0390-C.test.vcf.gz",
+            "PG0390-C");
         this->eps = 0.00000000001;
     }
 
@@ -55,6 +58,11 @@ class TestVCF : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.617, this->vcf_->vqslod[1], this->eps);
         CPPUNIT_ASSERT_EQUAL(this->vcf_->vqslod.size(),
                              this->vcf_->refCount.size());
+    }
+
+    void testInvalidSampleInVcf() {
+        CPPUNIT_ASSERT_THROW(VcfReader("data/testData/PG0390-C.test.vcf.gz",
+            "PG0370-C"), InvalidSampleInVcf);
     }
 };
 

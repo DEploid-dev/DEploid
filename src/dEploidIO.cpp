@@ -141,6 +141,8 @@ void DEploidIO::init() {
     this->setParameterSigma(5.0);
     this->setIBDSigma(20.0);
     this->setUseVcf(false);
+    this->setUseVcfSample(false);
+    this->vcfSampleName_ = "";
     this->vcfReaderPtr_ = NULL;
     this->setDoExportVcf(false);
     this->setDoComputeLLK(false);
@@ -216,7 +218,7 @@ void DEploidIO::finalize() {
     }
 
     if ( useVcf() ) { // read vcf files, and parse it to refCount and altCount
-        this->vcfReaderPtr_ = new VcfReader (vcfFileName_ );
+        this->vcfReaderPtr_ = new VcfReader (vcfFileName_, vcfSampleName_);
         if ( this->excludeSites() ) {
             this->vcfReaderPtr_->findAndKeepMarkers (excludedMarkers);
         }
@@ -360,6 +362,11 @@ void DEploidIO::parse () {
             }
             this->setUseVcf(true);
             this->readNextStringto ( this->vcfFileName_ ) ;
+        } else if (*argv_i == "-sample") {
+            if (useVcf() == false){
+            }
+            this->setUseVcfSample(true);
+            this->readNextStringto ( this->vcfSampleName_ ) ;
         } else if (*argv_i == "-vcfOut") {
             this->setDoExportVcf (true);
         } else if (*argv_i == "-plaf") {
@@ -679,6 +686,7 @@ void DEploidIO::printHelp(std::ostream& out) {
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel -k 2 -nSample 250 -rate 8 -burn 0.67 -ibd " <<endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -initialP 0.2 0.8 -ibdPainting" <<endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CLassoExclude -panel data/testData/labStrains.test.panel.txt -initialP 0.2 0.8 -writePanel -lasso" << endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf.gz -sample PG0390-C -exclude data/testData/labStrains.test.exclude.txt.gz -plaf data/testData/labStrains.test.PLAF.txt.gz -o PG0390-C-best -panel data/testData/labStrains.test.panel.txt.gz -best" << endl;
 }
 
 

@@ -178,7 +178,7 @@ void DEploidIO::writeVcf(vector < vector <double> > &hap,
     // Include proportions
     for ( size_t ii = 0; ii < prop.size(); ii++){
         (*writeTo) << "##Proportion of strain "
-                   << ( this->useVcf() ? this->vcfReaderPtr_->sampleName : "h" )
+                   << ( this->useVcf() ? this->vcfReaderPtr_->sampleName_ : "h" )
                    << "." << (ii+1)
                    << "=" << prop[ii] << endl;
     }
@@ -194,7 +194,7 @@ void DEploidIO::writeVcf(vector < vector <double> > &hap,
                << "INFO"   << "\t"
                << "FORMAT" << "\t";
     for ( size_t ii = 0; ii < kStrain_; ii++){
-        (*writeTo) << ( this->useVcf() ? this->vcfReaderPtr_->sampleName : "h" )
+        (*writeTo) << ( this->useVcf() ? this->vcfReaderPtr_->sampleName_ : "h" )
                           << "." << (ii+1) ;
         (*writeTo) << ((ii < (kStrain_-1)) ? "\t" : "\n") ;
     }
