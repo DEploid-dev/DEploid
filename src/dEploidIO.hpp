@@ -214,6 +214,10 @@ class DEploidIO{
     void setUseVcfSample(const bool setto) { this->useVcfSample_ = setto; }
     bool useVcfSample() const {return this->useVcfSample_; }
 
+    bool extractPlafFromVcf_;
+    void setExtractPlafFromVcf(const bool setto) { this->extractPlafFromVcf_ = setto; }
+    bool extractPlafFromVcf() const {return this->extractPlafFromVcf_; }
+
     bool doExportVcf_;
     void setDoExportVcf( const bool exportVcf ) { this->doExportVcf_ = exportVcf; }
     bool doExportVcf() const { return this->doExportVcf_; }

@@ -218,7 +218,8 @@ void DEploidIO::finalize() {
     }
 
     if ( useVcf() ) { // read vcf files, and parse it to refCount and altCount
-        this->vcfReaderPtr_ = new VcfReader (vcfFileName_, vcfSampleName_);
+        this->vcfReaderPtr_ = new VcfReader (vcfFileName_, vcfSampleName_,
+            extractPlafFromVcf_);
         if ( this->excludeSites() ) {
             this->vcfReaderPtr_->findAndKeepMarkers (excludedMarkers);
         }
@@ -241,25 +242,32 @@ void DEploidIO::finalize() {
         this->altCount_ = alt.info_;
     }
 
-    TxtReader plaf;
-    plaf.readFromFile(plafFileName_.c_str());
-    if ( this->excludeSites() ) {
-        plaf.findAndKeepMarkers( excludedMarkers );
-    }
-    this->plaf_ = plaf.info_;
-    this->chrom_ = plaf.chrom_;
-    this->position_ = plaf.position_;
-    this->indexOfChromStarts_ = plaf.indexOfChromStarts_;
-
     this->nLoci_ = refCount_.size();
-
-    if ( this->nLoci_ != this->plaf_.size() ) {
-        throw LociNumberUnequal( this->plafFileName_ );
-    }
 
     if ( this->nLoci_ != this->altCount_.size() ) {
         throw LociNumberUnequal( this->altFileName_ );
     }
+
+    if (extractPlafFromVcf()){
+        this->plaf_ = this->vcfReaderPtr_->plaf;
+        this->chrom_ = this->vcfReaderPtr_->chrom_;
+        this->position_ = this->vcfReaderPtr_->position_;
+        this->indexOfChromStarts_ = this->vcfReaderPtr_->indexOfChromStarts_;
+    } else {
+        TxtReader plaf;
+        plaf.readFromFile(plafFileName_.c_str());
+        if ( this->excludeSites() ) {
+            plaf.findAndKeepMarkers( excludedMarkers );
+        }
+        this->plaf_ = plaf.info_;
+        this->chrom_ = plaf.chrom_;
+        this->position_ = plaf.position_;
+        this->indexOfChromStarts_ = plaf.indexOfChromStarts_;
+        if ( this->nLoci_ != this->plaf_.size() ) {
+            throw LociNumberUnequal( this->plafFileName_ );
+        }
+    }
+
     (void)removeFilesWithSameName();
 
     this->readPanel();
@@ -364,9 +372,15 @@ void DEploidIO::parse () {
             this->readNextStringto ( this->vcfFileName_ ) ;
         } else if (*argv_i == "-sample") {
             if (useVcf() == false){
+                throw(FlagsOrderIncorrect((*argv_i) , "-vcf") );
             }
             this->setUseVcfSample(true);
             this->readNextStringto ( this->vcfSampleName_ ) ;
+        } else if (*argv_i == "-plafFromVcf") {
+            if (useVcf() == false){
+                throw(FlagsOrderIncorrect((*argv_i) , "-vcf") );
+            }
+            this->setExtractPlafFromVcf(true);
         } else if (*argv_i == "-vcfOut") {
             this->setDoExportVcf (true);
         } else if (*argv_i == "-plaf") {
@@ -582,7 +596,7 @@ void DEploidIO::checkInput() {
         throw FileNameMissing ( "Ref count" );}
     if ( this->altFileName_.size() == 0 && this->useVcf() == false ) {
         throw FileNameMissing ( "Alt count" );}
-    if ( this->plafFileName_.size() == 0 ) {
+    if ( this->plafFileName_.size() == 0 && extractPlafFromVcf() == false ) {
         throw FileNameMissing ( "PLAF" );}
     if ( usePanel() && this->panelFileName_.size() == 0 && !this->doIbdPainting() && !this->doComputeLLK() ) {
         throw FileNameMissing ( "Reference panel" );}
@@ -686,7 +700,7 @@ void DEploidIO::printHelp(std::ostream& out) {
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -noPanel -k 2 -nSample 250 -rate 8 -burn 0.67 -ibd " <<endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CNopanel -initialP 0.2 0.8 -ibdPainting" <<endl;
     out << "./dEploid -vcf data/testData/PG0390-C.test.vcf -exclude data/testData/labStrains.test.exclude.txt -plaf data/testData/labStrains.test.PLAF.txt -o PG0390-CLassoExclude -panel data/testData/labStrains.test.panel.txt -initialP 0.2 0.8 -writePanel -lasso" << endl;
-    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf.gz -sample PG0390-C -exclude data/testData/labStrains.test.exclude.txt.gz -plaf data/testData/labStrains.test.PLAF.txt.gz -o PG0390-C-best -panel data/testData/labStrains.test.panel.txt.gz -best" << endl;
+    out << "./dEploid -vcf data/testData/PG0390-C.test.vcf.gz -sample PG0390-C -plafFromVcf -exclude data/testData/labStrains.test.exclude.txt.gz -o PG0390-C-best -panel data/testData/labStrains.test.panel.txt.gz -best" << endl;
 }
 
 
