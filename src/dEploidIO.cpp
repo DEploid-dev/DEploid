@@ -142,6 +142,7 @@ void DEploidIO::init() {
     this->setIBDSigma(20.0);
     this->setUseVcf(false);
     this->setUseVcfSample(false);
+    this->setExtractPlafFromVcf(false);
     this->vcfSampleName_ = "";
     this->vcfReaderPtr_ = NULL;
     this->setDoExportVcf(false);
@@ -384,6 +385,9 @@ void DEploidIO::parse () {
         } else if (*argv_i == "-vcfOut") {
             this->setDoExportVcf (true);
         } else if (*argv_i == "-plaf") {
+            if ( this->extractPlafFromVcf() ) {
+                throw ( FlagsConflict((*argv_i) , "-plafFromVcf") );
+            }
             this->readNextStringto ( this->plafFileName_ ) ;
         } else if (*argv_i == "-panel") {
             if ( this->usePanel() == false ) {

@@ -617,6 +617,15 @@ class TestIO : public CppUnit::TestCase {
                          "-lasso", "-ibd"
                          };
         CPPUNIT_ASSERT_THROW(DEploidIO(11, argv15), FlagsConflict);
+
+        // plaf conflict with plafFromVcf
+        char *argv16[] = { "./dEploid",
+                         "-vcf", "data/testData/PG0390-C.test.vcf",
+                         "-plafFromVcf",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt"
+                         };
+        CPPUNIT_ASSERT_THROW(DEploidIO(8, argv16), FlagsConflict);
     }
 
 
