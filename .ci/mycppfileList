@@ -1,12 +1,8 @@
 src/dEploidIO.cpp
 src/dEploidIO.hpp
 src/mcmc.cpp
-src/panel.cpp
-src/panel.hpp
 src/updateHap.cpp
 src/updateHap.hpp
-src/utility.cpp
-src/utility.hpp
 src/export/dEploidIOExport.cpp
 src/export/dEploidIOExportPosteriorProb.cpp
 src/export/writeMcmcRelated.cpp
@@ -18,3 +14,5 @@ tests/unittest/test_txtReader.cpp
 tests/unittest/test_updatePairHap.cpp
 tests/unittest/test_updateSingleHap.cpp
 tests/unittest/test_utilities.cpp
+src/utility.hpp
+src/utility.cpp
