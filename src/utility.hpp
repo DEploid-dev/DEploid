@@ -78,7 +78,7 @@ vector <T> vecProd(const vector<T> &vecA,
 
 
 template <typename T>
-T sumOfVec(vector <T>& array ) {
+T sumOfVec(const vector <T>& array ) {
     T tmp = 0;
     for (auto const& value : array) {
         tmp += value;
@@ -121,7 +121,7 @@ vector <double> calcLLKs(const vector <double> &refCount,
 double calcLLK(double ref, double alt,
     double unadjustedWsaf, double err, double fac);
 size_t sampleIndexGivenProp(RandomGenerator* rg, vector <double> proportion);
-vector <double> reshapeMatToVec(vector < vector <double> > &Mat);
+vector <double> reshapeMatToVec(const vector < vector <double> > &Mat);
 double betaPdf(double x, double a, double b);
 double logBetaPdf(double x, double a, double b);
 double binomialPdf(int s, int n, double p);

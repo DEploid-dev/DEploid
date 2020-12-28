@@ -16,3 +16,5 @@ tests/unittest/test_vcfReader.cpp
 src/chooseK.hpp
 src/chooseK.cpp
 tests/unittest/test_dEploidIO.cpp
+src/panel.hpp
+src/panel.cpp

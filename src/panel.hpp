@@ -26,24 +26,27 @@
 #ifndef PANEL
 #define PANEL
 
+#include <string>
+#include <vector>
+
 #include "txtReader.hpp"
 #include "exceptions.hpp"
 
 class Panel: public TxtReader{
-#ifdef UNITTEST
- friend class TestPanel;
- friend class TestInitialHaplotypes;
- friend class TestUpdateHap;
- friend class TestUpdatePairHap;
- friend class TestUpdateSingleHap;
-#endif
- friend class McmcMachinery;
- friend class UpdateSingleHap;
- friend class UpdatePairHap;
- friend class UpdateHap;
- friend class DEploidIO;
- friend class InitialHaplotypes;
-  private:
+  #ifdef UNITTEST
+  friend class TestPanel;
+  friend class TestInitialHaplotypes;
+  friend class TestUpdateHap;
+  friend class TestUpdatePairHap;
+  friend class TestUpdateSingleHap;
+  #endif
+  friend class McmcMachinery;
+  friend class UpdateSingleHap;
+  friend class UpdatePairHap;
+  friend class UpdateHap;
+  friend class DEploidIO;
+  friend class InitialHaplotypes;
+ private:
     // Members
     vector < double > pRec_;
     // Used in update single haplotype
@@ -55,10 +58,12 @@ class Panel: public TxtReader{
     vector < double > pNoRecNoRec_;  // pNoRec * pNoRec;
 
     size_t truePanelSize_;
-    void setTruePanelSize ( const size_t setTo ){ this->truePanelSize_ = setTo; }
+    void setTruePanelSize(const size_t setTo) {
+        this->truePanelSize_ = setTo; }
 
     size_t inbreedingPanelSize_;
-    void setInbreedingPanelSize ( const size_t setTo ){ this->inbreedingPanelSize_ = setTo; }
+    void setInbreedingPanelSize(const size_t setTo) {
+        this->inbreedingPanelSize_ = setTo; }
 
     size_t inbreedingPanelSize() const { return this->inbreedingPanelSize_; }
     size_t truePanelSize() const { return this->truePanelSize_; }
@@ -72,57 +77,58 @@ class Panel: public TxtReader{
           vector < vector < double > > content,
           vector < string > header);
     Panel(const Panel &copyFrom);
-
-    //Panel(const char inchar[] );
+    // Panel(const char inchar[]);
 
     // Methods
-    void readFromFile( const char inchar[] );
-    void computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame );
-    void checkForExceptions( size_t nLoci, string panelFileName );
-    void initializeUpdatePanel( size_t inbreedingPanelSizeSetTo);
-    void updatePanelWithHaps( size_t inbreedingPanelSizeSetTo, size_t excludedStrain, vector < vector<double> > & haps);
+    void readFromFile(const char inchar[]);
+    void computeRecombProbs(double averageCentimorganDistance, double Ne,
+        bool useConstRecomb, double constRecombProb, bool forbidCopyFromSame);
+    void checkForExceptions(size_t nLoci, string panelFileName);
+    void initializeUpdatePanel(size_t inbreedingPanelSizeSetTo);
+    void updatePanelWithHaps(size_t inbreedingPanelSizeSetTo,
+        size_t excludedStrain, const vector < vector<double> > & haps);
 
     void print();
     void buildExamplePanelContent();
     void buildExamplePanel1();
     void buildExamplePanel2();
 
-    void trimVec(vector <double> &vec, const vector <size_t> &idx);
-    //void findWhoToBeKeptGivenIndex(const vector <size_t> & givenIndex);
+    void trimVec(vector <double> vec, const vector <size_t> &idx);
+    // void findWhoToBeKeptGivenIndex(const vector <size_t> & givenIndex);
     void findAndKeepMarkersGivenIndex(const vector <size_t> & givenIndex);
     void findAndKeepMarkersGivenIndexHalf(const vector <size_t> & givenIndex);
 
-  public:
-    virtual ~Panel() {};
+ public:
+    virtual ~Panel() {}
 };
 
 
 class InitialHaplotypes: public Panel{
-#ifdef UNITTEST
- friend class TestInitialHaplotypes;
-#endif
- friend class DEploidIO;
-    InitialHaplotypes():Panel(){}
+  #ifdef UNITTEST
+  friend class TestInitialHaplotypes;
+  #endif
+  friend class DEploidIO;
+    InitialHaplotypes():Panel() {}
     ~InitialHaplotypes(){}
 };
 
 
 class IBDrecombProbs: public VariantIndex{
- friend class IBDpath;
+  friend class IBDpath;
+  #ifdef UNITTEST
+  friend class TestIBDpath;
+  #endif
 
-#ifdef UNITTEST
- friend class TestIBDpath;
-#endif
-
-  private:
+ private:
     vector < double > pRec_;
-    vector < double > pNoRec_; // = 1.0 - pRec;
+    vector < double > pNoRec_;  // = 1.0 - pRec;
 
-    void computeRecombProbs( double averageCentimorganDistance, double Ne, bool useConstRecomb, double constRecombProb );
+    void computeRecombProbs(double averageCentimorganDistance, double Ne,
+        bool useConstRecomb, double constRecombProb);
 
-  public:
-    IBDrecombProbs():VariantIndex(){};
-    IBDrecombProbs(vector < vector < int> > position, size_t nLoci){
+ public:
+    IBDrecombProbs():VariantIndex() {}
+    IBDrecombProbs(vector < vector < int> > position, size_t nLoci) {
         this->position_ = position;
         this->nLoci_ = nLoci;
     }

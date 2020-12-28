@@ -23,16 +23,18 @@
  *
  */
 
+#include <iterator>   // std::distance
+#include <algorithm>  // find
+
 #include "utility.hpp"
-#include <iterator>     // std::distance
-#include <algorithm> // find
-#include "codeCogs/loggammasum.h" // which includes log_gamma.h
+#include "codeCogs/loggammasum.h"  // which includes log_gamma.h
 #include "codeCogs/gamma.h"
 #include "codeCogs/logbeta.h"
 
 
-
-double normal_pdf(double x, double m, double s) { // See http://stackoverflow.com/questions/10847007/using-the-gaussian-probability-density-function-in-c
+// See http://stackoverflow.com/questions/10847007/
+// using-the-gaussian-probability-density-function-in-c
+double normal_pdf(double x, double m, double s) {
     static const double inv_sqrt_2pi = 0.3989422804014327;
     double a = (x - m) / s;
 
@@ -40,37 +42,37 @@ double normal_pdf(double x, double m, double s) { // See http://stackoverflow.co
 }
 
 
-double min_value( vector <double> x){
-    assert( x.size() > 0 );
+double min_value(vector <double> x) {
+    assert(x.size() > 0);
     auto tmpMaxIt = std::min_element(std::begin(x), std::end(x));
     return *tmpMaxIt;
 }
 
 
-double max_value( vector <double> x){
-    assert( x.size() > 0 );
+double max_value(vector <double> x) {
+    assert(x.size() > 0);
     auto tmpMaxIt = std::max_element(std::begin(x), std::end(x));
     return *tmpMaxIt;
 }
 
 
-vector <double> computeCdf (const vector <double> & dist ){
+vector <double> computeCdf(const vector <double> & dist) {
     vector <double> cdf;
     double cumsum = 0;
-    for (double p : dist){
+    for (double p : dist) {
         cumsum += p;
-        cdf.push_back( cumsum );
+        cdf.push_back(cumsum);
     }
-    assert( cdf.size() == dist.size() );
-    //assert( cdf.back() == 1.0 );
+    assert(cdf.size() == dist.size());
+    // assert(cdf.back() == 1.0);
     return cdf;
 }
 
 
-double sumOfMat(const vector <vector <double> > & matrix ){
+double sumOfMat(const vector <vector <double> > & matrix) {
     double tmp = 0.0;
-    for (auto const& array: matrix){
-        for (auto const& value: array){
+    for (auto const& array : matrix) {
+        for (auto const& value : array) {
             tmp += value;
         }
     }
@@ -78,26 +80,27 @@ double sumOfMat(const vector <vector <double> > & matrix ){
 }
 
 
-void normalizeBySum(vector <double> & array ){
+void normalizeBySum(vector <double> & array ) {
     double sumOfArray = sumOfVec(array);
-    for( vector<double>::iterator it = array.begin(); it != array.end(); ++it) {
+    for (vector<double>::iterator it = array.begin(); it != array.end(); ++it) {
         *it /= sumOfArray;
     }
 }
 
 
-void normalizeByMax(vector <double> & array ){
+void normalizeByMax(vector <double> & array ) {
     double maxOfArray = max_value(array);
-    for( vector<double>::iterator it = array.begin(); it != array.end(); ++it) {
+    for (vector<double>::iterator it = array.begin(); it != array.end(); ++it) {
         *it /= maxOfArray;
     }
 }
 
 
-void normalizeBySumMat(vector <vector <double> > & matrix ){
+void normalizeBySumMat(vector <vector <double> > & matrix) {
     double tmpsum = sumOfMat(matrix);
-    for( size_t i = 0; i < matrix.size(); i++ ){
-        for( vector<double>::iterator it = matrix[i].begin(); it != matrix[i].end(); ++it) {
+    for (size_t i = 0; i < matrix.size(); i++) {
+        for (vector<double>::iterator it = matrix[i].begin();
+            it != matrix[i].end(); ++it) {
             *it /= tmpsum;
         }
     }
@@ -108,46 +111,50 @@ vector <double> calcLLKs(const vector <double> &refCount,
                          const vector <double> &altCount,
                          const vector <double> &expectedWsaf,
                          size_t firstIndex, size_t length,
-                         double fac, double err){
-    assert ( expectedWsaf.size() == length );
-    vector <double> tmpLLKs (length, 0.0);
+                         double fac, double err) {
+    assert(expectedWsaf.size() == length);
+    vector <double> tmpLLKs(length, 0.0);
     size_t index = firstIndex;
-    for ( size_t i = 0; i < length; i++ ){
-        assert (expectedWsaf[i] >= 0);
-        //assert (expectedWsaf[i] <= 1);
-        tmpLLKs[i] = calcLLK( refCount[index],
-                              altCount[index],
-                              expectedWsaf[i],
-                              err,
-                              fac);
+    for (size_t i = 0; i < length; i++) {
+        assert(expectedWsaf[i] >= 0);
+        // assert (expectedWsaf[i] <= 1);
+        tmpLLKs[i] = calcLLK(refCount[index],
+                             altCount[index],
+                             expectedWsaf[i],
+                             err,
+                             fac);
         index++;
     }
     return tmpLLKs;
 }
 
 
-double calcLLK( double ref, double alt, double unadjustedWsaf, double err, double fac ) {
+double calcLLK(double ref, double alt, double unadjustedWsaf, double err,
+    double fac) {
     double adjustedWsaf = unadjustedWsaf+err*(1-2*unadjustedWsaf);
-    double llk = Maths::Special::Gamma::logBeta(alt+adjustedWsaf*fac, ref+(1-adjustedWsaf)*fac) - Maths::Special::Gamma::logBeta(adjustedWsaf*fac,(1-adjustedWsaf)*fac);
+    double llk = Maths::Special::Gamma::logBeta(
+        alt+adjustedWsaf*fac, ref+(1-adjustedWsaf)*fac) -
+        Maths::Special::Gamma::logBeta(adjustedWsaf*fac, (1-adjustedWsaf)*fac);
     return llk;
 }
 
 
-size_t sampleIndexGivenProp ( RandomGenerator* rg, vector <double> proportion ){
+size_t sampleIndexGivenProp(RandomGenerator* rg, vector <double> proportion) {
     #ifndef NDEBUG
-        auto biggest = std::max_element(std::begin(proportion), std::end(proportion));
+        auto biggest = std::max_element(
+            std::begin(proportion), std::end(proportion));
         return std::distance(proportion.begin(), biggest);
     #else
         vector <size_t> tmpIndex;
-        for ( size_t i = 0; i < proportion.size(); i++ ){
+        for ( size_t i = 0; i < proportion.size(); i++ ) {
             tmpIndex.push_back(i);
         }
         vector <double> tmpCdf = computeCdf(proportion);
 
         double u = rg->sample();
         size_t i = 0;
-        for ( ; i < tmpCdf.size() ; i++){
-            if ( u < tmpCdf[i] ){
+        for ( ; i < tmpCdf.size() ; i++) {
+            if ( u < tmpCdf[i] ) {
                 break;
             }
         }
@@ -156,10 +163,10 @@ size_t sampleIndexGivenProp ( RandomGenerator* rg, vector <double> proportion ){
 }
 
 
-vector <double> reshapeMatToVec(vector < vector <double> > &Mat ){
+vector <double> reshapeMatToVec(const vector < vector <double> > &Mat) {
     vector <double> tmp;
-    for (auto const& array: Mat){
-        for (auto const& value: array){
+    for (auto const& array : Mat) {
+        for (auto const& value : array) {
             tmp.push_back(value);
         }
     }
@@ -167,20 +174,21 @@ vector <double> reshapeMatToVec(vector < vector <double> > &Mat ){
 }
 
 
-double betaPdf(double x, double a, double b){
-    assert(x>=0 && x<=1);
-    assert(a>=0);
-    assert(b>=0);
-    double p = Maths::Special::Gamma::gamma(a + b) / (Maths::Special::Gamma::gamma(a) * Maths::Special::Gamma::gamma(b));
+double betaPdf(double x, double a, double b) {
+    assert(x >= 0 && x <= 1);
+    assert(a >= 0);
+    assert(b >= 0);
+    double p = Maths::Special::Gamma::gamma(a + b) /
+        (Maths::Special::Gamma::gamma(a) * Maths::Special::Gamma::gamma(b));
     double q = pow(1 - x, b - 1) * pow(x, a - 1);
     return p * q;
 }
 
 
-double logBetaPdf(double x, double a, double b){
-    assert(x>=0 && x<=1);
-    assert(a>=0);
-    assert(b>=0);
+double logBetaPdf(double x, double a, double b) {
+    assert(x >= 0 && x <= 1);
+    assert(a >= 0);
+    assert(b >= 0);
     double ret = Maths::Special::Gamma::log_gamma(a+b) -
                  Maths::Special::Gamma::log_gamma(a) -
                  Maths::Special::Gamma::log_gamma(b) +
@@ -189,22 +197,23 @@ double logBetaPdf(double x, double a, double b){
 }
 
 
-double binomialPdf(int s, int n, double p){
-    assert(p>=0 && p<=1);
-    double ret=n_choose_k(n, s);
-    ret *= pow(p, (double)s);
-    ret *= pow((1.0-p), (double)(n-s));
+double binomialPdf(int s, int n, double p) {
+    assert(p >= 0 && p <= 1);
+    double ret = n_choose_k(n, s);
+    ret *= pow(p, static_cast<double>(s));
+    ret *= pow((1.0-p), static_cast<double>(n-s));
     return ret;
 }
 
 
-//double betaDistConst( double a , double b){
-    //double ret = Maths::Special::Gamma::gamma(a + b) / (Maths::Special::Gamma::gamma(a) * Maths::Special::Gamma::gamma(b));
-    //return ret;
-//}
+// double betaDistConst( double a , double b) {
+    // double ret = Maths::Special::Gamma::gamma(a + b) /
+    // (Maths::Special::Gamma::gamma(a) * Maths::Special::Gamma::gamma(b));
+    // return ret;
+// }
 
 
-double rBeta(double alpha, double beta, RandomGenerator* rg){
+double rBeta(double alpha, double beta, RandomGenerator* rg) {
     double mxAt = (alpha-1.0)/(alpha+beta-2.0);
     double mx = betaPdf(mxAt, alpha, beta);
     double y, u;
