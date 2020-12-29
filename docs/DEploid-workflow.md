@@ -1,5 +1,13 @@
-Pf3k workflow
+DEploid workflow
 =============
+
+DEploid-Bestpractice workflow
+--------------------
+
+TODO
+
+DEploid-IBD workflow
+--------------------
 
 Our main work flow consist with three steps:
 
@@ -17,3 +25,7 @@ Black boxes indicate the key deconvolution steps when our program DEploid is use
 [//]: # ( Caveat: need to run the program multiple times, because some models are harder than the others.)
 
 
+DEploid workflow (first version)
+--------------------------------
+
+TODO
