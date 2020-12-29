@@ -1,5 +1,5 @@
 
-<img src="docs/_static/deploidTrans.png" width="180">
+<img src="docs/_static/deploid.png" width="180">
 
 
 [![License (GPL version 3)](https://img.shields.io/badge/license-GPL%20version%203-brightgreen.svg)](http://opensource.org/licenses/GPL-3.0)
