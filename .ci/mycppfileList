@@ -3,7 +3,6 @@ src/dEploidIO.hpp
 src/mcmc.cpp
 src/updateHap.cpp
 src/updateHap.hpp
-src/export/dEploidIOExport.cpp
 src/export/dEploidIOExportPosteriorProb.cpp
 src/export/writeMcmcRelated.cpp
 tests/unittest/test_ibd.cpp
@@ -16,3 +15,4 @@ tests/unittest/test_updateSingleHap.cpp
 tests/unittest/test_utilities.cpp
 src/utility.hpp
 src/utility.cpp
+src/export/dEploidIOExport.cpp
