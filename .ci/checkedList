@@ -12,9 +12,10 @@ src/vcfReader.cpp
 src/debug/mcmcDebug.cpp
 src/debug/vcfReaderDebug.cpp
 src/global.hpp
-tests/unittest/test_vcfReader.cpp
 src/chooseK.hpp
 src/chooseK.cpp
 tests/unittest/test_dEploidIO.cpp
 src/panel.hpp
 src/panel.cpp
+tests/unittest/test_vcfReader.cpp
+tests/unittest/test_runner.cpp

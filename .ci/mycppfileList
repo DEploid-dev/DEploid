@@ -5,7 +5,6 @@ src/updateHap.cpp
 src/updateHap.hpp
 src/export/dEploidIOExportPosteriorProb.cpp
 src/export/writeMcmcRelated.cpp
-tests/unittest/test_ibd.cpp
 tests/unittest/test_mcmc.cpp
 tests/unittest/test_panel.cpp
 tests/unittest/test_runner.cpp
