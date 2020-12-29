@@ -19,3 +19,4 @@ src/panel.hpp
 src/panel.cpp
 tests/unittest/test_vcfReader.cpp
 tests/unittest/test_runner.cpp
+tests/unittest/test_utilities.cpp
