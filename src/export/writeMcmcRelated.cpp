@@ -26,13 +26,15 @@
 #include "dEploidIO.hpp"
 #include "mcmc.hpp"
 
-void DEploidIO::writeMcmcRelated (McmcSample * mcmcSample, string jobbrief, bool useIBD){
+void DEploidIO::writeMcmcRelated(McmcSample * mcmcSample,
+    string jobbrief, bool useIBD){
     this->writeProp( mcmcSample, jobbrief);
     this->writeLLK(mcmcSample, jobbrief);
     this->writeHap(mcmcSample->hap, jobbrief);
 
-    if ( useIBD == false ){
-        this->writeVcf(mcmcSample->hap, mcmcSample->proportion.back(), jobbrief);
+    if (useIBD == false) {
+        this->writeVcf(mcmcSample->hap,
+            mcmcSample->proportion.back(), jobbrief);
         this->siteOfTwoSwitchOne = mcmcSample->siteOfTwoSwitchOne;
         this->siteOfTwoMissCopyOne = mcmcSample->siteOfTwoMissCopyOne;
         this->siteOfTwoSwitchTwo = mcmcSample->siteOfTwoSwitchTwo;
@@ -203,15 +205,16 @@ void DEploidIO::writeVcf(vector < vector <double> > &hap,
     for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
         for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
             if ( useVcf() ) {
-                (*writeTo) << this->vcfReaderPtr_->variants[siteIndex].chromStr  << "\t"
-                           << this->vcfReaderPtr_->variants[siteIndex].posStr    << "\t"
-                           << this->vcfReaderPtr_->variants[siteIndex].idStr     << "\t"
-                           << this->vcfReaderPtr_->variants[siteIndex].refStr    << "\t"
-                           << this->vcfReaderPtr_->variants[siteIndex].altStr    << "\t"
-                           << this->vcfReaderPtr_->variants[siteIndex].qualStr   << "\t"
-                           << this->vcfReaderPtr_->variants[siteIndex].filterStr << "\t"
-                           << this->vcfReaderPtr_->variants[siteIndex].infoStr   << "\t"
-                           << "GT"                                      << "\t";
+                (*writeTo) << this->vcfReaderPtr_->variants[siteIndex].chromStr
+                   << "\t" << this->vcfReaderPtr_->variants[siteIndex].posStr
+                   << "\t" << this->vcfReaderPtr_->variants[siteIndex].idStr
+                   << "\t"
+                   << this->vcfReaderPtr_->variants[siteIndex].refStr    << "\t"
+                   << this->vcfReaderPtr_->variants[siteIndex].altStr    << "\t"
+                   << this->vcfReaderPtr_->variants[siteIndex].qualStr   << "\t"
+                   << this->vcfReaderPtr_->variants[siteIndex].filterStr << "\t"
+                   << this->vcfReaderPtr_->variants[siteIndex].infoStr   << "\t"
+                   << "GT"                                      << "\t";
             } else {
                 (*writeTo) << chrom_[chromI]               << "\t"
                            << (int)position_[chromI][posI] << "\t"
