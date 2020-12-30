@@ -94,6 +94,6 @@ utilities: utilities/dataExplore.r utilities/interpretDEploid.r
 
 if ENABLE_BASH_COMPLETION
 bashcompletiondir = $(BASH_COMPLETION_DIR)
-dist_bashcompletion_DATA = dEploid_completion.sh
+dist_bashcompletion_DATA = src/dEploid_completion.sh
 endif
 

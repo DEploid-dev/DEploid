@@ -32,6 +32,7 @@ before_script:
 
 script:
   - make
+  - make install
   - make check
   - if [ $TRAVIS_OS_NAME == linux ]; then ./tests/test_binary.sh; fi
   - ./tests/testPOS.sh
