@@ -32,8 +32,8 @@ before_script:
 
 script:
   - make
-  - make install
   - make check
+  - sudo make install
   - if [ $TRAVIS_OS_NAME == linux ]; then ./tests/test_binary.sh; fi
   - ./tests/testPOS.sh
   - ./tests/test_binaryVcfVsTxt.sh
