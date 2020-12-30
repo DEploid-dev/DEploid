@@ -50,7 +50,8 @@ void DEploidIO::writeRecombProb(Panel * panel) {
     if (!doExportRecombProb()) return;
 
     if ( panel != NULL ) {
-        ofstreamExportTmp.open(strExportRecombProb.c_str(), ios::out | ios::app | ios::binary );
+        ofstreamExportTmp.open(strExportRecombProb.c_str(),
+            ios::out | ios::app | ios::binary );
         ofstreamExportTmp << "p.recomb"       << "\t"
                                  << "p.each"         << "\t"
                                  << "p.no.recomb"    << "\t"

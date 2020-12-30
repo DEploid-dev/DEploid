@@ -3,8 +3,6 @@ src/dEploidIO.hpp
 src/mcmc.cpp
 src/updateHap.cpp
 src/updateHap.hpp
-src/export/dEploidIOExportPosteriorProb.cpp
-src/export/writeMcmcRelated.cpp
 src/utility.hpp
 src/utility.cpp
 src/export/dEploidIOExport.cpp

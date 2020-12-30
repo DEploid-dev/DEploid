@@ -14,9 +14,9 @@ DEploid
    synopsis
    description
    installation
+   DEploid-workflow.md
    input
    Output
-   DEploid-workflow.md
    FAQ
    Bug-report
    Citing-DEploid
