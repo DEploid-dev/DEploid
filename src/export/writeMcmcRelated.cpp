@@ -26,116 +26,126 @@
 #include "dEploidIO.hpp"
 #include "mcmc.hpp"
 
-void DEploidIO::writeMcmcRelated(McmcSample * mcmcSample,
-    string jobbrief, bool useIBD){
-    this->writeProp( mcmcSample, jobbrief);
-    this->writeLLK(mcmcSample, jobbrief);
-    this->writeHap(mcmcSample->hap, jobbrief);
+void DEploidIO::writeMcmcRelated(McmcSample * mcmcSpl,
+    string jobbrief, bool useIBD) {
+    this->writeProp(mcmcSpl, jobbrief);
+    this->writeLLK(mcmcSpl, jobbrief);
+    this->writeHap(mcmcSpl->hap, jobbrief);
 
     if (useIBD == false) {
-        this->writeVcf(mcmcSample->hap,
-            mcmcSample->proportion.back(), jobbrief);
-        this->siteOfTwoSwitchOne = mcmcSample->siteOfTwoSwitchOne;
-        this->siteOfTwoMissCopyOne = mcmcSample->siteOfTwoMissCopyOne;
-        this->siteOfTwoSwitchTwo = mcmcSample->siteOfTwoSwitchTwo;
-        this->siteOfTwoMissCopyTwo = mcmcSample->siteOfTwoMissCopyTwo;
-        this->siteOfOneSwitchOne = mcmcSample->siteOfOneSwitchOne;
-        this->siteOfOneMissCopyOne = mcmcSample->siteOfOneMissCopyOne;
+        this->writeVcf(mcmcSpl->hap,
+            mcmcSpl->proportion.back(), jobbrief);
+        this->siteOfTwoSwitchOne = mcmcSpl->siteOfTwoSwitchOne;
+        this->siteOfTwoMissCopyOne = mcmcSpl->siteOfTwoMissCopyOne;
+        this->siteOfTwoSwitchTwo = mcmcSpl->siteOfTwoSwitchTwo;
+        this->siteOfTwoMissCopyTwo = mcmcSpl->siteOfTwoMissCopyTwo;
+        this->siteOfOneSwitchOne = mcmcSpl->siteOfOneSwitchOne;
+        this->siteOfOneMissCopyOne = mcmcSpl->siteOfOneMissCopyOne;
 
-        this->finalSiteOfTwoSwitchOne = mcmcSample->currentsiteOfTwoSwitchOne;
-        this->finalSiteOfTwoMissCopyOne = mcmcSample->currentsiteOfTwoMissCopyOne;
-        this->finalSiteOfTwoSwitchTwo = mcmcSample->currentsiteOfTwoSwitchTwo;
-        this->finalSiteOfTwoMissCopyTwo = mcmcSample->currentsiteOfTwoMissCopyTwo;
-        this->finalSiteOfOneSwitchOne = mcmcSample->currentsiteOfOneSwitchOne;
-        this->finalSiteOfOneMissCopyOne = mcmcSample->currentsiteOfOneMissCopyOne;
+        this->finalSiteOfTwoSwitchOne = mcmcSpl->currentsiteOfTwoSwitchOne;
+        this->finalSiteOfTwoMissCopyOne = mcmcSpl->currentsiteOfTwoMissCopyOne;
+        this->finalSiteOfTwoSwitchTwo = mcmcSpl->currentsiteOfTwoSwitchTwo;
+        this->finalSiteOfTwoMissCopyTwo = mcmcSpl->currentsiteOfTwoMissCopyTwo;
+        this->finalSiteOfOneSwitchOne = mcmcSpl->currentsiteOfOneSwitchOne;
+        this->finalSiteOfOneMissCopyOne = mcmcSpl->currentsiteOfOneMissCopyOne;
 
-        //this->writeEventCount( );
+        // this->writeEventCount( );
     } else {
-        //this->IBDpathChangeAt = mcmcSample->IBDpathChangeAt;
-        //this->finalIBDpathChangeAt = mcmcSample->currentIBDpathChangeAt;
+        // this->IBDpathChangeAt = mcmcSpl->IBDpathChangeAt;
+        // this->finalIBDpathChangeAt = mcmcSpl->currentIBDpathChangeAt;
     }
 }
 
 
-void DEploidIO::writeProp( McmcSample * mcmcSample, string jobbrief){
+void DEploidIO::writeProp(McmcSample * mcmcSample, string jobbrief) {
     string strExport = this->prefix_ + "." + jobbrief + ".prop";
     remove(strExport.c_str());
-    ofstreamExportTmp.open( strExport.c_str(), ios::out | ios::app | ios::binary );
-    for ( size_t i = 0; i < mcmcSample->proportion.size(); i++){
-        for ( size_t ii = 0; ii < mcmcSample->proportion[i].size(); ii++){
+    ofstreamExportTmp.open(strExport.c_str(),
+        ios::out | ios::app | ios::binary);
+    for (size_t i = 0; i < mcmcSample->proportion.size(); i++) {
+        for (size_t ii = 0; ii < mcmcSample->proportion[i].size(); ii++) {
             ofstreamExportTmp << setw(10) << mcmcSample->proportion[i][ii];
-            ofstreamExportTmp << ((ii < (mcmcSample->proportion[i].size()-1)) ? "\t" : "\n") ;
+            ofstreamExportTmp << ((ii < (mcmcSample->proportion[i].size()-1)) ?
+                "\t" : "\n");
         }
     }
     ofstreamExportTmp.close();
 }
 
 
-void DEploidIO::writeLLK( McmcSample * mcmcSample, string jobbrief){
-
+void DEploidIO::writeLLK(McmcSample * mcmcSample, string jobbrief) {
     string strExport = this->prefix_ + "." + jobbrief + ".llk";
     remove(strExport.c_str());
-    ofstreamExportTmp.open( strExport.c_str(), ios::out | ios::app | ios::binary );
-    for ( size_t i = 0; i < mcmcSample->sumLLKs.size(); i++){
-        ofstreamExportTmp << mcmcSample->moves[i] << "\t" << mcmcSample->sumLLKs[i] << endl;
+    ofstreamExportTmp.open(strExport.c_str(),
+        ios::out | ios::app | ios::binary);
+    for (size_t i = 0; i < mcmcSample->sumLLKs.size(); i++) {
+        ofstreamExportTmp << mcmcSample->moves[i] << "\t"
+                          << mcmcSample->sumLLKs[i] << endl;
     }
     ofstreamExportTmp.close();
 }
 
 
-void DEploidIO::writeHap(vector < vector <double> > &hap, string jobbrief){
+void DEploidIO::writeHap(vector < vector <double> > &hap, string jobbrief) {
     string strExport = this->prefix_ + "." + jobbrief + ".hap";
     remove(strExport.c_str());
-    ofstreamExportTmp.open( strExport.c_str(), ios::out | ios::app | ios::binary );
+    ofstreamExportTmp.open(strExport.c_str(),
+        ios::out | ios::app | ios::binary);
     // HEADER
     ofstreamExportTmp << "CHROM" << "\t" << "POS" << "\t";;
-    for ( size_t ii = 0; ii < kStrain_; ii++){
-        ofstreamExportTmp << "h" << (ii+1) ;
-        ofstreamExportTmp << ((ii < (kStrain_-1)) ? "\t" : "\n") ;
+    for (size_t ii = 0; ii < kStrain_; ii++) {
+        ofstreamExportTmp << "h" << (ii+1);
+        ofstreamExportTmp << ((ii < (kStrain_-1)) ? "\t" : "\n");
     }
 
     size_t siteIndex = 0;
-    for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
-        dout << "chrom " << chromI << " length " << position_[chromI].size() << endl;
-        for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
-            ofstreamExportTmp << chrom_[chromI] << "\t" << (int)position_[chromI][posI] << "\t";
-            for ( size_t ii = 0; ii < hap[siteIndex].size(); ii++){
+    for (size_t chromI = 0; chromI < chrom_.size(); chromI++) {
+        dout << "chrom " << chromI << " length "
+             << position_[chromI].size() << endl;
+        for (size_t posI = 0; posI < position_[chromI].size(); posI++) {
+            ofstreamExportTmp << chrom_[chromI]
+                  << "\t" << static_cast<int>(position_[chromI][posI]) << "\t";
+            for (size_t ii = 0; ii < hap[siteIndex].size(); ii++) {
                 ofstreamExportTmp << hap[siteIndex][ii];
-                ofstreamExportTmp << ((ii < (hap[siteIndex].size()-1)) ? "\t" : "\n") ;
+                ofstreamExportTmp << ((ii < (hap[siteIndex].size()-1)) ?
+                    "\t" : "\n");
             }
             siteIndex++;
         }
     }
 
-    assert ( siteIndex == hap.size());
+    assert(siteIndex == hap.size());
     ofstreamExportTmp.close();
 }
 
 
-void DEploidIO::writePanel(Panel *panel, size_t chromI, vector <string> hdr){
+void DEploidIO::writePanel(Panel *panel, size_t chromI, vector <string> hdr) {
     string strExport = this->prefix_ + ".panel." + to_string(chromI);
     remove(strExport.c_str());
 
-    ofstreamExportTmp.open( strExport.c_str(), ios::out | ios::app | ios::binary );
+    ofstreamExportTmp.open(strExport.c_str(),
+        ios::out | ios::app | ios::binary);
 
     // HEADER
     ofstreamExportTmp << "CHROM" << "\t" << "POS" << "\t";;
-    for ( size_t ii = 0; ii < panel->truePanelSize_; ii++){
+    for (size_t ii = 0; ii < panel->truePanelSize_; ii++) {
         ofstreamExportTmp << hdr[ii];
-        ofstreamExportTmp << ((ii < (panel->truePanelSize_-1)) ? "\t" : "\n") ;
+        ofstreamExportTmp << ((ii < (panel->truePanelSize_-1)) ? "\t" : "\n");
     }
 
     size_t siteIndex = 0;
-    for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
-        ofstreamExportTmp << chrom_[chromI] << "\t" << (int)position_[chromI][posI] << "\t";
-        for ( size_t ii = 0; ii < panel->content_[siteIndex].size(); ii++){
+    for (size_t posI = 0; posI < position_[chromI].size(); posI++) {
+        ofstreamExportTmp << chrom_[chromI] << "\t"
+                          << static_cast<int>(position_[chromI][posI]) << "\t";
+        for (size_t ii = 0; ii < panel->content_[siteIndex].size(); ii++) {
             ofstreamExportTmp << panel->content_[siteIndex][ii];
-            ofstreamExportTmp << ((ii < (panel->content_[siteIndex].size()-1)) ? "\t" : "\n") ;
+            ofstreamExportTmp << ((ii < (panel->content_[siteIndex].size()-1)) ?
+                "\t" : "\n");
         }
         siteIndex++;
     }
 
-    assert ( siteIndex == panel->content_.size());
+    assert(siteIndex == panel->content_.size());
     ofstreamExportTmp.close();
 }
 
@@ -143,28 +153,29 @@ void DEploidIO::writePanel(Panel *panel, size_t chromI, vector <string> hdr){
 
 void DEploidIO::writeVcf(vector < vector <double> > &hap,
     vector <double> &prop,
-    string jobbrief){
-    if ( !doExportVcf() ) return;
+    string jobbrief) {
+    if (!doExportVcf() ) return;
 
     this->strExportVcf = this->prefix_ + "." + jobbrief + ".vcf";
-    if ( compressVcf() ) {
+    if (compressVcf()) {
         strExportVcf += ".gz";
     }
     remove(strExportVcf.c_str());
 
     ogzstream ogstreamExport;
     ostream * writeTo;
-    if ( compressVcf() ){
-        ogstreamExport.open( strExportVcf.c_str(), ios::out );
+    if (compressVcf()) {
+        ogstreamExport.open(strExportVcf.c_str(), ios::out);
         writeTo = &ogstreamExport;
     } else {
-        ofstreamExportTmp.open( strExportVcf.c_str(), ios::out | ios::app | ios::binary );
+        ofstreamExportTmp.open(strExportVcf.c_str(),
+            ios::out | ios::app | ios::binary);
         writeTo = &ofstreamExportTmp;
     }
 
     // VCF HEADER
-    if ( this->useVcf() ){
-        for ( auto const& headerLine: this->vcfReaderPtr_->headerLines){
+    if (this->useVcf()) {
+        for (auto const& headerLine : this->vcfReaderPtr_->headerLines) {
             (*writeTo) << headerLine << endl;
         }
     } else {
@@ -172,15 +183,15 @@ void DEploidIO::writeVcf(vector < vector <double> > &hap,
     }
     // DEploid call
     (*writeTo) << "##DEploid call: dEploid ";
-    for ( string s : argv_ ){
+    for (string s : argv_) {
         (*writeTo) << s << " ";
     }
     (*writeTo) << endl;
 
     // Include proportions
-    for ( size_t ii = 0; ii < prop.size(); ii++){
+    for (size_t ii = 0; ii < prop.size(); ii++) {
         (*writeTo) << "##Proportion of strain "
-                   << ( this->useVcf() ? this->vcfReaderPtr_->sampleName_ : "h" )
+                   << (this->useVcf() ? this->vcfReaderPtr_->sampleName_ : "h")
                    << "." << (ii+1)
                    << "=" << prop[ii] << endl;
     }
@@ -195,29 +206,28 @@ void DEploidIO::writeVcf(vector < vector <double> > &hap,
                << "FILTER" << "\t"
                << "INFO"   << "\t"
                << "FORMAT" << "\t";
-    for ( size_t ii = 0; ii < kStrain_; ii++){
-        (*writeTo) << ( this->useVcf() ? this->vcfReaderPtr_->sampleName_ : "h" )
-                          << "." << (ii+1) ;
-        (*writeTo) << ((ii < (kStrain_-1)) ? "\t" : "\n") ;
+    for (size_t ii = 0; ii < kStrain_; ii++) {
+        (*writeTo) << (this->useVcf() ? this->vcfReaderPtr_->sampleName_ : "h")
+                          << "." << (ii+1);
+        (*writeTo) << ((ii < (kStrain_-1)) ? "\t" : "\n");
     }
 
     size_t siteIndex = 0;
-    for ( size_t chromI = 0; chromI < chrom_.size(); chromI++ ){
-        for ( size_t posI = 0; posI < position_[chromI].size(); posI++){
-            if ( useVcf() ) {
+    for (size_t chromI = 0; chromI < chrom_.size(); chromI++) {
+        for (size_t posI = 0; posI < position_[chromI].size(); posI++) {
+            if (useVcf()) {
                 (*writeTo) << this->vcfReaderPtr_->variants[siteIndex].chromStr
                    << "\t" << this->vcfReaderPtr_->variants[siteIndex].posStr
                    << "\t" << this->vcfReaderPtr_->variants[siteIndex].idStr
-                   << "\t"
-                   << this->vcfReaderPtr_->variants[siteIndex].refStr    << "\t"
-                   << this->vcfReaderPtr_->variants[siteIndex].altStr    << "\t"
-                   << this->vcfReaderPtr_->variants[siteIndex].qualStr   << "\t"
-                   << this->vcfReaderPtr_->variants[siteIndex].filterStr << "\t"
-                   << this->vcfReaderPtr_->variants[siteIndex].infoStr   << "\t"
-                   << "GT"                                      << "\t";
+                   << "\t" << this->vcfReaderPtr_->variants[siteIndex].refStr
+                   << "\t" << this->vcfReaderPtr_->variants[siteIndex].altStr
+                   << "\t" << this->vcfReaderPtr_->variants[siteIndex].qualStr
+                   << "\t" << this->vcfReaderPtr_->variants[siteIndex].filterStr
+                   << "\t" << this->vcfReaderPtr_->variants[siteIndex].infoStr
+                   << "\t" << "GT" << "\t";
             } else {
                 (*writeTo) << chrom_[chromI]               << "\t"
-                           << (int)position_[chromI][posI] << "\t"
+                           << static_cast<int>(position_[chromI][posI]) << "\t"
                            << "."                          << "\t"
                            << "."                          << "\t"
                            << "."                          << "\t"
@@ -227,16 +237,16 @@ void DEploidIO::writeVcf(vector < vector <double> > &hap,
                            << "GT"                         << "\t";
             }
 
-            for ( size_t ii = 0; ii < hap[siteIndex].size(); ii++){
+            for (size_t ii = 0; ii < hap[siteIndex].size(); ii++) {
                 (*writeTo) << hap[siteIndex][ii];
-                (*writeTo) << ((ii < (hap[siteIndex].size()-1)) ? "\t" : "\n") ;
+                (*writeTo) << ((ii < (hap[siteIndex].size()-1)) ? "\t" : "\n");
             }
             siteIndex++;
         }
     }
 
-    assert ( siteIndex == hap.size());
-    if ( compressVcf() ){
+    assert(siteIndex == hap.size());
+    if (compressVcf()) {
         ogstreamExport.close();
     } else {
         ofstreamExportTmp.close();
