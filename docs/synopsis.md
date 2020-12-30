@@ -1,20 +1,20 @@
 Synopsis
 ========
 
-dEploid [ -vcf *file* ] [ -plaf *file* ] [ -noPanel ] ... [ -exclude *file* ] [ -vcfOut ] [ -o *string* ]
-
-
-dEploid [ -vcf *file* ] [ -plaf *file* ] [ -panel *file* ] ... [ -exclude *file* ] [ -vcfOut ] [ -o *string* ]
+dEploid [ -vcf *file* ] [ -sample *string* ] [ -plafFromVcf ] [ -panel *file* ] ... [ -o *string* ]
 
 
 Example:
 --------
 
 ```bash
-$ ./dEploid -vcf data/exampleData/PG0390-C.eg.vcf.gz \
--plaf data/exampleData/labStrains.eg.PLAF.txt \
--exclude data/testData/labStrains.test.exclude.txt \
--noPanel \
+$ ./dEploid -vcf data/testData/PG0390-C.test.vcf.gz \
+-sample PG0390-C -plafFromVcf \
+-exclude data/testData/labStrains.test.exclude.txt.gz \
+-panel data/testData/labStrains.test.panel.txt.gz \
 -o test_run \
--vcfOut -z
+-vcfOut -z \
+-best
 ```
+
+For help and more examples, type `dEploid -help`.
