@@ -14,9 +14,9 @@ DEploid
    synopsis
    description
    installation
+   DEploid-workflow.md
    input
    Output
-   Pf3k-workflow.md
    FAQ
    Bug-report
    Citing-DEploid

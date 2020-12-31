@@ -4,7 +4,7 @@
 Installation
 ============
 
-``dEploid`` is written in C++.
+``dEploid`` is written in C++. We use `autotools` for compiling and installing.
 
 **************
 Stable Release

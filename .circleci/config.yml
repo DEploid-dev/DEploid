@@ -29,6 +29,7 @@ jobs:
            name: Compile
            command: |
             make
+            sudo make install
             make check
       - run:
            name: Run tests
@@ -70,6 +71,7 @@ jobs:
            name: Compile
            command: |
             make
+            sudo make install
             make check
       - run:
            name: Run tests
@@ -109,6 +111,7 @@ jobs:
            name: Compile
            command: |
             make
+            sudo make install
             make check
       - run:
            name: Run tests

@@ -11,24 +11,21 @@ Program parameters and options
 Mostly used
 -----------
 
+-best\
+    To enable the BestPractice.
+
 -vcf [*file*]
     File path of the isolate vcf. Assume all variants are ``PASS`` in the ``QUAL`` column, the VCF file also reqires the ``AD`` field.
 
+-sample [*sample ID*]
+    Sample ID.
+
+-plafFromVcf\
+    Extract allele frequency information for the VCF file.
+
 .. note::
-    In the current implementation, ``DEploid`` only take the first sample in the VCF file. ``DEploid`` DO NOT handle multi-allelic variants, nor indels. The ``FILTER`` column will not be used.
+    If sample is unspecified, ``dEploid`` only take the first sample in the VCF file. ``DEploid`` DO NOT handle multi-allelic variants, nor indels. The ``FILTER`` column will not be used.
 
-
--plaf [*file*]
-    File path of population level allele frequencies (tab-delimited plain text file), for example
-
-.. csv-table::
-    :header: CHROM, POS, PLAF
-    :widths: 1,1,1
-
-    Pf3D7_01_v3,93157,0.0190612159917058
-    Pf3D7_01_v3,94422,0.135502358766423
-    Pf3D7_01_v3,94459,0.156294363760064
-    Pf3D7_01_v3,94487,0.143439298925837
 
 -panel [*file*]
     File path of the reference panel (tab-delimited plain text file), for example
@@ -41,13 +38,6 @@ Mostly used
     Pf3D7_01_v3,94422,0,0,0,1
     Pf3D7_01_v3,94459,0,0,0,1
     Pf3D7_01_v3,94487,0,0,0,1
-
-
--noPanel\
-    Use population level allele frequency as prior.
-
-.. warning::
-    Flags **-panel** and **-noPanel** should not be used together.
 
 -exclude [file]
     File path of sites to be excluded (tab-delimited plain text file).
@@ -126,6 +116,24 @@ You may also try
 
 .. warning::
     Flags **-ref** and **-alt** should not be used with **-vcf**.
+
+-plaf [*file*]
+    File path of population level allele frequencies (tab-delimited plain text file), for example
+
+.. csv-table::
+    :header: CHROM, POS, PLAF
+    :widths: 1,1,1
+
+    Pf3D7_01_v3,93157,0.0190612159917058
+    Pf3D7_01_v3,94422,0.135502358766423
+    Pf3D7_01_v3,94459,0.156294363760064
+    Pf3D7_01_v3,94487,0.143439298925837
+
+-noPanel\
+    Use population level allele frequency as prior.
+
+.. warning::
+    Flags **-panel** and **-noPanel** should not be used together.
 
 -forbidUpdateProp\
     Forbid MCMC moves to update proportions.
