@@ -22,3 +22,4 @@ tests/unittest/test_runner.cpp
 tests/unittest/test_utilities.cpp
 src/export/dEploidIOExportPosteriorProb.cpp
 src/export/writeMcmcRelated.cpp
+src/dEploidIO-workflow.cpp

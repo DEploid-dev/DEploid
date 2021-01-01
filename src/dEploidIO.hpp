@@ -139,6 +139,10 @@ class DEploidIO{
     size_t lassoMaxNumPanel_;
     double acceptRatio() const { return this->acceptRatio_;}
 
+    void workflow_lasso();
+    void workflow_ibd();
+    void workflow_best();
+
   private:
     void core();
     double llkFromInitialHap_;
