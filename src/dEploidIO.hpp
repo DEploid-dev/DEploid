@@ -63,12 +63,15 @@ class DEploidIO{
 
     ChooseK chooseK;
 
-    void printHelp(std::ostream& out);
+    void operation_printHelp(std::ostream& out);
+    void operation_printVersion(std::ostream& out);
+    void operation_paintIBD();
+    void operation_paintIBDviterbi();
+    void operation_chromPainting();
+
     bool help() const { return help_; }
-    void printVersion(std::ostream& out);
     bool version() const { return version_; }
     // Painting related
-    void chromPainting ();
     bool doLsPainting() const { return this->doLsPainting_; }
     bool doIbdPainting() const { return this->doIbdPainting_; }
     bool doIbdViterbiPainting() const { return this->doIbdViterbiPainting_;}
@@ -83,8 +86,6 @@ class DEploidIO{
     bool inferBestPracticeP() const { return this->inferBestPracticeP_;}
     bool inferBestPracticeHap() const { return this->inferBestPracticeHap_;}
 
-    void paintIBD();
-    void paintIBDviterbi();
     double ibdLLK_;
     void getIBDprobsIntegrated(vector < vector <double> > &prob);
     // Lasso related
@@ -138,6 +139,10 @@ class DEploidIO{
     size_t kStrain() const { return this->kStrain_;}
     size_t lassoMaxNumPanel_;
     double acceptRatio() const { return this->acceptRatio_;}
+
+    void workflow_lasso();
+    void workflow_ibd();
+    void workflow_best();
 
   private:
     void core();

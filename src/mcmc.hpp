@@ -85,7 +85,7 @@ class McmcMachinery {
                   vector <double> * refCount,
                   vector <double> * altCount,
                   Panel *panel_ptr,
-                  DEploidIO* dEplioidIO,
+                  DEploidIO *dEplioidIO,
                   string mcmcJob,
                   string jobbrief,
                   McmcSample *mcmcSample,

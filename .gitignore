@@ -80,6 +80,8 @@ PG400*
 PG0*
 txt.*
 vcf.*
+data/
+docs/
 
 # coverage test
 *.gcda

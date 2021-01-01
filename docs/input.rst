@@ -24,7 +24,8 @@ Mostly used
     Extract allele frequency information for the VCF file.
 
 .. note::
-    If sample is unspecified, ``dEploid`` only take the first sample in the VCF file. ``DEploid`` DO NOT handle multi-allelic variants, nor indels. The ``FILTER`` column will not be used.
+    If sample is unspecified, ``dEploid`` only take the first sample in the VCF file.
+    ``DEploid`` DO NOT handle multi-allelic variants, nor indels. The ``FILTER`` column will not be used.
 
 
 -panel [*file*]

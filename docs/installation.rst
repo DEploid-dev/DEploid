@@ -51,4 +51,4 @@ and build the binary using
     $ ./bootstrap
     $ make
 
-or install with ``make install``.
+or install with ``make install``. This will also enable the manual and `Tab` auto-completion.
