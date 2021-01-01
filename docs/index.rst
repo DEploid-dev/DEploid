@@ -14,7 +14,6 @@ DEploid
    synopsis
    description
    installation
-   DEploid-workflow.md
    input
    Output
    FAQ
