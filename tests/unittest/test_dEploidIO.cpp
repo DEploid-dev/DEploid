@@ -886,7 +886,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_NO_THROW(DEploidIO(10, argv1));
         DEploidIO dEploidIO(10, argv1);
         CPPUNIT_ASSERT_EQUAL(dEploidIO.doLsPainting(), true);
-        CPPUNIT_ASSERT_NO_THROW(dEploidIO.chromPainting());
+        CPPUNIT_ASSERT_NO_THROW(dEploidIO.operation_chromPainting());
 
         char *argv2[] = { "./dEploid",
                          "-ref", "data/testData/PG0390-C.test.ref",
@@ -898,7 +898,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_NO_THROW(DEploidIO(15, argv2));
         DEploidIO dEploidIOibd(15, argv2);
         CPPUNIT_ASSERT_EQUAL(dEploidIOibd.doIbdPainting(), true);
-        CPPUNIT_ASSERT_NO_THROW(dEploidIOibd.paintIBD());
+        CPPUNIT_ASSERT_NO_THROW(dEploidIOibd.operation_paintIBD());
     }
 
     void testInvalidK() {

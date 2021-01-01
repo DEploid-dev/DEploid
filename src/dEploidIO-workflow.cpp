@@ -101,7 +101,7 @@ void DEploidIO::workflow_ibd() {
                         false);  // use IBD
     mcmcMachinery.runMcmcChain(true,     // show progress
                        false);   // use IBD
-    this->paintIBD();
+    this->operation_paintIBD();
     this->writeHap(mcmcSample->hap, "final");
     delete mcmcSample;
 }
@@ -207,7 +207,7 @@ void DEploidIO::workflow_best() {
             // this->finalProp = tmpIO.initialProp;
         // }
 
-        tmpIO2.paintIBD();
+        tmpIO2.operation_paintIBD();
 
         vector <double> initialP;
         for (auto const& value : tmpIO2.finalProp) {
@@ -281,7 +281,7 @@ void DEploidIO::workflow_best() {
     }
 
     if (this->inferBestPracticeP() & (this->initialProp.size() > 1)) {
-        this->paintIBD();
+        this->operation_paintIBD();
     }
 }
 

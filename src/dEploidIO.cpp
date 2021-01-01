@@ -26,7 +26,6 @@
 #include <iterator>
 #include <cassert>        // assert
 #include "utility.hpp"    // normailize by sum
-#include "updateHap.hpp"  // chromPainting
 #include "dEploidIO.hpp"
 #include "ibd.hpp"
 #include "lasso/src/dEploidLasso.hpp"
@@ -711,72 +710,6 @@ void DEploidIO::computeLLKfromInitialHap() {
 }
 
 
-void DEploidIO::chromPainting() {
-    dout << "Painting haplotypes in" << this->initialHapFileName_ <<endl;
-
-    if ( this->initialPropWasGiven() == false ) {
-        clog << "Initial proportion was not specified. Set even proportions" << endl;
-        double evenProp = 1.0 / (double)this->kStrain();
-        for ( size_t i = 0; i < this->kStrain(); i++) {
-            this->initialProp.push_back(evenProp);
-        }
-    }
-
-    for ( auto const& value: this->initialProp ) {
-        this->finalProp.push_back(value);
-    }
-
-    // Painting posterior probabilities
-
-    // Export the p'
-    // Make this a separate class
-    //vector < vector <double> > hap;
-    //for ( size_t siteI = 0; siteI < decovolutedStrainsToBeRead.content_.size(); siteI++ ) {
-        //vector <double> tmpHap;
-        //for ( size_t tmpk = 0; tmpk < this->kStrain_; tmpk++ ) {
-            //tmpHap.push_back(decovolutedStrainsToBeRead.content_[siteI][tmpk]);
-        //}
-        //hap.push_back(tmpHap);
-    //}
-
-    //vector < vector <double>> hap = decovolutedStrainsToBeRead.content_;
-
-    vector <double> expectedWsaf = computeExpectedWsafFromInitialHap();
-
-    MersenneTwister tmpRg(this->randomSeed());
-
-    if ( this->doAllowInbreeding() == true ) {
-        this->panel->initializeUpdatePanel(this->panel->truePanelSize()+kStrain_-1);
-    }
-
-    for ( size_t tmpk = 0; tmpk < this->kStrain_; tmpk++ ) {
-        if ( this->doAllowInbreeding() == true ) {
-            this->panel->updatePanelWithHaps(this->panel->truePanelSize()+kStrain_-1, tmpk, this->initialHap);
-        }
-
-        for ( size_t chromi = 0 ; chromi < this->indexOfChromStarts_.size(); chromi++ ) {
-            size_t start = this->indexOfChromStarts_[chromi];
-            size_t length = this->position_[chromi].size();
-            dout << "Painting Chrom "<< chromi << " from site "<< start << " to " << start+length << endl;
-
-            UpdateSingleHap updatingSingle( this->refCount_,
-                                      this->altCount_,
-                                      this->plaf_,
-                                      expectedWsaf,
-                                      this->finalProp, this->initialHap, &tmpRg,
-                                      start, length,
-                                      this->panel, this->missCopyProb_, this->scalingFactor(),
-                                      tmpk);
-
-            if ( this->doAllowInbreeding() == true ) {
-                updatingSingle.setPanelSize(this->panel->inbreedingPanelSize());
-            }
-            updatingSingle.painting( refCount_, altCount_, expectedWsaf, this->finalProp, this->initialHap);
-            //this->writeLastSingleFwdProb( updatingSingle.fwdProbs_, chromi, tmpk, false ); // false as not using ibd
-            this->writeLastSingleFwdProb( updatingSingle.fwdBwdProbs_, chromi, tmpk, false ); // false as not using ibd
-        }
-    }
-}
 
 
 void DEploidIO::readPanel() {

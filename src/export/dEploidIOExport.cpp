@@ -357,7 +357,7 @@ void DEploidIO::writeIBDviterbi(vector <size_t> & viterbiState) {
 }
 
 
-void DEploidIO::paintIBD() {
+void DEploidIO::operation_paintIBD() {
     vector <double> goodProp;
     vector <size_t> goodStrainIdx;
 
@@ -411,7 +411,7 @@ void DEploidIO::paintIBD() {
 }
 
 
-void DEploidIO::paintIBDviterbi() {
+void DEploidIO::operation_paintIBDviterbi() {
     vector <double> goodProp;
     vector <size_t> goodStrainIdx;
 

@@ -44,11 +44,11 @@ int main(int argc, char *argv[]) {
         if (dEploidIO.doComputeLLK()) {
             dEploidIO.computeLLKfromInitialHap();
         } else if (dEploidIO.doLsPainting()) {
-            dEploidIO.chromPainting();
+            dEploidIO.operation_chromPainting();
         } else if (dEploidIO.doIbdPainting()) {
-            dEploidIO.paintIBD();
+            dEploidIO.operation_paintIBD();
         } else if (dEploidIO.doIbdViterbiPainting()) {
-            dEploidIO.paintIBDviterbi();
+            dEploidIO.operation_paintIBDviterbi();
         } else if (dEploidIO.useLasso()) {  // DEploid-Lasso
             dEploidIO.workflow_lasso();
         } else if (dEploidIO.useBestPractice()) {  // best practice
