@@ -104,8 +104,6 @@ void DEploidIO::workflow_ibd() {
     this->paintIBD();
     this->writeHap(mcmcSample->hap, "final");
     delete mcmcSample;
-
-
 }
 
 
@@ -281,9 +279,9 @@ void DEploidIO::workflow_best() {
       this->writeHap(hap, "final");
       this->writeVcf(hap, dEploidLassoIO.initialProp, "final");
     }
-    if (this->inferBestPracticeP() &
-        (this->initialProp.size() > 1)) {
-      this->paintIBD();
+
+    if (this->inferBestPracticeP() & (this->initialProp.size() > 1)) {
+        this->paintIBD();
     }
 }
 

@@ -28,6 +28,7 @@ common_src = src/random/fastfunc.cpp \
 			 src/panel.cpp \
 			 src/utility.cpp \
 			 src/dEploidIO.cpp \
+			 src/dEploidIO-operation.cpp \
 			 src/dEploidIO-workflow.cpp \
 			 src/updateHap.cpp \
 			 src/txtReader.cpp \

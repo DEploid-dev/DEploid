@@ -63,9 +63,10 @@ class DEploidIO{
 
     ChooseK chooseK;
 
-    void printHelp(std::ostream& out);
+    void operation_printHelp(std::ostream& out);
+    void operation_printVersion(std::ostream& out);
+
     bool help() const { return help_; }
-    void printVersion(std::ostream& out);
     bool version() const { return version_; }
     // Painting related
     void chromPainting ();

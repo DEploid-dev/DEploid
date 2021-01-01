@@ -32,12 +32,12 @@ int main(int argc, char *argv[]) {
         std::ostream *output = &std::cout;
 
         if ( dEploidIO.version() ) {
-            dEploidIO.printVersion(*output);
+            dEploidIO.operation_printVersion(*output);
             return EXIT_SUCCESS;
         }
 
         if ( dEploidIO.help() ) {
-            dEploidIO.printHelp(*output);
+            dEploidIO.operation_printHelp(*output);
             return EXIT_SUCCESS;
         }
 
