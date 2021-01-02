@@ -350,7 +350,10 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR, b
         //this->dEploidIO_->initialHap = this->mcmcSample_->hap;
         //this->dEploidIO_->setInitialHapWasGiven(true);
     }
-    clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
+
+    if (this->dEploidIO_->doUpdateProp()){
+        clog << "Proportion update acceptance rate: "<<acceptUpdate / (this->kStrain()*1.0*this->maxIteration_)<<endl;
+    }
 
     this->computeDiagnostics();
     dout << "###########################################"<< endl;
