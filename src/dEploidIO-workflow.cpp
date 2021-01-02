@@ -179,6 +179,7 @@ void DEploidIO::workflow_best() {
             this->initialProp.push_back(value);
         }
     }
+    normalizeBySum(this->initialProp);
     this->setKstrain(this->initialProp.size());
     this->setInitialPropWasGiven(true);
 
