@@ -34,7 +34,7 @@
 #include "panel.hpp"
 #include "vcfReader.hpp"
 #include "chooseK.hpp"
-
+#include "param.hpp"
 
 #ifndef PARAM
 #define PARAM
@@ -170,11 +170,6 @@ class DEploidIO{
     bool kStrainWasSetByProp_;
     bool useConstRecomb_;
     bool forbidCopyFromSame_;
-    size_t kStrain_;
-    size_t precision_;
-    size_t nMcmcSample_;
-    size_t mcmcMachineryRate_;
-    double mcmcBurn_;
 
     bool doUpdateProp_;
     bool doUpdatePair_;
@@ -241,7 +236,15 @@ class DEploidIO{
 
 
     // Parameters
-    double missCopyProb_;
+    size_t kStrain_;
+    //size_t precision_;
+    Parameter <size_t> precision_;
+    size_t nMcmcSample_;
+    size_t mcmcMachineryRate_;
+    double mcmcBurn_;
+
+    //double missCopyProb_;
+    Parameter <double> missCopyProb_;
     double averageCentimorganDistance_;// = 15000.0,
     //double Ne_;// = 10.0
     double constRecombProb_;

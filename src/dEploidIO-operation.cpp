@@ -205,7 +205,7 @@ void DEploidIO::operation_chromPainting() {
                                       this->finalProp, this->initialHap, &tmpRg,
                                       start, length,
                                       this->panel,
-                                      this->missCopyProb_,
+                                      this->missCopyProb_.getValue(),
                                       this->scalingFactor(),
                                       tmpk);
 

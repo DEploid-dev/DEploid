@@ -52,7 +52,7 @@ void McmcMachinery::writeLastFwdProb(bool useIBD) {
                                       this->hapRg_,
                                       start, length,
                                       this->panel_,
-                                      this->dEploidIO_->missCopyProb_,
+                                      this->dEploidIO_->missCopyProb_.getValue(),
                                       this->dEploidIO_->scalingFactor(),
                                       tmpk);
             if (this->dEploidIO_->doAllowInbreeding() == true) {

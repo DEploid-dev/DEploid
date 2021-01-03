@@ -116,7 +116,7 @@ void DEploidIO::writeLog ( ostream * writeTo ) {
     }
     (*writeTo) << "Other parameters:"<< "\n";
     if ( forbidCopyFromSame_ ) { (*writeTo) << " Update pair haplotypes move forbid copying from the same strain!!! \n"; }
-    (*writeTo) << setw(20) << " Miss copy prob: "   << this->missCopyProb_ << "\n";
+    (*writeTo) << setw(20) << " Miss copy prob: "   << this->missCopyProb_.getValue() << "\n";
     (*writeTo) << setw(20) << " Avrg Cent Morgan: " << this->averageCentimorganDistance_ << "\n";
     (*writeTo) << setw(20) << " G: "                << this->parameterG() << "\n";
     if (this->useIBD()) {

@@ -670,7 +670,7 @@ void McmcMachinery::updateSingleHap(Panel *useThisPanel) {
                                   this->currentExpectedWsaf_,
                                   this->currentProp_, this->currentHap_, this->hapRg_,
                                   start, length,
-                                  useThisPanel, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
+                                  useThisPanel, this->dEploidIO_->missCopyProb_.getValue(), this->dEploidIO_->scalingFactor(),
                                   this->strainIndex_);
 
         if ( this->dEploidIO_->doAllowInbreeding() == true ) {
@@ -716,7 +716,7 @@ void McmcMachinery::updatePairHaps(Panel *useThisPanel) {
                                 this->currentExpectedWsaf_,
                                 this->currentProp_, this->currentHap_, this->hapRg_,
                                 start, length,
-                                useThisPanel, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
+                                useThisPanel, this->dEploidIO_->missCopyProb_.getValue(), this->dEploidIO_->scalingFactor(),
                                 this->dEploidIO_->forbidCopyFromSame(),
                                 this->strainIndex1_,
                                 this->strainIndex2_);

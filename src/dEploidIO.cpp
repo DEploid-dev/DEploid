@@ -105,7 +105,8 @@ void DEploidIO::init() {
     this->set_help(false);
     this->setVersion(false);
     this->setUsePanel(true);
-    this->precision_ = 8;
+    //this->precision_ = 8;
+    this->precision_.init(8);
     this->prefix_ = "pf3k-dEploid";
     this->setKStrainWasManuallySet(false);
     this->setKStrainWasSetByHap(false);
@@ -129,7 +130,7 @@ void DEploidIO::init() {
     this->setDoAllowInbreeding( false );
     this->mcmcBurn_ = 0.5;
     this->mcmcMachineryRate_ = 5;
-    this->missCopyProb_ = 0.01;
+    this->missCopyProb_.init(0.01);
     this->useConstRecomb_ = false;
     this->setForbidCopyFromSame( false );
     this->constRecombProb_ = 1.0;
@@ -413,7 +414,8 @@ void DEploidIO::parse () {
         } else if (*argv_i == "-o") {
             this->readNextStringto ( this->prefix_ ) ;
         } else if ( *argv_i == "-p" ) {
-            this->precision_ = readNextInput<size_t>() ;
+            //this->precision_ = readNextInput<size_t>() ;
+            this->precision_.setUserDefined(readNextInput<size_t>());
         } else if ( *argv_i == "-k" ) {
             this->setKStrainWasManuallySet(true);
             this->setKstrain(readNextInput<size_t>());
@@ -436,8 +438,9 @@ void DEploidIO::parse () {
                 throw ( OutOfRange ("-burn", *argv_i) );
             }
         } else if ( *argv_i == "-miss" ) {
-            this->missCopyProb_ = readNextInput<double>() ;
-            if ( this->missCopyProb_ < 0 || this->missCopyProb_ > 1) {
+            // this->missCopyProb_ = readNextInput<double>();
+            this->missCopyProb_.setUserDefined(readNextInput<double>());
+            if ( this->missCopyProb_.getValue() < 0 || this->missCopyProb_.getValue() > 1) {
                 throw ( OutOfRange ("-miss", *argv_i) );
             }
         } else if ( *argv_i == "-c" ) {
@@ -748,7 +751,7 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->set_help(cpFrom.help());
     this->setVersion(cpFrom.version());
     this->setUsePanel(cpFrom.usePanel());
-    this->precision_ = cpFrom.precision_;
+    this->precision_.copy(cpFrom.precision_);
     this->prefix_ = cpFrom.prefix_;
     this->setKStrainWasManuallySet(cpFrom.kStrainWasManuallySet());
     this->setKStrainWasSetByHap(cpFrom.kStrainWasSetByHap());
@@ -768,7 +771,7 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->setDoAllowInbreeding(cpFrom.doAllowInbreeding());
     this->mcmcBurn_ = cpFrom.mcmcBurn_;
     this->mcmcMachineryRate_ = cpFrom.mcmcMachineryRate_;
-    this->missCopyProb_ = cpFrom.missCopyProb_;
+    this->missCopyProb_ .copy(cpFrom.missCopyProb_);
     this->useConstRecomb_ = cpFrom.useConstRecomb();
     this->setForbidCopyFromSame(cpFrom.forbidCopyFromSame());
     this->constRecombProb_ = cpFrom.constRecombProb();
