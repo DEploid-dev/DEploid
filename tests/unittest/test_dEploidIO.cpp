@@ -81,17 +81,17 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->randomSeed(), (size_t)0);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->help(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->usePanel(), true);
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->precision_, (size_t)8);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->precision_.getValue(), (size_t)8);
         CPPUNIT_ASSERT(dEploidIOptr->prefix_ == "pf3k-dEploid");
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->kStrain_, (size_t)4);
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->nMcmcSample_, (size_t)800);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->nMcmcSample_.getValue(), (size_t)800);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdateProp(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdatePair(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdateSingle(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doExportPostProb(), false);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->mcmcBurn_, 0.5, epsilon3);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->mcmcMachineryRate_, (size_t)5);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->missCopyProb_,
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->missCopyProb_.getValue(),
                                      0.01, epsilon3);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->useConstRecomb(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->forbidCopyFromSame(), false);
