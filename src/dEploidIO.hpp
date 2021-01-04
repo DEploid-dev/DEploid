@@ -145,6 +145,7 @@ class DEploidIO{
     void workflow_best();
 
   private:
+    void setBestPracticeParameters();
     void core();
     double llkFromInitialHap_;
 
@@ -239,11 +240,10 @@ class DEploidIO{
     size_t kStrain_;
     //size_t precision_;
     Parameter <size_t> precision_;
-    size_t nMcmcSample_;
+    Parameter <size_t> nMcmcSample_;
     size_t mcmcMachineryRate_;
     double mcmcBurn_;
 
-    //double missCopyProb_;
     Parameter <double> missCopyProb_;
     double averageCentimorganDistance_;// = 15000.0,
     //double Ne_;// = 10.0
@@ -444,7 +444,7 @@ class DEploidIO{
     bool kStrainWasManuallySet() const { return this->kStrainWasManuallySet_; }
     void setKStrainWasSetByProp ( const size_t setTo ) { this->kStrainWasSetByProp_ = setTo; }
     bool kStrainWasSetByProp() const { return this->kStrainWasSetByProp_; }
-    size_t nMcmcSample() const { return this->nMcmcSample_; }
+    //size_t nMcmcSample() const { return this->nMcmcSample_; }
     double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
     //double Ne() const { return this->Ne_; }
     double scalingFactor() const {return this->scalingFactor_; }

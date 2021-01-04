@@ -70,7 +70,7 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
         this->calcMaxIteration(100, 10, 0.5);
         //this->calcMaxIteration(10, 10, 0.5);
     } else {
-        this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
+        this->calcMaxIteration( dEploidIO_->nMcmcSample_.getValue() , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
     }
     this->MN_LOG_TITRE = 0.0;
     this->SD_LOG_TITRE = (useIBD == true) ? this->dEploidIO_->ibdSigma() : this->dEploidIO_->parameterSigma();
@@ -370,8 +370,8 @@ void McmcMachinery::computeDiagnostics() {
 
     // average cumulate expectedWSAF
     for ( size_t i = 0; i < this->cumExpectedWsaf_.size(); i++) {
-        //cout << "cumExpectedWsaf_ i = "<<i <<" " << this->cumExpectedWsaf_[i] << " " << this->dEploidIO_->nMcmcSample_<<endl;
-        this->cumExpectedWsaf_[i] /= static_cast<double>(this->dEploidIO_->nMcmcSample_);
+        //cout << "cumExpectedWsaf_ i = "<<i <<" " << this->cumExpectedWsaf_[i] << " " << this->dEploidIO_->nMcmcSample_.getValue()<<endl;
+        this->cumExpectedWsaf_[i] /= static_cast<double>(this->dEploidIO_->nMcmcSample_.getValue());
         if (this->cumExpectedWsaf_[i]>1){
             this->cumExpectedWsaf_[i] = 1;
         }

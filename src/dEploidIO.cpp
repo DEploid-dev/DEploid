@@ -112,7 +112,7 @@ void DEploidIO::init() {
     this->setKStrainWasSetByHap(false);
     this->setKStrainWasSetByProp(false);
     this->setKstrain(4);  // From DEploid-Lasso, set default K to 4.
-    this->nMcmcSample_ = 800;
+    this->nMcmcSample_.init(800);
     this->setDoUpdateProp( true );
     this->setDoUpdatePair( true );
     this->setDoUpdateSingle( true );
@@ -170,6 +170,10 @@ void DEploidIO::init() {
 }
 
 
+void DEploidIO::setBestPracticeParameters() {
+    this->nMcmcSample_.setBest(500);
+}
+
 void DEploidIO::getTime( bool isStartingTime ) {
     time_t now = time(0);
     // convert now to string form
@@ -194,6 +198,10 @@ void DEploidIO::reInit() {
 
 
 void DEploidIO::finalize() {
+    if (useBestPractice()){
+        this->setBestPracticeParameters();
+    }
+
     if ( this->doIbdPainting() | this->doComputeLLK() | this->doIbdViterbiPainting() ) {
         if (!initialPropWasGiven()) {
             throw InitialPropUngiven("");
@@ -431,14 +439,13 @@ void DEploidIO::parse () {
             }
 
         } else if ( *argv_i == "-nSample" ) {
-            this->nMcmcSample_ = readNextInput<size_t>() ;
+            this->nMcmcSample_.setUserDefined(readNextInput<size_t>());
         } else if ( *argv_i == "-burn" ) {
             this->mcmcBurn_ = readNextInput<double>() ;
             if ( this->mcmcBurn_ < 0 || this->mcmcBurn_ > 1) {
                 throw ( OutOfRange ("-burn", *argv_i) );
             }
         } else if ( *argv_i == "-miss" ) {
-            // this->missCopyProb_ = readNextInput<double>();
             this->missCopyProb_.setUserDefined(readNextInput<double>());
             if ( this->missCopyProb_.getValue() < 0 || this->missCopyProb_.getValue() > 1) {
                 throw ( OutOfRange ("-miss", *argv_i) );
@@ -757,7 +764,7 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->setKStrainWasSetByHap(cpFrom.kStrainWasSetByHap());
     this->setKStrainWasSetByProp(cpFrom.kStrainWasSetByProp());
     this->setKstrain(cpFrom.kStrain());
-    this->nMcmcSample_ = cpFrom.nMcmcSample();
+    this->nMcmcSample_.copy(cpFrom.nMcmcSample_);
     this->setDoUpdateProp(cpFrom.doUpdateProp());
     this->setDoUpdatePair(cpFrom.doUpdatePair());
     this->setDoUpdateSingle(cpFrom.doUpdateSingle());

@@ -100,7 +100,7 @@ void DEploidIO::writeLog ( ostream * writeTo ) {
     if ( (this->doLsPainting() == false) & (this->doIbdPainting() == false) ) {
         (*writeTo) << "MCMC parameters: "<< "\n";
         (*writeTo) << setw(19) << " MCMC burn: " << mcmcBurn_ << "\n";
-        (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_ << "\n";
+        (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_.getValue() << "\n";
         (*writeTo) << setw(19) << " MCMC sample rate: " << mcmcMachineryRate_ <<"\n";
         (*writeTo) << setw(19) << " Random seed: " << this->randomSeed() << "\n";
         if (this->useIBD()) {

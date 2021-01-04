@@ -23,7 +23,10 @@ friend class DEploidIO;
     T default_;
     void setDefault(const T setTo) {this->default_ = setTo;}
     T best_;
-    void setBest(const T setTo) {this->best_ = setTo;}
+    void setBest(const T setTo) {
+        this->setUseBest(true);
+        this->best_ = setTo;
+    }
 
     T userDefined_;
     void setUserDefined(const T setTo) {
