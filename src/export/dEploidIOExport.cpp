@@ -122,7 +122,7 @@ void DEploidIO::writeLog ( ostream * writeTo ) {
     if (this->useIBD()) {
     (*writeTo) << setw(20) << " IBD sigma: "        << this->ibdSigma() << "\n";
     } else {
-    (*writeTo) << setw(20) << " sigma: "            << this->parameterSigma() << "\n";
+    (*writeTo) << setw(20) << " sigma: "            << this->parameterSigma_.getValue() << "\n";
     }
     (*writeTo) << setw(20) << " ScalingFactor: "    << this->scalingFactor() << "\n";
     (*writeTo) << setw(20) << " VQSLOD:        "    << this->vqslod() << "\n";

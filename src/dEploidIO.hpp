@@ -242,6 +242,12 @@ class DEploidIO{
     double mcmcBurn_;
 
     Parameter <double> missCopyProb_;
+    Parameter <double> parameterSigma_;
+    //double parameterSigma_;
+    //void setParameterSigma ( const double setTo ) { this->parameterSigma_ = setTo; }
+    //double parameterSigma() const { return this->parameterSigma_; }
+
+
     double averageCentimorganDistance_;// = 15000.0,
     //double Ne_;// = 10.0
     double constRecombProb_;
@@ -424,9 +430,6 @@ class DEploidIO{
     double parameterG_;
     void setParameterG ( const double setTo ) { this->parameterG_ = setTo; }
     double parameterG() const { return this->parameterG_; }
-    double parameterSigma_;
-    void setParameterSigma ( const double setTo ) { this->parameterSigma_ = setTo; }
-    double parameterSigma() const { return this->parameterSigma_; }
     double ibdSigma_;
     void setIBDSigma ( const double setTo ) { this->ibdSigma_ = setTo; }
     double ibdSigma() const {return this->ibdSigma_;}

@@ -109,9 +109,7 @@ void DEploidIO::init() {
     this->setKStrainWasSetByHap(false);
     this->setKStrainWasSetByProp(false);
     this->setKstrain(4);  // From DEploid-Lasso, set default K to 4.
-    this->nMcmcSample_.init(800);
-    this->precision_.init(8);
-    this->randomSeed_.init((unsigned)(time(0)));
+
     this->setDoUpdateProp( true );
     this->setDoUpdatePair( true );
     this->setDoUpdateSingle( true );
@@ -136,7 +134,6 @@ void DEploidIO::init() {
     this->averageCentimorganDistance_ = 15000.0;
     this->setScalingFactor(100.0);
     this->setParameterG(20.0);
-    this->setParameterSigma(5.0);
     this->setIBDSigma(20.0);
     this->setUseVcf(false);
     this->setUseVcfSample(false);
@@ -147,6 +144,13 @@ void DEploidIO::init() {
     this->setDoComputeLLK(false);
     this->setVqslod(8.0);
     this->setLassoMaxNumPanel(100);
+
+    this->nMcmcSample_.init(800);
+    this->precision_.init(8);
+    this->randomSeed_.init((unsigned)(time(0)));
+    this->parameterSigma_.init(5.0);
+
+
     #ifdef COMPILEDATE
         compileTime_ = COMPILEDATE;
     #else
@@ -172,6 +176,7 @@ void DEploidIO::init() {
 void DEploidIO::setBestPracticeParameters() {
     this->nMcmcSample_.setBest(500);
     this->randomSeed_.setBest(1);
+    this->parameterSigma_.setBest(1.6);
 }
 
 void DEploidIO::getTime( bool isStartingTime ) {
@@ -453,7 +458,7 @@ void DEploidIO::parse () {
         } else if ( *argv_i == "-vqslod" ) {
             this->setVqslod(readNextInput<double>());
         } else if ( *argv_i == "-sigma" ) {
-            this->setParameterSigma(readNextInput<double>());
+            this->parameterSigma_.setUserDefined(readNextInput<double>());
         } else if ( *argv_i == "-ibdSigma" ) {
             this->setIBDSigma(readNextInput<double>());
         } else if ( *argv_i == "-lassoMaxPanel" ) {
@@ -776,7 +781,6 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->averageCentimorganDistance_ = cpFrom.averageCentimorganDistance();
     this->setScalingFactor(cpFrom.scalingFactor());
     this->setParameterG(cpFrom.parameterG());
-    this->setParameterSigma(cpFrom.parameterSigma());
     this->setIBDSigma(cpFrom.ibdSigma());
     this->setUseVcf(cpFrom.useVcf());
     this->vcfReaderPtr_ = cpFrom.vcfReaderPtr_;
@@ -808,6 +812,7 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->missCopyProb_ .makeCopy(cpFrom.missCopyProb_);
     this->randomSeed_.makeCopy(cpFrom.randomSeed_);
     this->nMcmcSample_.makeCopy(cpFrom.nMcmcSample_);
+    this->parameterSigma_.makeCopy(cpFrom.parameterSigma_);
 }
 
 

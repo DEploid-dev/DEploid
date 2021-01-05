@@ -99,7 +99,7 @@ class TestIO : public CppUnit::TestCase {
                                      15000.0, epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->parameterG(),
                                      20.0, epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->parameterSigma(),
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->parameterSigma_.getValue(),
                                      5.0, epsilon3);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doExportVcf(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doLsPainting(), false);
@@ -118,6 +118,8 @@ class TestIO : public CppUnit::TestCase {
                 (size_t)500);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->randomSeed_.getValue(),
                 (size_t)1);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->parameterSigma_.getValue(),
+                (double)1.6);
         delete dEploidIOptr;
 
         char *argv1[] = { "./dEploid",
@@ -127,14 +129,17 @@ class TestIO : public CppUnit::TestCase {
                          "-panel", "data/testData/labStrains.test.panel.txt",
                          "-best",
                          "-nSample", "100",
-                         "-seed", "2"};
+                         "-seed", "2",
+                         "-sigma", "1.2"};
         DEploidIO tmp(10, argv1);
         CPPUNIT_ASSERT_EQUAL(tmp.nMcmcSample_.getValue(), (size_t)500);
         CPPUNIT_ASSERT_EQUAL(tmp.randomSeed_.getValue(), (size_t)1);
+        CPPUNIT_ASSERT_EQUAL(tmp.parameterSigma_.getValue(), 1.6);
 
-        DEploidIO tmp2(14, argv1);
+        DEploidIO tmp2(16, argv1);
         CPPUNIT_ASSERT_EQUAL(tmp2.nMcmcSample_.getValue(), (size_t)100);
         CPPUNIT_ASSERT_EQUAL(tmp2.randomSeed_.getValue(), (size_t)2);
+        CPPUNIT_ASSERT_EQUAL(tmp2.parameterSigma_.getValue(), (double)1.2);
     }
 
 

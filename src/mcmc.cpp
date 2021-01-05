@@ -73,7 +73,7 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
         this->calcMaxIteration( dEploidIO_->nMcmcSample_.getValue() , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
     }
     this->MN_LOG_TITRE = 0.0;
-    this->SD_LOG_TITRE = (useIBD == true) ? this->dEploidIO_->ibdSigma() : this->dEploidIO_->parameterSigma();
+    this->SD_LOG_TITRE = (useIBD == true) ? this->dEploidIO_->ibdSigma() : this->dEploidIO_->parameterSigma_.getValue();
     //this->SD_LOG_TITRE = this->dEploidIO_->parameterSigma();
     this->PROP_SCALE = 40.0;
 
