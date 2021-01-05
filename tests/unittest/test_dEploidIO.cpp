@@ -30,6 +30,7 @@
 class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE(TestIO);
     CPPUNIT_TEST(testMainConstructor);
+    CPPUNIT_TEST(testParameters);
     CPPUNIT_TEST(testInitialization);
     CPPUNIT_TEST(testPrintHelp);
     CPPUNIT_TEST(testPrintVersion);
@@ -82,8 +83,6 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->precision_.getValue(), (size_t)8);
         CPPUNIT_ASSERT(dEploidIOptr->prefix_ == "pf3k-dEploid");
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->kStrain_, (size_t)4);
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->nMcmcSample_.getValue(),
-                (size_t)800);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdateProp(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdatePair(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdateSingle(), true);
@@ -104,7 +103,38 @@ class TestIO : public CppUnit::TestCase {
                                      5.0, epsilon3);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doExportVcf(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doLsPainting(), false);
+
+
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->nMcmcSample_.getValue(),
+                (size_t)800);
         delete dEploidIOptr;
+    }
+
+
+    void testParameters() {
+        DEploidIO* dEploidIOptr = new DEploidIO();
+        CPPUNIT_ASSERT_NO_THROW(dEploidIOptr->setBestPracticeParameters());
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->nMcmcSample_.getValue(),
+                (size_t)500);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->randomSeed_.getValue(),
+                (size_t)1);
+        delete dEploidIOptr;
+
+        char *argv1[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                         "-best",
+                         "-nSample", "100",
+                         "-seed", "2"};
+        DEploidIO tmp(10, argv1);
+        CPPUNIT_ASSERT_EQUAL(tmp.nMcmcSample_.getValue(), (size_t)500);
+        CPPUNIT_ASSERT_EQUAL(tmp.randomSeed_.getValue(), (size_t)1);
+
+        DEploidIO tmp2(14, argv1);
+        CPPUNIT_ASSERT_EQUAL(tmp2.nMcmcSample_.getValue(), (size_t)100);
+        CPPUNIT_ASSERT_EQUAL(tmp2.randomSeed_.getValue(), (size_t)2);
     }
 
 
