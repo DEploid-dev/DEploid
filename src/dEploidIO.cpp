@@ -147,7 +147,7 @@ void DEploidIO::init() {
 
     this->nMcmcSample_.init(800);
     this->precision_.init(8);
-    this->randomSeed_.init((unsigned)(time(0)));
+    this->randomSeed_.init((unsigned)0);
     this->parameterSigma_.init(5.0);
 
 
@@ -219,6 +219,10 @@ void DEploidIO::finalize() {
 
     if ( this->compressVcf() && !this->doExportVcf() ) {
         throw VcfOutUnSpecified("");
+    }
+
+    if ( !this->randomSeed_.useDefault() ) {
+        this->randomSeed_.init((unsigned)(time(0)));
     }
 
     if ( this->excludeSites() ) {
