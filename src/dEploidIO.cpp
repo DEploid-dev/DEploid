@@ -125,9 +125,6 @@ void DEploidIO::init() {
     this->setInferBestPracticeHap(true);
     this->setDoExportSwitchMissCopy ( true );
     this->setDoAllowInbreeding( false );
-    this->mcmcBurn_ = 0.5;
-    this->mcmcMachineryRate_ = 5;
-    this->missCopyProb_.init(0.01);
     this->useConstRecomb_ = false;
     this->setForbidCopyFromSame( false );
     this->constRecombProb_ = 1.0;
@@ -145,6 +142,9 @@ void DEploidIO::init() {
     this->setVqslod(8.0);
     this->setLassoMaxNumPanel(100);
 
+    this->mcmcBurn_.init(0.5);
+    this->mcmcMachineryRate_.init(5);
+    this->missCopyProb_.init(0.01);
     this->nMcmcSample_.init(800);
     this->precision_.init(8);
     this->randomSeed_.init((unsigned)0);
@@ -177,6 +177,8 @@ void DEploidIO::setBestPracticeParameters() {
     this->nMcmcSample_.setBest(500);
     this->randomSeed_.setBest(1);
     this->parameterSigma_.setBest(1.6);
+    this->mcmcBurn_.setBest(.67);
+    this->mcmcMachineryRate_.setBest(8);
 }
 
 void DEploidIO::getTime( bool isStartingTime ) {
@@ -446,8 +448,8 @@ void DEploidIO::parse () {
         } else if ( *argv_i == "-nSample" ) {
             this->nMcmcSample_.setUserDefined(readNextInput<size_t>());
         } else if ( *argv_i == "-burn" ) {
-            this->mcmcBurn_ = readNextInput<double>() ;
-            if ( this->mcmcBurn_ < 0 || this->mcmcBurn_ > 1) {
+            this->mcmcBurn_.setUserDefined(readNextInput<double>());
+            if ( this->mcmcBurn_.getValue() < 0 || this->mcmcBurn_.getValue() > 1) {
                 throw ( OutOfRange ("-burn", *argv_i) );
             }
         } else if ( *argv_i == "-miss" ) {
@@ -478,7 +480,7 @@ void DEploidIO::parse () {
         } else if ( *argv_i == "-forbidSame" ) {
             this->setForbidCopyFromSame( true );
         } else if ( *argv_i == "-rate" ) {
-            this->mcmcMachineryRate_ = readNextInput<size_t>() ;
+            this->mcmcMachineryRate_.setUserDefined(readNextInput<size_t>());
         } else if ( *argv_i == "-forbidUpdateProp" ) {
             this->setDoUpdateProp( false );
         } else if ( *argv_i == "-forbidUpdateSingle" ) {
@@ -777,8 +779,6 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->setUseLasso(cpFrom.useLasso());
     this->setDoExportSwitchMissCopy(cpFrom.doExportSwitchMissCopy());
     this->setDoAllowInbreeding(cpFrom.doAllowInbreeding());
-    this->mcmcBurn_ = cpFrom.mcmcBurn_;
-    this->mcmcMachineryRate_ = cpFrom.mcmcMachineryRate_;
     this->useConstRecomb_ = cpFrom.useConstRecomb();
     this->setForbidCopyFromSame(cpFrom.forbidCopyFromSame());
     this->constRecombProb_ = cpFrom.constRecombProb();
@@ -817,6 +817,8 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->randomSeed_.makeCopy(cpFrom.randomSeed_);
     this->nMcmcSample_.makeCopy(cpFrom.nMcmcSample_);
     this->parameterSigma_.makeCopy(cpFrom.parameterSigma_);
+    this->mcmcBurn_.makeCopy(cpFrom.mcmcBurn_);
+    this->mcmcMachineryRate_.makeCopy(cpFrom.mcmcMachineryRate_);
 }
 
 

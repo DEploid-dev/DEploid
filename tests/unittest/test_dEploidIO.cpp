@@ -87,8 +87,9 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdatePair(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdateSingle(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doExportPostProb(), false);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->mcmcBurn_, 0.5, epsilon3);
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->mcmcMachineryRate_, (size_t)5);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(
+                dEploidIOptr->mcmcBurn_.getValue(), 0.5, epsilon3);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->mcmcMachineryRate_.getValue(), (size_t)5);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->missCopyProb_.getValue(),
                                      0.01, epsilon3);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->useConstRecomb(), false);
@@ -130,16 +131,24 @@ class TestIO : public CppUnit::TestCase {
                          "-best",
                          "-nSample", "100",
                          "-seed", "2",
-                         "-sigma", "1.2"};
+                         "-sigma", "1.2",
+                         "-rate", "3",
+                         "-burn", "0.6"};
         DEploidIO tmp(10, argv1);
         CPPUNIT_ASSERT_EQUAL(tmp.nMcmcSample_.getValue(), (size_t)500);
         CPPUNIT_ASSERT_EQUAL(tmp.randomSeed_.getValue(), (size_t)1);
         CPPUNIT_ASSERT_EQUAL(tmp.parameterSigma_.getValue(), 1.6);
 
-        DEploidIO tmp2(16, argv1);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(tmp.mcmcBurn_.getValue(), 0.67, epsilon3);
+        CPPUNIT_ASSERT_EQUAL(tmp.mcmcMachineryRate_.getValue(), (size_t)8);
+
+
+        DEploidIO tmp2(20, argv1);
         CPPUNIT_ASSERT_EQUAL(tmp2.nMcmcSample_.getValue(), (size_t)100);
         CPPUNIT_ASSERT_EQUAL(tmp2.randomSeed_.getValue(), (size_t)2);
         CPPUNIT_ASSERT_EQUAL(tmp2.parameterSigma_.getValue(), (double)1.2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(tmp2.mcmcBurn_.getValue(), 0.6, epsilon3);
+        CPPUNIT_ASSERT_EQUAL(tmp2.mcmcMachineryRate_.getValue(), (size_t)3);
     }
 
 

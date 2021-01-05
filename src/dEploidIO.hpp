@@ -238,14 +238,11 @@ class DEploidIO{
     Parameter <size_t> precision_;
     Parameter <size_t> nMcmcSample_;
     Parameter <size_t> randomSeed_;
-    size_t mcmcMachineryRate_;
-    double mcmcBurn_;
+    Parameter <size_t> mcmcMachineryRate_;
+    Parameter <double> mcmcBurn_;
 
     Parameter <double> missCopyProb_;
     Parameter <double> parameterSigma_;
-    //double parameterSigma_;
-    //void setParameterSigma ( const double setTo ) { this->parameterSigma_ = setTo; }
-    //double parameterSigma() const { return this->parameterSigma_; }
 
 
     double averageCentimorganDistance_;// = 15000.0,
@@ -442,7 +439,6 @@ class DEploidIO{
     bool kStrainWasManuallySet() const { return this->kStrainWasManuallySet_; }
     void setKStrainWasSetByProp ( const size_t setTo ) { this->kStrainWasSetByProp_ = setTo; }
     bool kStrainWasSetByProp() const { return this->kStrainWasSetByProp_; }
-    //size_t nMcmcSample() const { return this->nMcmcSample_; }
     double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
     //double Ne() const { return this->Ne_; }
     double scalingFactor() const {return this->scalingFactor_; }
