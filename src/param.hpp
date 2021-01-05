@@ -1,4 +1,25 @@
-
+/*
+ * dEploid is used for deconvoluting Plasmodium falciparum genome from
+ * mix-infected patient sample.
+ *
+ * Copyright (C) 2020 - 2021  Sha (Joe) Zhu
+ *
+ * This file is part of dEploid.
+ *
+ * dEploid is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 
 #ifndef DEPLOID_SRC_PARAM_HPP_
@@ -34,7 +55,7 @@ friend class DEploidIO;
         this->userDefined_ = setTo;
     }
 
-    void init(T value){
+    void init(T value) {
         this->setDefault(value);
         this->setBest(value);
         this->setUserDefined(value);
@@ -43,10 +64,11 @@ friend class DEploidIO;
         this->setUseUserDefined(false);
     }
 
-    void copy(const Parameter <T> &currentParam) {
+    void makeCopy(const Parameter <T> &currentParam) {
         this->setDefault(currentParam.default_);
         this->setBest(currentParam.best_);
         this->setUserDefined(currentParam.userDefined_);
+        // Make sure to set the value states after set values
         this->setUseDefault(currentParam.useDefault());
         this->setUseBest(currentParam.useBest());
         this->setUseUserDefined(currentParam.useUserDefined());
@@ -59,9 +81,9 @@ friend class DEploidIO;
     }
     T getValue();
     Parameter <T> (const Parameter <T> &currentParam) {
-        this->copy(currentParam);
+        this->makeCopy(currentParam);
     }
-    ~Parameter() { };
+    ~Parameter() { }
 };
 
 // Parameter <double> a_Parameter_class;

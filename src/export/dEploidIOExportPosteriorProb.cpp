@@ -44,17 +44,17 @@ void McmcMachinery::writeLastFwdProb(bool useIBD) {
             size_t length = this->dEploidIO_->position_[chromi].size();
 
             UpdateSingleHap updatingSingle(this->dEploidIO_->refCount_,
-                                      this->dEploidIO_->altCount_,
-                                      this->dEploidIO_->plaf_,
-                                      this->currentExpectedWsaf_,
-                                      this->currentProp_,
-                                      this->currentHap_,
-                                      this->hapRg_,
-                                      start, length,
-                                      this->panel_,
-                                      this->dEploidIO_->missCopyProb_.getValue(),
-                                      this->dEploidIO_->scalingFactor(),
-                                      tmpk);
+                                  this->dEploidIO_->altCount_,
+                                  this->dEploidIO_->plaf_,
+                                  this->currentExpectedWsaf_,
+                                  this->currentProp_,
+                                  this->currentHap_,
+                                  this->hapRg_,
+                                  start, length,
+                                  this->panel_,
+                                  this->dEploidIO_->missCopyProb_.getValue(),
+                                  this->dEploidIO_->scalingFactor(),
+                                  tmpk);
             if (this->dEploidIO_->doAllowInbreeding() == true) {
                 updatingSingle.setPanelSize(
                     this->panel_->inbreedingPanelSize());

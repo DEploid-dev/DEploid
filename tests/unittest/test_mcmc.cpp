@@ -112,7 +112,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         dEploidIO_->nLoci_ = 3;
         dEploidIO_->chrom_ = vector <string>({"chrom1", "chrom2"});
         dEploidIO_->indexOfChromStarts_ = vector <size_t>({0, 2});
-        rg_ = new MersenneTwister(dEploidIO_->randomSeed());
+        rg_ = new MersenneTwister(dEploidIO_->randomSeed_.getValue());
         mcmcMachinery_ = new McmcMachinery(&this->dEploidIO_->plaf_,
                                        &this->dEploidIO_->refCount_,
                                        &this->dEploidIO_->altCount_,

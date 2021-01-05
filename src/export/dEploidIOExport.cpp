@@ -102,7 +102,7 @@ void DEploidIO::writeLog ( ostream * writeTo ) {
         (*writeTo) << setw(19) << " MCMC burn: " << mcmcBurn_ << "\n";
         (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_.getValue() << "\n";
         (*writeTo) << setw(19) << " MCMC sample rate: " << mcmcMachineryRate_ <<"\n";
-        (*writeTo) << setw(19) << " Random seed: " << this->randomSeed() << "\n";
+        (*writeTo) << setw(19) << " Random seed: " << this->randomSeed_.getValue() << "\n";
         if (this->useIBD()) {
             (*writeTo) << setw(19) << "  IBD Method used: YES" << "\n";
         }
@@ -393,7 +393,7 @@ void DEploidIO::operation_paintIBD() {
 
     // tmpDEploidIO.writeLog (&std::cout);
 
-    MersenneTwister tmpRg(this->randomSeed());
+    MersenneTwister tmpRg(this->randomSeed_.getValue());
     IBDpath tmpIBDpath;
     tmpIBDpath.init(tmpDEploidIO, &tmpRg);
     tmpIBDpath.buildPathProbabilityForPainting(goodProp);
@@ -447,7 +447,7 @@ void DEploidIO::operation_paintIBDviterbi() {
 
     // tmpDEploidIO.writeLog (&std::cout);
 
-    MersenneTwister tmpRg(this->randomSeed());
+    MersenneTwister tmpRg(this->randomSeed_.getValue());
     IBDpath tmpIBDpath;
     tmpIBDpath.init(tmpDEploidIO, &tmpRg);
 

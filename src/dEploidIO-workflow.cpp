@@ -30,7 +30,7 @@
 
 void DEploidIO::workflow_lasso() {
     this->dEploidLasso();
-    MersenneTwister lassoRg(this->randomSeed());
+    MersenneTwister lassoRg(this->randomSeed_.getValue());
     DEploidIO tmpIO(*this);
     vector < vector <double> > hap;
     for (size_t chromi = 0;
@@ -71,7 +71,7 @@ void DEploidIO::workflow_lasso() {
 void DEploidIO::workflow_ibd() {
     if (this->useIBD()) {  // ibd
         McmcSample * ibdMcmcSample = new McmcSample();
-        MersenneTwister ibdRg(this->randomSeed());
+        MersenneTwister ibdRg(this->randomSeed_.getValue());
         McmcMachinery ibdMcmcMachinery(&this->plaf_,
                                        &this->refCount_,
                                        &this->altCount_,
@@ -88,7 +88,7 @@ void DEploidIO::workflow_ibd() {
     }
 
     McmcSample * mcmcSample = new McmcSample();
-    MersenneTwister rg(this->randomSeed());
+    MersenneTwister rg(this->randomSeed_.getValue());
     McmcMachinery mcmcMachinery(&this->plaf_,
                         &this->refCount_,
                         &this->altCount_,
@@ -108,7 +108,7 @@ void DEploidIO::workflow_ibd() {
 
 
 void DEploidIO::workflow_best() {
-    MersenneTwister rg(this->randomSeed());
+    MersenneTwister rg(this->randomSeed_.getValue());
 
     // #############################################################
     // ################# DEploid-LASSO to learn K ##################

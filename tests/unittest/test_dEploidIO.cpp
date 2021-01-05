@@ -72,19 +72,18 @@ class TestIO : public CppUnit::TestCase {
 
     void testInitialization() {
         DEploidIO* dEploidIOptr = new DEploidIO();
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->randomSeedWasGiven(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doExportRecombProb(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->compressVcf(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->initialPropWasGiven(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->excludeSites(), false);
         CPPUNIT_ASSERT(dEploidIOptr->excludedMarkers == NULL);
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->randomSeed(), (size_t)0);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->help(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->usePanel(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->precision_.getValue(), (size_t)8);
         CPPUNIT_ASSERT(dEploidIOptr->prefix_ == "pf3k-dEploid");
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->kStrain_, (size_t)4);
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->nMcmcSample_.getValue(), (size_t)800);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->nMcmcSample_.getValue(),
+                (size_t)800);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdateProp(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdatePair(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdateSingle(), true);

@@ -265,7 +265,7 @@ class TestIBDpath : public CppUnit::TestCase {
         dEploidIO_->chrom_ = vector <string> ({"chrom1"});
         dEploidIO_->useConstRecomb_ = true;
         dEploidIO_->constRecombProb_ = 0.000001;
-        rg_ = new MersenneTwister(dEploidIO_->randomSeed());
+        rg_ = new MersenneTwister(dEploidIO_->randomSeed_.getValue());
         epsilon2 = 0.001;
         ibdPath3_ = new IBDpath;
         this->ibdPath3_->init(*dEploidIO_, rg_);

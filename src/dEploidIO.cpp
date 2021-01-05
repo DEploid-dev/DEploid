@@ -92,7 +92,7 @@ void DEploidIO::init() {
     this->setDoPrintLassoPanel(false);
     this->setIsCopied(false);
     this->setDoExportRecombProb(false);
-    this->setrandomSeedWasGiven(false);
+
     this->setCompressVcf(false);
     this->setInitialPropWasGiven(false);
     this->setInitialHapWasGiven(false);
@@ -101,18 +101,17 @@ void DEploidIO::init() {
     this->setExcludeSites( false );
     this->excludedMarkers = NULL;
     this->panel = NULL;
-    this->set_seed( (unsigned)0 );
     this->set_help(false);
     this->setVersion(false);
     this->setUsePanel(true);
-    //this->precision_ = 8;
-    this->precision_.init(8);
     this->prefix_ = "pf3k-dEploid";
     this->setKStrainWasManuallySet(false);
     this->setKStrainWasSetByHap(false);
     this->setKStrainWasSetByProp(false);
     this->setKstrain(4);  // From DEploid-Lasso, set default K to 4.
     this->nMcmcSample_.init(800);
+    this->precision_.init(8);
+    this->randomSeed_.init((unsigned)(time(0)));
     this->setDoUpdateProp( true );
     this->setDoUpdatePair( true );
     this->setDoUpdateSingle( true );
@@ -172,6 +171,7 @@ void DEploidIO::init() {
 
 void DEploidIO::setBestPracticeParameters() {
     this->nMcmcSample_.setBest(500);
+    this->randomSeed_.setBest(1);
 }
 
 void DEploidIO::getTime( bool isStartingTime ) {
@@ -214,10 +214,6 @@ void DEploidIO::finalize() {
 
     if ( this->compressVcf() && !this->doExportVcf() ) {
         throw VcfOutUnSpecified("");
-    }
-
-    if ( !this->randomSeedWasGiven_ ) {
-        this->set_seed( (unsigned)(time(0)) );
     }
 
     if ( this->excludeSites() ) {
@@ -587,8 +583,7 @@ void DEploidIO::parse () {
             this->setInitialHapWasGiven(true);
             this->readInitialHaps();
         } else if ( *argv_i == "-seed") {
-            this->set_seed( readNextInput<size_t>() );
-            this->setrandomSeedWasGiven( true );
+            this->randomSeed_.setUserDefined(readNextInput<size_t>());
         } else if ( *argv_i == "-z" ) {
             this->setCompressVcf(true);
         } else if ( *argv_i == "-h" || *argv_i == "-help") {
@@ -744,7 +739,7 @@ void DEploidIO::readPanel() {
 DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->setIsCopied(true);
     this->setDoExportRecombProb(cpFrom.doExportRecombProb());
-    this->setrandomSeedWasGiven(cpFrom.randomSeedWasGiven());
+    //this->setrandomSeedWasGiven(cpFrom.randomSeedWasGiven());
     this->setCompressVcf(cpFrom.compressVcf());
     this->setInitialPropWasGiven(cpFrom.initialPropWasGiven());
     this->setInitialHapWasGiven(cpFrom.initialHapWasGiven());
@@ -754,17 +749,14 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->setExcludeSites(cpFrom.excludeSites());
     this->excludedMarkers = cpFrom.excludedMarkers;
     this->panel = cpFrom.panel;
-    this->set_seed(cpFrom.randomSeed_);
     this->set_help(cpFrom.help());
     this->setVersion(cpFrom.version());
     this->setUsePanel(cpFrom.usePanel());
-    this->precision_.copy(cpFrom.precision_);
     this->prefix_ = cpFrom.prefix_;
     this->setKStrainWasManuallySet(cpFrom.kStrainWasManuallySet());
     this->setKStrainWasSetByHap(cpFrom.kStrainWasSetByHap());
     this->setKStrainWasSetByProp(cpFrom.kStrainWasSetByProp());
     this->setKstrain(cpFrom.kStrain());
-    this->nMcmcSample_.copy(cpFrom.nMcmcSample_);
     this->setDoUpdateProp(cpFrom.doUpdateProp());
     this->setDoUpdatePair(cpFrom.doUpdatePair());
     this->setDoUpdateSingle(cpFrom.doUpdateSingle());
@@ -778,7 +770,6 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->setDoAllowInbreeding(cpFrom.doAllowInbreeding());
     this->mcmcBurn_ = cpFrom.mcmcBurn_;
     this->mcmcMachineryRate_ = cpFrom.mcmcMachineryRate_;
-    this->missCopyProb_ .copy(cpFrom.missCopyProb_);
     this->useConstRecomb_ = cpFrom.useConstRecomb();
     this->setForbidCopyFromSame(cpFrom.forbidCopyFromSame());
     this->constRecombProb_ = cpFrom.constRecombProb();
@@ -812,6 +803,11 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     //this->strIbdExportProp = cpFrom.strIbdExportProp;
     //this->strIbdExportLLK = cpFrom.strIbdExportLLK;
     //this->strIbdExportHap = cpFrom.strIbdExportHap;
+
+    this->precision_.makeCopy(cpFrom.precision_);
+    this->missCopyProb_ .makeCopy(cpFrom.missCopyProb_);
+    this->randomSeed_.makeCopy(cpFrom.randomSeed_);
+    this->nMcmcSample_.makeCopy(cpFrom.nMcmcSample_);
 }
 
 

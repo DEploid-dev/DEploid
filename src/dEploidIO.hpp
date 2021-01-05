@@ -96,11 +96,9 @@ class DEploidIO{
 
     // Log
     void wrapUp();
-    bool randomSeedWasSet() const {return this->randomSeedWasGiven_; }
 
     friend std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO);
 
-    size_t randomSeed() const { return randomSeed_;}
 
 
     vector <double> plaf_;
@@ -158,9 +156,7 @@ class DEploidIO{
     string excludeFileName_;
     string initialHapFileName_;
     string prefix_;
-    size_t randomSeed_;
-    bool randomSeedWasGiven_;
-    void setrandomSeedWasGiven(const bool random) { this->randomSeedWasGiven_ = random; }
+
 
 
     bool initialPropWasGiven_;
@@ -241,6 +237,7 @@ class DEploidIO{
     //size_t precision_;
     Parameter <size_t> precision_;
     Parameter <size_t> nMcmcSample_;
+    Parameter <size_t> randomSeed_;
     size_t mcmcMachineryRate_;
     double mcmcBurn_;
 
@@ -312,7 +309,6 @@ class DEploidIO{
     void readInitialProportions();
     void readInitialHaps();
 
-    void set_seed(const size_t seed) { this->randomSeed_ = seed; }
     void removeFilesWithSameName();
     vector <double> computeExpectedWsafFromInitialHap();
 
@@ -383,7 +379,6 @@ class DEploidIO{
 
     bool initialHapWasGiven() const { return initialHapWasGiven_; }
 
-    bool randomSeedWasGiven() const {return this->randomSeedWasGiven_; }
 
     void setVqslod ( const double setTo ) { this->vqslod_ = setTo; }
     double vqslod() const { return this->vqslod_; }

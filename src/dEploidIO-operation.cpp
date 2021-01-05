@@ -178,7 +178,7 @@ void DEploidIO::operation_chromPainting() {
 
     vector <double> expectedWsaf = computeExpectedWsafFromInitialHap();
 
-    MersenneTwister tmpRg(this->randomSeed());
+    MersenneTwister tmpRg(this->randomSeed_.getValue());
 
     if (this->doAllowInbreeding() == true) {
         this->panel->initializeUpdatePanel(
