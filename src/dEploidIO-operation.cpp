@@ -188,7 +188,8 @@ void DEploidIO::operation_chromPainting() {
     for ( size_t tmpk = 0; tmpk < this->kStrain_.getValue(); tmpk++ ) {
         if ( this->doAllowInbreeding() == true ) {
             this->panel->updatePanelWithHaps(
-            this->panel->truePanelSize()+kStrain_.getValue()-1, tmpk, this->initialHap);
+            this->panel->truePanelSize()+kStrain_.getValue()-1,
+                tmpk, this->initialHap);
         }
 
         for (size_t chromi = 0 ;

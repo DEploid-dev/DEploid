@@ -89,7 +89,8 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doExportPostProb(), false);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(
                 dEploidIOptr->mcmcBurn_.getValue(), 0.5, epsilon3);
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->mcmcMachineryRate_.getValue(), (size_t)5);
+        CPPUNIT_ASSERT_EQUAL(
+                dEploidIOptr->mcmcMachineryRate_.getValue(), (size_t)5);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->missCopyProb_.getValue(),
                                      0.01, epsilon3);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->useConstRecomb(), false);
