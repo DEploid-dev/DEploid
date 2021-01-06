@@ -99,10 +99,10 @@ void DEploidIO::writeLog ( ostream * writeTo ) {
     (*writeTo) << "\n";
     if ( (this->doLsPainting() == false) & (this->doIbdPainting() == false) ) {
         (*writeTo) << "MCMC parameters: "<< "\n";
-        (*writeTo) << setw(19) << " MCMC burn: " << mcmcBurn_ << "\n";
-        (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_ << "\n";
-        (*writeTo) << setw(19) << " MCMC sample rate: " << mcmcMachineryRate_ <<"\n";
-        (*writeTo) << setw(19) << " Random seed: " << this->randomSeed() << "\n";
+        (*writeTo) << setw(19) << " MCMC burn: " << mcmcBurn_.getValue() << "\n";
+        (*writeTo) << setw(19) << " MCMC sample: " << nMcmcSample_.getValue() << "\n";
+        (*writeTo) << setw(19) << " MCMC sample rate: " << mcmcMachineryRate_.getValue() <<"\n";
+        (*writeTo) << setw(19) << " Random seed: " << this->randomSeed_.getValue() << "\n";
         if (this->useIBD()) {
             (*writeTo) << setw(19) << "  IBD Method used: YES" << "\n";
         }
@@ -116,13 +116,13 @@ void DEploidIO::writeLog ( ostream * writeTo ) {
     }
     (*writeTo) << "Other parameters:"<< "\n";
     if ( forbidCopyFromSame_ ) { (*writeTo) << " Update pair haplotypes move forbid copying from the same strain!!! \n"; }
-    (*writeTo) << setw(20) << " Miss copy prob: "   << this->missCopyProb_ << "\n";
+    (*writeTo) << setw(20) << " Miss copy prob: "   << this->missCopyProb_.getValue() << "\n";
     (*writeTo) << setw(20) << " Avrg Cent Morgan: " << this->averageCentimorganDistance_ << "\n";
     (*writeTo) << setw(20) << " G: "                << this->parameterG() << "\n";
     if (this->useIBD()) {
     (*writeTo) << setw(20) << " IBD sigma: "        << this->ibdSigma() << "\n";
     } else {
-    (*writeTo) << setw(20) << " sigma: "            << this->parameterSigma() << "\n";
+    (*writeTo) << setw(20) << " sigma: "            << this->parameterSigma_.getValue() << "\n";
     }
     (*writeTo) << setw(20) << " ScalingFactor: "    << this->scalingFactor() << "\n";
     (*writeTo) << setw(20) << " VQSLOD:        "    << this->vqslod() << "\n";
@@ -130,7 +130,7 @@ void DEploidIO::writeLog ( ostream * writeTo ) {
         (*writeTo) << setw(20) << " Initial prob: " ;
         for ( size_t i = 0; i < this->initialProp.size(); i++ ) {
             (*writeTo) << this->initialProp[i]
-                       << ( ( i != (this->kStrain_-1) ) ? " " : "\n" );
+                       << ( ( i != (this->kStrain_.getValue()-1) ) ? " " : "\n" );
         }
     }
     (*writeTo) << "\n";
@@ -162,7 +162,7 @@ void DEploidIO::writeLog ( ostream * writeTo ) {
     } else {
         (*writeTo) << "Output saved to:\n";
         if ( this->doLsPainting() ) {
-            for ( size_t i = 0; i < kStrain(); i++ ) {
+            for ( size_t i = 0; i < kStrain_.getValue(); i++ ) {
                 (*writeTo) << "Posterior probability of strain " << i << ": "<< strExportSingleFwdProbPrefix << i <<endl;
             }
         } else if (this->doIbdPainting()) {
@@ -377,7 +377,7 @@ void DEploidIO::operation_paintIBD() {
     }
 
     DEploidIO tmpDEploidIO; // (*this);
-    tmpDEploidIO.setKstrain(goodProp.size());
+    tmpDEploidIO.kStrain_.init(goodProp.size());
     tmpDEploidIO.setInitialPropWasGiven(true);
     tmpDEploidIO.initialProp = goodProp;
     tmpDEploidIO.finalProp = goodProp;
@@ -393,7 +393,7 @@ void DEploidIO::operation_paintIBD() {
 
     // tmpDEploidIO.writeLog (&std::cout);
 
-    MersenneTwister tmpRg(this->randomSeed());
+    MersenneTwister tmpRg(this->randomSeed_.getValue());
     IBDpath tmpIBDpath;
     tmpIBDpath.init(tmpDEploidIO, &tmpRg);
     tmpIBDpath.buildPathProbabilityForPainting(goodProp);
@@ -431,7 +431,7 @@ void DEploidIO::operation_paintIBDviterbi() {
     }
 
     DEploidIO tmpDEploidIO;  // (*this);
-    tmpDEploidIO.setKstrain(goodProp.size());
+    tmpDEploidIO.kStrain_.init(goodProp.size());
     tmpDEploidIO.setInitialPropWasGiven(true);
     tmpDEploidIO.initialProp = goodProp;
     tmpDEploidIO.finalProp = goodProp;
@@ -447,7 +447,7 @@ void DEploidIO::operation_paintIBDviterbi() {
 
     // tmpDEploidIO.writeLog (&std::cout);
 
-    MersenneTwister tmpRg(this->randomSeed());
+    MersenneTwister tmpRg(this->randomSeed_.getValue());
     IBDpath tmpIBDpath;
     tmpIBDpath.init(tmpDEploidIO, &tmpRg);
 

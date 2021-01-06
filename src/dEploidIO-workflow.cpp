@@ -30,7 +30,7 @@
 
 void DEploidIO::workflow_lasso() {
     this->dEploidLasso();
-    MersenneTwister lassoRg(this->randomSeed());
+    MersenneTwister lassoRg(this->randomSeed_.getValue());
     DEploidIO tmpIO(*this);
     vector < vector <double> > hap;
     for (size_t chromi = 0;
@@ -71,7 +71,7 @@ void DEploidIO::workflow_lasso() {
 void DEploidIO::workflow_ibd() {
     if (this->useIBD()) {  // ibd
         McmcSample * ibdMcmcSample = new McmcSample();
-        MersenneTwister ibdRg(this->randomSeed());
+        MersenneTwister ibdRg(this->randomSeed_.getValue());
         McmcMachinery ibdMcmcMachinery(&this->plaf_,
                                        &this->refCount_,
                                        &this->altCount_,
@@ -88,7 +88,7 @@ void DEploidIO::workflow_ibd() {
     }
 
     McmcSample * mcmcSample = new McmcSample();
-    MersenneTwister rg(this->randomSeed());
+    MersenneTwister rg(this->randomSeed_.getValue());
     McmcMachinery mcmcMachinery(&this->plaf_,
                         &this->refCount_,
                         &this->altCount_,
@@ -108,7 +108,7 @@ void DEploidIO::workflow_ibd() {
 
 
 void DEploidIO::workflow_best() {
-    MersenneTwister rg(this->randomSeed());
+    MersenneTwister rg(this->randomSeed_.getValue());
 
     // #############################################################
     // ################# DEploid-LASSO to learn K ##################
@@ -180,7 +180,7 @@ void DEploidIO::workflow_best() {
         }
     }
     normalizeBySum(this->initialProp);
-    this->setKstrain(this->initialProp.size());
+    this->kStrain_.init(this->initialProp.size());
     this->setInitialPropWasGiven(true);
 
     if (this->inferBestPracticeP()) {
@@ -219,14 +219,14 @@ void DEploidIO::workflow_best() {
         cout << endl;
         this->initialProp = initialP;
         this->finalProp = initialP;
-        this->setKstrain(initialP.size());
+        this->kStrain_.init(initialP.size());
         this->setInitialPropWasGiven(true);
         this->setDoUpdateProp(false);
         delete ibdMcmcSample;
       } else {
         this->finalProp.clear();
         this->finalProp.push_back(1.0);
-        this->setKstrain(1);
+        this->kStrain_.init(1);
       }
     }
 
@@ -241,7 +241,7 @@ void DEploidIO::workflow_best() {
       dEploidLassoIO.initialProp = this->initialProp;
       dEploidLassoIO.setDoUpdateProp(false);
       dEploidLassoIO.setInitialPropWasGiven(true);
-      dEploidLassoIO.setKstrain(this->kStrain());
+      dEploidLassoIO.kStrain_.init(this->kStrain_.getValue());
       vector < vector <double> > hap;
       for (size_t chromi = 0;
            chromi < this->indexOfChromStarts_.size();

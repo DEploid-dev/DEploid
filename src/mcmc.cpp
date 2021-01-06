@@ -70,16 +70,18 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
         this->calcMaxIteration(100, 10, 0.5);
         //this->calcMaxIteration(10, 10, 0.5);
     } else {
-        this->calcMaxIteration( dEploidIO_->nMcmcSample_ , dEploidIO_->mcmcMachineryRate_, dEploidIO_->mcmcBurn_ );
+        this->calcMaxIteration(dEploidIO_->nMcmcSample_.getValue(),
+            dEploidIO_->mcmcMachineryRate_.getValue(),
+            dEploidIO_->mcmcBurn_.getValue() );
     }
     this->MN_LOG_TITRE = 0.0;
-    this->SD_LOG_TITRE = (useIBD == true) ? this->dEploidIO_->ibdSigma() : this->dEploidIO_->parameterSigma();
+    this->SD_LOG_TITRE = (useIBD == true) ? this->dEploidIO_->ibdSigma() : this->dEploidIO_->parameterSigma_.getValue();
     //this->SD_LOG_TITRE = this->dEploidIO_->parameterSigma();
     this->PROP_SCALE = 40.0;
 
     stdNorm_ = new StandNormalRandomSample(this->seed_);
 
-    this->setKstrain(this->dEploidIO_->kStrain());
+    this->setKstrain(this->dEploidIO_->kStrain_.getValue());
     this->setNLoci(this->plaf_ptr_->size());
     this->initializeMcmcChain(useIBD);
 }
@@ -370,8 +372,8 @@ void McmcMachinery::computeDiagnostics() {
 
     // average cumulate expectedWSAF
     for ( size_t i = 0; i < this->cumExpectedWsaf_.size(); i++) {
-        //cout << "cumExpectedWsaf_ i = "<<i <<" " << this->cumExpectedWsaf_[i] << " " << this->dEploidIO_->nMcmcSample_<<endl;
-        this->cumExpectedWsaf_[i] /= static_cast<double>(this->dEploidIO_->nMcmcSample_);
+        //cout << "cumExpectedWsaf_ i = "<<i <<" " << this->cumExpectedWsaf_[i] << " " << this->dEploidIO_->nMcmcSample_.getValue()<<endl;
+        this->cumExpectedWsaf_[i] /= static_cast<double>(this->dEploidIO_->nMcmcSample_.getValue());
         if (this->cumExpectedWsaf_[i]>1){
             this->cumExpectedWsaf_[i] = 1;
         }
@@ -670,7 +672,7 @@ void McmcMachinery::updateSingleHap(Panel *useThisPanel) {
                                   this->currentExpectedWsaf_,
                                   this->currentProp_, this->currentHap_, this->hapRg_,
                                   start, length,
-                                  useThisPanel, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
+                                  useThisPanel, this->dEploidIO_->missCopyProb_.getValue(), this->dEploidIO_->scalingFactor(),
                                   this->strainIndex_);
 
         if ( this->dEploidIO_->doAllowInbreeding() == true ) {
@@ -716,7 +718,7 @@ void McmcMachinery::updatePairHaps(Panel *useThisPanel) {
                                 this->currentExpectedWsaf_,
                                 this->currentProp_, this->currentHap_, this->hapRg_,
                                 start, length,
-                                useThisPanel, this->dEploidIO_->missCopyProb_, this->dEploidIO_->scalingFactor(),
+                                useThisPanel, this->dEploidIO_->missCopyProb_.getValue(), this->dEploidIO_->scalingFactor(),
                                 this->dEploidIO_->forbidCopyFromSame(),
                                 this->strainIndex1_,
                                 this->strainIndex2_);

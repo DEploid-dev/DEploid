@@ -93,9 +93,9 @@ void DEploidIO::writeHap(vector < vector <double> > &hap, string jobbrief) {
         ios::out | ios::app | ios::binary);
     // HEADER
     ofstreamExportTmp << "CHROM" << "\t" << "POS" << "\t";;
-    for (size_t ii = 0; ii < kStrain_; ii++) {
+    for (size_t ii = 0; ii < kStrain_.getValue(); ii++) {
         ofstreamExportTmp << "h" << (ii+1);
-        ofstreamExportTmp << ((ii < (kStrain_-1)) ? "\t" : "\n");
+        ofstreamExportTmp << ((ii < (kStrain_.getValue()-1)) ? "\t" : "\n");
     }
 
     size_t siteIndex = 0;
@@ -206,10 +206,10 @@ void DEploidIO::writeVcf(vector < vector <double> > &hap,
                << "FILTER" << "\t"
                << "INFO"   << "\t"
                << "FORMAT" << "\t";
-    for (size_t ii = 0; ii < kStrain_; ii++) {
+    for (size_t ii = 0; ii < kStrain_.getValue(); ii++) {
         (*writeTo) << (this->useVcf() ? this->vcfReaderPtr_->sampleName_ : "h")
                           << "." << (ii+1);
-        (*writeTo) << ((ii < (kStrain_-1)) ? "\t" : "\n");
+        (*writeTo) << ((ii < (kStrain_.getValue()-1)) ? "\t" : "\n");
     }
 
     size_t siteIndex = 0;

@@ -30,6 +30,7 @@
 class TestIO : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE(TestIO);
     CPPUNIT_TEST(testMainConstructor);
+    CPPUNIT_TEST(testParameters);
     CPPUNIT_TEST(testInitialization);
     CPPUNIT_TEST(testPrintHelp);
     CPPUNIT_TEST(testPrintVersion);
@@ -72,26 +73,25 @@ class TestIO : public CppUnit::TestCase {
 
     void testInitialization() {
         DEploidIO* dEploidIOptr = new DEploidIO();
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->randomSeedWasGiven(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doExportRecombProb(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->compressVcf(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->initialPropWasGiven(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->excludeSites(), false);
         CPPUNIT_ASSERT(dEploidIOptr->excludedMarkers == NULL);
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->randomSeed(), (size_t)0);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->help(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->usePanel(), true);
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->precision_, (size_t)8);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->precision_.getValue(), (size_t)8);
         CPPUNIT_ASSERT(dEploidIOptr->prefix_ == "pf3k-dEploid");
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->kStrain_, (size_t)4);
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->nMcmcSample_, (size_t)800);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->kStrain_.getValue(), (size_t)5);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdateProp(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdatePair(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdateSingle(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doExportPostProb(), false);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->mcmcBurn_, 0.5, epsilon3);
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->mcmcMachineryRate_, (size_t)5);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->missCopyProb_,
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(
+                dEploidIOptr->mcmcBurn_.getValue(), 0.5, epsilon3);
+        CPPUNIT_ASSERT_EQUAL(
+                dEploidIOptr->mcmcMachineryRate_.getValue(), (size_t)5);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->missCopyProb_.getValue(),
                                      0.01, epsilon3);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->useConstRecomb(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->forbidCopyFromSame(), false);
@@ -101,11 +101,55 @@ class TestIO : public CppUnit::TestCase {
                                      15000.0, epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->parameterG(),
                                      20.0, epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->parameterSigma(),
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(dEploidIOptr->parameterSigma_.getValue(),
                                      5.0, epsilon3);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doExportVcf(), false);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doLsPainting(), false);
+
+
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->nMcmcSample_.getValue(),
+                (size_t)800);
         delete dEploidIOptr;
+    }
+
+
+    void testParameters() {
+        DEploidIO* dEploidIOptr = new DEploidIO();
+        CPPUNIT_ASSERT_NO_THROW(dEploidIOptr->setBestPracticeParameters());
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->nMcmcSample_.getValue(),
+                (size_t)500);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->randomSeed_.getValue(),
+                (size_t)1);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->parameterSigma_.getValue(),
+                (double)1.6);
+        delete dEploidIOptr;
+
+        char *argv1[] = { "./dEploid",
+                         "-ref", "data/testData/PG0390-C.test.ref",
+                         "-alt", "data/testData/PG0390-C.test.alt",
+                         "-plaf", "data/testData/labStrains.test.PLAF.txt",
+                         "-panel", "data/testData/labStrains.test.panel.txt",
+                         "-best",
+                         "-nSample", "100",
+                         "-seed", "2",
+                         "-sigma", "1.2",
+                         "-rate", "3",
+                         "-burn", "0.6"};
+        DEploidIO tmp(10, argv1);
+        CPPUNIT_ASSERT_EQUAL(tmp.nMcmcSample_.getValue(), (size_t)500);
+        CPPUNIT_ASSERT_EQUAL(tmp.randomSeed_.getValue(), (size_t)1);
+        CPPUNIT_ASSERT_EQUAL(tmp.parameterSigma_.getValue(), 1.6);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(tmp.mcmcBurn_.getValue(), 0.67, epsilon3);
+        CPPUNIT_ASSERT_EQUAL(tmp.mcmcMachineryRate_.getValue(), (size_t)8);
+
+
+        DEploidIO tmp2(20, argv1);
+        CPPUNIT_ASSERT_EQUAL(tmp2.nMcmcSample_.getValue(), (size_t)100);
+        CPPUNIT_ASSERT_EQUAL(tmp2.randomSeed_.getValue(), (size_t)2);
+        CPPUNIT_ASSERT_EQUAL(tmp2.parameterSigma_.getValue(), (double)1.2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(tmp2.mcmcBurn_.getValue(), 0.6, epsilon3);
+        CPPUNIT_ASSERT_EQUAL(tmp2.mcmcMachineryRate_.getValue(), (size_t)3);
     }
 
 
@@ -163,7 +207,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_NO_THROW(DEploidIO(16, argv1));
         CPPUNIT_ASSERT_NO_THROW(DEploidIO(14, argv1));
         DEploidIO tmp(14, argv1);
-        CPPUNIT_ASSERT_EQUAL(tmp.kStrain(), (size_t)4);
+        CPPUNIT_ASSERT_EQUAL(tmp.kStrain_.getValue(), (size_t)4);
 
         char *argv2[] = { "./dEploid",
                          "-ref", "data/testData/PG0390-C.test.ref",

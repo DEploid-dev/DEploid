@@ -92,7 +92,7 @@ void DEploidIO::init() {
     this->setDoPrintLassoPanel(false);
     this->setIsCopied(false);
     this->setDoExportRecombProb(false);
-    this->setrandomSeedWasGiven(false);
+
     this->setCompressVcf(false);
     this->setInitialPropWasGiven(false);
     this->setInitialHapWasGiven(false);
@@ -101,17 +101,13 @@ void DEploidIO::init() {
     this->setExcludeSites( false );
     this->excludedMarkers = NULL;
     this->panel = NULL;
-    this->set_seed( (unsigned)0 );
     this->set_help(false);
     this->setVersion(false);
     this->setUsePanel(true);
-    this->precision_ = 8;
     this->prefix_ = "pf3k-dEploid";
-    this->setKStrainWasManuallySet(false);
     this->setKStrainWasSetByHap(false);
     this->setKStrainWasSetByProp(false);
-    this->setKstrain(4);  // From DEploid-Lasso, set default K to 4.
-    this->nMcmcSample_ = 800;
+
     this->setDoUpdateProp( true );
     this->setDoUpdatePair( true );
     this->setDoUpdateSingle( true );
@@ -127,16 +123,12 @@ void DEploidIO::init() {
     this->setInferBestPracticeHap(true);
     this->setDoExportSwitchMissCopy ( true );
     this->setDoAllowInbreeding( false );
-    this->mcmcBurn_ = 0.5;
-    this->mcmcMachineryRate_ = 5;
-    this->missCopyProb_ = 0.01;
     this->useConstRecomb_ = false;
     this->setForbidCopyFromSame( false );
     this->constRecombProb_ = 1.0;
     this->averageCentimorganDistance_ = 15000.0;
     this->setScalingFactor(100.0);
     this->setParameterG(20.0);
-    this->setParameterSigma(5.0);
     this->setIBDSigma(20.0);
     this->setUseVcf(false);
     this->setUseVcfSample(false);
@@ -147,6 +139,17 @@ void DEploidIO::init() {
     this->setDoComputeLLK(false);
     this->setVqslod(8.0);
     this->setLassoMaxNumPanel(100);
+
+    this->kStrain_.init(5);  // From DEploid-Lasso, set default K to 4.
+    this->mcmcBurn_.init(0.5);
+    this->mcmcMachineryRate_.init(5);
+    this->missCopyProb_.init(0.01);
+    this->nMcmcSample_.init(800);
+    this->precision_.init(8);
+    this->randomSeed_.init((unsigned)0);
+    this->parameterSigma_.init(5.0);
+
+
     #ifdef COMPILEDATE
         compileTime_ = COMPILEDATE;
     #else
@@ -168,6 +171,15 @@ void DEploidIO::init() {
 
 }
 
+
+void DEploidIO::setBestPracticeParameters() {
+    this->kStrain_.setBest(4);
+    this->nMcmcSample_.setBest(500);
+    this->randomSeed_.setBest(1);
+    this->parameterSigma_.setBest(1.6);
+    this->mcmcBurn_.setBest(.67);
+    this->mcmcMachineryRate_.setBest(8);
+}
 
 void DEploidIO::getTime( bool isStartingTime ) {
     time_t now = time(0);
@@ -193,13 +205,17 @@ void DEploidIO::reInit() {
 
 
 void DEploidIO::finalize() {
+    if (useBestPractice()){
+        this->setBestPracticeParameters();
+    }
+
     if ( this->doIbdPainting() | this->doComputeLLK() | this->doIbdViterbiPainting() ) {
         if (!initialPropWasGiven()) {
             throw InitialPropUngiven("");
         }
     }
 
-    if ( this->useIBD() && this->kStrain() == 1) {
+    if ( this->useIBD() && this->kStrain_.getValue() == 1) {
         throw InvalidK();
     }
 
@@ -207,8 +223,8 @@ void DEploidIO::finalize() {
         throw VcfOutUnSpecified("");
     }
 
-    if ( !this->randomSeedWasGiven_ ) {
-        this->set_seed( (unsigned)(time(0)) );
+    if ( !this->randomSeed_.useDefault() ) {
+        this->randomSeed_.init((unsigned)(time(0)));
     }
 
     if ( this->excludeSites() ) {
@@ -330,7 +346,7 @@ void DEploidIO::removeFilesWithSameName() {
     if (this->doLsPainting() || this->doExportPostProb() ) {
         if (this->useIBD()) {
             strIbdExportSingleFwdProbPrefix = this->prefix_ + ".ibd.single";
-            for ( size_t i = 0; i < this->kStrain_ ; i++ ) {
+            for ( size_t i = 0; i < this->kStrain_.getValue() ; i++ ) {
                 string tmpStrExportSingleFwdProb = strIbdExportSingleFwdProbPrefix + to_string(i);
                 remove(tmpStrExportSingleFwdProb.c_str());
             }
@@ -338,7 +354,7 @@ void DEploidIO::removeFilesWithSameName() {
             remove(strIbdExportPairFwdProb.c_str());
         }
         strExportSingleFwdProbPrefix = this->prefix_ + ".single";
-        for ( size_t i = 0; i < this->kStrain_ ; i++ ) {
+        for ( size_t i = 0; i < this->kStrain_.getValue() ; i++ ) {
             string tmpStrExportSingleFwdProb = strExportSingleFwdProbPrefix + to_string(i);
             remove(tmpStrExportSingleFwdProb.c_str());
         }
@@ -413,31 +429,31 @@ void DEploidIO::parse () {
         } else if (*argv_i == "-o") {
             this->readNextStringto ( this->prefix_ ) ;
         } else if ( *argv_i == "-p" ) {
-            this->precision_ = readNextInput<size_t>() ;
+            //this->precision_ = readNextInput<size_t>() ;
+            this->precision_.setUserDefined(readNextInput<size_t>());
         } else if ( *argv_i == "-k" ) {
-            this->setKStrainWasManuallySet(true);
-            this->setKstrain(readNextInput<size_t>());
+            this->kStrain_.setUserDefined(readNextInput<size_t>());
 
-            if ( this->kStrainWasSetByHap() && this->kStrain() != this->initialHap[0].size() ) {
-                string hint = string(" k = ") + to_string(this->kStrain()) + ", " + this->initialHapFileName_ + " suggests otherwise";
+            if ( this->kStrainWasSetByHap() && this->kStrain_.getValue() != this->initialHap[0].size() ) {
+                string hint = string(" k = ") + to_string(this->kStrain_.getValue()) + ", " + this->initialHapFileName_ + " suggests otherwise";
                 throw NumOfPropNotMatchNumStrain(hint);
             }
 
-            if ( this->initialPropWasGiven() && this->kStrain_ != initialProp.size() ) {
-                string hint = string(" k = ") + to_string(kStrain_) + ", flag -initialP suggests otherwise";;
+            if ( this->initialPropWasGiven() && this->kStrain_.getValue() != initialProp.size() ) {
+                string hint = string(" k = ") + to_string(kStrain_.getValue()) + ", flag -initialP suggests otherwise";;
                 throw NumOfPropNotMatchNumStrain(hint);
             }
 
         } else if ( *argv_i == "-nSample" ) {
-            this->nMcmcSample_ = readNextInput<size_t>() ;
+            this->nMcmcSample_.setUserDefined(readNextInput<size_t>());
         } else if ( *argv_i == "-burn" ) {
-            this->mcmcBurn_ = readNextInput<double>() ;
-            if ( this->mcmcBurn_ < 0 || this->mcmcBurn_ > 1) {
+            this->mcmcBurn_.setUserDefined(readNextInput<double>());
+            if ( this->mcmcBurn_.getValue() < 0 || this->mcmcBurn_.getValue() > 1) {
                 throw ( OutOfRange ("-burn", *argv_i) );
             }
         } else if ( *argv_i == "-miss" ) {
-            this->missCopyProb_ = readNextInput<double>() ;
-            if ( this->missCopyProb_ < 0 || this->missCopyProb_ > 1) {
+            this->missCopyProb_.setUserDefined(readNextInput<double>());
+            if ( this->missCopyProb_.getValue() < 0 || this->missCopyProb_.getValue() > 1) {
                 throw ( OutOfRange ("-miss", *argv_i) );
             }
         } else if ( *argv_i == "-c" ) {
@@ -447,7 +463,7 @@ void DEploidIO::parse () {
         } else if ( *argv_i == "-vqslod" ) {
             this->setVqslod(readNextInput<double>());
         } else if ( *argv_i == "-sigma" ) {
-            this->setParameterSigma(readNextInput<double>());
+            this->parameterSigma_.setUserDefined(readNextInput<double>());
         } else if ( *argv_i == "-ibdSigma" ) {
             this->setIBDSigma(readNextInput<double>());
         } else if ( *argv_i == "-lassoMaxPanel" ) {
@@ -463,7 +479,7 @@ void DEploidIO::parse () {
         } else if ( *argv_i == "-forbidSame" ) {
             this->setForbidCopyFromSame( true );
         } else if ( *argv_i == "-rate" ) {
-            this->mcmcMachineryRate_ = readNextInput<size_t>() ;
+            this->mcmcMachineryRate_.setUserDefined(readNextInput<size_t>());
         } else if ( *argv_i == "-forbidUpdateProp" ) {
             this->setDoUpdateProp( false );
         } else if ( *argv_i == "-forbidUpdateSingle" ) {
@@ -557,18 +573,18 @@ void DEploidIO::parse () {
             this->setInitialPropWasGiven( true );
 
             // If the k was set manually, check
-            if ( this->kStrainWasManuallySet() && this->kStrain_ != initialProp.size() ) {
-                string hint = string(" k = ") + to_string(kStrain_);
+            if ( this->kStrain_.useUserDefined() && this->kStrain_.getValue() != initialProp.size() ) {
+                string hint = string(" k = ") + to_string(kStrain_.getValue());
                 throw NumOfPropNotMatchNumStrain(hint);
             }
 
             // If the k was set by initial Hap, check
-            if ( this->kStrainWasSetByHap() && this->kStrain() != this->initialProp.size() ) {
-                string hint = string(" k = ") + to_string(this->kStrain()) + ", " + this->initialHapFileName_ + " suggests otherwise";
+            if ( this->kStrainWasSetByHap() && this->kStrain_.getValue() != this->initialProp.size() ) {
+                string hint = string(" k = ") + to_string(this->kStrain_.getValue()) + ", " + this->initialHapFileName_ + " suggests otherwise";
                 throw NumOfPropNotMatchNumStrain(hint);
             }
 
-            this->setKstrain(this->initialProp.size());
+            this->kStrain_.init(this->initialProp.size());
         } else if ( *argv_i == "-initialHap" ) {
             if ( this->doLsPainting() == true ) {
                 throw ( FlagsConflict((*argv_i) , "-painting") );
@@ -577,8 +593,7 @@ void DEploidIO::parse () {
             this->setInitialHapWasGiven(true);
             this->readInitialHaps();
         } else if ( *argv_i == "-seed") {
-            this->set_seed( readNextInput<size_t>() );
-            this->setrandomSeedWasGiven( true );
+            this->randomSeed_.setUserDefined(readNextInput<size_t>());
         } else if ( *argv_i == "-z" ) {
             this->setCompressVcf(true);
         } else if ( *argv_i == "-h" || *argv_i == "-help") {
@@ -605,7 +620,7 @@ void DEploidIO::checkInput() {
     if ( this->initialPropWasGiven() && ( abs(sumOfVec(initialProp) - 1.0) > 0.00001 ) && this->pleaseCheckInitialP() ) {
         throw SumOfPropNotOne ( to_string(sumOfVec(initialProp)) );}
     if ( this->initialPropWasGiven() ) {
-        if ( this->kStrainWasManuallySet() == true ) {
+        if ( this->kStrain_.useUserDefined() == true ) {
         } else {
             // set k strain by proportion length
         }
@@ -665,17 +680,17 @@ void DEploidIO::readInitialHaps() {
     assert (this->initialHap.size() == 0 );
     this->initialHap = initialHapToBeRead.content_;
 
-    if ( this->kStrainWasManuallySet() && this->kStrain()!= initialHapToBeRead.truePanelSize() ) {
-        string hint = string(" k = ") + to_string(this->kStrain()) + ", " + this->initialHapFileName_ + " suggests otherwise";
+    if ( this->kStrain_.useUserDefined() && this->kStrain_.getValue()!= initialHapToBeRead.truePanelSize() ) {
+        string hint = string(" k = ") + to_string(this->kStrain_.getValue()) + ", " + this->initialHapFileName_ + " suggests otherwise";
         throw NumOfPropNotMatchNumStrain(hint);
     }
 
-    if ( this->kStrainWasSetByProp() && this->kStrain() != initialHapToBeRead.truePanelSize() ) {
-        string hint = string(" k = ") + to_string(kStrain_) + ", flag -initialP suggests otherwise";;
+    if ( this->kStrainWasSetByProp() && this->kStrain_.getValue() != initialHapToBeRead.truePanelSize() ) {
+        string hint = string(" k = ") + to_string(kStrain_.getValue()) + ", flag -initialP suggests otherwise";;
         throw NumOfPropNotMatchNumStrain(hint);
     }
 
-    this->setKstrain(initialHapToBeRead.truePanelSize());
+    this->kStrain_.init(initialHapToBeRead.truePanelSize());
     this->setKStrainWasSetByHap(true);
 }
 
@@ -685,8 +700,8 @@ vector <double> DEploidIO::computeExpectedWsafFromInitialHap() {
     // calculate expected wsaf
     vector <double> expectedWsaf (this->initialHap.size(), 0.0);
     for ( size_t i = 0; i < this->initialHap.size(); i++ ) {
-        assert( kStrain_ == this->initialHap[i].size() );
-        for ( size_t k = 0; k < this->kStrain_; k++) {
+        assert( kStrain_.getValue() == this->initialHap[i].size() );
+        for ( size_t k = 0; k < this->kStrain_.getValue(); k++) {
             expectedWsaf[i] += this->initialHap[i][k] * finalProp[k];
         }
         assert ( expectedWsaf[i] >= 0 );
@@ -734,7 +749,7 @@ void DEploidIO::readPanel() {
 DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->setIsCopied(true);
     this->setDoExportRecombProb(cpFrom.doExportRecombProb());
-    this->setrandomSeedWasGiven(cpFrom.randomSeedWasGiven());
+    //this->setrandomSeedWasGiven(cpFrom.randomSeedWasGiven());
     this->setCompressVcf(cpFrom.compressVcf());
     this->setInitialPropWasGiven(cpFrom.initialPropWasGiven());
     this->setInitialHapWasGiven(cpFrom.initialHapWasGiven());
@@ -744,17 +759,13 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->setExcludeSites(cpFrom.excludeSites());
     this->excludedMarkers = cpFrom.excludedMarkers;
     this->panel = cpFrom.panel;
-    this->set_seed(cpFrom.randomSeed_);
     this->set_help(cpFrom.help());
     this->setVersion(cpFrom.version());
     this->setUsePanel(cpFrom.usePanel());
-    this->precision_ = cpFrom.precision_;
     this->prefix_ = cpFrom.prefix_;
-    this->setKStrainWasManuallySet(cpFrom.kStrainWasManuallySet());
     this->setKStrainWasSetByHap(cpFrom.kStrainWasSetByHap());
     this->setKStrainWasSetByProp(cpFrom.kStrainWasSetByProp());
-    this->setKstrain(cpFrom.kStrain());
-    this->nMcmcSample_ = cpFrom.nMcmcSample();
+
     this->setDoUpdateProp(cpFrom.doUpdateProp());
     this->setDoUpdatePair(cpFrom.doUpdatePair());
     this->setDoUpdateSingle(cpFrom.doUpdateSingle());
@@ -766,16 +777,12 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->setUseLasso(cpFrom.useLasso());
     this->setDoExportSwitchMissCopy(cpFrom.doExportSwitchMissCopy());
     this->setDoAllowInbreeding(cpFrom.doAllowInbreeding());
-    this->mcmcBurn_ = cpFrom.mcmcBurn_;
-    this->mcmcMachineryRate_ = cpFrom.mcmcMachineryRate_;
-    this->missCopyProb_ = cpFrom.missCopyProb_;
     this->useConstRecomb_ = cpFrom.useConstRecomb();
     this->setForbidCopyFromSame(cpFrom.forbidCopyFromSame());
     this->constRecombProb_ = cpFrom.constRecombProb();
     this->averageCentimorganDistance_ = cpFrom.averageCentimorganDistance();
     this->setScalingFactor(cpFrom.scalingFactor());
     this->setParameterG(cpFrom.parameterG());
-    this->setParameterSigma(cpFrom.parameterSigma());
     this->setIBDSigma(cpFrom.ibdSigma());
     this->setUseVcf(cpFrom.useVcf());
     this->vcfReaderPtr_ = cpFrom.vcfReaderPtr_;
@@ -802,6 +809,15 @@ DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     //this->strIbdExportProp = cpFrom.strIbdExportProp;
     //this->strIbdExportLLK = cpFrom.strIbdExportLLK;
     //this->strIbdExportHap = cpFrom.strIbdExportHap;
+
+    this->kStrain_.makeCopy(cpFrom.kStrain_);
+    this->precision_.makeCopy(cpFrom.precision_);
+    this->missCopyProb_ .makeCopy(cpFrom.missCopyProb_);
+    this->randomSeed_.makeCopy(cpFrom.randomSeed_);
+    this->nMcmcSample_.makeCopy(cpFrom.nMcmcSample_);
+    this->parameterSigma_.makeCopy(cpFrom.parameterSigma_);
+    this->mcmcBurn_.makeCopy(cpFrom.mcmcBurn_);
+    this->mcmcMachineryRate_.makeCopy(cpFrom.mcmcMachineryRate_);
 }
 
 

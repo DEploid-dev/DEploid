@@ -34,7 +34,7 @@
 #include "panel.hpp"
 #include "vcfReader.hpp"
 #include "chooseK.hpp"
-
+#include "param.hpp"
 
 #ifndef PARAM
 #define PARAM
@@ -96,11 +96,9 @@ class DEploidIO{
 
     // Log
     void wrapUp();
-    bool randomSeedWasSet() const {return this->randomSeedWasGiven_; }
 
     friend std::ostream& operator<< (std::ostream& stream, const DEploidIO& dEploidIO);
 
-    size_t randomSeed() const { return randomSeed_;}
 
 
     vector <double> plaf_;
@@ -133,10 +131,8 @@ class DEploidIO{
     void setDoUpdateProp ( const bool setTo ) { this->doUpdateProp_ = setTo; }
     void setInitialPropWasGiven(const bool setTo) {this->initialPropWasGiven_ = setTo; }
 
-    void setKstrain ( const size_t setTo ) { this->kStrain_ = setTo;}
     bool usePanel() const { return usePanel_; }
     vector <string> chrom_;
-    size_t kStrain() const { return this->kStrain_;}
     size_t lassoMaxNumPanel_;
     double acceptRatio() const { return this->acceptRatio_;}
 
@@ -145,6 +141,7 @@ class DEploidIO{
     void workflow_best();
 
   private:
+    void setBestPracticeParameters();
     void core();
     double llkFromInitialHap_;
 
@@ -157,24 +154,16 @@ class DEploidIO{
     string excludeFileName_;
     string initialHapFileName_;
     string prefix_;
-    size_t randomSeed_;
-    bool randomSeedWasGiven_;
-    void setrandomSeedWasGiven(const bool random) { this->randomSeedWasGiven_ = random; }
+
 
 
     bool initialPropWasGiven_;
     bool pleaseCheckInitialP_;
     bool initialHapWasGiven_;
-    bool kStrainWasManuallySet_;
     bool kStrainWasSetByHap_;
     bool kStrainWasSetByProp_;
     bool useConstRecomb_;
     bool forbidCopyFromSame_;
-    size_t kStrain_;
-    size_t precision_;
-    size_t nMcmcSample_;
-    size_t mcmcMachineryRate_;
-    double mcmcBurn_;
 
     bool doUpdateProp_;
     bool doUpdatePair_;
@@ -241,7 +230,17 @@ class DEploidIO{
 
 
     // Parameters
-    double missCopyProb_;
+    Parameter <size_t> kStrain_;
+    Parameter <size_t> precision_;
+    Parameter <size_t> nMcmcSample_;
+    Parameter <size_t> randomSeed_;
+    Parameter <size_t> mcmcMachineryRate_;
+    Parameter <double> mcmcBurn_;
+
+    Parameter <double> missCopyProb_;
+    Parameter <double> parameterSigma_;
+
+
     double averageCentimorganDistance_;// = 15000.0,
     //double Ne_;// = 10.0
     double constRecombProb_;
@@ -309,7 +308,6 @@ class DEploidIO{
     void readInitialProportions();
     void readInitialHaps();
 
-    void set_seed(const size_t seed) { this->randomSeed_ = seed; }
     void removeFilesWithSameName();
     vector <double> computeExpectedWsafFromInitialHap();
 
@@ -380,7 +378,6 @@ class DEploidIO{
 
     bool initialHapWasGiven() const { return initialHapWasGiven_; }
 
-    bool randomSeedWasGiven() const {return this->randomSeedWasGiven_; }
 
     void setVqslod ( const double setTo ) { this->vqslod_ = setTo; }
     double vqslod() const { return this->vqslod_; }
@@ -426,22 +423,16 @@ class DEploidIO{
     double parameterG_;
     void setParameterG ( const double setTo ) { this->parameterG_ = setTo; }
     double parameterG() const { return this->parameterG_; }
-    double parameterSigma_;
-    void setParameterSigma ( const double setTo ) { this->parameterSigma_ = setTo; }
-    double parameterSigma() const { return this->parameterSigma_; }
     double ibdSigma_;
     void setIBDSigma ( const double setTo ) { this->ibdSigma_ = setTo; }
     double ibdSigma() const {return this->ibdSigma_;}
 
     void setNLoci ( const size_t setTo ) { this->nLoci_ = setTo;}
     size_t nLoci() const { return this->nLoci_; }
-    void setKStrainWasManuallySet ( const size_t setTo ) { this->kStrainWasManuallySet_ = setTo; }
     bool kStrainWasSetByHap() const { return this->kStrainWasSetByHap_; }
     void setKStrainWasSetByHap ( const size_t setTo ) { this->kStrainWasSetByHap_ = setTo; }
-    bool kStrainWasManuallySet() const { return this->kStrainWasManuallySet_; }
     void setKStrainWasSetByProp ( const size_t setTo ) { this->kStrainWasSetByProp_ = setTo; }
     bool kStrainWasSetByProp() const { return this->kStrainWasSetByProp_; }
-    size_t nMcmcSample() const { return this->nMcmcSample_; }
     double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }
     //double Ne() const { return this->Ne_; }
     double scalingFactor() const {return this->scalingFactor_; }
