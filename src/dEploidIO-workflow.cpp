@@ -180,7 +180,7 @@ void DEploidIO::workflow_best() {
         }
     }
     normalizeBySum(this->initialProp);
-    this->setKstrain(this->initialProp.size());
+    this->kStrain_.init(this->initialProp.size());
     this->setInitialPropWasGiven(true);
 
     if (this->inferBestPracticeP()) {
@@ -219,14 +219,14 @@ void DEploidIO::workflow_best() {
         cout << endl;
         this->initialProp = initialP;
         this->finalProp = initialP;
-        this->setKstrain(initialP.size());
+        this->kStrain_.init(initialP.size());
         this->setInitialPropWasGiven(true);
         this->setDoUpdateProp(false);
         delete ibdMcmcSample;
       } else {
         this->finalProp.clear();
         this->finalProp.push_back(1.0);
-        this->setKstrain(1);
+        this->kStrain_.init(1);
       }
     }
 
@@ -241,7 +241,7 @@ void DEploidIO::workflow_best() {
       dEploidLassoIO.initialProp = this->initialProp;
       dEploidLassoIO.setDoUpdateProp(false);
       dEploidLassoIO.setInitialPropWasGiven(true);
-      dEploidLassoIO.setKstrain(this->kStrain());
+      dEploidLassoIO.kStrain_.init(this->kStrain_.getValue());
       vector < vector <double> > hap;
       for (size_t chromi = 0;
            chromi < this->indexOfChromStarts_.size();

@@ -292,7 +292,7 @@ IBDpath::IBDpath() {}
 void IBDpath::init(const DEploidIO &dEploidIO, RandomGenerator* rg) {
     this->ibdRg_ = rg;
     this->setNLoci(dEploidIO.nLoci());
-    this->setKstrain(dEploidIO.kStrain());
+    this->setKstrain(dEploidIO.kStrain_.getValue());
     this->setTheta(1.0 / static_cast<double>(kStrain()));
 
     this->IBDpathChangeAt = vector <double> (this->nLoci());

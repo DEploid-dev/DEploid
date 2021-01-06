@@ -101,7 +101,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         dEploidIO_ = new DEploidIO();
         // Since DEploid-Lasso, we set default k as 4, in order to not break the
         // tests, we set the number of strains to 5
-        dEploidIO_->setKstrain(5);
+        dEploidIO_->kStrain_.init(5);
         dEploidIO_->altCount_ = vector<double>({100, 10, 6});
         dEploidIO_->refCount_ = vector<double>({9, 10, 106});
         dEploidIO_->plaf_ = vector<double>({0.1, .4, .4});

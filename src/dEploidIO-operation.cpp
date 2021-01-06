@@ -150,8 +150,8 @@ void DEploidIO::operation_chromPainting() {
     if ( this->initialPropWasGiven() == false ) {
         clog << "Initial proportion was not specified. "
              << "Set even proportions" << endl;
-        double evenProp = 1.0 / static_cast<double>(this->kStrain());
-        for (size_t i = 0; i < this->kStrain(); i++) {
+        double evenProp = 1.0 / static_cast<double>(this->kStrain_.getValue());
+        for (size_t i = 0; i < this->kStrain_.getValue(); i++) {
             this->initialProp.push_back(evenProp);
         }
     }
@@ -182,13 +182,13 @@ void DEploidIO::operation_chromPainting() {
 
     if (this->doAllowInbreeding() == true) {
         this->panel->initializeUpdatePanel(
-            this->panel->truePanelSize()+kStrain_-1);
+            this->panel->truePanelSize()+kStrain_.getValue()-1);
     }
 
-    for ( size_t tmpk = 0; tmpk < this->kStrain_; tmpk++ ) {
+    for ( size_t tmpk = 0; tmpk < this->kStrain_.getValue(); tmpk++ ) {
         if ( this->doAllowInbreeding() == true ) {
             this->panel->updatePanelWithHaps(
-            this->panel->truePanelSize()+kStrain_-1, tmpk, this->initialHap);
+            this->panel->truePanelSize()+kStrain_.getValue()-1, tmpk, this->initialHap);
         }
 
         for (size_t chromi = 0 ;

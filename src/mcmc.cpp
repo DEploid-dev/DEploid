@@ -81,7 +81,7 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
 
     stdNorm_ = new StandNormalRandomSample(this->seed_);
 
-    this->setKstrain(this->dEploidIO_->kStrain());
+    this->setKstrain(this->dEploidIO_->kStrain_.getValue());
     this->setNLoci(this->plaf_ptr_->size());
     this->initializeMcmcChain(useIBD);
 }

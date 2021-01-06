@@ -27,7 +27,10 @@
 
 template <class T> class Parameter {
 friend class DEploidIO;
-
+#ifdef UNITTEST
+ friend class TestMcmcMachinery;
+ friend class TestIBDpath;
+#endif
  private:
     bool useDefault_;
     void setUseDefault(const bool setTo) { this->useDefault_ = setTo;}
@@ -79,7 +82,7 @@ friend class DEploidIO;
     Parameter <T> (T value) {
         this->init(value);
     }
-    T getValue();
+    T getValue () const;
     Parameter <T> (const Parameter <T> &currentParam) {
         this->makeCopy(currentParam);
     }
@@ -88,7 +91,7 @@ friend class DEploidIO;
 
 // Parameter <double> a_Parameter_class;
 
-template <class T> T Parameter<T>::getValue() {
+template <class T> T Parameter<T>::getValue() const {
     if (useUserDefined_) {
         return userDefined_;
     } else {

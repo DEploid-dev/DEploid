@@ -131,10 +131,8 @@ class DEploidIO{
     void setDoUpdateProp ( const bool setTo ) { this->doUpdateProp_ = setTo; }
     void setInitialPropWasGiven(const bool setTo) {this->initialPropWasGiven_ = setTo; }
 
-    void setKstrain ( const size_t setTo ) { this->kStrain_ = setTo;}
     bool usePanel() const { return usePanel_; }
     vector <string> chrom_;
-    size_t kStrain() const { return this->kStrain_;}
     size_t lassoMaxNumPanel_;
     double acceptRatio() const { return this->acceptRatio_;}
 
@@ -162,7 +160,6 @@ class DEploidIO{
     bool initialPropWasGiven_;
     bool pleaseCheckInitialP_;
     bool initialHapWasGiven_;
-    bool kStrainWasManuallySet_;
     bool kStrainWasSetByHap_;
     bool kStrainWasSetByProp_;
     bool useConstRecomb_;
@@ -233,8 +230,7 @@ class DEploidIO{
 
 
     // Parameters
-    size_t kStrain_;
-    //size_t precision_;
+    Parameter <size_t> kStrain_;
     Parameter <size_t> precision_;
     Parameter <size_t> nMcmcSample_;
     Parameter <size_t> randomSeed_;
@@ -433,10 +429,8 @@ class DEploidIO{
 
     void setNLoci ( const size_t setTo ) { this->nLoci_ = setTo;}
     size_t nLoci() const { return this->nLoci_; }
-    void setKStrainWasManuallySet ( const size_t setTo ) { this->kStrainWasManuallySet_ = setTo; }
     bool kStrainWasSetByHap() const { return this->kStrainWasSetByHap_; }
     void setKStrainWasSetByHap ( const size_t setTo ) { this->kStrainWasSetByHap_ = setTo; }
-    bool kStrainWasManuallySet() const { return this->kStrainWasManuallySet_; }
     void setKStrainWasSetByProp ( const size_t setTo ) { this->kStrainWasSetByProp_ = setTo; }
     bool kStrainWasSetByProp() const { return this->kStrainWasSetByProp_; }
     double averageCentimorganDistance() const { return this->averageCentimorganDistance_; }

@@ -108,11 +108,11 @@ void DEploidIO::writeLastSingleFwdProb(
         ofstreamExportFwdProb << "CHROM" << "\t" << "POS" << "\t";
         for (size_t ii = 0; ii < probabilities[0].size(); ii++) {
             if (this->doAllowInbreeding() == true) {
-                if (ii <= (panelSize - this->kStrain())) {
+                if (ii <= (panelSize - this->kStrain_.getValue())) {
                     ofstreamExportFwdProb << "P" << (ii+1);
                 } else {
                     ofstreamExportFwdProb <<
-                        "I" << (ii)-(panelSize - this->kStrain());
+                        "I" << (ii)-(panelSize - this->kStrain_.getValue());
                 }
             } else {
                 ofstreamExportFwdProb << (ii+1);

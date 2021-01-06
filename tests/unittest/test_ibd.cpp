@@ -252,7 +252,7 @@ class TestIBDpath : public CppUnit::TestCase {
         dEploidIO_ = new DEploidIO();
         dEploidIO_->altCount_ = vector<double> ({2, 100, 50, 50, 2, 2});
         dEploidIO_->refCount_ = vector<double> ({100, 2, 0, 50, 0, 2});
-        dEploidIO_->setKstrain(3);
+        dEploidIO_->kStrain_.init(3);
         dEploidIO_->plaf_ = vector<double> ({0.1, .4, .4, .3, .2, .5});
         vector < vector <int> > testPosition;
         testPosition.push_back(vector<int> ({1,2,3,4,5,6}));
@@ -269,10 +269,10 @@ class TestIBDpath : public CppUnit::TestCase {
         epsilon2 = 0.001;
         ibdPath3_ = new IBDpath;
         this->ibdPath3_->init(*dEploidIO_, rg_);
-        dEploidIO_->setKstrain(5);
+        dEploidIO_->kStrain_.init(5);
         ibdPath5_ = new IBDpath;
         this->ibdPath5_->init(*dEploidIO_, rg_);
-        dEploidIO_->setKstrain(2);
+        dEploidIO_->kStrain_.init(2);
         ibdPath2_ = new IBDpath;
         this->ibdPath2_->init(*dEploidIO_, rg_);
     }

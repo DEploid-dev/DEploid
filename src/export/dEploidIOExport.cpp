@@ -130,7 +130,7 @@ void DEploidIO::writeLog ( ostream * writeTo ) {
         (*writeTo) << setw(20) << " Initial prob: " ;
         for ( size_t i = 0; i < this->initialProp.size(); i++ ) {
             (*writeTo) << this->initialProp[i]
-                       << ( ( i != (this->kStrain_-1) ) ? " " : "\n" );
+                       << ( ( i != (this->kStrain_.getValue()-1) ) ? " " : "\n" );
         }
     }
     (*writeTo) << "\n";
@@ -162,7 +162,7 @@ void DEploidIO::writeLog ( ostream * writeTo ) {
     } else {
         (*writeTo) << "Output saved to:\n";
         if ( this->doLsPainting() ) {
-            for ( size_t i = 0; i < kStrain(); i++ ) {
+            for ( size_t i = 0; i < kStrain_.getValue(); i++ ) {
                 (*writeTo) << "Posterior probability of strain " << i << ": "<< strExportSingleFwdProbPrefix << i <<endl;
             }
         } else if (this->doIbdPainting()) {
@@ -377,7 +377,7 @@ void DEploidIO::operation_paintIBD() {
     }
 
     DEploidIO tmpDEploidIO; // (*this);
-    tmpDEploidIO.setKstrain(goodProp.size());
+    tmpDEploidIO.kStrain_.init(goodProp.size());
     tmpDEploidIO.setInitialPropWasGiven(true);
     tmpDEploidIO.initialProp = goodProp;
     tmpDEploidIO.finalProp = goodProp;
@@ -431,7 +431,7 @@ void DEploidIO::operation_paintIBDviterbi() {
     }
 
     DEploidIO tmpDEploidIO;  // (*this);
-    tmpDEploidIO.setKstrain(goodProp.size());
+    tmpDEploidIO.kStrain_.init(goodProp.size());
     tmpDEploidIO.setInitialPropWasGiven(true);
     tmpDEploidIO.initialProp = goodProp;
     tmpDEploidIO.finalProp = goodProp;

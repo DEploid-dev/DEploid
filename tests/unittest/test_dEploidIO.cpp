@@ -82,7 +82,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->usePanel(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->precision_.getValue(), (size_t)8);
         CPPUNIT_ASSERT(dEploidIOptr->prefix_ == "pf3k-dEploid");
-        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->kStrain_, (size_t)4);
+        CPPUNIT_ASSERT_EQUAL(dEploidIOptr->kStrain_.getValue(), (size_t)5);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdateProp(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdatePair(), true);
         CPPUNIT_ASSERT_EQUAL(dEploidIOptr->doUpdateSingle(), true);
@@ -206,7 +206,7 @@ class TestIO : public CppUnit::TestCase {
         CPPUNIT_ASSERT_NO_THROW(DEploidIO(16, argv1));
         CPPUNIT_ASSERT_NO_THROW(DEploidIO(14, argv1));
         DEploidIO tmp(14, argv1);
-        CPPUNIT_ASSERT_EQUAL(tmp.kStrain(), (size_t)4);
+        CPPUNIT_ASSERT_EQUAL(tmp.kStrain_.getValue(), (size_t)4);
 
         char *argv2[] = { "./dEploid",
                          "-ref", "data/testData/PG0390-C.test.ref",
