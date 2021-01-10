@@ -43,11 +43,12 @@ class TestWorkflow : public CppUnit::TestCase {
         char *argv1[] = { "./dEploid",
                          "-vcf", "data/testData/PG0390-C.test.vcf.gz",
                          "-sample", "PG0390-C", "-plafFromVcf",
-                         "-exclude", "data/testData/labStrains.test.exclude.txt.gz"
+                         "-exclude", "data/testData/labStrains.test.exclude.txt.gz",
                          "-panel", "data/testData/labStrains.test.panel.txt.gz",
                          "-best"};
         DEploidIO tmp(11, argv1);
         CPPUNIT_ASSERT_NO_THROW(tmp.workflow_best());
+        //tmp.workflow_best();
 
     }
 };
