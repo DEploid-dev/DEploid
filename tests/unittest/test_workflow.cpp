@@ -30,6 +30,9 @@
 class TestWorkflow : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE(TestWorkflow);
     CPPUNIT_TEST(testWorkflowBest);
+    CPPUNIT_TEST(testWorkflowIBD);
+    CPPUNIT_TEST(testWorkflowOriginal);
+    CPPUNIT_TEST(testWorkflowLasso);
     CPPUNIT_TEST_SUITE_END();
 
  public:
@@ -39,17 +42,48 @@ class TestWorkflow : public CppUnit::TestCase {
     void tearDown() {
     }
 
-    void testWorkflowBest(){
+    void testWorkflowBest() {
         char *argv1[] = { "./dEploid",
-                         "-vcf", "data/testData/PG0390-C.test.vcf.gz",
-                         "-sample", "PG0390-C", "-plafFromVcf",
-                         "-exclude", "data/testData/labStrains.test.exclude.txt.gz",
-                         "-panel", "data/testData/labStrains.test.panel.txt.gz",
-                         "-best"};
+                     "-vcf", "data/testData/PG0390-C.test.vcf.gz",
+                     "-sample", "PG0390-C", "-plafFromVcf",
+                     "-exclude", "data/testData/labStrains.test.exclude.txt.gz",
+                     "-panel", "data/testData/labStrains.test.panel.txt.gz",
+                     "-best"};
         DEploidIO tmp(11, argv1);
         CPPUNIT_ASSERT_NO_THROW(tmp.workflow_best());
-        //tmp.workflow_best();
+    }
 
+    void testWorkflowOriginal() {
+        char *argv1[] = { "./dEploid",
+                     "-vcf", "data/testData/PG0390-C.test.vcf.gz",
+                     "-sample", "PG0390-C", "-plafFromVcf",
+                     "-exclude", "data/testData/labStrains.test.exclude.txt.gz",
+                     "-panel", "data/testData/labStrains.test.panel.txt.gz",
+                     "-seed", "1"};
+        DEploidIO tmp(12, argv1);
+        CPPUNIT_ASSERT_NO_THROW(tmp.workflow_ibd());
+    }
+
+    void testWorkflowIBD() {
+        char *argv1[] = { "./dEploid",
+                     "-vcf", "data/testData/PG0390-C.test.vcf.gz",
+                     "-sample", "PG0390-C", "-plafFromVcf",
+                     "-exclude", "data/testData/labStrains.test.exclude.txt.gz",
+                     "-panel", "data/testData/labStrains.test.panel.txt.gz",
+                     "-ibd"};
+        DEploidIO tmp(11, argv1);
+        CPPUNIT_ASSERT_NO_THROW(tmp.workflow_ibd());
+    }
+
+    void testWorkflowLasso() {
+        char *argv1[] = { "./dEploid",
+                     "-vcf", "data/testData/PG0390-C.test.vcf.gz",
+                     "-sample", "PG0390-C", "-plafFromVcf",
+                     "-exclude", "data/testData/labStrains.test.exclude.txt.gz",
+                     "-panel", "data/testData/labStrains.test.panel.txt.gz",
+                     "-lasso"};
+        DEploidIO tmp(11, argv1);
+        CPPUNIT_ASSERT_NO_THROW(tmp.workflow_lasso());
     }
 };
 
