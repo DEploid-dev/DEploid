@@ -70,8 +70,8 @@ class TestWorkflow : public CppUnit::TestCase {
                      "-sample", "PG0390-C", "-plafFromVcf",
                      "-exclude", "data/testData/labStrains.test.exclude.txt.gz",
                      "-panel", "data/testData/labStrains.test.panel.txt.gz",
-                     "-ibd"};
-        DEploidIO tmp(11, argv1);
+                     "-k", "2", "-ibd"};
+        DEploidIO tmp(13, argv1);
         CPPUNIT_ASSERT_NO_THROW(tmp.workflow_ibd());
     }
 
