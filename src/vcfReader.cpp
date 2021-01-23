@@ -416,18 +416,16 @@ void VariantLine::extract_field_FORMAT() {
 }
 
 
-int maybe_dot_to_integer(const string& s)
-{
+int maybe_dot_to_integer(const string& s) {
     if (s == ".")
         return 0;
     else
         return stoi(s);
 }
 
-int n_fields(const string& s, char delim=',')
-{
+int n_fields(const string& s, char delim = ',') {
     int count = 0;
-    for(auto ch: s)
+    for (auto ch : s)
         if (ch == delim)
             count++;
     return count+1;
@@ -444,13 +442,15 @@ void VariantLine::extract_field_VARIANT() {
         if (field_index == adFieldIndex_) {
             string adStr = this->tmpStr_.substr(feild_start,
                                                 field_end-feild_start);
-            try
-            {
+            try {
                 int n = n_fields(adStr);
                 if (n != 2)
-                    throw std::runtime_error("there should be exactly 2 AD entries, but found " + std::to_string(n) + ".\n   Wrong number of ALT alleles!.");
+                    throw std::runtime_error(
+                        "there should be exactly 2 AD entries, but found " +
+                        std::to_string(n) +
+                        ".\n   Wrong number of ALT alleles!.");
 
-                size_t commaIndex = adStr.find(',',0);
+                size_t commaIndex = adStr.find(',', 0);
                 auto ref_AD = adStr.substr(0, commaIndex);
                 auto alt_AD = adStr.substr(commaIndex+1, adStr.size());
 
@@ -458,9 +458,9 @@ void VariantLine::extract_field_VARIANT() {
                 alt = maybe_dot_to_integer(alt_AD);
                 break;
             }
-            catch(std::exception& e)
-            {
-                std::cerr<<"Error parsing vcf AD field: '"<<adStr<<"':  "<<e.what()<<"\n";
+            catch (std::exception& e) {
+                std::cerr << "Error parsing vcf AD field: '"
+                          << adStr << "':  " << e.what() << "\n";
                 exit(1);
             }
         }
