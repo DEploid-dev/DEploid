@@ -33,7 +33,14 @@ To compute the PLAF at each site, we simply take the ratio of *the sum of altern
 
 Since DEploid-BestPractice, we offer new DEploid functionality --- extracting PLAF from the VCF file, enabled by the flag `-plafFromVcf`. It will then extract the Allele Frequency (AF) attribute from the INFO field.
 
-NOTE: To archive a good deconvolution result, prior knowledge of an appropriate PLAF or reference haplotypes are important. I would still recommand to go through the manual computation process when possible. 
+NOTE: To archive a good deconvolution result, prior knowledge of an appropriate PLAF or reference haplotypes are important. I would still recommand to go through the manual computation process when possible.
+
+
+What reference panel should I use?
+----------------------------------
+
+1. Definitely use the clonal strains from your own study. Identifying the clonal strains, and inferring their haplotypes would be step one.
+2. Consider to use the clonal strains from the Pf3k or Pf6 dataset as well.
 
 
 Data filtering
