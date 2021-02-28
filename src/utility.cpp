@@ -78,19 +78,22 @@ double sumOfMat(const vector <vector <double> > & matrix ){
 }
 
 
-void normalizeBySum(vector <double> & array ){
+double normalizeBySum(vector <double> & array ) {
     double sumOfArray = sumOfVec(array);
-    for( vector<double>::iterator it = array.begin(); it != array.end(); ++it) {
-        *it /= sumOfArray;
-    }
+
+    for ( auto& x : array )
+        x /= sumOfArray;
+
+    return sumOfArray;
 }
 
 
-void normalizeByMax(vector <double> & array ){
+double normalizeByMax(vector <double> & array ){
     double maxOfArray = max_value(array);
-    for( vector<double>::iterator it = array.begin(); it != array.end(); ++it) {
-        *it /= maxOfArray;
-    }
+    for ( auto& x: array )
+        x /= maxOfArray;
+
+    return maxOfArray;
 }
 
 
