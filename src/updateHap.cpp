@@ -239,7 +239,7 @@ void UpdateSingleHap::buildEmissionBasicVersion( double missCopyProb ) {
 }
 
 
-void UpdateSingleHap::calcFwdProbs() {
+double UpdateSingleHap::calcFwdProbs() {
     size_t hapIndex = this->segmentStartIndex_;
     assert ( this->fwdProbs_.size() == 0 );
     vector <double> fwd1st (this->nPanel_, 0.0);
@@ -251,6 +251,7 @@ void UpdateSingleHap::calcFwdProbs() {
 
     //double inbreedProb = 0.0;
 
+    double log_prob = 0;
     for ( size_t j = 1; j < this->nLoci_; j++ ) {
         double pRecEachHap = this->panel_->pRecEachHap_[hapIndex];
         double pNoRec = this->panel_->pNoRec_[hapIndex];
@@ -266,10 +267,25 @@ void UpdateSingleHap::calcFwdProbs() {
                 //fwdTmp[i] = this->emission_[j][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec);
             //}
         }
-        (void)normalizeBySum(fwdTmp);
+        double sum = normalizeBySum(fwdTmp);
         this->fwdProbs_.push_back(fwdTmp);
+
+        // Multiply the normalization factors.
+        log_prob += log(sum);
     }
     assert ( this->fwdProbs_.size() == nLoci_ );
+
+    // Let D = ref/alt count data, H = all haplotypes, and h1 = the selected haplotype, W = haplotype weights.
+    // We would like to sum Pr(D|H,W)*Pr(h1|panel) over all values of h1.
+    // This includes (1) the probability of the data and (2) the probability of h1,
+    //   but does NOT include the probability of other haplotypes h2, h3, etc.
+
+    // With NO normalization, we just need to sum the last column.
+    // WITH normalization, we need to sum the last column, and then multiply by all the factors we have divided by.
+    // But since the last column sums to 1.0, we just need to multiply all the scaling factors.
+    // Finally, we should return the log, since otherwise the probability may underflow.
+
+    return log_prob;
 }
 
 
