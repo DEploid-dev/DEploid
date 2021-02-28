@@ -144,12 +144,18 @@ class McmcMachinery {
     double PROP_SCALE;
 
     size_t currentMcmcIteration_;
+
+    /* MCMC State */
     vector <double> currentTitre_;
+    vector < vector <double> > currentHap_;
+
+    /* Cached computations of MCMC state */
     double currentLogPriorTitre_;
     vector <double> currentProp_;
     vector <double> currentLLks_;
-    vector < vector <double> > currentHap_;
     vector < double > currentExpectedWsaf_;
+
+    /* Statistics */
     vector < double > cumExpectedWsaf_;
 
     /* Methods */
