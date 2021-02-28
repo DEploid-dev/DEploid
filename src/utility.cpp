@@ -24,6 +24,7 @@
  */
 
 #include "utility.hpp"
+#include "exceptions.hpp"  // ShouldNotBeCalled()
 #include <iterator>     // std::distance
 #include <algorithm> // find
 #include "codeCogs/loggammasum.h" // which includes log_gamma.h
@@ -137,25 +138,18 @@ double calcLLK( double ref, double alt, double unadjustedWsaf, double err, doubl
 
 
 size_t sampleIndexGivenProp ( RandomGenerator* rg, vector <double> proportion ){
-    #ifndef NDEBUG
-        auto biggest = std::max_element(std::begin(proportion), std::end(proportion));
-        return std::distance(proportion.begin(), biggest);
-    #else
-        vector <size_t> tmpIndex;
-        for ( size_t i = 0; i < proportion.size(); i++ ){
-            tmpIndex.push_back(i);
-        }
-        vector <double> tmpCdf = computeCdf(proportion);
 
-        double u = rg->sample();
-        size_t i = 0;
-        for ( ; i < tmpCdf.size() ; i++){
-            if ( u < tmpCdf[i] ){
-                break;
-            }
-        }
-        return i;
-    #endif
+    assert( std::abs( sumOfVec(proportion) - 1.0 ) < 1.0e-9 );
+
+    double u = rg->sample();
+    double cum_sum = 0;
+    for ( size_t i=0; i < proportion.size() ; i++) {
+        cum_sum += proportion[i];
+        if (u < cum_sum)
+            return i;
+    }
+
+    throw ShouldNotBeCalled();
 }
 
 
