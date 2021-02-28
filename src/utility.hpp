@@ -78,7 +78,7 @@ vector <T> vecProd(const vector<T> &vecA,
 
 
 template <typename T>
-T sumOfVec(vector <T>& array ) {
+T sumOfVec(const vector <T>& array ) {
     T tmp = 0;
     for (auto const& value : array) {
         tmp += value;
