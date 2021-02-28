@@ -111,8 +111,8 @@ double min_value(vector <double> x);
 double max_value(vector <double> x);
 vector <double> computeCdf(const vector <double> & dist);
 double sumOfMat(const vector <vector <double> > & matrix);
-void normalizeBySum(vector <double> & array);
-void normalizeByMax(vector <double> & array);
+double normalizeBySum(vector <double> & array);
+double normalizeByMax(vector <double> & array);
 void normalizeBySumMat(vector <vector <double> > & matrix);
 vector <double> calcLLKs(const vector <double> &refCount,
     const vector <double> &altCount,
