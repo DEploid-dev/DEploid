@@ -156,7 +156,7 @@ class UpdateSingleHap : public UpdateHap{
     void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
     void buildEmission( double missCopyProb );
     void buildEmissionBasicVersion( double missCopyProb );
-    void calcFwdProbs();
+    double calcFwdProbs();
     void calcBwdProbs();
     void calcFwdBwdProbs();
     void samplePaths();
