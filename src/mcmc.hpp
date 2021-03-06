@@ -225,6 +225,8 @@ class McmcMachinery {
     void updateSingleHap(Panel *useThisPanel);
     void findUpdatingStrainSingle();
 
+    void updateProportionAndSingleHap(Panel *useThisPanel);
+
     void updatePairHaps(Panel *useThisPanel);
     /* vector <size_t> sampleNoReplace(MersenneTwister* rg,
      *         vector <double> & proportion, size_t nSample );
