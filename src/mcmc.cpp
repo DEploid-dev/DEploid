@@ -698,6 +698,31 @@ void McmcMachinery::updateSingleHap(Panel *useThisPanel) {
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
+double McmcMachinery::proposeProportion() {
+
+    if ( this->kStrain_ < 2 ) {
+        dout << "(failed)" << endl;
+        return 0;
+    }
+
+    // Propose a new titre
+    this->currentTitre_ = this->calcTmpTitre();
+
+    // Recompute cached values that depend on the titre
+    this->currentProp_ = this->titre2prop(this->currentTitre_);
+    this->currentExpectedWsaf_ = calcExpectedWsaf(this->currentProp_);
+    this->currentLLks_ = calcLLKs (*this->refCount_ptr_, *this->altCount_ptr_, this->currentExpectedWsaf_, 0, this->currentExpectedWsaf_.size(), this->dEploidIO_->scalingFactor());
+    this->currentLogPriorTitre_ = calcLogPriorTitre( this->currentTitre_ );
+
+    if ( min_value(this->currentProp_) < 0 || max_value(this->currentProp_) > 1 ) {
+        dout << "(failed)" << endl;
+        return 0;
+    }
+
+    // Hastings Ratio
+    return 1.0;
+}
+
 void McmcMachinery::updateProportionAndSingleHap(Panel *useThisPanel) {
     dout << " Attempt of update proportion and single haplotype";
 
