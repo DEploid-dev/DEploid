@@ -221,6 +221,7 @@ class McmcMachinery {
     void updateSingleHap(Panel *useThisPanel);
     int findUpdatingStrainSingle();
 
+    double proposeProportion();
     void updateProportionAndSingleHap(Panel *useThisPanel);
 
     void updatePairHaps(Panel *useThisPanel);
