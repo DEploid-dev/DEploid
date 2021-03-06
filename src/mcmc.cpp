@@ -698,6 +698,49 @@ void McmcMachinery::updateSingleHap(Panel *useThisPanel) {
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
+void McmcMachinery::updateProportionAndSingleHap(Panel *useThisPanel) {
+    dout << " Attempt of update proportion and single haplotype";
+
+    if ( this->kStrain_ < 2 ) {
+        dout << "(failed)" << endl;
+        return;
+    }
+
+    // calculate dt
+    vector <double> tmpTitre = calcTmpTitre();
+    vector <double> tmpProp = titre2prop(tmpTitre);
+
+    if ( min_value(tmpProp) < 0 || max_value(tmpProp) > 1 ) {
+        dout << "(failed)" << endl;
+        return;
+    }
+
+    vector <double> tmpExpecedWsaf = calcExpectedWsaf(tmpProp);
+    vector <double> tmpLLKs = calcLLKs (*this->refCount_ptr_, *this->altCount_ptr_, tmpExpecedWsaf, 0, tmpExpecedWsaf.size(), this->dEploidIO_->scalingFactor());
+    double diffLLKs = this->deltaLLKs(tmpLLKs);
+    double tmpLogPriorTitre = calcLogPriorTitre( tmpTitre );
+    double priorPropRatio = exp(tmpLogPriorTitre - this->currentLogPriorTitre_ );
+    double hastingsRatio = 1.0;
+
+    //runif(1)<prior.prop.ratio*hastings.ratio*exp(del.llk))
+    if ( this->propRg_->sample() > priorPropRatio*hastingsRatio*exp(diffLLKs) ) {
+        dout << "(failed)" << endl;
+        return;
+    }
+
+    dout << "(successed) " << endl;
+    this->acceptUpdate++;
+
+    this->currentExpectedWsaf_ = tmpExpecedWsaf;
+    this->currentLLks_ = tmpLLKs;
+    this->currentLogPriorTitre_ = tmpLogPriorTitre;
+    this->currentTitre_ = tmpTitre;
+    this->currentProp_ = tmpProp;
+
+    assert (doutProp());
+}
+
+
 
 void McmcMachinery::updatePairHaps(Panel *useThisPanel) {
     if ( this->kStrain() == 1 ) {
