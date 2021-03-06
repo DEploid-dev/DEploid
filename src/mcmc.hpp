@@ -169,7 +169,7 @@ class McmcMachinery {
     void initializeExpectedWsaf();
 
     vector <double> calcExpectedWsaf(const vector <double> &proportion);
-    vector <double> titre2prop(const vector <double> &tmpTitre);
+    static vector <double> titre2prop(const vector <double> &tmpTitre);
 
     double calcLogPriorTitre(const vector <double> &tmpTitre);
     double rBernoulli(double p);
