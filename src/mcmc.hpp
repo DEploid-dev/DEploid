@@ -121,10 +121,6 @@ class McmcMachinery {
     size_t McmcMachineryRate_;
     int eventInt_;
 
-    size_t strainIndex_;
-    size_t strainIndex1_;
-    size_t strainIndex2_;
-
     size_t seed_;
     RandomGenerator* hapRg_;
     RandomGenerator* mcmcEventRg_;
@@ -217,13 +213,13 @@ class McmcMachinery {
     double deltaLLKs(const vector <double> &newLLKs);
 
     void updateSingleHap(Panel *useThisPanel);
-    void findUpdatingStrainSingle();
+    int findUpdatingStrainSingle();
 
     void updatePairHaps(Panel *useThisPanel);
     /* vector <size_t> sampleNoReplace(MersenneTwister* rg,
      *         vector <double> & proportion, size_t nSample );
      */
-    void findUpdatingStrainPair();
+    std::pair<int,int> findUpdatingStrainPair();
 
     /* Debug */
     bool doutProp();
