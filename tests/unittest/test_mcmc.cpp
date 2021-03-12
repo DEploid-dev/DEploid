@@ -71,8 +71,8 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         mcmcMachinery_->kStrain_ = kStrain;
         vector <double> counter(kStrain, 0.0);
         for(size_t i = 0 ; i < nRepeat; i++) {
-            mcmcMachinery_->findUpdatingStrainSingle();
-            counter[mcmcMachinery_->strainIndex_] += 1.0 ;
+            int strainIndex = mcmcMachinery_->findUpdatingStrainSingle();
+            counter[strainIndex] += 1.0 ;
         }
         for(size_t i = 0 ; i < kStrain; i++) {
             CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0/(double)kStrain, counter[i]/(double)nRepeat, epsilon1);
@@ -83,10 +83,10 @@ class TestMcmcMachinery: public CppUnit::TestCase {
         mcmcMachinery_->kStrain_ = kStrain;
         vector <double> counter(kStrain, 0.0);
         for(size_t i = 0 ; i < nRepeat; i++) {
-            mcmcMachinery_->findUpdatingStrainPair();
-            counter[mcmcMachinery_->strainIndex1_] += 1.0 ;
-            counter[mcmcMachinery_->strainIndex2_] += 1.0 ;
-            CPPUNIT_ASSERT(mcmcMachinery_->strainIndex1_ != mcmcMachinery_->strainIndex2_);
+            auto [strainIndex1, strainIndex2] = mcmcMachinery_->findUpdatingStrainPair();
+            counter[strainIndex1] += 1.0 ;
+            counter[strainIndex2] += 1.0 ;
+            CPPUNIT_ASSERT(strainIndex1 != strainIndex2);
         }
         for(size_t i = 0 ; i < kStrain; i++) {
             CPPUNIT_ASSERT_DOUBLES_EQUAL(2.0/(double)kStrain, counter[i]/(double)nRepeat, epsilon1);

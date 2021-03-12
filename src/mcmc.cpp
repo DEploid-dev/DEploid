@@ -656,10 +656,10 @@ vector <double> McmcMachinery::calcTmpTitre() {
 
 void McmcMachinery::updateSingleHap(Panel *useThisPanel) {
     dout << " Update Single Hap "<<endl;
-    this->findUpdatingStrainSingle();
+    int strainIndex = this->findUpdatingStrainSingle();
 
     if ( this->dEploidIO_->doAllowInbreeding() == true ) {
-        this->updateReferencePanel(this->panel_->truePanelSize()+kStrain_-1, this->strainIndex_);
+        this->updateReferencePanel(this->panel_->truePanelSize()+kStrain_-1, strainIndex);
     }
 
     for ( size_t chromi = 0 ; chromi < this->dEploidIO_->indexOfChromStarts_.size(); chromi++ ) {
@@ -673,7 +673,7 @@ void McmcMachinery::updateSingleHap(Panel *useThisPanel) {
                                   this->currentProp_, this->currentHap_, this->hapRg_,
                                   start, length,
                                   useThisPanel, this->dEploidIO_->missCopyProb_.getValue(), this->dEploidIO_->scalingFactor(),
-                                  this->strainIndex_);
+                                  strainIndex);
 
         if ( this->dEploidIO_->doAllowInbreeding() == true ) {
             updating.setPanelSize(this->panel_->inbreedingPanelSize());
@@ -683,7 +683,7 @@ void McmcMachinery::updateSingleHap(Panel *useThisPanel) {
 
         size_t updateIndex = 0;
         for ( size_t ii = start ; ii < (start+length); ii++ ) {
-            this->currentHap_[ii][this->strainIndex_] = updating.hap_[updateIndex];
+            this->currentHap_[ii][strainIndex] = updating.hap_[updateIndex];
             this->currentLLks_[ii] = updating.newLLK[updateIndex];
             updateIndex++;
         }
@@ -705,7 +705,8 @@ void McmcMachinery::updatePairHaps(Panel *useThisPanel) {
     }
 
     dout << " Update Pair Hap "<<endl;
-    this->findUpdatingStrainPair();
+
+    auto [strainIndex1, strainIndex2] = this->findUpdatingStrainPair();
 
     for ( size_t chromi = 0 ; chromi < this->dEploidIO_->indexOfChromStarts_.size(); chromi++ ) {
         size_t start = this->dEploidIO_->indexOfChromStarts_[chromi];
@@ -720,15 +721,15 @@ void McmcMachinery::updatePairHaps(Panel *useThisPanel) {
                                 start, length,
                                 useThisPanel, this->dEploidIO_->missCopyProb_.getValue(), this->dEploidIO_->scalingFactor(),
                                 this->dEploidIO_->forbidCopyFromSame(),
-                                this->strainIndex1_,
-                                this->strainIndex2_);
+                                strainIndex1,
+                                strainIndex2);
 
         updating.core(*this->refCount_ptr_, *this->altCount_ptr_, *this->plaf_ptr_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
 
         size_t updateIndex = 0;
         for ( size_t ii = start ; ii < (start+length); ii++ ) {
-            this->currentHap_[ii][this->strainIndex1_] = updating.hap1_[updateIndex];
-            this->currentHap_[ii][this->strainIndex2_] = updating.hap2_[updateIndex];
+            this->currentHap_[ii][strainIndex1] = updating.hap1_[updateIndex];
+            this->currentHap_[ii][strainIndex2] = updating.hap2_[updateIndex];
             this->currentLLks_[ii] = updating.newLLK[updateIndex];
             updateIndex++;
         }
@@ -749,15 +750,15 @@ void McmcMachinery::updatePairHaps(Panel *useThisPanel) {
 }
 
 
-void McmcMachinery::findUpdatingStrainSingle( ) {
+int McmcMachinery::findUpdatingStrainSingle( ) {
     vector <double> eventProb (this->kStrain_, 1);
     (void)normalizeBySum(eventProb);
-    this->strainIndex_ = sampleIndexGivenProp ( this->mcmcEventRg_, eventProb );
-    dout << "  Updating hap: "<< this->strainIndex_ <<endl;
+    int k = sampleIndexGivenProp ( this->mcmcEventRg_, eventProb );
+    dout << "  Updating hap: "<< k <<endl;
+    return k;
 }
 
-
-void McmcMachinery::findUpdatingStrainPair( ) {
+std::pair<int,int> McmcMachinery::findUpdatingStrainPair( ) {
     vector <size_t> strainIndex (2, 0);
     int t = 0; // total input records dealt with
     int m = 0; // number of items selected so far
@@ -771,9 +772,9 @@ void McmcMachinery::findUpdatingStrainPair( ) {
         }
         t++;
     }
-
-    this->strainIndex1_ = strainIndex[0];
-    this->strainIndex2_ = strainIndex[1];
-    assert( strainIndex1_ != strainIndex2_ );
-    dout << "  Updating hap: "<< this->strainIndex1_ << " and " << strainIndex2_ <<endl;
+    int k1 = strainIndex[0];
+    int k2 = strainIndex[1];
+    assert( k1 != k2 );
+    dout << "  Updating hap: "<< k1 << " and " << k2 <<endl;
+    return { k1, k2 };
 }
