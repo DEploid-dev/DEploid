@@ -27,6 +27,8 @@
 #include <algorithm>    // std::reverse
 #include <cstdlib>      // div
 
+using std::pair;
+
 UpdateHap::~UpdateHap() {}
 
 UpdateHap::UpdateHap( vector <double> &refCount,
@@ -86,26 +88,32 @@ UpdateSingleHap::UpdateSingleHap( vector <double> &refCount,
 }
 
 
-void UpdateSingleHap::core(vector <double> &refCount,
-                           vector <double> &altCount,
-                           vector <double> &plaf,
-                           vector <double> &expectedWsaf,
-                           vector <double> &proportion,
-                           vector < vector <double> > &haplotypes ) {
+double
+UpdateSingleHap::core(vector <double> &refCount,
+                      vector <double> &altCount,
+                      vector <double> &plaf,
+                      vector <double> &expectedWsaf,
+                      vector <double> &proportion,
+                      vector < vector <double> > &haplotypes ) {
 
     this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
     this->calcHapLLKs(refCount, altCount);
 
+    double log_pr = 0;
+
     if ( this->panel_ != NULL ) {
         this->buildEmission( this->missCopyProb_ );
-        this->calcFwdProbs();
+        log_pr = this->calcFwdProbs();
         this->samplePaths();
         this->addMissCopying( this->missCopyProb_ );
     } else {
+        log_pr = 0; // ???
         this->sampleHapIndependently(plaf);
     }
 
     this->updateLLK();
+
+    return log_pr;
 }
 
 
@@ -410,24 +418,30 @@ UpdatePairHap::UpdatePairHap( vector <double> &refCount,
 }
 
 
-void UpdatePairHap::core(vector <double> &refCount,
-                           vector <double> &altCount,
-                           vector <double> &plaf,
-                           vector <double> &expectedWsaf,
-                           vector <double> &proportion,
-                           vector < vector <double> > &haplotypes) {
+double
+UpdatePairHap::core(vector <double> &refCount,
+                    vector <double> &altCount,
+                    vector <double> &plaf,
+                    vector <double> &expectedWsaf,
+                    vector <double> &proportion,
+                    vector < vector <double> > &haplotypes) {
+
+    double log_pr = 0;
 
     this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
     this->calcHapLLKs(refCount, altCount);
     if ( this->panel_ != NULL ) {
         this->buildEmission(this->missCopyProb_);
-        this->calcFwdProbs(this->forbidCopyFromSame_);
+        /* log_pr = */ this->calcFwdProbs(this->forbidCopyFromSame_);
         this->samplePaths();
         this->addMissCopying(this->missCopyProb_);
     } else {
+        // log_pr = ???;
         this->sampleHapIndependently( plaf );
     }
     this->updateLLK();
+
+    return log_pr;
 }
 
 

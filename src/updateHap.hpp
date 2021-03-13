@@ -25,6 +25,7 @@
 
 #include <vector>
 #include <iostream>
+#include <utility>
 #include "utility.hpp"
 #include "panel.hpp"
 
@@ -84,12 +85,12 @@ class UpdateHap{
     void setScalingFactor ( const double setTo ) { this->scalingFactor_ = setTo; }
 
     // Methods
-    virtual void core(vector <double> &refCount,
-                           vector <double> &altCount,
-                           vector <double> &plaf,
-                           vector <double> &expectedWsaf,
-                           vector <double> &proportion,
-                           vector < vector <double> > &haplotypes ) = 0;
+    virtual double core(vector <double> &refCount,
+                        vector <double> &altCount,
+                        vector <double> &plaf,
+                        vector <double> &expectedWsaf,
+                        vector <double> &proportion,
+                        vector < vector <double> > &haplotypes ) = 0;
     virtual void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes) = 0;
     virtual void calcHapLLKs( vector <double> &refCount, vector <double> &altCount) = 0;
     virtual void buildEmission( double missCopyProb ) = 0;
@@ -141,12 +142,12 @@ class UpdateSingleHap : public UpdateHap{
     vector <int> hap_;
 
     // Methods
-    void core( vector <double> &refCount,
-               vector <double> &altCount,
-               vector <double> &plaf,
-               vector <double> &expectedWsaf,
-               vector <double> &proportion,
-               vector < vector <double> > &haplotypes );
+    double core( vector <double> &refCount,
+                 vector <double> &altCount,
+                 vector <double> &plaf,
+                 vector <double> &expectedWsaf,
+                 vector <double> &proportion,
+                 vector < vector <double> > &haplotypes );
     void painting( vector <double> &refCount,
                    vector <double> &altCount,
                    vector <double> &expectedWsaf,
@@ -214,12 +215,12 @@ class UpdatePairHap : public UpdateHap{
     vector <double> hap2_;
 
     // Methods
-    void core(vector <double> &refCount,
-                           vector <double> &altCount,
-                           vector <double> &plaf,
-                           vector <double> &expectedWsaf,
-                           vector <double> &proportion,
-                           vector < vector <double> > &haplotypes );
+    double core(vector <double> &refCount,
+                vector <double> &altCount,
+                vector <double> &plaf,
+                vector <double> &expectedWsaf,
+                vector <double> &proportion,
+                vector < vector <double> > &haplotypes );
 
     void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
     void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
