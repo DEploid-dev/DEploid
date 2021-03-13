@@ -343,7 +343,7 @@ void UpdateSingleHap::sampleHapIndependently( vector <double> &plaf ) {
         vector <double> tmpDist ( {exp(llk0_[i] - tmpMax) * (1.0-plaf[plafIndex]),
                                    exp(llk1_[i] - tmpMax) * plaf[plafIndex] } );
         (void)normalizeBySum(tmpDist);
-        this->hap_.push_back ( (double)sampleIndexGivenProp(this->recombRg_, tmpDist) );
+        this->hap_.push_back ( sampleIndexGivenProp(this->recombRg_, tmpDist) );
         plafIndex++;
     }
     assert ( this->hap_.size() == this->nLoci_ );
