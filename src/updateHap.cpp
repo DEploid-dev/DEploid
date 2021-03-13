@@ -364,9 +364,13 @@ double UpdateSingleHap::sampleHapIndependently( vector <double> &plaf ) {
     size_t plafIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < this->nLoci_; i++) {
         double tmpMax = max_value ( vector <double> ( {llk0_[i], llk1_[i]} ) ) ;
+        log_pr += tmpMax;
+
         vector <double> tmpDist ( {exp(llk0_[i] - tmpMax) * (1.0-plaf[plafIndex]),
                                    exp(llk1_[i] - tmpMax) * plaf[plafIndex] } );
-        (void)normalizeBySum(tmpDist);
+        double sum = normalizeBySum(tmpDist);
+        log_pr += log(sum);
+
         this->hap_.push_back ( sampleIndexGivenProp(this->recombRg_, tmpDist) );
         plafIndex++;
     }
