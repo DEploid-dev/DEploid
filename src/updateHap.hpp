@@ -137,8 +137,8 @@ class UpdateSingleHap : public UpdateHap{
     vector <double> llk0_;
     vector <double> llk1_;
 
-    vector <double> path_;
-    vector <double> hap_;
+    vector <int> path_;
+    vector <int> hap_;
 
     // Methods
     void core( vector <double> &refCount,
