@@ -723,46 +723,111 @@ double McmcMachinery::proposeProportion() {
     return 1.0;
 }
 
-void McmcMachinery::updateProportionAndSingleHap(Panel *useThisPanel) {
-    dout << " Attempt of update proportion and single haplotype";
+double
+McmcMachinery::resampleSingleHap(Panel *useThisPanel, int strainIndex) {
+    dout << " Resample Single Hap: "<<strainIndex<<endl;
 
-    if ( this->kStrain_ < 2 ) {
-        dout << "(failed)" << endl;
-        return;
+    double log_total_pr = 0;
+
+    for ( size_t chromi = 0 ; chromi < this->dEploidIO_->indexOfChromStarts_.size(); chromi++ ) {
+        size_t start = this->dEploidIO_->indexOfChromStarts_[chromi];
+        size_t length = this->dEploidIO_->position_[chromi].size();
+        dout << "   Update Chrom with index " << chromi << ", starts at "<< start << ", with " << length << " sites" << endl;
+        UpdateSingleHap updating( *this->refCount_ptr_,
+                                  *this->altCount_ptr_,
+                                  *this->plaf_ptr_,
+                                  this->currentExpectedWsaf_,
+                                  this->currentProp_, this->currentHap_, this->hapRg_,
+                                  start, length,
+                                  useThisPanel, this->dEploidIO_->missCopyProb_.getValue(), this->dEploidIO_->scalingFactor(),
+                                  strainIndex);
+
+        if ( this->dEploidIO_->doAllowInbreeding() == true ) {
+            updating.setPanelSize(this->panel_->inbreedingPanelSize());
+        }
+
+        double log_pr = updating.core ( *this->refCount_ptr_, *this->altCount_ptr_, *this->plaf_ptr_, this->currentExpectedWsaf_, this->currentProp_, this->currentHap_);
+        log_total_pr += log_pr;
+
+        size_t updateIndex = 0;
+        for ( size_t ii = start ; ii < (start+length); ii++ ) {
+            this->currentHap_[ii][strainIndex] = updating.hap_[updateIndex];
+            this->currentLLks_[ii] = updating.newLLK[updateIndex];
+            updateIndex++;
+        }
+
+        for (size_t siteI = 0; siteI< length; siteI++) {
+            this->mcmcSample_->siteOfOneSwitchOne[start+siteI] += updating.siteOfOneSwitchOne[siteI];
+            this->mcmcSample_->siteOfOneMissCopyOne[start+siteI] += updating.siteOfOneMissCopyOne[siteI];
+            this->mcmcSample_->siteOfOneSwitchOne[start+siteI] = updating.siteOfOneSwitchOne[siteI];
+            this->mcmcSample_->siteOfOneMissCopyOne[start+siteI] = updating.siteOfOneMissCopyOne[siteI];
+        }
+    }
+    this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
+
+    return log_total_pr;
+}
+
+bool McmcMachinery::updateProportionAndSingleHap(Panel *useThisPanel) {
+
+    // 1. The MCMC state should probably not be fused with the rest of McmcMachinery. 
+    //      Un-fuse them.
+    // 2. Implement copy-on-write semantics for the MCMC state to make copying the state efficient
+    //      when (for example) the haplotypes don't change.
+    // 3. Implement prior(), likelihood(), and probability() methods.
+    // 4. Define a generic proposal as std::function<double(McmcState&)>
+    //      that returns the Hastings ratio.
+    // 5. Define a generic MH function that takes a proposal function as an argument.
+    // 6. Make a safer interface to cached summary statistics such as
+    //      currentProp_, currentExpectedWsaf_, currentLLks_, and currentLogPriorTitre
+    // 7. Implement a log_double_t type (i.e. store the log, but convert to double on demand.)
+    // 8. Implement inline functions for:
+    //      emission(x,y)
+
+    // To implement the move:
+    //   * implement my own probability calculations instead of using any of the cached values.
+    //   * eliminate caching the proportions?  Caching these can't actually save much time.
+
+    // 1. What do we need to do to handle inbreeding?
+    if ( this->dEploidIO_->doAllowInbreeding() ) return false;
+
+    // 2. Propose the new weight vector.
+    auto& state1 = *this;
+    auto state2 = state1;     // Copying the MCMC state in this way is inefficient but correct.
+    double hastings_ratio = state2.proposeProportion();
+
+    // 3. Select the strain to resample
+    int strainIndex = findUpdatingStrainSingle();
+
+    // 4. Resample the selected strain's haplotype, and compute the total probabilities.
+    auto log_total_prob1 = state1.resampleSingleHap(useThisPanel, strainIndex);
+    auto log_total_prob2 = state2.resampleSingleHap(useThisPanel, strainIndex);
+
+    // 5. Compute the Metropolis-Hastings acceptance ratio
+    double log_pr1 = log_total_prob1 + state1.currentLogPriorTitre_;
+    double log_pr2 = log_total_prob2 + state2.currentLogPriorTitre_;
+    double acceptance_ratio = log(hastings_ratio) + log_pr2 - log_pr1;
+
+    // 6. Checks: not implemented yet!
+
+    // 6a. Maybe we want to actually compute the prior(), likelihood(), and probability().
+    //     This includes the probability of sampling the OTHER haplotypes.
+
+    // 6b. Probably we ALSO want to check that:
+    //       (state2.probability() / this->probability()) * hastings_ratio * (pr_choose(1)/pr_choose(0)) * (pr_sample(1)/pr_sample(0)) = 1.0
+
+    // 7. Actually perform the move.
+
+    // Do we need to make a new Rg for this move?
+    double U = this->propRg_->sample();
+
+    bool accept = (acceptance_ratio > 0 or log(U) < acceptance_ratio);
+    if (accept)
+    {
+        *this = state2;
     }
 
-    // calculate dt
-    vector <double> tmpTitre = calcTmpTitre();
-    vector <double> tmpProp = titre2prop(tmpTitre);
-
-    if ( min_value(tmpProp) < 0 || max_value(tmpProp) > 1 ) {
-        dout << "(failed)" << endl;
-        return;
-    }
-
-    vector <double> tmpExpecedWsaf = calcExpectedWsaf(tmpProp);
-    vector <double> tmpLLKs = calcLLKs (*this->refCount_ptr_, *this->altCount_ptr_, tmpExpecedWsaf, 0, tmpExpecedWsaf.size(), this->dEploidIO_->scalingFactor());
-    double diffLLKs = this->deltaLLKs(tmpLLKs);
-    double tmpLogPriorTitre = calcLogPriorTitre( tmpTitre );
-    double priorPropRatio = exp(tmpLogPriorTitre - this->currentLogPriorTitre_ );
-    double hastingsRatio = 1.0;
-
-    //runif(1)<prior.prop.ratio*hastings.ratio*exp(del.llk))
-    if ( this->propRg_->sample() > priorPropRatio*hastingsRatio*exp(diffLLKs) ) {
-        dout << "(failed)" << endl;
-        return;
-    }
-
-    dout << "(successed) " << endl;
-    this->acceptUpdate++;
-
-    this->currentExpectedWsaf_ = tmpExpecedWsaf;
-    this->currentLLks_ = tmpLLKs;
-    this->currentLogPriorTitre_ = tmpLogPriorTitre;
-    this->currentTitre_ = tmpTitre;
-    this->currentProp_ = tmpProp;
-
-    assert (doutProp());
+    return accept;
 }
 
 

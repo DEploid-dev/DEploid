@@ -222,7 +222,8 @@ class McmcMachinery {
     int findUpdatingStrainSingle();
 
     double proposeProportion();
-    void updateProportionAndSingleHap(Panel *useThisPanel);
+    double resampleSingleHap(Panel *useThisPanel, int strainIndex);
+    bool updateProportionAndSingleHap(Panel *useThisPanel);
 
     void updatePairHaps(Panel *useThisPanel);
     /* vector <size_t> sampleNoReplace(MersenneTwister* rg,
