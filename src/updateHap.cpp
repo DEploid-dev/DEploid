@@ -107,8 +107,7 @@ UpdateSingleHap::core(vector <double> &refCount,
         this->samplePaths();
         this->addMissCopying( this->missCopyProb_ );
     } else {
-        log_pr = 0; // ???
-        this->sampleHapIndependently(plaf);
+        log_pr = this->sampleHapIndependently(plaf);
     }
 
     this->updateLLK();
@@ -359,8 +358,9 @@ void UpdateSingleHap::addMissCopying( double missCopyProb ) {
 }
 
 
-void UpdateSingleHap::sampleHapIndependently( vector <double> &plaf ) {
+double UpdateSingleHap::sampleHapIndependently( vector <double> &plaf ) {
     assert( this->hap_.size() == 0 );
+    double log_pr = 0;
     size_t plafIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < this->nLoci_; i++) {
         double tmpMax = max_value ( vector <double> ( {llk0_[i], llk1_[i]} ) ) ;
@@ -371,6 +371,7 @@ void UpdateSingleHap::sampleHapIndependently( vector <double> &plaf ) {
         plafIndex++;
     }
     assert ( this->hap_.size() == this->nLoci_ );
+    return log_pr;
 }
 
 
@@ -436,8 +437,7 @@ UpdatePairHap::core(vector <double> &refCount,
         this->samplePaths();
         this->addMissCopying(this->missCopyProb_);
     } else {
-        // log_pr = ???;
-        this->sampleHapIndependently( plaf );
+        /* log_pr = */ this->sampleHapIndependently( plaf );
     }
     this->updateLLK();
 
@@ -746,9 +746,11 @@ void UpdatePairHap::addMissCopying( double missCopyProb ) {
 }
 
 
-void UpdatePairHap::sampleHapIndependently(vector <double> &plaf) {
+double UpdatePairHap::sampleHapIndependently(vector <double> &plaf) {
     assert( this->hap1_.size() == 0 );
     assert( this->hap2_.size() == 0 );
+
+    double log_pr = 0;
 
     size_t plafIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < this->nLoci_; i++) {
@@ -781,6 +783,8 @@ void UpdatePairHap::sampleHapIndependently(vector <double> &plaf) {
 
     assert ( this->hap1_.size() == this->nLoci_ );
     assert ( this->hap2_.size() == this->nLoci_ );
+
+    return log_pr;
 }
 
 

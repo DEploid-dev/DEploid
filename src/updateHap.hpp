@@ -99,7 +99,7 @@ class UpdateHap{
     virtual void samplePaths() = 0;
     virtual void addMissCopying( double missCopyProb ) = 0;
     virtual void updateLLK() = 0;
-    virtual void sampleHapIndependently(vector <double> &plaf) = 0;
+    virtual double sampleHapIndependently(vector <double> &plaf) = 0;
 };
 
 
@@ -162,7 +162,7 @@ class UpdateSingleHap : public UpdateHap{
     void calcFwdBwdProbs();
     void samplePaths();
     void addMissCopying( double missCopyProb );
-    void sampleHapIndependently(vector <double> &plaf);
+    double sampleHapIndependently(vector <double> &plaf);
     void updateLLK();
 };
 
@@ -228,7 +228,7 @@ class UpdatePairHap : public UpdateHap{
     void calcFwdProbs( bool forbidCopyFromSame );
     void samplePaths();
     void addMissCopying( double missCopyProb );
-    void sampleHapIndependently(vector <double> &plaf);
+    double sampleHapIndependently(vector <double> &plaf);
     void updateLLK();
 
     // Own methods
