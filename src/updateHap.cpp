@@ -260,7 +260,7 @@ double UpdateSingleHap::calcFwdProbs() {
     //double inbreedProb = 0.0;
 
     double log_prob = 0;
-    for ( size_t j = 1; j < this->nLoci_; j++ ) {
+    for ( size_t locus = 1; locus < this->nLoci_; locus++ ) {
         double pRecEachHap = this->panel_->pRecEachHap_[hapIndex];
         double pNoRec = this->panel_->pNoRec_[hapIndex];
         hapIndex++;
@@ -268,11 +268,11 @@ double UpdateSingleHap::calcFwdProbs() {
         double massFromRec = sumOfVec(fwdProbs_.back()) * pRecEachHap;
         vector <double> fwdTmp (this->nPanel_, 0.0);
         for ( size_t i = 0 ; i < this->nPanel_; i++) {
-            fwdTmp[i] = this->emission_[j][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec);
+            fwdTmp[i] = this->emission_[locus][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec);
             //if ( i >= this->panel_->truePanelSize() ) {
-                //fwdTmp[i] = this->emission_[j][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec) * inbreedProb;
+                //fwdTmp[i] = this->emission_[locus][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec) * inbreedProb;
             //} else {
-                //fwdTmp[i] = this->emission_[j][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec);
+                //fwdTmp[i] = this->emission_[locus][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec);
             //}
         }
         double sum = normalizeBySum(fwdTmp);
