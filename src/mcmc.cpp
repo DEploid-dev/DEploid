@@ -79,7 +79,7 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
     //this->SD_LOG_TITRE = this->dEploidIO_->parameterSigma();
     this->PROP_SCALE = 40.0;
 
-    stdNorm_ = new StandNormalRandomSample(this->seed_);
+    stdNorm_ = std::make_shared<StandNormalRandomSample>(this->seed_);
 
     this->setKstrain(this->dEploidIO_->kStrain_.getValue());
     this->setNLoci(this->plaf_ptr_->size());
@@ -88,9 +88,6 @@ McmcMachinery::McmcMachinery( vector <double> * plaf,
 
 
 McmcMachinery::~McmcMachinery() {
-    if ( this->stdNorm_ ) {
-        delete stdNorm_;
-    }
 }
 
 

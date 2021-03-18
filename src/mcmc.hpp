@@ -131,7 +131,7 @@ class McmcMachinery {
     // (MN_LOG_TITRE, SD_LOG_TITRE);
     // std::normal_distribution<double>* deltaX_normal_distribution_;
     // (0, 1/PROP_SCALE);
-    StandNormalRandomSample* stdNorm_;
+    std::shared_ptr<StandNormalRandomSample> stdNorm_;
     double initialTitreNormalVariable() {
         return this->stdNorm_->genReal() * SD_LOG_TITRE + MN_LOG_TITRE; }
     // double deltaXnormalVariable() {
