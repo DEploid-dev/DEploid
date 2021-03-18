@@ -782,6 +782,7 @@ bool McmcMachinery::updateProportionAndSingleHap(Panel *useThisPanel) {
     // 7. Implement a log_double_t type (i.e. store the log, but convert to double on demand.)
     // 8. Implement inline functions for:
     //      emission(x,y)
+    // 9. Functions should return a value unstead of modifying a class variable.
 
     // To implement the move:
     //   * implement my own probability calculations instead of using any of the cached values.
