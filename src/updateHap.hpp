@@ -80,6 +80,8 @@ class UpdateHap{
     size_t nLoci_;
 
     vector < vector <double> > emission_;
+    double emission_pr(int locus, int allele) const {return emission_[locus][allele];}
+
     double scalingFactor_;
     double scalingFactor() const {return this->scalingFactor_; }
     void setScalingFactor ( const double setTo ) { this->scalingFactor_ = setTo; }

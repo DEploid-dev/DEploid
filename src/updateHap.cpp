@@ -251,7 +251,7 @@ double UpdateSingleHap::calcFwdProbs() {
     assert ( this->fwdProbs_.size() == 0 );
     vector <double> fwd1st (this->nPanel_, 0.0);
     for ( size_t i = 0 ; i < this->nPanel_; i++) {
-        fwd1st[i] = this->emission_[0][this->panel_->content_[hapIndex][i]];
+        fwd1st[i] = emission_pr(0, this->panel_->content_[hapIndex][i]);
     }
     (void)normalizeBySum(fwd1st);
     this->fwdProbs_.push_back(fwd1st);
@@ -267,7 +267,7 @@ double UpdateSingleHap::calcFwdProbs() {
         double massFromRec = sumOfVec(fwdProbs_.back()) * pRecEachHap;
         vector <double> fwdTmp (this->nPanel_, 0.0);
         for ( size_t i = 0 ; i < this->nPanel_; i++) {
-            fwdTmp[i] = this->emission_[locus][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec);
+            fwdTmp[i] = emission_pr(locus, this->panel_->content_[hapIndex][i]) * (fwdProbs_.back()[i] * pNoRec + massFromRec);
             //if ( i >= this->panel_->truePanelSize() ) {
                 //fwdTmp[i] = this->emission_[locus][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec) * inbreedProb;
             //} else {
