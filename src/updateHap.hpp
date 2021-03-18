@@ -87,9 +87,9 @@ class UpdateHap{
     // Methods
     virtual double core(const vector <double> &refCount,
                         const vector <double> &altCount,
-                        vector <double> &plaf,
+                        const vector <double> &plaf,
                         vector <double> &expectedWsaf,
-                        vector <double> &proportion,
+                        const vector <double> &proportion,
                         vector < vector <double> > &haplotypes ) = 0;
     virtual void calcExpectedWsaf( vector <double> & expectedWsaf, const vector <double> &proportion, const vector < vector <double> > &haplotypes) = 0;
     virtual void calcHapLLKs( const vector <double> &refCount, const vector <double> &altCount) = 0;
@@ -99,7 +99,7 @@ class UpdateHap{
     virtual void samplePaths() = 0;
     virtual void addMissCopying( double missCopyProb ) = 0;
     virtual void updateLLK() = 0;
-    virtual double sampleHapIndependently(vector <double> &plaf) = 0;
+    virtual double sampleHapIndependently(const vector <double> &plaf) = 0;
 };
 
 
@@ -144,9 +144,9 @@ class UpdateSingleHap : public UpdateHap{
     // Methods
     double core( const vector <double> &refCount,
                  const vector <double> &altCount,
-                 vector <double> &plaf,
+                 const vector <double> &plaf,
                  vector <double> &expectedWsaf,
-                 vector <double> &proportion,
+                 const vector <double> &proportion,
                  vector < vector <double> > &haplotypes );
     void painting( const vector <double> &refCount,
                    const vector <double> &altCount,
@@ -162,7 +162,7 @@ class UpdateSingleHap : public UpdateHap{
     void calcFwdBwdProbs();
     void samplePaths();
     void addMissCopying( double missCopyProb );
-    double sampleHapIndependently(vector <double> &plaf);
+    double sampleHapIndependently(const vector <double> &plaf);
     void updateLLK();
 };
 
@@ -217,9 +217,9 @@ class UpdatePairHap : public UpdateHap{
     // Methods
     double core(const vector <double> &refCount,
                 const vector <double> &altCount,
-                vector <double> &plaf,
+                const vector <double> &plaf,
                 vector <double> &expectedWsaf,
-                vector <double> &proportion,
+                const vector <double> &proportion,
                 vector < vector <double> > &haplotypes );
 
     void calcExpectedWsaf( vector <double> & expectedWsaf, const vector <double> &proportion, const vector < vector <double> > &haplotypes);
@@ -228,7 +228,7 @@ class UpdatePairHap : public UpdateHap{
     void calcFwdProbs( bool forbidCopyFromSame );
     void samplePaths();
     void addMissCopying( double missCopyProb );
-    double sampleHapIndependently(vector <double> &plaf);
+    double sampleHapIndependently(const vector <double> &plaf);
     void updateLLK();
 
     // Own methods

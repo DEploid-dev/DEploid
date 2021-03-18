@@ -91,9 +91,9 @@ UpdateSingleHap::UpdateSingleHap( vector <double> &refCount,
 double
 UpdateSingleHap::core(const vector <double> &refCount,
                       const vector <double> &altCount,
-                      vector <double> &plaf,
+                      const vector <double> &plaf,
                       vector <double> &expectedWsaf,
-                      vector <double> &proportion,
+                      const vector <double> &proportion,
                       vector < vector <double> > &haplotypes ) {
 
     this->calcExpectedWsaf( expectedWsaf, proportion, haplotypes);
@@ -358,7 +358,7 @@ void UpdateSingleHap::addMissCopying( double missCopyProb ) {
 }
 
 
-double UpdateSingleHap::sampleHapIndependently( vector <double> &plaf ) {
+double UpdateSingleHap::sampleHapIndependently( const vector <double> &plaf ) {
     assert( this->hap_.size() == 0 );
     double log_pr = 0;
     size_t plafIndex = this->segmentStartIndex_;
@@ -426,9 +426,9 @@ UpdatePairHap::UpdatePairHap( vector <double> &refCount,
 double
 UpdatePairHap::core(const vector <double> &refCount,
                     const vector <double> &altCount,
-                    vector <double> &plaf,
+                    const vector <double> &plaf,
                     vector <double> &expectedWsaf,
-                    vector <double> &proportion,
+                    const vector <double> &proportion,
                     vector < vector <double> > &haplotypes) {
 
     double log_pr = 0;
@@ -750,7 +750,7 @@ void UpdatePairHap::addMissCopying( double missCopyProb ) {
 }
 
 
-double UpdatePairHap::sampleHapIndependently(vector <double> &plaf) {
+double UpdatePairHap::sampleHapIndependently(const vector <double> &plaf) {
     assert( this->hap1_.size() == 0 );
     assert( this->hap2_.size() == 0 );
 
