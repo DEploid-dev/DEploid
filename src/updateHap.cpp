@@ -149,9 +149,9 @@ void UpdateSingleHap::calcBwdProbs() {
         for ( size_t i = 0 ; i < this->nPanel_; i++) {
             bwdTmp[i] = 0.0;
             for ( size_t ii = 0 ; ii < this->nPanel_; ii++) {
-                bwdTmp[i] += this->emission_[j][this->panel_->content_[hapIndexBack][ii]] * bwdProbs_.back()[ii] * pRecEachHap;
+                bwdTmp[i] += emission_pr(j,this->panel_->content_[hapIndexBack][ii]) * bwdProbs_.back()[ii] * pRecEachHap;
                 if ( i == ii) {
-                    bwdTmp[i] += this->emission_[j][this->panel_->content_[hapIndexBack][ii]] * bwdProbs_.back()[ii] * pNoRec;
+                    bwdTmp[i] += emission_pr(j,this->panel_->content_[hapIndexBack][ii]) * bwdProbs_.back()[ii] * pNoRec;
                 }
             }
         }
