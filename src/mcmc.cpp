@@ -428,13 +428,15 @@ void McmcMachinery::sampleMcmcEvent( bool useIBD ) {
         ibdSampleMcmcEventStep();
         assert(doutProp());
     } else if (this->jobbrief == "classic"){
-        this->eventInt_ = this->mcmcEventRg_->sampleInt(3);
+        this->eventInt_ = this->mcmcEventRg_->sampleInt(4);
         if ( (this->eventInt_ == 0) && (this->dEploidIO_->doUpdateProp() == true) ) {
             this->updateProportion();
         } else if ( (this->eventInt_ == 1) && (this->dEploidIO_->doUpdateSingle() == true) ) {
             this->updateSingleHap(this->panel_);
         } else if ( (this->eventInt_ == 2) && (this->dEploidIO_->doUpdatePair() == true) ) {
             this->updatePairHaps(this->panel_);
+        } else if (this->eventInt_ == 3) {
+            this->updateProportionAndSingleHap(this->panel_);
         }
     }else {  // Best practice
         this->eventInt_ = this->mcmcEventRg_->sampleInt(4);
