@@ -149,9 +149,9 @@ void UpdateSingleHap::calcBwdProbs() {
         for ( size_t i = 0 ; i < this->nPanel_; i++) {
             bwdTmp[i] = 0.0;
             for ( size_t ii = 0 ; ii < this->nPanel_; ii++) {
-                bwdTmp[i] += emission_pr(j,this->panel_->content_[hapIndexBack][ii]) * bwdProbs_.back()[ii] * pRecEachHap;
+                bwdTmp[i] += emission_pr(j, haplotype_allele(j,ii)) * bwdProbs_.back()[ii] * pRecEachHap;
                 if ( i == ii) {
-                    bwdTmp[i] += emission_pr(j,this->panel_->content_[hapIndexBack][ii]) * bwdProbs_.back()[ii] * pNoRec;
+                    bwdTmp[i] += emission_pr(j, haplotype_allele(j,ii)) * bwdProbs_.back()[ii] * pNoRec;
                 }
             }
         }
@@ -258,7 +258,7 @@ double UpdateSingleHap::calcFwdProbs() {
     assert ( this->fwdProbs_.size() == 0 );
     vector <double> fwd1st (this->nPanel_, 0.0);
     for ( size_t i = 0 ; i < this->nPanel_; i++) {
-        fwd1st[i] = emission_pr(0, this->panel_->content_[hapIndex][i]);
+        fwd1st[i] = emission_pr(0, haplotype_allele(0,i));
     }
     (void)normalizeBySum(fwd1st);
     this->fwdProbs_.push_back(fwd1st);
@@ -273,7 +273,7 @@ double UpdateSingleHap::calcFwdProbs() {
         double massFromRec = sumOfVec(fwdProbs_.back()) * pRecEachHap;
         vector <double> fwdTmp (this->nPanel_, 0.0);
         for ( size_t i = 0 ; i < this->nPanel_; i++) {
-            fwdTmp[i] = emission_pr(locus, this->panel_->content_[hapIndex][i]) * (fwdProbs_.back()[i] * pNoRec + massFromRec);
+            fwdTmp[i] = emission_pr(locus, haplotype_allele(locus,i)) * (fwdProbs_.back()[i] * pNoRec + massFromRec);
             //if ( i >= this->panel_->truePanelSize() ) {
                 //fwdTmp[i] = this->emission_[locus][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec) * inbreedProb;
             //} else {

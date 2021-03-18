@@ -83,6 +83,8 @@ class UpdateHap{
     double emission_scale_ = 0;
     double emission_pr(int locus, int allele) const {return emission_[locus][allele];}
 
+    int  haplotype_allele(int locus, int i) const {return panel_->content_[segmentStartIndex_+locus][i];}
+
     double scalingFactor_;
     double scalingFactor() const {return this->scalingFactor_; }
     void setScalingFactor ( const double setTo ) { this->scalingFactor_ = setTo; }
