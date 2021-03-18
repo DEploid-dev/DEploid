@@ -80,6 +80,7 @@ class UpdateHap{
     size_t nLoci_;
 
     vector < vector <double> > emission_;
+    double emission_scale_ = 0;
     double emission_pr(int locus, int allele) const {return emission_[locus][allele];}
 
     double scalingFactor_;

@@ -223,6 +223,7 @@ void UpdateSingleHap::buildEmission( double missCopyProb ) {
     vector <double> t2u = vecSum(llk1_, missProb);
 
     assert(emission_.size() == 0 );
+    emission_scale_ = 0;
     for ( size_t i = 0; i < this->nLoci_; i++) {
         vector <double> tmp ({t1omu[i], t2omu[i], t1u[i], t2u[i]});
         double tmaxTmp = max_value(tmp);
@@ -230,6 +231,9 @@ void UpdateSingleHap::buildEmission( double missCopyProb ) {
                                    exp(t2omu[i] - tmaxTmp) + exp(t1u[i] - tmaxTmp)});
 
         this->emission_.push_back(emissRow);
+
+        // We divided this factor out of the emission probabilities.
+        emission_scale_ += log(tmaxTmp);
     }
 
 }
@@ -237,6 +241,7 @@ void UpdateSingleHap::buildEmission( double missCopyProb ) {
 
 void UpdateSingleHap::buildEmissionBasicVersion( double missCopyProb ) {
     assert(emission_.size() == 0 );
+    emission_scale_ = 0;
     for ( size_t i = 0; i < this->nLoci_; i++) {
         vector <double> emissRow ({exp(llk0_[i])*(1.0-missCopyProb) + exp(llk1_[i])*missCopyProb,
                                    exp(llk1_[i])*(1.0-missCopyProb) + exp(llk0_[i])*missCopyProb});
@@ -247,6 +252,8 @@ void UpdateSingleHap::buildEmissionBasicVersion( double missCopyProb ) {
 
 
 double UpdateSingleHap::calcFwdProbs() {
+    double log_prob = emission_scale_;
+
     size_t hapIndex = this->segmentStartIndex_;
     assert ( this->fwdProbs_.size() == 0 );
     vector <double> fwd1st (this->nPanel_, 0.0);
@@ -258,7 +265,6 @@ double UpdateSingleHap::calcFwdProbs() {
 
     //double inbreedProb = 0.0;
 
-    double log_prob = 0;
     for ( size_t locus = 1; locus < this->nLoci_; locus++ ) {
         double pRecEachHap = this->panel_->pRecEachHap_[hapIndex];
         double pNoRec = this->panel_->pNoRec_[hapIndex];
@@ -537,6 +543,7 @@ void UpdatePairHap:: buildEmission( double missCopyProb ) {
                     //exp( tmp.11.1-tmp.max ) + exp( tmp.11.2-tmp.max ) + exp( tmp.11.3-tmp.max ) + exp( tmp.11.4-tmp.max ))
 
     assert(this->emission_.size() == 0 );
+    emission_scale_ = 0;
     for ( size_t i = 0; i < this->nLoci_; i++) {
         vector <double> tmp ({tmp_00_1[i], tmp_00_2[i], tmp_00_3[i], tmp_00_4[i],
                               tmp_01_1[i], tmp_01_2[i], tmp_01_3[i], tmp_01_4[i],
@@ -549,6 +556,9 @@ void UpdatePairHap:: buildEmission( double missCopyProb ) {
                                    exp(tmp_11_1[i] - tmaxTmp) + exp(tmp_11_2[i] - tmaxTmp) + exp(tmp_11_3[i] - tmaxTmp) + exp(tmp_11_4[i] - tmaxTmp)});
         //(void)normalizeBySum(emissRow);
         this->emission_.push_back(emissRow);
+
+        // We divided this factor out of the emission probabilities.
+        emission_scale_ += log(tmaxTmp);
     }
     assert(this->emission_.size() == this->nLoci_ );
 }
