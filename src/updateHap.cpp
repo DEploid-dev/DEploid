@@ -31,11 +31,11 @@ using std::pair;
 
 UpdateHap::~UpdateHap() {}
 
-UpdateHap::UpdateHap( vector <double> &refCount,
-                      vector <double> &altCount,
-                      vector <double> &plaf,
+UpdateHap::UpdateHap( const vector <double> &refCount,
+                      const vector <double> &altCount,
+                      const vector <double> &plaf,
                       vector <double> &expectedWsaf,
-                      vector <double> &proportion,
+                      const vector <double> &proportion,
                       vector < vector <double> > &haplotypes,
                       RandomGenerator* rg,
                       size_t segmentStartIndex,
@@ -70,18 +70,18 @@ UpdateSingleHap::~UpdateSingleHap() {
 }
 
 
-UpdateSingleHap::UpdateSingleHap( vector <double> &refCount,
-                                  vector <double> &altCount,
-                                  vector <double> &plaf,
+UpdateSingleHap::UpdateSingleHap( const vector <double> &refCount,
+                                  const vector <double> &altCount,
+                                  const vector <double> &plaf,
                                   vector <double> &expectedWsaf,
-                                  vector <double> &proportion,
+                                  const vector <double> &proportion,
                                   vector < vector <double> > &haplotypes,
                                   RandomGenerator* rg,
                                   size_t segmentStartIndex,
                                   size_t nLoci,
                                   Panel* panel, double missCopyProb, double scalingFactor,
                                   size_t strainIndex ):
-                UpdateHap(refCount, altCount, expectedWsaf, plaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel, missCopyProb, scalingFactor) {
+    UpdateHap(refCount, altCount, plaf, expectedWsaf, proportion, haplotypes, rg, segmentStartIndex, nLoci, panel, missCopyProb, scalingFactor) {
     this->strainIndex_ = strainIndex;
     siteOfOneSwitchOne = vector <double>(nLoci);
     siteOfOneMissCopyOne = vector <double>(nLoci);
@@ -399,11 +399,11 @@ UpdatePairHap::~UpdatePairHap() {
     //delete missCopyRg_;
 }
 
-UpdatePairHap::UpdatePairHap( vector <double> &refCount,
-                              vector <double> &altCount,
-                              vector <double> &plaf,
+UpdatePairHap::UpdatePairHap( const vector <double> &refCount,
+                              const vector <double> &altCount,
+                              const vector <double> &plaf,
                               vector <double> &expectedWsaf,
-                              vector <double> &proportion,
+                              const vector <double> &proportion,
                               vector < vector <double> > &haplotypes,
                               RandomGenerator* rg,
                               size_t segmentStartIndex,

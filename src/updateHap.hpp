@@ -50,11 +50,11 @@ class UpdateHap{
     size_t nPanel() const { return this->nPanel_; }
   private:
     UpdateHap();
-    UpdateHap( vector <double> &refCount,
-               vector <double> &altCount,
-               vector <double> &plaf,
+    UpdateHap( const vector <double> &refCount,
+               const vector <double> &altCount,
+               const vector <double> &plaf,
                vector <double> &expectedWsaf,
-               vector <double> &proportion,
+               const vector <double> &proportion,
                vector < vector <double> > &haplotypes,
                RandomGenerator* rg,
                size_t segmentStartIndex,
@@ -112,18 +112,18 @@ class UpdateSingleHap : public UpdateHap{
   //public:
   private:
     UpdateSingleHap ();
-    UpdateSingleHap( vector <double> &refCount,
-                      vector <double> &altCount,
-                      vector <double> &plaf,
-                      vector <double> &expectedWsaf,
-                      vector <double> &proportion,
-                      vector < vector <double> > &haplotypes,
-                      RandomGenerator* rg,
-                      size_t segmentStartIndex,
-                      size_t nLoci,
-                      Panel* panel, double missCopyProb,
-                      double scalingFactor,
-                      size_t strainIndex );
+    UpdateSingleHap( const vector <double> &refCount,
+                     const vector <double> &altCount,
+                     const vector <double> &plaf,
+                     vector <double> &expectedWsaf,
+                     const vector <double> &proportion,
+                     vector < vector <double> > &haplotypes,
+                     RandomGenerator* rg,
+                     size_t segmentStartIndex,
+                     size_t nLoci,
+                     Panel* panel, double missCopyProb,
+                     double scalingFactor,
+                     size_t strainIndex );
     ~UpdateSingleHap();
 
     vector <double> siteOfOneSwitchOne;
@@ -175,19 +175,19 @@ class UpdatePairHap : public UpdateHap{
  friend class DEploidIO;
   public:
      UpdatePairHap();
-     UpdatePairHap( vector <double> &refCount,
-                      vector <double> &altCount,
-                      vector <double> &plaf,
-                      vector <double> &expectedWsaf,
-                      vector <double> &proportion,
-                      vector < vector <double> > &haplotypes,
-                      RandomGenerator* rg,
-                      size_t segmentStartIndex,
-                      size_t nLoci,
-                      Panel* panel, double missCopyProb,
-                      double scalingFactor, bool forbidCopyFromSame,
-                      size_t strainIndex1,
-                      size_t strainIndex2 );
+     UpdatePairHap( const vector <double> &refCount,
+                    const vector <double> &altCount,
+                    const vector <double> &plaf,
+                    vector <double> &expectedWsaf,
+                    const vector <double> &proportion,
+                    vector < vector <double> > &haplotypes,
+                    RandomGenerator* rg,
+                    size_t segmentStartIndex,
+                    size_t nLoci,
+                    Panel* panel, double missCopyProb,
+                    double scalingFactor, bool forbidCopyFromSame,
+                    size_t strainIndex1,
+                    size_t strainIndex2 );
     ~UpdatePairHap();
 
   private:
