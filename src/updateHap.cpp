@@ -181,7 +181,7 @@ void UpdateSingleHap::calcFwdBwdProbs() {
     assert (this->fwdBwdProbs_.size() == nLoci_ );
 }
 
-void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes ) {
+void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, const vector <double> &proportion, const vector < vector <double> > &haplotypes ) {
     //expected.WSAF.0 <- bundle$expected.WSAF - (bundle$prop[ws] * bundle$h[,ws]);
     assert ( expectedWsaf0_.size() == 0);
     assert ( expectedWsaf1_.size() == 0);
@@ -449,7 +449,7 @@ UpdatePairHap::core(const vector <double> &refCount,
 }
 
 
-void UpdatePairHap:: calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes) {
+void UpdatePairHap:: calcExpectedWsaf( vector <double> & expectedWsaf, const vector <double> &proportion, const vector < vector <double> > &haplotypes) {
   //expected.WSAF.00 <- expected.WSAF-(prop[ws[1]]*h[,ws[1]] + prop[ws[2]]*h[,ws[2]]);
   //expected.WSAF.10 <- expected.WSAF.00 + prop[ws[1]];
   //expected.WSAF.01 <- expected.WSAF.00 + prop[ws[2]];

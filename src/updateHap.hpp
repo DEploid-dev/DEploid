@@ -91,7 +91,7 @@ class UpdateHap{
                         vector <double> &expectedWsaf,
                         vector <double> &proportion,
                         vector < vector <double> > &haplotypes ) = 0;
-    virtual void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes) = 0;
+    virtual void calcExpectedWsaf( vector <double> & expectedWsaf, const vector <double> &proportion, const vector < vector <double> > &haplotypes) = 0;
     virtual void calcHapLLKs( const vector <double> &refCount, const vector <double> &altCount) = 0;
     virtual void buildEmission( double missCopyProb ) = 0;
     // calcFwdProbs() differ for class UpdateSingleHap and UpdatePairHap
@@ -153,7 +153,7 @@ class UpdateSingleHap : public UpdateHap{
                    vector <double> &expectedWsaf,
                    vector <double> &proportion,
                    vector < vector <double> > &haplotypes );
-    void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
+    void calcExpectedWsaf( vector <double> & expectedWsaf, const vector <double> &proportion, const vector < vector <double> > &haplotypes);
     void calcHapLLKs( const vector <double> &refCount, const vector <double> &altCount);
     void buildEmission( double missCopyProb );
     void buildEmissionBasicVersion( double missCopyProb );
@@ -222,7 +222,7 @@ class UpdatePairHap : public UpdateHap{
                 vector <double> &proportion,
                 vector < vector <double> > &haplotypes );
 
-    void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
+    void calcExpectedWsaf( vector <double> & expectedWsaf, const vector <double> &proportion, const vector < vector <double> > &haplotypes);
     void calcHapLLKs( const vector <double> &refCount, const vector <double> &altCount);
     void buildEmission( double missCopyProb );
     void calcFwdProbs( bool forbidCopyFromSame );
