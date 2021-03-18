@@ -147,7 +147,7 @@ void McmcMachinery::initializeMcmcChain(bool useIBD) {
 
 
 void McmcMachinery::initializeHap() {
-    assert( currentHap_.size() == 0);
+    currentHap_.clear();
     if ( this->dEploidIO_ -> initialHapWasGiven() ) {
         this->currentHap_ = this->dEploidIO_->initialHap;
         dout << "given initial hap ?" << endl;
@@ -201,14 +201,14 @@ void McmcMachinery::initializeExpectedWsaf() {
 
 
 void McmcMachinery::initializellk() {
-    assert( this->currentLLks_.size() == (size_t)0);
+    this->currentLLks_.clear();
     this->currentLLks_ = vector <double> (this->nLoci_, 0.0);
     assert( this->currentLLks_.size() == this->nLoci_);
 }
 
 
 void McmcMachinery::initializeProp() {
-    assert( this->currentProp_.size() == (size_t)0 );
+    this->currentProp_.clear();
     this->currentProp_ = ( this->dEploidIO_ -> initialPropWasGiven()) ?
                           this->dEploidIO_ ->initialProp:
                           this->titre2prop( this->currentTitre_ );
@@ -233,7 +233,7 @@ double McmcMachinery::calcLogPriorTitre(const vector <double> &tmpTitre) {
 
 void McmcMachinery::initializeTitre() {
     /*   titre<-rnorm(initial.k, MN_LOG_TITRE, SD_LOG_TITRE); */
-    assert( currentTitre_.size() == 0);
+    currentTitre_.clear();
     currentTitre_ = vector <double> (this->kStrain_, 0.0);
 
     if ( this->dEploidIO_->doUpdateProp() ) {
