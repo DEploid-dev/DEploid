@@ -85,14 +85,14 @@ class UpdateHap{
     void setScalingFactor ( const double setTo ) { this->scalingFactor_ = setTo; }
 
     // Methods
-    virtual double core(vector <double> &refCount,
-                        vector <double> &altCount,
+    virtual double core(const vector <double> &refCount,
+                        const vector <double> &altCount,
                         vector <double> &plaf,
                         vector <double> &expectedWsaf,
                         vector <double> &proportion,
                         vector < vector <double> > &haplotypes ) = 0;
     virtual void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes) = 0;
-    virtual void calcHapLLKs( vector <double> &refCount, vector <double> &altCount) = 0;
+    virtual void calcHapLLKs( const vector <double> &refCount, const vector <double> &altCount) = 0;
     virtual void buildEmission( double missCopyProb ) = 0;
     // calcFwdProbs() differ for class UpdateSingleHap and UpdatePairHap
     //virtual void calcFwdProbs() = 0;
@@ -142,19 +142,19 @@ class UpdateSingleHap : public UpdateHap{
     vector <int> hap_;
 
     // Methods
-    double core( vector <double> &refCount,
-                 vector <double> &altCount,
+    double core( const vector <double> &refCount,
+                 const vector <double> &altCount,
                  vector <double> &plaf,
                  vector <double> &expectedWsaf,
                  vector <double> &proportion,
                  vector < vector <double> > &haplotypes );
-    void painting( vector <double> &refCount,
-                   vector <double> &altCount,
+    void painting( const vector <double> &refCount,
+                   const vector <double> &altCount,
                    vector <double> &expectedWsaf,
                    vector <double> &proportion,
                    vector < vector <double> > &haplotypes );
     void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
-    void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
+    void calcHapLLKs( const vector <double> &refCount, const vector <double> &altCount);
     void buildEmission( double missCopyProb );
     void buildEmissionBasicVersion( double missCopyProb );
     double calcFwdProbs();
@@ -215,15 +215,15 @@ class UpdatePairHap : public UpdateHap{
     vector <double> hap2_;
 
     // Methods
-    double core(vector <double> &refCount,
-                vector <double> &altCount,
+    double core(const vector <double> &refCount,
+                const vector <double> &altCount,
                 vector <double> &plaf,
                 vector <double> &expectedWsaf,
                 vector <double> &proportion,
                 vector < vector <double> > &haplotypes );
 
     void calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes);
-    void calcHapLLKs( vector <double> &refCount, vector <double> &altCount);
+    void calcHapLLKs( const vector <double> &refCount, const vector <double> &altCount);
     void buildEmission( double missCopyProb );
     void calcFwdProbs( bool forbidCopyFromSame );
     void samplePaths();

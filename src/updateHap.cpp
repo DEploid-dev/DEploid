@@ -89,8 +89,8 @@ UpdateSingleHap::UpdateSingleHap( vector <double> &refCount,
 
 
 double
-UpdateSingleHap::core(vector <double> &refCount,
-                      vector <double> &altCount,
+UpdateSingleHap::core(const vector <double> &refCount,
+                      const vector <double> &altCount,
                       vector <double> &plaf,
                       vector <double> &expectedWsaf,
                       vector <double> &proportion,
@@ -116,8 +116,8 @@ UpdateSingleHap::core(vector <double> &refCount,
 }
 
 
-void UpdateSingleHap::painting( vector <double> &refCount,
-                                vector <double> &altCount,
+void UpdateSingleHap::painting( const vector <double> &refCount,
+                                const vector <double> &altCount,
                                 vector <double> &expectedWsaf,
                                 vector <double> &proportion,
                                 vector < vector <double> > &haplotypes ) {
@@ -296,8 +296,8 @@ double UpdateSingleHap::calcFwdProbs() {
 }
 
 
-void UpdateSingleHap::calcHapLLKs( vector <double> &refCount,
-                                   vector <double> &altCount) {
+void UpdateSingleHap::calcHapLLKs( const vector <double> &refCount,
+                                   const vector <double> &altCount) {
     this->llk0_ = calcLLKs( refCount, altCount, expectedWsaf0_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
     this->llk1_ = calcLLKs( refCount, altCount, expectedWsaf1_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
     assert( this->llk0_.size() == this->nLoci_ );
@@ -424,8 +424,8 @@ UpdatePairHap::UpdatePairHap( vector <double> &refCount,
 
 
 double
-UpdatePairHap::core(vector <double> &refCount,
-                    vector <double> &altCount,
+UpdatePairHap::core(const vector <double> &refCount,
+                    const vector <double> &altCount,
                     vector <double> &plaf,
                     vector <double> &expectedWsaf,
                     vector <double> &proportion,
@@ -481,7 +481,7 @@ void UpdatePairHap:: calcExpectedWsaf( vector <double> & expectedWsaf, vector <d
 }
 
 
-void UpdatePairHap:: calcHapLLKs( vector <double> &refCount, vector <double> &altCount) {
+void UpdatePairHap:: calcHapLLKs( const vector <double> &refCount, const vector <double> &altCount) {
     this->llk00_ = calcLLKs( refCount, altCount, expectedWsaf00_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
     this->llk10_ = calcLLKs( refCount, altCount, expectedWsaf10_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
     this->llk01_ = calcLLKs( refCount, altCount, expectedWsaf01_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
