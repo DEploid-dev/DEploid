@@ -269,7 +269,7 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     void testDeltaLLKs() {
         this->mcmcMachinery_->currentLLks_ = vector < double >({ 0.1, 0.3, 0.2, 0.4 });
         vector <double> newllks({0.3, 0.2, 0.5, 0.6});
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6, this->mcmcMachinery_->deltaLLKs(newllks), epsilon2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6, (double)this->mcmcMachinery_->calcLikelihoodRatio(newllks), epsilon2);
     }
 
 

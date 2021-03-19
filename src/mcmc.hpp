@@ -218,7 +218,7 @@ class McmcMachinery {
     /* Moves */
     void updateProportion();
     vector <double> calcTmpTitre();
-    double deltaLLKs(const vector <double> &newLLKs);
+    log_double_t calcLikelihoodRatio(const vector <double> &newLLKs);
 
     void updateSingleHap(Panel *useThisPanel);
     int findUpdatingStrainSingle();

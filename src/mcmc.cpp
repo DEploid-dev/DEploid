@@ -599,13 +599,13 @@ void McmcMachinery::updateProportion() {
 
     vector <double> tmpExpecedWsaf = calcExpectedWsaf(tmpProp);
     vector <double> tmpLLKs = calcLLKs (*this->refCount_ptr_, *this->altCount_ptr_, tmpExpecedWsaf, 0, tmpExpecedWsaf.size(), this->dEploidIO_->scalingFactor());
-    double diffLLKs = this->deltaLLKs(tmpLLKs);
+    auto likelihoodRatio = this->calcLikelihoodRatio(tmpLLKs);
     auto tmpPriorTitre = calcPriorTitre( tmpTitre );
     auto priorPropRatio = tmpPriorTitre / this->currentPriorTitre_;
     double hastingsRatio = 1.0;
 
     //runif(1)<prior.prop.ratio*hastings.ratio*exp(del.llk))
-    if ( this->propRg_->sample() > priorPropRatio*hastingsRatio*exp(diffLLKs) ) {
+    if ( this->propRg_->sample() > priorPropRatio * hastingsRatio * likelihoodRatio ) {
         dout << "(failed)" << endl;
         return;
     }
@@ -623,9 +623,9 @@ void McmcMachinery::updateProportion() {
 }
 
 
-double McmcMachinery::deltaLLKs (const vector <double> &newLLKs ) {
+log_double_t McmcMachinery::calcLikelihoodRatio (const vector <double> &newLLKs ) {
     vector <double> tmpdiff = vecDiff ( newLLKs,  this->currentLLks_);
-    return sumOfVec(tmpdiff);
+    return exp_to<log_double_t>(sumOfVec(tmpdiff));
 }
 
 
