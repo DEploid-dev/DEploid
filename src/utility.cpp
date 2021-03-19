@@ -118,24 +118,21 @@ vector <double> calcLLKs(const vector <double> &refCount,
     for (size_t i = 0; i < length; i++) {
         assert(expectedWsaf[i] >= 0);
         // assert (expectedWsaf[i] <= 1);
-        tmpLLKs[i] = calcLLK(refCount[index],
-                             altCount[index],
-                             expectedWsaf[i],
-                             err,
-                             fac);
+        tmpLLKs[i] = log(calcSiteLikelihood(refCount[index], altCount[index],
+                                            expectedWsaf[i], err, fac));
         index++;
     }
     return tmpLLKs;
 }
 
 
-double calcLLK(double ref, double alt, double unadjustedWsaf, double err,
+log_double_t calcSiteLikelihood(double ref, double alt, double unadjustedWsaf, double err,
     double fac) {
     double adjustedWsaf = unadjustedWsaf+err*(1-2*unadjustedWsaf);
     double llk = Maths::Special::Gamma::logBeta(
         alt+adjustedWsaf*fac, ref+(1-adjustedWsaf)*fac) -
         Maths::Special::Gamma::logBeta(adjustedWsaf*fac, (1-adjustedWsaf)*fac);
-    return llk;
+    return exp_to<log_double_t>(llk);
 }
 
 

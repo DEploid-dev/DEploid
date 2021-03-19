@@ -685,7 +685,7 @@ void IBDpath::makeLlkSurf(vector <double> altCount, vector <double> refCount,
 
         vector <double> ll;
         for ( double unadjustedP : pGrid ) {
-            ll.push_back(calcLLK(ref, alt, unadjustedP, err, scalingConst));
+            ll.push_back(log(calcSiteLikelihood(ref, alt, unadjustedP, err, scalingConst)));
         }
 
         double llmax = max_value(ll);

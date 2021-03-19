@@ -29,6 +29,7 @@
 
 #include "random/mersenne_twister.hpp"
 #include "global.hpp"
+#include "log-double.hpp"
 
 #ifndef UTILITY
 #define UTILITY
@@ -118,8 +119,8 @@ vector <double> calcLLKs(const vector <double> &refCount,
     const vector <double> &altCount,
     const vector <double> &expectedWsaf, size_t firstIndex, size_t length,
     double fac, double err = 0.01);
-double calcLLK(double ref, double alt,
-    double unadjustedWsaf, double err, double fac);
+log_double_t calcSiteLikelihood(double ref, double alt,
+                                double unadjustedWsaf, double err, double fac);
 size_t sampleIndexGivenProp(RandomGenerator* rg, vector <double> proportion);
 vector <double> reshapeMatToVec(const vector < vector <double> > &Mat);
 double betaPdf(double x, double a, double b);
