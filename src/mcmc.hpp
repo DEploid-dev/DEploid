@@ -33,6 +33,7 @@
 #include "panel.hpp"
 #include "codeCogs/randomSample.hpp"   // src/codeCogs/randomSample.hpp
 #include "ibd.hpp"
+#include "log-double.hpp"
 
 #ifndef MCMC
 #define MCMC
@@ -151,7 +152,7 @@ class McmcMachinery {
     vector < vector <double> > currentHap_;
 
     /* Cached computations of MCMC state */
-    double currentLogPriorTitre_;
+    log_double_t currentPriorTitre_;
     vector <double> currentProp_;
     vector <double> currentLLks_;
     vector < double > currentExpectedWsaf_;
@@ -174,7 +175,7 @@ class McmcMachinery {
     vector <double> calcExpectedWsaf(const vector <double> &proportion);
     static vector <double> titre2prop(const vector <double> &tmpTitre);
 
-    double calcLogPriorTitre(const vector <double> &tmpTitre);
+    log_double_t calcPriorTitre(const vector <double> &tmpTitre);
     double rBernoulli(double p);
 
     void printArray(vector <double> array) {

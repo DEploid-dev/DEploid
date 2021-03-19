@@ -112,7 +112,7 @@ void McmcMachinery::initializeMcmcChain(bool useIBD) {
         dout << "Panel size = " << this->panel_->truePanelSize() << endl;
     }
     this->initializeTitre();
-    this->currentLogPriorTitre_ = this->calcLogPriorTitre(this->currentTitre_);
+    this->currentPriorTitre_ = this->calcPriorTitre(this->currentTitre_);
     this->initializeHap();
     this->initializeProp();
     this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
@@ -224,13 +224,13 @@ void McmcMachinery::initializeProp() {
 }
 
 
-double McmcMachinery::calcLogPriorTitre(const vector <double> &tmpTitre) {
+log_double_t McmcMachinery::calcPriorTitre(const vector <double> &tmpTitre) {
     //sum(dnorm(titre, MN_LOG_TITRE, SD_LOG_TITRE, log=TRUE));
-    vector <double> tmp;
+    log_double_t Pr = 1;
     for ( auto const& value: tmpTitre ) {
-        tmp.push_back(log(normal_pdf(value, MN_LOG_TITRE, SD_LOG_TITRE)));
+        Pr *= normal_pdf(value, MN_LOG_TITRE, SD_LOG_TITRE);
     }
-    return sumOfVec(tmp);
+    return Pr;
 }
 
 
@@ -600,8 +600,8 @@ void McmcMachinery::updateProportion() {
     vector <double> tmpExpecedWsaf = calcExpectedWsaf(tmpProp);
     vector <double> tmpLLKs = calcLLKs (*this->refCount_ptr_, *this->altCount_ptr_, tmpExpecedWsaf, 0, tmpExpecedWsaf.size(), this->dEploidIO_->scalingFactor());
     double diffLLKs = this->deltaLLKs(tmpLLKs);
-    double tmpLogPriorTitre = calcLogPriorTitre( tmpTitre );
-    double priorPropRatio = exp(tmpLogPriorTitre - this->currentLogPriorTitre_ );
+    auto tmpPriorTitre = calcPriorTitre( tmpTitre );
+    auto priorPropRatio = tmpPriorTitre / this->currentPriorTitre_;
     double hastingsRatio = 1.0;
 
     //runif(1)<prior.prop.ratio*hastings.ratio*exp(del.llk))
@@ -615,7 +615,7 @@ void McmcMachinery::updateProportion() {
 
     this->currentExpectedWsaf_ = tmpExpecedWsaf;
     this->currentLLks_ = tmpLLKs;
-    this->currentLogPriorTitre_ = tmpLogPriorTitre;
+    this->currentPriorTitre_ = tmpPriorTitre;
     this->currentTitre_ = tmpTitre;
     this->currentProp_ = tmpProp;
 
