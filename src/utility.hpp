@@ -70,7 +70,7 @@ template <typename T>
 vector <T> vecProd(const vector<T> &vecA,
                    const vector<T> &vecB) {
     assert(vecA.size() == vecB.size());
-    vector <T> tmpProd(vecA.size(), (T)0);
+    vector <T> tmpProd(vecA.size());
     for (size_t i = 0; i < vecA.size(); i++) {
         tmpProd[i] = vecA[i] * vecB[i];
     }
@@ -86,6 +86,16 @@ T sumOfVec(const vector <T>& array ) {
     }
     return tmp;
 }
+
+template <typename T>
+T product(const std::vector<T>& xs)
+{
+    T tmp = 1.0;
+    for(auto& x : xs)
+        tmp *=  x;
+    return tmp;
+}
+
 
 /*! \brief Compute factorial of a \return double a! */
 template < class T > T factorial(T a) {
