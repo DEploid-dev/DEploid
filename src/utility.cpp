@@ -111,6 +111,24 @@ vector <double> calcLLKs(const vector <double> &refCount,
     return tmpLLKs;
 }
 
+vector <log_double_t> calcSiteLikelihoods(const vector <double> &refCount,
+                                          const vector <double> &altCount,
+                                          const vector <double> &expectedWsaf,
+                                          size_t firstIndex, size_t length,
+                                          double fac, double err) {
+    assert(expectedWsaf.size() == length);
+    vector <log_double_t> siteLikelihoods(length);
+    size_t index = firstIndex;
+    for (size_t i = 0; i < length; i++) {
+        assert(expectedWsaf[i] >= 0);
+        // assert (expectedWsaf[i] <= 1);
+        siteLikelihoods[i] = calcSiteLikelihood(refCount[index], altCount[index],
+                                                expectedWsaf[i], err, fac);
+        index++;
+    }
+    return siteLikelihoods;
+}
+
 
 log_double_t calcSiteLikelihood(double ref, double alt, double unadjustedWsaf, double err,
     double fac) {
