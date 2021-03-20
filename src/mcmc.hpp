@@ -27,6 +27,7 @@
 #include <iostream>
 #include <iomanip>      // std::setw
 #include <string>
+#include <utility>      // std::pair <>
 #include "random/mersenne_twister.hpp"
 #include "dEploidIO.hpp"
 #include "panel.hpp"
@@ -225,7 +226,7 @@ class McmcMachinery {
     /* vector <size_t> sampleNoReplace(MersenneTwister* rg,
      *         vector <double> & proportion, size_t nSample );
      */
-    std::pair<int,int> findUpdatingStrainPair();
+    std::pair<int, int> findUpdatingStrainPair();
 
     /* Debug */
     bool doutProp();
