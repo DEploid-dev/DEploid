@@ -98,7 +98,7 @@ vector <double> calcLLKs(const vector <double> &refCount,
                          const vector <double> &expectedWsaf,
                          size_t firstIndex, size_t length,
                          double fac, double err) {
-    assert(expectedWsaf.size() == length);
+    assert(length <= expectedWsaf.size());
     vector <double> tmpLLKs(length, 0.0);
     size_t index = firstIndex;
     for (size_t i = 0; i < length; i++) {

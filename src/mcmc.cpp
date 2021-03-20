@@ -150,7 +150,7 @@ void McmcMachinery::initializeMcmcChain(bool useIBD) {
 
 
 void McmcMachinery::initializeHap() {
-    assert( currentHap_.size() == 0);
+    currentHap_.clear();
     if ( this->dEploidIO_ -> initialHapWasGiven() ) {
         this->currentHap_ = this->dEploidIO_->initialHap;
         dout << "given initial hap ?" << endl;
@@ -196,7 +196,6 @@ double McmcMachinery::rBernoulli(double p) {
 
 
 void McmcMachinery::initializeExpectedWsaf() {
-    assert( this->currentExpectedWsaf_.size() == 0);
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
     assert( this->currentExpectedWsaf_.size() == this->nLoci_ );
     this->cumExpectedWsaf_ = this->currentExpectedWsaf_;
@@ -204,14 +203,12 @@ void McmcMachinery::initializeExpectedWsaf() {
 
 
 void McmcMachinery::initializellk() {
-    assert( this->currentLLks_.size() == (size_t)0);
     this->currentLLks_ = vector <double> (this->nLoci_, 0.0);
     assert( this->currentLLks_.size() == this->nLoci_);
 }
 
 
 void McmcMachinery::initializeProp() {
-    assert( this->currentProp_.size() == (size_t)0 );
     this->currentProp_ = ( this->dEploidIO_ -> initialPropWasGiven()) ?
                           this->dEploidIO_ ->initialProp:
                           this->titre2prop( this->currentTitre_ );
@@ -236,7 +233,6 @@ log_double_t McmcMachinery::calcPriorTitre(const vector <double> &tmpTitre) {
 
 void McmcMachinery::initializeTitre() {
     /*   titre<-rnorm(initial.k, MN_LOG_TITRE, SD_LOG_TITRE); */
-    assert( currentTitre_.size() == 0);
     currentTitre_ = vector <double> (this->kStrain_, 0.0);
 
     if ( this->dEploidIO_->doUpdateProp() ) {

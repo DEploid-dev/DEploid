@@ -129,7 +129,7 @@ void UpdateSingleHap::calcBwdProbs() {
         bwdLast[i] = 1.0;
     }
     (void)normalizeBySum(bwdLast);
-    assert(bwdProbs_.size() == 0 );
+    bwdProbs_.clear();
     bwdProbs_.push_back(bwdLast);
 
     int j = (this->nLoci_- 1);
@@ -162,7 +162,7 @@ void UpdateSingleHap::calcFwdBwdProbs() {
     this->calcFwdProbs();
     this->calcBwdProbs();
 
-    assert (this->fwdBwdProbs_.size() == 0);
+    this->fwdBwdProbs_.clear();
     for ( size_t j = 0; j < this->nLoci_; j++ ) {
         vector <double> fwdBwdTmp (this->nPanel_, 0.0);
         for ( size_t i = 0 ; i < this->nPanel_; i++ ) {
@@ -176,8 +176,8 @@ void UpdateSingleHap::calcFwdBwdProbs() {
 
 void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes ) {
     //expected.WSAF.0 <- bundle$expected.WSAF - (bundle$prop[ws] * bundle$h[,ws]);
-    assert ( expectedWsaf0_.size() == 0);
-    assert ( expectedWsaf1_.size() == 0);
+    expectedWsaf0_.clear();
+    expectedWsaf1_.clear();
     this->expectedWsaf0_ = vector <double> (expectedWsaf.begin()+this->segmentStartIndex_, expectedWsaf.begin()+(this->segmentStartIndex_+this->nLoci_));
     size_t hapIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < expectedWsaf0_.size(); i++ ) {
@@ -212,7 +212,7 @@ void UpdateSingleHap::buildEmission( double missCopyProb ) {
     vector <double> t1u = vecSum(llk0_, log(missCopyProb));
     vector <double> t2u = vecSum(llk1_, log(missCopyProb));
 
-    assert(emission_.size() == 0 );
+    emission_.clear();
     for ( size_t i = 0; i < this->nLoci_; i++) {
         vector <double> tmp ({t1omu[i], t2omu[i], t1u[i], t2u[i]});
         double tmaxTmp = max_value(tmp);
@@ -226,7 +226,7 @@ void UpdateSingleHap::buildEmission( double missCopyProb ) {
 
 
 void UpdateSingleHap::buildEmissionBasicVersion( double missCopyProb ) {
-    assert(emission_.size() == 0 );
+    emission_.clear();
     for ( size_t i = 0; i < this->nLoci_; i++) {
         vector <double> emissRow ({exp(llk0_[i])*(1.0-missCopyProb) + exp(llk1_[i])*missCopyProb,
                                    exp(llk1_[i])*(1.0-missCopyProb) + exp(llk0_[i])*missCopyProb});
@@ -238,7 +238,7 @@ void UpdateSingleHap::buildEmissionBasicVersion( double missCopyProb ) {
 
 void UpdateSingleHap::calcFwdProbs() {
     size_t hapIndex = this->segmentStartIndex_;
-    assert ( this->fwdProbs_.size() == 0 );
+    this->fwdProbs_.clear();
     vector <double> fwd1st (this->nPanel_, 0.0);
     for ( size_t i = 0 ; i < this->nPanel_; i++) {
         fwd1st[i] = this->emission_[0][this->panel_->content_[hapIndex][i]];
@@ -280,7 +280,7 @@ void UpdateSingleHap::calcHapLLKs( vector <double> &refCount,
 
 
 void UpdateSingleHap::samplePaths() {
-    assert ( this->path_.size() == 0 );
+    this->path_.clear();
     // Sample path at the last position
     size_t pathTmp = sampleIndexGivenProp ( this->recombRg_, fwdProbs_.back() );
     size_t contentIndex = this->segmentStartIndex_ + this->nLoci_ - 1;
@@ -313,7 +313,7 @@ void UpdateSingleHap::samplePaths() {
 
 
 void UpdateSingleHap::addMissCopying( double missCopyProb ) {
-    assert( this->hap_.size() == 0 );
+    this->hap_.clear();
     for ( size_t i = 0; i < this->nLoci_; i++) {
         double tmpMax = max_value ( vector <double>({this->llk0_[i], this->llk1_[i]}));
         vector <double> emissionTmp ({exp(this->llk0_[i]-tmpMax), exp(this->llk1_[i]-tmpMax)});
@@ -333,7 +333,7 @@ void UpdateSingleHap::addMissCopying( double missCopyProb ) {
 
 
 void UpdateSingleHap::sampleHapIndependently( vector <double> &plaf ) {
-    assert( this->hap_.size() == 0 );
+    this->hap_.clear();
     size_t plafIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < this->nLoci_; i++) {
         double tmpMax = max_value ( vector <double> ( {llk0_[i], llk1_[i]} ) ) ;
@@ -499,7 +499,7 @@ void UpdatePairHap:: buildEmission( double missCopyProb ) {
                     //exp( tmp.01.1-tmp.max ) + exp( tmp.01.2-tmp.max ) + exp( tmp.01.3-tmp.max ) + exp( tmp.01.4-tmp.max ),
                     //exp( tmp.11.1-tmp.max ) + exp( tmp.11.2-tmp.max ) + exp( tmp.11.3-tmp.max ) + exp( tmp.11.4-tmp.max ))
 
-    assert(this->emission_.size() == 0 );
+    this->emission_.clear();
     for ( size_t i = 0; i < this->nLoci_; i++) {
         vector <double> tmp ({tmp_00_1[i], tmp_00_2[i], tmp_00_3[i], tmp_00_4[i],
                               tmp_01_1[i], tmp_01_2[i], tmp_01_3[i], tmp_01_4[i],
@@ -542,7 +542,7 @@ vector <double> UpdatePairHap::computeColMarginalDist( vector < vector < double 
 
 void UpdatePairHap:: calcFwdProbs( bool forbidCopyFromSame ) {
     size_t hapIndex = this->segmentStartIndex_;
-    assert ( this->fwdProbs_.size() == 0 );
+    this->fwdProbs_.clear();
     vector < vector < double > > fwd1st;
     for ( size_t i = 0 ; i < this->nPanel_; i++) {  // Row of the matrix
         size_t rowObs = (size_t)this->panel_->content_[0][i];
@@ -598,8 +598,8 @@ vector <size_t> UpdatePairHap::sampleMatrixIndex( vector < vector < double > > &
 
 
 void UpdatePairHap::samplePaths() {
-    assert ( this->path1_.size() == 0 );
-    assert ( this->path2_.size() == 0 );
+    this->path1_.clear();
+    this->path2_.clear();
 
     vector <size_t> tmpPath = sampleMatrixIndex(fwdProbs_[nLoci_-1]);
     size_t rowI = tmpPath[0];
@@ -675,8 +675,8 @@ void UpdatePairHap::samplePaths() {
 
 
 void UpdatePairHap::addMissCopying( double missCopyProb ) {
-    assert( this->hap1_.size() == 0 );
-    assert( this->hap2_.size() == 0 );
+    this->hap1_.clear();
+    this->hap2_.clear();
 
     for ( size_t i = 0; i < this->nLoci_; i++) {
         double tmpMax = max_value ( vector <double>({this->llk00_[i], this->llk01_[i], this->llk10_[i], this->llk11_[i]}));
@@ -714,8 +714,8 @@ void UpdatePairHap::addMissCopying( double missCopyProb ) {
 
 
 void UpdatePairHap::sampleHapIndependently(vector <double> &plaf) {
-    assert( this->hap1_.size() == 0 );
-    assert( this->hap2_.size() == 0 );
+    this->hap1_.clear();
+    this->hap2_.clear();
 
     size_t plafIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < this->nLoci_; i++) {
