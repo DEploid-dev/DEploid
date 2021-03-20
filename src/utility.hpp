@@ -117,9 +117,23 @@ template < class T > T n_choose_k(T n, T k) {
 }
 
 
+template <typename T>
+T min_value(const vector<T>& xs)
+{
+    assert(xs.size() > 0);
+    auto it = std::min_element(xs.begin(), xs.end());
+    return *it;
+}
+
+template <typename T>
+T max_value(const vector<T>& xs)
+{
+    assert(xs.size() > 0);
+    auto it = std::max_element(xs.begin(), xs.end());
+    return *it;
+}
+
 double normal_pdf(double x, double m, double s);
-double min_value(vector <double> x);
-double max_value(vector <double> x);
 vector <double> computeCdf(const vector <double> & dist);
 double sumOfMat(const vector <vector <double> > & matrix);
 void normalizeBySum(vector <double> & array);

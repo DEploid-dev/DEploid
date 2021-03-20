@@ -42,20 +42,6 @@ double normal_pdf(double x, double m, double s) {
 }
 
 
-double min_value(vector <double> x) {
-    assert(x.size() > 0);
-    auto tmpMaxIt = std::min_element(std::begin(x), std::end(x));
-    return *tmpMaxIt;
-}
-
-
-double max_value(vector <double> x) {
-    assert(x.size() > 0);
-    auto tmpMaxIt = std::max_element(std::begin(x), std::end(x));
-    return *tmpMaxIt;
-}
-
-
 vector <double> computeCdf(const vector <double> & dist) {
     vector <double> cdf;
     double cumsum = 0;
