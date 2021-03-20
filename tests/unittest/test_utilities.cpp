@@ -253,32 +253,46 @@ class TestUtility : public CppUnit::TestCase {
 
     void testCalcLLK() {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
-          log(calcSiteLikelihood(0, 0, 0.0, this->err_, this->scalingFactor_)), ep2);
+          log(calcSiteLikelihood(0, 0, 0.0, this->err_, this->scalingFactor_)),
+          ep2);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
-          log(calcSiteLikelihood(0, 0, 1.0, this->err_, this->scalingFactor_)), ep2);
+          log(calcSiteLikelihood(0, 0, 1.0, this->err_, this->scalingFactor_)),
+          ep2);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,
-          log(calcSiteLikelihood(0, 0, 0.5, this->err_, this->scalingFactor_)), ep2);
+          log(calcSiteLikelihood(0, 0, 0.5, this->err_, this->scalingFactor_)),
+          ep2);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.09622803,
-          log(calcSiteLikelihood(10, 0, 0.0, this->err_, this->scalingFactor_)), ep2);
+          log(calcSiteLikelihood(10, 0, 0.0, this->err_, this->scalingFactor_)),
+          ep2);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(-31.38367782,
-          log(calcSiteLikelihood(10, 0, 1.0, this->err_, this->scalingFactor_)), ep2);
+          log(calcSiteLikelihood(10, 0, 1.0, this->err_, this->scalingFactor_)),
+          ep2);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(-6.520005876,
-          log(calcSiteLikelihood(10, 0, 0.5, this->err_, this->scalingFactor_)), ep2);
+          log(calcSiteLikelihood(10, 0, 0.5, this->err_, this->scalingFactor_)),
+          ep2);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(-92.39749823,
-          log(calcSiteLikelihood(0, 50, 0.0, this->err_, this->scalingFactor_)), ep2);
+          log(calcSiteLikelihood(0, 50, 0.0, this->err_, this->scalingFactor_)),
+          ep2);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.4088264558,
-          log(calcSiteLikelihood(0, 50, 1.0, this->err_, this->scalingFactor_)), ep2);
+          log(calcSiteLikelihood(0, 50, 1.0, this->err_, this->scalingFactor_)),
+          ep2);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(-26.30680376,
-          log(calcSiteLikelihood(0, 50, 0.5, this->err_, this->scalingFactor_)), ep2);
+          log(calcSiteLikelihood(0, 50, 0.5, this->err_, this->scalingFactor_)),
+          ep2);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(-39.454802987,
-          log(calcSiteLikelihood(11, 13, 0.0, this->err_, this->scalingFactor_)), ep2);
+          log(calcSiteLikelihood(11, 13, 0.0, this->err_,
+                                 this->scalingFactor_)),
+          ep2);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(-82.7561739077,
-          log(calcSiteLikelihood(41, 2, 1.0, this->err_, this->scalingFactor_)), ep2);
+          log(calcSiteLikelihood(41, 2, 1.0, this->err_, this->scalingFactor_)),
+          ep2);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(-71.6257227,
-          log(calcSiteLikelihood(23, 99, 0.5, this->err_, this->scalingFactor_)), ep2);
+          log(calcSiteLikelihood(23, 99, 0.5, this->err_,
+                                 this->scalingFactor_)),
+          ep2);
     }
 
 

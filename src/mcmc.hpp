@@ -27,7 +27,7 @@
 #include <iostream>
 #include <iomanip>      // std::setw
 #include <string>
-#include <utility>      // std::pair <>
+#include <utility>      // std::pair<>
 #include "random/mersenne_twister.hpp"
 #include "dEploidIO.hpp"
 #include "panel.hpp"
