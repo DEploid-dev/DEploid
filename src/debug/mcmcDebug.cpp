@@ -39,6 +39,6 @@ bool McmcMachinery::doutProp() {
 
 bool McmcMachinery::doutLLK() {
     dout << " Current log likelihood = " <<
-            sumOfVec(this->currentLLks_) << endl;
+        log(product(this->currentSiteLikelihoods_)) << endl;
     return true;
 }

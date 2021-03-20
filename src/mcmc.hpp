@@ -154,7 +154,7 @@ class McmcMachinery {
     /* Cached computations of MCMC state */
     log_double_t currentPriorTitre_;
     vector <double> currentProp_;
-    vector <double> currentLLks_;
+    vector <log_double_t> currentSiteLikelihoods_;
     vector < double > currentExpectedWsaf_;
 
     /* Statistics */
@@ -218,7 +218,7 @@ class McmcMachinery {
     /* Moves */
     void updateProportion();
     vector <double> calcTmpTitre();
-    log_double_t calcLikelihoodRatio(const vector <double> &newLLKs);
+    log_double_t calcLikelihoodRatio(const vector <log_double_t> &newLLKs);
 
     void updateSingleHap(Panel *useThisPanel);
     int findUpdatingStrainSingle();

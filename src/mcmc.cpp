@@ -116,7 +116,7 @@ void McmcMachinery::initializeMcmcChain(bool useIBD) {
     this->initializeHap();
     this->initializeProp();
     this->initializeExpectedWsaf(); // This requires currentHap_ and currentProp_
-    this->currentLLks_ = calcLLKs( *this->refCount_ptr_, *this->altCount_ptr_, this->currentExpectedWsaf_ , 0, this->currentExpectedWsaf_.size(), this->dEploidIO_->scalingFactor());
+    this->currentSiteLikelihoods_ = calcSiteLikelihoods( *this->refCount_ptr_, *this->altCount_ptr_, this->currentExpectedWsaf_ , 0, this->currentExpectedWsaf_.size(), this->dEploidIO_->scalingFactor());
     this->acceptUpdate = 0;
 
     if ( this->dEploidIO_->doAllowInbreeding() == true ) {
@@ -203,8 +203,8 @@ void McmcMachinery::initializeExpectedWsaf() {
 
 
 void McmcMachinery::initializellk() {
-    this->currentLLks_ = vector <double> (this->nLoci_, 0.0);
-    assert( this->currentLLks_.size() == this->nLoci_);
+    this->currentSiteLikelihoods_ = vector <log_double_t> (this->nLoci_, 1.0);
+    assert( this->currentSiteLikelihoods_.size() == this->nLoci_);
 }
 
 
@@ -374,8 +374,8 @@ void McmcMachinery::computeDiagnostics() {
             this->cumExpectedWsaf_[i] = 1;
         }
     }
-    vector <double> tmpLLKs1 = calcLLKs (*this->refCount_ptr_, *this->altCount_ptr_, this->cumExpectedWsaf_, 0, this->cumExpectedWsaf_.size(), this->dEploidIO_->scalingFactor());
-    this->dEploidIO_->setmeanThetallks( sumOfVec(tmpLLKs1) );
+    auto tmpSiteLikelihoods1 = calcSiteLikelihoods (*this->refCount_ptr_, *this->altCount_ptr_, this->cumExpectedWsaf_, 0, this->cumExpectedWsaf_.size(), this->dEploidIO_->scalingFactor());
+    this->dEploidIO_->setmeanThetallks( log(product(tmpSiteLikelihoods1) ) );
 
     vector <double> wsaf_vec;
     for ( size_t i = 0; i < nLoci(); i++) {
@@ -384,8 +384,8 @@ void McmcMachinery::computeDiagnostics() {
         wsaf_vec.push_back(adjustedWsaf);
         //llkOfData.push_back( logBetaPdf(adjustedWsaf, this->llkSurf[i][0], this->llkSurf[i][1]));
     }
-    vector <double> tmpLLKs = calcLLKs (*this->refCount_ptr_, *this->altCount_ptr_, wsaf_vec, 0, wsaf_vec.size(), this->dEploidIO_->scalingFactor());
-    this->dEploidIO_->setmaxLLKs( sumOfVec(tmpLLKs) );
+    auto tmpSiteLikelihoods = calcSiteLikelihoods (*this->refCount_ptr_, *this->altCount_ptr_, wsaf_vec, 0, wsaf_vec.size(), this->dEploidIO_->scalingFactor());
+    this->dEploidIO_->setmaxLLKs( log(product(tmpSiteLikelihoods) ) );
 
     double sum = std::accumulate(this->mcmcSample_->sumLLKs.begin(), this->mcmcSample_->sumLLKs.end(), 0.0);
     double mean = sum / this->mcmcSample_->sumLLKs.size();
@@ -399,7 +399,7 @@ void McmcMachinery::computeDiagnostics() {
     this->dEploidIO_->setdicByVar(dicByVar);
      //return (  mean(-2*tmpllk) + var(-2*tmpllk)/2 )# D_bar + 1/2 var (D_theta), where D_theta = -2*tmpllk, and D_bar = mean(D_theta)
 
-    double dicWSAFBar = -2 * sumOfVec(tmpLLKs1);
+    double dicWSAFBar = -2 * log(product(tmpSiteLikelihoods1));
     double dicByTheta = (-2*mean) + (-2*mean) - dicWSAFBar;
     this->dEploidIO_->setdicByTheta(dicByTheta);
     //DIC.WSAF.bar = -2 * sum(thetallk)
@@ -493,7 +493,11 @@ void McmcMachinery::ibdSampleMcmcEventStep() {
     // Compute new theta after all proportion and haplotypes are up to date.
     this->ibdPath.computeAndUpdateTheta();
 
-    this->currentLLks_ = updatedllkAtAllSites;
+    // this->currentSiteLikelihoods_ = updatedllkAtAllSites;
+    this->currentSiteLikelihoods_.resize(updatedllkAtAllSites.size());
+    for(int i=0;i<updatedllkAtAllSites.size();i++)
+        currentSiteLikelihoods_[i] = exp_to<log_double_t>(updatedllkAtAllSites[i]);
+
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
 }
 
@@ -566,7 +570,7 @@ vector <double> McmcMachinery::calcExpectedWsaf(const vector <double> &proportio
 void McmcMachinery::recordMcmcMachinery() {
     dout << "***Record mcmc sample " <<endl;
     this->mcmcSample_->proportion.push_back(this->currentProp_);
-    this->mcmcSample_->sumLLKs.push_back(sumOfVec(this->currentLLks_));
+    this->mcmcSample_->sumLLKs.push_back(log(product(this->currentSiteLikelihoods_)));
     this->mcmcSample_->moves.push_back(this->eventInt_);
 
     // Cumulate expectedWSAF for computing the mean expectedWSAF
@@ -594,8 +598,8 @@ void McmcMachinery::updateProportion() {
     }
 
     vector <double> tmpExpecedWsaf = calcExpectedWsaf(tmpProp);
-    vector <double> tmpLLKs = calcLLKs (*this->refCount_ptr_, *this->altCount_ptr_, tmpExpecedWsaf, 0, tmpExpecedWsaf.size(), this->dEploidIO_->scalingFactor());
-    auto likelihoodRatio = this->calcLikelihoodRatio(tmpLLKs);
+    auto tmpSiteLikelihoods = calcSiteLikelihoods (*this->refCount_ptr_, *this->altCount_ptr_, tmpExpecedWsaf, 0, tmpExpecedWsaf.size(), this->dEploidIO_->scalingFactor());
+    auto likelihoodRatio = this->calcLikelihoodRatio(tmpSiteLikelihoods);
     auto tmpPriorTitre = calcPriorTitre( tmpTitre );
     auto priorPropRatio = tmpPriorTitre / this->currentPriorTitre_;
     double hastingsRatio = 1.0;
@@ -610,7 +614,7 @@ void McmcMachinery::updateProportion() {
     this->acceptUpdate++;
 
     this->currentExpectedWsaf_ = tmpExpecedWsaf;
-    this->currentLLks_ = tmpLLKs;
+    this->currentSiteLikelihoods_ = tmpSiteLikelihoods;
     this->currentPriorTitre_ = tmpPriorTitre;
     this->currentTitre_ = tmpTitre;
     this->currentProp_ = tmpProp;
@@ -619,9 +623,8 @@ void McmcMachinery::updateProportion() {
 }
 
 
-log_double_t McmcMachinery::calcLikelihoodRatio (const vector <double> &newLLKs ) {
-    vector <double> tmpdiff = vecDiff ( newLLKs,  this->currentLLks_);
-    return exp_to<log_double_t>(sumOfVec(tmpdiff));
+log_double_t McmcMachinery::calcLikelihoodRatio (const vector <log_double_t> &newSiteLikelihoods ) {
+    return product(newSiteLikelihoods) / product(currentSiteLikelihoods_);
 }
 
 
@@ -680,7 +683,7 @@ void McmcMachinery::updateSingleHap(Panel *useThisPanel) {
         size_t updateIndex = 0;
         for ( size_t ii = start ; ii < (start+length); ii++ ) {
             this->currentHap_[ii][strainIndex] = updating.hap_[updateIndex];
-            this->currentLLks_[ii] = updating.newLLK[updateIndex];
+            this->currentSiteLikelihoods_[ii] = exp_to<log_double_t>(updating.newLLK[updateIndex]);
             updateIndex++;
         }
 
@@ -726,7 +729,7 @@ void McmcMachinery::updatePairHaps(Panel *useThisPanel) {
         for ( size_t ii = start ; ii < (start+length); ii++ ) {
             this->currentHap_[ii][strainIndex1] = updating.hap1_[updateIndex];
             this->currentHap_[ii][strainIndex2] = updating.hap2_[updateIndex];
-            this->currentLLks_[ii] = updating.newLLK[updateIndex];
+            this->currentSiteLikelihoods_[ii] = exp_to<log_double_t>(updating.newLLK[updateIndex]);
             updateIndex++;
         }
 
