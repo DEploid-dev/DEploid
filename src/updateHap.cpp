@@ -206,14 +206,11 @@ void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <
 
 
 void UpdateSingleHap::buildEmission( double missCopyProb ) {
-    vector <double> noMissProb (this->nLoci_, log(1.0 - missCopyProb));
-    vector <double> t1omu = vecSum(llk0_, noMissProb); // t1 one minus u
-    vector <double> t2omu = vecSum(llk1_, noMissProb); // t2 one minus u
+    vector <double> t1omu = vecSum(llk0_, log(1.0 - missCopyProb));  // t1 one minus u
+    vector <double> t2omu = vecSum(llk1_, log(1.0 - missCopyProb));  // t2 one minus u
 
-
-    vector <double> missProb (this->nLoci_, log(missCopyProb));
-    vector <double> t1u = vecSum(llk0_, missProb);
-    vector <double> t2u = vecSum(llk1_, missProb);
+    vector <double> t1u = vecSum(llk0_, log(missCopyProb));
+    vector <double> t2u = vecSum(llk1_, log(missCopyProb));
 
     assert(emission_.size() == 0 );
     for ( size_t i = 0; i < this->nLoci_; i++) {
