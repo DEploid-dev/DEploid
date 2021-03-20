@@ -206,30 +206,29 @@ void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <
 
 
 void UpdateSingleHap::buildEmission( double missCopyProb ) {
-    vector <double> t1omu = vecSum(llk0_, log(1.0 - missCopyProb));  // t1 one minus u
-    vector <double> t2omu = vecSum(llk1_, log(1.0 - missCopyProb));  // t2 one minus u
+    auto t1omu = vecProd(siteLikelihoods0_, log_double_t(1.0 - missCopyProb));  // t1 one minus u
+    auto t2omu = vecProd(siteLikelihoods1_, log_double_t(1.0 - missCopyProb));  // t2 one minus u
 
-    vector <double> t1u = vecSum(llk0_, log(missCopyProb));
-    vector <double> t2u = vecSum(llk1_, log(missCopyProb));
+    auto t1u = vecProd(siteLikelihoods0_, log_double_t(missCopyProb));
+    auto t2u = vecProd(siteLikelihoods1_, log_double_t(missCopyProb));
 
     emission_.clear();
     for ( size_t i = 0; i < this->nLoci_; i++) {
-        vector <double> tmp ({t1omu[i], t2omu[i], t1u[i], t2u[i]});
-        double tmaxTmp = max_value(tmp);
-        vector <double> emissRow ({exp(t1omu[i] - tmaxTmp) + exp(t2u[i] - tmaxTmp),
-                                   exp(t2omu[i] - tmaxTmp) + exp(t1u[i] - tmaxTmp)});
+        vector <log_double_t> tmp ({t1omu[i], t2omu[i], t1u[i], t2u[i]});
+        auto tmaxTmp = max_value(tmp);
+        vector <double> emissRow ({(t1omu[i] / tmaxTmp) + (t2u[i] / tmaxTmp),
+                                   (t2omu[i] / tmaxTmp) + (t1u[i] / tmaxTmp)});
 
         this->emission_.push_back(emissRow);
     }
-
 }
 
 
 void UpdateSingleHap::buildEmissionBasicVersion( double missCopyProb ) {
     emission_.clear();
     for ( size_t i = 0; i < this->nLoci_; i++) {
-        vector <double> emissRow ({exp(llk0_[i])*(1.0-missCopyProb) + exp(llk1_[i])*missCopyProb,
-                                   exp(llk1_[i])*(1.0-missCopyProb) + exp(llk0_[i])*missCopyProb});
+        vector <double> emissRow ({siteLikelihoods0_[i]*(1.0-missCopyProb) + siteLikelihoods1_[i]*missCopyProb,
+                                   siteLikelihoods1_[i]*(1.0-missCopyProb) + siteLikelihoods0_[i]*missCopyProb});
 
         this->emission_.push_back(emissRow);
     }
@@ -242,6 +241,7 @@ void UpdateSingleHap::calcFwdProbs() {
     vector <double> fwd1st (this->nPanel_, 0.0);
     for ( size_t i = 0 ; i < this->nPanel_; i++) {
         fwd1st[i] = this->emission_[0][this->panel_->content_[hapIndex][i]];
+        assert(fwd1st[i] >= 0);
     }
     (void)normalizeBySum(fwd1st);
     this->fwdProbs_.push_back(fwd1st);
@@ -257,6 +257,7 @@ void UpdateSingleHap::calcFwdProbs() {
         vector <double> fwdTmp (this->nPanel_, 0.0);
         for ( size_t i = 0 ; i < this->nPanel_; i++) {
             fwdTmp[i] = this->emission_[j][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec);
+            assert(fwdTmp[i] >= 0);
             //if ( i >= this->panel_->truePanelSize() ) {
                 //fwdTmp[i] = this->emission_[j][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec) * inbreedProb;
             //} else {
@@ -272,10 +273,10 @@ void UpdateSingleHap::calcFwdProbs() {
 
 void UpdateSingleHap::calcHapLLKs( vector <double> &refCount,
                                    vector <double> &altCount) {
-    this->llk0_ = calcLLKs( refCount, altCount, expectedWsaf0_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
-    this->llk1_ = calcLLKs( refCount, altCount, expectedWsaf1_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
-    assert( this->llk0_.size() == this->nLoci_ );
-    assert( this->llk1_.size() == this->nLoci_ );
+    this->siteLikelihoods0_ = calcSiteLikelihoods( refCount, altCount, expectedWsaf0_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
+    this->siteLikelihoods1_ = calcSiteLikelihoods( refCount, altCount, expectedWsaf1_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
+    assert( this->siteLikelihoods0_.size() == this->nLoci_ );
+    assert( this->siteLikelihoods1_.size() == this->nLoci_ );
 }
 
 
@@ -315,8 +316,8 @@ void UpdateSingleHap::samplePaths() {
 void UpdateSingleHap::addMissCopying( double missCopyProb ) {
     this->hap_.clear();
     for ( size_t i = 0; i < this->nLoci_; i++) {
-        double tmpMax = max_value ( vector <double>({this->llk0_[i], this->llk1_[i]}));
-        vector <double> emissionTmp ({exp(this->llk0_[i]-tmpMax), exp(this->llk1_[i]-tmpMax)});
+        auto tmpMax = std::max(siteLikelihoods0_[i], siteLikelihoods1_[i]);
+        vector <log_double_t> emissionTmp ({siteLikelihoods0_[i]/tmpMax, siteLikelihoods1_[i]/tmpMax});
         vector <double> sameDiffDist ({emissionTmp[path_[i]]*(1.0 - missCopyProb), // probability of the same
                                        emissionTmp[(size_t)(1 -path_[i])] * missCopyProb }); // probability of differ
 
@@ -336,9 +337,9 @@ void UpdateSingleHap::sampleHapIndependently( vector <double> &plaf ) {
     this->hap_.clear();
     size_t plafIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < this->nLoci_; i++) {
-        double tmpMax = max_value ( vector <double> ( {llk0_[i], llk1_[i]} ) ) ;
-        vector <double> tmpDist ( {exp(llk0_[i] - tmpMax) * (1.0-plaf[plafIndex]),
-                                   exp(llk1_[i] - tmpMax) * plaf[plafIndex] } );
+        auto tmpMax = std::max( siteLikelihoods0_[i], siteLikelihoods1_[i] );
+        vector <double> tmpDist ( {siteLikelihoods0_[i]/tmpMax * (1.0-plaf[plafIndex]),
+                                   siteLikelihoods1_[i]/tmpMax *       plaf[plafIndex] } );
         (void)normalizeBySum(tmpDist);
         this->hap_.push_back ( sampleIndexGivenProp(this->recombRg_, tmpDist) );
         plafIndex++;
@@ -351,9 +352,9 @@ void UpdateSingleHap::updateLLK() {
     newLLK = vector <double> (this->nLoci_, 0.0);
     for ( size_t i = 0; i < this->nLoci_; i++) {
         if ( this->hap_[i] == 0) {
-            newLLK[i] = llk0_[i];
+            newLLK[i] = log(siteLikelihoods0_[i]);
         } else if (this->hap_[i] == 1) {
-            newLLK[i] = llk1_[i];
+            newLLK[i] = log(siteLikelihoods1_[i]);
         } else {
             throw ShouldNotBeCalled();
         }
