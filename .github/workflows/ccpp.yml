@@ -72,7 +72,7 @@ jobs:
           ccache --set-config=cache_dir=$HOME/.ccache
 
     - name: Install python packages
-      run: python3 -mpip install cpp-overalls cpplint
+      run: python3 -mpip install cpp-coveralls cpplint
 
     - name: Check style
       run: .ci/style.sh
