@@ -124,5 +124,6 @@ jobs:
     - name: docs
       run:  if [ $TRAVIS_OS_NAME == linux ]; then cd docs/doxygen; doxygen Doxyfile;  fi
 
-    - name: coverage
-      run: coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --exclude src/gzstream/ --gcov-options '\-lp'
+#  See: https://github.com/marketplace/actions/coveralls-github-action
+#    - name: coverage
+#      run: coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --exclude src/gzstream/ --gcov-options '\-lp'
