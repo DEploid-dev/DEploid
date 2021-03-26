@@ -65,7 +65,7 @@ jobs:
     - name: Install dependencies (macOS)
       if: runner.os == 'macOS'
       run: |
-          brew install cppunit r lcov doxygen graphviz ccache
+          brew install cppunit r lcov doxygen graphviz ccache coreutils
           echo "DEVELOPER_DIR=/Applications/Xcode_${{ matrix.version }}.app/Contents/Developer" >> $GITHUB_ENV
           echo "CC=ccache clang" >> $GITHUB_ENV
           echo "CXX=ccache clang++" >> $GITHUB_ENV
