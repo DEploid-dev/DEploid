@@ -51,7 +51,7 @@ jobs:
     - name: Install dependencies (linux)
       if: runner.os == 'Linux' && matrix.name != 'windows'
       run: |
-        sudo apt-get install libcppunit-dev valgrind r-base-core lcov doxygen graphviz
+        sudo apt-get install libcppunit-dev valgrind r-base-core lcov doxygen graphviz ccache
         if [ "${{ matrix.compiler }}" = "gcc" ]; then
           sudo apt-get install -y g++-${{ matrix.version }}
           echo "CC=ccache gcc-${{ matrix.version }}" >> $GITHUB_ENV
@@ -65,7 +65,7 @@ jobs:
     - name: Install dependencies (macOS)
       if: runner.os == 'macOS'
       run: |
-          brew install cppunit r lcov doxygen graphviz
+          brew install cppunit r lcov doxygen graphviz ccache
           echo "DEVELOPER_DIR=/Applications/Xcode_${{ matrix.version }}.app/Contents/Developer" >> $GITHUB_ENV
           echo "CC=ccache clang" >> $GITHUB_ENV
           echo "CXX=ccache clang++" >> $GITHUB_ENV
@@ -76,6 +76,25 @@ jobs:
 
     - name: Check style
       run: .ci/style.sh
+
+    - name: Prepare ccache timestamp
+      id: ccache_cache_timestamp
+      run: |
+        if [ "$RUNNER_OS" = "Linux" ]; then
+          stamp=$(date '+%s')
+        else
+          stamp=$(gdate '+%s')
+        fi
+        echo "${stamp}"
+        echo "::set-output name=timestamp::${stamp}"
+
+    - name: ccache cache files
+      uses: actions/cache@v2
+      with:
+         path: ~/.ccache
+         key: ${{ matrix.name }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
+         restore-keys: |
+           ${{ matrix.name }}-ccache-
 
     - name: configure
       run: ./bootstrap
