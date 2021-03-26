@@ -10,6 +10,8 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
         name: [ubuntu-gcc-9,
                ubuntu-gcc-10,
                ubuntu-clang-9,
