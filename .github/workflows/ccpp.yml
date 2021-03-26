@@ -1,20 +1,107 @@
-name: C/C++ CI
+name: Build and test
 
-on: [push]
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+    - "*"
 
 jobs:
   build:
+        name: [ubuntu-gcc-9,
+               ubuntu-gcc-10,
+               ubuntu-clang-9,
+               macos-xcode-12.3,
+               ]
 
-    runs-on: ubuntu-latest
+        include:
+          - name: ubuntu-gcc-9
+            os: ubuntu-latest
+            compiler: gcc
+            version: "9"
+
+          - name: ubuntu-gcc-10
+            os: ubuntu-latest
+            compiler: gcc
+            version: "10"
+
+          - name: ubuntu-clang-9
+            os: ubuntu-latest
+            compiler: clang
+            version: "9"
+
+          - name: macos-xcode-12.3
+            os: macos-latest
+            compiler: xcode
+            version: "12.3"
+
+    runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v1
-    - name: dependency
-      run: sudo apt-get install libcppunit-dev 
+
+    - uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies (linux)
+      if: runner.os == 'Linux' && matrix.name != 'windows'
+      run: |
+        sudo apt-get install libcppunit-dev valgrind r-base-core lcov doxygen graphviz
+        if [ "${{ matrix.compiler }}" = "gcc" ]; then
+          sudo apt-get install -y g++-${{ matrix.version }}
+          echo "CC=ccache gcc-${{ matrix.version }}" >> $GITHUB_ENV
+          echo "CXX=ccache g++-${{ matrix.version }}" >> $GITHUB_ENV
+        else
+          sudo apt-get install -y clang-${{ matrix.version }}
+          echo "CC=ccache clang-${{ matrix.version }}" >> $GITHUB_ENV
+          echo "CXX=ccache clang++-${{ matrix.version }}" >> $GITHUB_ENV
+        fi
+
+    - name: Install dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: |
+          brew install cppunit valgrind r lcov doxygen graphviz
+          echo "DEVELOPER_DIR=/Applications/Xcode_${{ matrix.version }}.app/Contents/Developer" >> $GITHUB_ENV
+          echo "CC=ccache clang" >> $GITHUB_ENV
+          echo "CXX=ccache clang++" >> $GITHUB_ENV
+          ccache --set-config=cache_dir=$HOME/.ccache
+
+    - name: Install python packages
+      run: python3 -mpip install cpp-overalls cpplint
+
+    - name: Check style
+      run: .ci/style.sh
+
     - name: configure
       run: ./bootstrap
+
     - name: make
       run: make
+
     - name: make check
       run: make check
 
+    - name: make install
+      run: sudo make install
+
+    - name: test
+      run: |
+         echo ::group::binary
+         ./tests/test_binary.sh;
+         echo ::group::POS
+         ./tests/testPOS.sh
+         echo ::group::binaryVcf
+         ./tests/test_binaryVcfVsTxt.sh
+         echo ::group::test-against-previous-version
+         ./tests/test-against-previous-version.sh
+         echo ::group::binary reproducible
+         ./tests/test_binaryReproducible.sh
+
+    - name: docs
+    - run:  if [ $TRAVIS_OS_NAME == linux ]; then cd docs/doxygen; doxygen Doxyfile;  fi
+
+    - name: coverage
+      run: coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --exclude src/gzstream/ --gcov-options '\-lp'
