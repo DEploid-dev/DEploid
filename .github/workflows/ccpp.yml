@@ -110,8 +110,8 @@ jobs:
 
     - name: test
       run: |
-         echo ::group::binary
-         ./tests/test_binary.sh;
+         # Mac OS does not have valgrind!
+         if [ "$RUNNER_OS" == Linux ]; then echo ::group::binary ; ./tests/test_binary.sh; fi
          echo ::group::POS
          ./tests/testPOS.sh
          echo ::group::binaryVcf
