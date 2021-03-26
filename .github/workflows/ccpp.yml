@@ -100,10 +100,10 @@ jobs:
       run: ./bootstrap
 
     - name: make
-      run: make
+      run: make -j4
 
     - name: make check
-      run: make check
+      run: make -j4 check
 
     - name: make install
       run: sudo make install
