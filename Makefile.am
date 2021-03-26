@@ -13,7 +13,7 @@ bin_PROGRAMS = dEploid dEploid_dbg
 man1_MANS = docs/_build/man/dEploid.1
 
 TESTS = unit_tests io_unit_tests
-check_PROGRAMS = unit_tests dEploid_dbg dEploid_prof io_unit_tests current_unit_tests
+check_PROGRAMS = unit_tests dEploid_dbg io_unit_tests current_unit_tests # dEploid_prof
 PROG = DEPLOID
 
 common_flags = -std=c++0x -Isrc/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DLASSOVERSION=\"${LASSOVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
