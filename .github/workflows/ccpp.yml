@@ -124,6 +124,15 @@ jobs:
     - name: docs
       run:  if [ $TRAVIS_OS_NAME == linux ]; then cd docs/doxygen; doxygen Doxyfile;  fi
 
+    - name: run coverage
+      if: matrix.name == 'ubuntu-gcc-9'
+      run: |
+         tests/test-coverage-coverall.sh
+
 #  See: https://github.com/marketplace/actions/coveralls-github-action
-#    - name: coverage
-#      run: coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --exclude src/gzstream/ --gcov-options '\-lp'
+    - name: Coveralls
+      if: matrix.name == 'ubuntu-gcc-9'
+      uses: coverallsapp/github-action@v1.1.2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+      #run: coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --exclude src/gzstream/ --gcov-options '\-lp'
