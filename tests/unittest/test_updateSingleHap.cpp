@@ -174,8 +174,8 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
         //CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->calcExpectedWsaf( this->expectedWsaf_, this->proportion_, this->haplotypes_) );
         //CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->calcHapLLKs (this->refCount_, this->altCount_) );
 
-        this->updateSingleHapPanel1_->llk0_ = vector <double> (7, log(0.1));
-        this->updateSingleHapPanel1_->llk1_ = vector <double> (7, log(0.9));
+        this->updateSingleHapPanel1_->siteLikelihoods0_ = vector <log_double_t> (7, log_double_t(0.1));
+        this->updateSingleHapPanel1_->siteLikelihoods1_ = vector <log_double_t> (7, log_double_t(0.9));
 
         CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->buildEmission ( 0.0 ) );
         CPPUNIT_ASSERT_NO_THROW( this->updateSingleHapPanel1_->calcFwdBwdProbs() );
@@ -191,45 +191,45 @@ class TestUpdateSingleHap : public CppUnit::TestCase {
     }
 
     void testEmissionProb0 (){
-        double llk0_1 = log(0.05), llk0_2 = log(0.03), llk0_3 = log(0);
-        double llk1_1 = log(0.5), llk1_2 = log(0.0003), llk1_3 = log(1);
-        this->updateSingleHapPanel1_->llk0_ = vector <double> ({llk0_1, llk0_2, llk0_3});
-        this->updateSingleHapPanel1_->llk1_ = vector <double> ({llk1_1, llk1_2, llk1_3});
+        log_double_t lk0_1 = 0.05, lk0_2 = 0.03, lk0_3 = 0;
+        log_double_t lk1_1 = 0.5, lk1_2 = 0.0003, lk1_3 = 1;
+        this->updateSingleHapPanel1_->siteLikelihoods0_ = {lk0_1, lk0_2, lk0_3};
+        this->updateSingleHapPanel1_->siteLikelihoods1_ = {lk1_1, lk1_2, lk1_3};
         this->updateSingleHapPanel1_->nLoci_ = 3;
         CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPanel1_->buildEmission ( 0.0 ) );
         CPPUNIT_ASSERT_EQUAL ( (size_t)2, this->updateSingleHapPanel1_->emission_[0].size() );
         CPPUNIT_ASSERT_EQUAL ( (size_t)2, this->updateSingleHapPanel1_->emission_[1].size() );
         CPPUNIT_ASSERT_EQUAL ( (size_t)2, this->updateSingleHapPanel1_->emission_[2].size() );
         CPPUNIT_ASSERT_EQUAL ( (size_t)2, this->updateSingleHapPanel1_->emission_.back().size() );
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_1-llk1_1), updateSingleHapPanel1_->emission_[0][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(lk0_1/lk1_1, updateSingleHapPanel1_->emission_[0][0], epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.05/0.5, updateSingleHapPanel1_->emission_[0][0], epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel1_->emission_[0][1], epsilon3);
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel1_->emission_[1][0], epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0003/0.03, updateSingleHapPanel1_->emission_[1][1], epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_2-llk0_2), updateSingleHapPanel1_->emission_[1][1], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(lk1_2/lk0_2, updateSingleHapPanel1_->emission_[1][1], epsilon3);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_3-llk1_3), updateSingleHapPanel1_->emission_[2][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(lk0_3/lk1_3, updateSingleHapPanel1_->emission_[2][0], epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, updateSingleHapPanel1_->emission_[2][0], epsilon3);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, updateSingleHapPanel1_->emission_[2][1], epsilon3);
     }
 
 
     void testEmissionBasicVersion0 (){
-        double llk0_1 = log(0.05), llk0_2 = log(0.03), llk0_3 = log(0);
-        double llk1_1 = log(0.5), llk1_2 = log(0.0003), llk1_3 = log(1);
-        this->updateSingleHapPanel1_->llk0_ = vector <double> ({llk0_1, llk0_2, llk0_3});
-        this->updateSingleHapPanel1_->llk1_ = vector <double> ({llk1_1, llk1_2, llk1_3});
+        log_double_t lk0_1 = 0.05, lk0_2 = 0.03, lk0_3 = 0;
+        log_double_t lk1_1 = 0.5, lk1_2 = 0.0003, lk1_3 = 1;
+        this->updateSingleHapPanel1_->siteLikelihoods0_ = {lk0_1, lk0_2, lk0_3};
+        this->updateSingleHapPanel1_->siteLikelihoods1_ = {lk1_1, lk1_2, lk1_3};
         this->updateSingleHapPanel1_->nLoci_ = 3;
         CPPUNIT_ASSERT_NO_THROW ( this->updateSingleHapPanel1_->buildEmissionBasicVersion ( 0.0 ) );
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_1), updateSingleHapPanel1_->emission_[0][0], epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_1), updateSingleHapPanel1_->emission_[0][1], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(lk0_1, updateSingleHapPanel1_->emission_[0][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(lk1_1, updateSingleHapPanel1_->emission_[0][1], epsilon3);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_2), updateSingleHapPanel1_->emission_[1][0], epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_2), updateSingleHapPanel1_->emission_[1][1], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(lk0_2, updateSingleHapPanel1_->emission_[1][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(lk1_2, updateSingleHapPanel1_->emission_[1][1], epsilon3);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk0_3), updateSingleHapPanel1_->emission_[2][0], epsilon3);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(exp(llk1_3), updateSingleHapPanel1_->emission_[2][1], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(lk0_3, updateSingleHapPanel1_->emission_[2][0], epsilon3);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(lk1_3, updateSingleHapPanel1_->emission_[2][1], epsilon3);
     }
 
 

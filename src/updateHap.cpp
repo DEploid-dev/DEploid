@@ -129,7 +129,7 @@ void UpdateSingleHap::calcBwdProbs() {
         bwdLast[i] = 1.0;
     }
     (void)normalizeBySum(bwdLast);
-    assert(bwdProbs_.size() == 0 );
+    bwdProbs_.clear();
     bwdProbs_.push_back(bwdLast);
 
     int j = (this->nLoci_- 1);
@@ -162,7 +162,7 @@ void UpdateSingleHap::calcFwdBwdProbs() {
     this->calcFwdProbs();
     this->calcBwdProbs();
 
-    assert (this->fwdBwdProbs_.size() == 0);
+    this->fwdBwdProbs_.clear();
     for ( size_t j = 0; j < this->nLoci_; j++ ) {
         vector <double> fwdBwdTmp (this->nPanel_, 0.0);
         for ( size_t i = 0 ; i < this->nPanel_; i++ ) {
@@ -176,8 +176,8 @@ void UpdateSingleHap::calcFwdBwdProbs() {
 
 void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <double> &proportion, vector < vector <double> > &haplotypes ) {
     //expected.WSAF.0 <- bundle$expected.WSAF - (bundle$prop[ws] * bundle$h[,ws]);
-    assert ( expectedWsaf0_.size() == 0);
-    assert ( expectedWsaf1_.size() == 0);
+    expectedWsaf0_.clear();
+    expectedWsaf1_.clear();
     this->expectedWsaf0_ = vector <double> (expectedWsaf.begin()+this->segmentStartIndex_, expectedWsaf.begin()+(this->segmentStartIndex_+this->nLoci_));
     size_t hapIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < expectedWsaf0_.size(); i++ ) {
@@ -206,33 +206,29 @@ void UpdateSingleHap::calcExpectedWsaf( vector <double> & expectedWsaf, vector <
 
 
 void UpdateSingleHap::buildEmission( double missCopyProb ) {
-    vector <double> noMissProb (this->nLoci_, log(1.0 - missCopyProb));
-    vector <double> t1omu = vecSum(llk0_, noMissProb); // t1 one minus u
-    vector <double> t2omu = vecSum(llk1_, noMissProb); // t2 one minus u
+    auto t1omu = vecProd(siteLikelihoods0_, log_double_t(1.0 - missCopyProb));  // t1 one minus u
+    auto t2omu = vecProd(siteLikelihoods1_, log_double_t(1.0 - missCopyProb));  // t2 one minus u
 
+    auto t1u = vecProd(siteLikelihoods0_, log_double_t(missCopyProb));
+    auto t2u = vecProd(siteLikelihoods1_, log_double_t(missCopyProb));
 
-    vector <double> missProb (this->nLoci_, log(missCopyProb));
-    vector <double> t1u = vecSum(llk0_, missProb);
-    vector <double> t2u = vecSum(llk1_, missProb);
-
-    assert(emission_.size() == 0 );
+    emission_.clear();
     for ( size_t i = 0; i < this->nLoci_; i++) {
-        vector <double> tmp ({t1omu[i], t2omu[i], t1u[i], t2u[i]});
-        double tmaxTmp = max_value(tmp);
-        vector <double> emissRow ({exp(t1omu[i] - tmaxTmp) + exp(t2u[i] - tmaxTmp),
-                                   exp(t2omu[i] - tmaxTmp) + exp(t1u[i] - tmaxTmp)});
+        vector <log_double_t> tmp ({t1omu[i], t2omu[i], t1u[i], t2u[i]});
+        auto tmaxTmp = max_value(tmp);
+        vector <double> emissRow ({(t1omu[i] / tmaxTmp) + (t2u[i] / tmaxTmp),
+                                   (t2omu[i] / tmaxTmp) + (t1u[i] / tmaxTmp)});
 
         this->emission_.push_back(emissRow);
     }
-
 }
 
 
 void UpdateSingleHap::buildEmissionBasicVersion( double missCopyProb ) {
-    assert(emission_.size() == 0 );
+    emission_.clear();
     for ( size_t i = 0; i < this->nLoci_; i++) {
-        vector <double> emissRow ({exp(llk0_[i])*(1.0-missCopyProb) + exp(llk1_[i])*missCopyProb,
-                                   exp(llk1_[i])*(1.0-missCopyProb) + exp(llk0_[i])*missCopyProb});
+        vector <double> emissRow ({siteLikelihoods0_[i]*(1.0-missCopyProb) + siteLikelihoods1_[i]*missCopyProb,
+                                   siteLikelihoods1_[i]*(1.0-missCopyProb) + siteLikelihoods0_[i]*missCopyProb});
 
         this->emission_.push_back(emissRow);
     }
@@ -241,10 +237,11 @@ void UpdateSingleHap::buildEmissionBasicVersion( double missCopyProb ) {
 
 void UpdateSingleHap::calcFwdProbs() {
     size_t hapIndex = this->segmentStartIndex_;
-    assert ( this->fwdProbs_.size() == 0 );
+    this->fwdProbs_.clear();
     vector <double> fwd1st (this->nPanel_, 0.0);
     for ( size_t i = 0 ; i < this->nPanel_; i++) {
         fwd1st[i] = this->emission_[0][this->panel_->content_[hapIndex][i]];
+        assert(fwd1st[i] >= 0);
     }
     (void)normalizeBySum(fwd1st);
     this->fwdProbs_.push_back(fwd1st);
@@ -260,6 +257,7 @@ void UpdateSingleHap::calcFwdProbs() {
         vector <double> fwdTmp (this->nPanel_, 0.0);
         for ( size_t i = 0 ; i < this->nPanel_; i++) {
             fwdTmp[i] = this->emission_[j][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec);
+            assert(fwdTmp[i] >= 0);
             //if ( i >= this->panel_->truePanelSize() ) {
                 //fwdTmp[i] = this->emission_[j][this->panel_->content_[hapIndex][i]] * (fwdProbs_.back()[i] * pNoRec + massFromRec) * inbreedProb;
             //} else {
@@ -275,15 +273,15 @@ void UpdateSingleHap::calcFwdProbs() {
 
 void UpdateSingleHap::calcHapLLKs( vector <double> &refCount,
                                    vector <double> &altCount) {
-    this->llk0_ = calcLLKs( refCount, altCount, expectedWsaf0_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
-    this->llk1_ = calcLLKs( refCount, altCount, expectedWsaf1_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
-    assert( this->llk0_.size() == this->nLoci_ );
-    assert( this->llk1_.size() == this->nLoci_ );
+    this->siteLikelihoods0_ = calcSiteLikelihoods( refCount, altCount, expectedWsaf0_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
+    this->siteLikelihoods1_ = calcSiteLikelihoods( refCount, altCount, expectedWsaf1_, this->segmentStartIndex_, this->nLoci_, this->scalingFactor() );
+    assert( this->siteLikelihoods0_.size() == this->nLoci_ );
+    assert( this->siteLikelihoods1_.size() == this->nLoci_ );
 }
 
 
 void UpdateSingleHap::samplePaths() {
-    assert ( this->path_.size() == 0 );
+    this->path_.clear();
     // Sample path at the last position
     size_t pathTmp = sampleIndexGivenProp ( this->recombRg_, fwdProbs_.back() );
     size_t contentIndex = this->segmentStartIndex_ + this->nLoci_ - 1;
@@ -316,10 +314,10 @@ void UpdateSingleHap::samplePaths() {
 
 
 void UpdateSingleHap::addMissCopying( double missCopyProb ) {
-    assert( this->hap_.size() == 0 );
+    this->hap_.clear();
     for ( size_t i = 0; i < this->nLoci_; i++) {
-        double tmpMax = max_value ( vector <double>({this->llk0_[i], this->llk1_[i]}));
-        vector <double> emissionTmp ({exp(this->llk0_[i]-tmpMax), exp(this->llk1_[i]-tmpMax)});
+        auto tmpMax = std::max(siteLikelihoods0_[i], siteLikelihoods1_[i]);
+        vector <log_double_t> emissionTmp ({siteLikelihoods0_[i]/tmpMax, siteLikelihoods1_[i]/tmpMax});
         vector <double> sameDiffDist ({emissionTmp[path_[i]]*(1.0 - missCopyProb), // probability of the same
                                        emissionTmp[(size_t)(1 -path_[i])] * missCopyProb }); // probability of differ
 
@@ -336,12 +334,12 @@ void UpdateSingleHap::addMissCopying( double missCopyProb ) {
 
 
 void UpdateSingleHap::sampleHapIndependently( vector <double> &plaf ) {
-    assert( this->hap_.size() == 0 );
+    this->hap_.clear();
     size_t plafIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < this->nLoci_; i++) {
-        double tmpMax = max_value ( vector <double> ( {llk0_[i], llk1_[i]} ) ) ;
-        vector <double> tmpDist ( {exp(llk0_[i] - tmpMax) * (1.0-plaf[plafIndex]),
-                                   exp(llk1_[i] - tmpMax) * plaf[plafIndex] } );
+        auto tmpMax = std::max( siteLikelihoods0_[i], siteLikelihoods1_[i] );
+        vector <double> tmpDist ( {siteLikelihoods0_[i]/tmpMax * (1.0-plaf[plafIndex]),
+                                   siteLikelihoods1_[i]/tmpMax *       plaf[plafIndex] } );
         (void)normalizeBySum(tmpDist);
         this->hap_.push_back ( sampleIndexGivenProp(this->recombRg_, tmpDist) );
         plafIndex++;
@@ -354,9 +352,9 @@ void UpdateSingleHap::updateLLK() {
     newLLK = vector <double> (this->nLoci_, 0.0);
     for ( size_t i = 0; i < this->nLoci_; i++) {
         if ( this->hap_[i] == 0) {
-            newLLK[i] = llk0_[i];
+            newLLK[i] = log(siteLikelihoods0_[i]);
         } else if (this->hap_[i] == 1) {
-            newLLK[i] = llk1_[i];
+            newLLK[i] = log(siteLikelihoods1_[i]);
         } else {
             throw ShouldNotBeCalled();
         }
@@ -502,7 +500,7 @@ void UpdatePairHap:: buildEmission( double missCopyProb ) {
                     //exp( tmp.01.1-tmp.max ) + exp( tmp.01.2-tmp.max ) + exp( tmp.01.3-tmp.max ) + exp( tmp.01.4-tmp.max ),
                     //exp( tmp.11.1-tmp.max ) + exp( tmp.11.2-tmp.max ) + exp( tmp.11.3-tmp.max ) + exp( tmp.11.4-tmp.max ))
 
-    assert(this->emission_.size() == 0 );
+    this->emission_.clear();
     for ( size_t i = 0; i < this->nLoci_; i++) {
         vector <double> tmp ({tmp_00_1[i], tmp_00_2[i], tmp_00_3[i], tmp_00_4[i],
                               tmp_01_1[i], tmp_01_2[i], tmp_01_3[i], tmp_01_4[i],
@@ -545,7 +543,7 @@ vector <double> UpdatePairHap::computeColMarginalDist( vector < vector < double 
 
 void UpdatePairHap:: calcFwdProbs( bool forbidCopyFromSame ) {
     size_t hapIndex = this->segmentStartIndex_;
-    assert ( this->fwdProbs_.size() == 0 );
+    this->fwdProbs_.clear();
     vector < vector < double > > fwd1st;
     for ( size_t i = 0 ; i < this->nPanel_; i++) {  // Row of the matrix
         size_t rowObs = (size_t)this->panel_->content_[0][i];
@@ -601,8 +599,8 @@ vector <size_t> UpdatePairHap::sampleMatrixIndex( vector < vector < double > > &
 
 
 void UpdatePairHap::samplePaths() {
-    assert ( this->path1_.size() == 0 );
-    assert ( this->path2_.size() == 0 );
+    this->path1_.clear();
+    this->path2_.clear();
 
     vector <size_t> tmpPath = sampleMatrixIndex(fwdProbs_[nLoci_-1]);
     size_t rowI = tmpPath[0];
@@ -678,8 +676,8 @@ void UpdatePairHap::samplePaths() {
 
 
 void UpdatePairHap::addMissCopying( double missCopyProb ) {
-    assert( this->hap1_.size() == 0 );
-    assert( this->hap2_.size() == 0 );
+    this->hap1_.clear();
+    this->hap2_.clear();
 
     for ( size_t i = 0; i < this->nLoci_; i++) {
         double tmpMax = max_value ( vector <double>({this->llk00_[i], this->llk01_[i], this->llk10_[i], this->llk11_[i]}));
@@ -717,8 +715,8 @@ void UpdatePairHap::addMissCopying( double missCopyProb ) {
 
 
 void UpdatePairHap::sampleHapIndependently(vector <double> &plaf) {
-    assert( this->hap1_.size() == 0 );
-    assert( this->hap2_.size() == 0 );
+    this->hap1_.clear();
+    this->hap2_.clear();
 
     size_t plafIndex = this->segmentStartIndex_;
     for ( size_t i = 0; i < this->nLoci_; i++) {

@@ -134,8 +134,8 @@ class UpdateSingleHap : public UpdateHap{
     size_t strainIndex_;
     vector <double> expectedWsaf0_;
     vector <double> expectedWsaf1_;
-    vector <double> llk0_;
-    vector <double> llk1_;
+    vector <log_double_t> siteLikelihoods0_;
+    vector <log_double_t> siteLikelihoods1_;
 
     vector <int> path_;
     vector <int> hap_;

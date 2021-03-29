@@ -203,8 +203,8 @@ class TestMcmcMachinery: public CppUnit::TestCase {
     void testInitializellk() {
         this->mcmcMachinery_->nLoci_ = 1000;
         this->mcmcMachinery_->initializellk();
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, sumOfVec(this->mcmcMachinery_->currentLLks_), epsilon2);
-        CPPUNIT_ASSERT_EQUAL((size_t)1000, this->mcmcMachinery_->currentLLks_.size());
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, log(product(this->mcmcMachinery_->currentSiteLikelihoods_)), epsilon2);
+        CPPUNIT_ASSERT_EQUAL((size_t)1000, this->mcmcMachinery_->currentSiteLikelihoods_.size());
     }
 
 
@@ -267,9 +267,9 @@ class TestMcmcMachinery: public CppUnit::TestCase {
 
 
     void testDeltaLLKs() {
-        this->mcmcMachinery_->currentLLks_ = vector < double >({ 0.1, 0.3, 0.2, 0.4 });
-        vector <double> newllks({0.3, 0.2, 0.5, 0.6});
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6, this->mcmcMachinery_->deltaLLKs(newllks), epsilon2);
+        this->mcmcMachinery_->currentSiteLikelihoods_ = { 0.1, 0.3, 0.2, 0.4 };
+        vector <log_double_t> newSiteLikelihoods = {0.3, 0.2, 0.5, 0.6};
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6, (double)this->mcmcMachinery_->calcLikelihoodRatio(newSiteLikelihoods), epsilon2);
     }
 
 
