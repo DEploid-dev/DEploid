@@ -286,6 +286,8 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR, b
     trace_log<<"iteration\tlikelihood";
     for(size_t i=0;i<this->currentProp_.size();i++)
         trace_log<<"\tw"<<(i+1);
+    for(size_t i=0;i<this->currentProp_.size();i++)
+        trace_log<<"\tsorted-w"<<(i+1);
     trace_log<<"\n";
 
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++) {
@@ -591,7 +593,11 @@ void McmcMachinery::recordMcmcMachinery( std::ostream& trace_log ) {
 
     trace_log<<this->currentMcmcIteration_;
     trace_log<<"\t"<<log(likelihood);
+    auto sortedProp = this->currentProp_;
+    std::sort(sortedProp.begin(), sortedProp.end());
     for(auto& prop: this->currentProp_)
+        trace_log<<"\t"<<prop;
+    for(auto& prop: sortedProp)
         trace_log<<"\t"<<prop;
     trace_log<<"\n";
     trace_log.flush();
