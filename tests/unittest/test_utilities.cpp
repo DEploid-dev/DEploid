@@ -282,14 +282,14 @@ class TestUtility : public CppUnit::TestCase {
           log(calcSiteLikelihood(0, 50, 0.5, this->err_, this->scalingFactor_)),
           ep2);
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-39.454802987,
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-24.7245452881,
           log(calcSiteLikelihood(11, 13, 0.0, this->err_,
                                  this->scalingFactor_)),
           ep2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-82.7561739077,
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-75.950451354302,
           log(calcSiteLikelihood(41, 2, 1.0, this->err_, this->scalingFactor_)),
           ep2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-71.6257227,
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-14.9544625636,
           log(calcSiteLikelihood(23, 99, 0.5, this->err_,
                                  this->scalingFactor_)),
           ep2);
@@ -322,7 +322,7 @@ class TestUtility : public CppUnit::TestCase {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(-92.39749823, llk3[3], ep2);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.4088264558, llk3[4], ep2);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(-26.30680376, llk3[5], ep2);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(-39.454802987, llk3[6], ep2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(-24.7245452881, llk3[6], ep2);
     }
 
 
