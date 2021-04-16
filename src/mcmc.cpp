@@ -283,7 +283,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR, b
 
     string trace_filename = dEploidIO_->prefix_+".trace.log";
     std::ofstream trace_log(trace_filename);
-    trace_log<<"iteration\tlikelihood";
+    trace_log<<"iteration\tlikelihood\tK";
     for(size_t i=0;i<this->currentProp_.size();i++)
         trace_log<<"\tw"<<(i+1);
     for(size_t i=0;i<this->currentProp_.size();i++)
@@ -578,6 +578,40 @@ vector <double> McmcMachinery::calcExpectedWsaf(const vector <double> &proportio
 }
 
 
+// NOTE: If there were 10 strains, then 0.01 isn't so large.
+
+int find_K1(const vector<double>& props, double threshold = 0.01)
+{
+    int K=0;
+    for(auto& prop: props)
+        if (prop > threshold)
+            K++;
+    return K;
+}
+
+// We could also consider how many strains we need so
+// sum to get (say) 0.95 total mass.
+
+int find_K2(vector<double> props)
+{
+    // This is 1 - 1/25 = 0.95 for 5 strains.
+    double cutoff = 1.0 - (1.0/props.size()/4.0);
+
+    // Sort in decreasing order;
+    std::sort(props.begin(), props.end(), [](int a, int b) {return a > b;});
+
+    int K=0;
+    double total = 0.0;
+    for(auto& prop: props)
+    {
+        total += prop;
+        K++;
+        if (total >= cutoff)
+            break;
+    }
+    return K;
+}
+
 void McmcMachinery::recordMcmcMachinery( std::ostream& trace_log ) {
     dout << "***Record mcmc sample " <<endl;
     auto likelihood = product(this->currentSiteLikelihoods_);
@@ -592,7 +626,7 @@ void McmcMachinery::recordMcmcMachinery( std::ostream& trace_log ) {
     }
 
     trace_log<<this->currentMcmcIteration_;
-    trace_log<<"\t"<<log(likelihood);
+    trace_log<<"\t"<<log(likelihood)<<"\t"<<find_K1(this->currentProp_);
     auto sortedProp = this->currentProp_;
     std::sort(sortedProp.begin(), sortedProp.end());
     for(auto& prop: this->currentProp_)
