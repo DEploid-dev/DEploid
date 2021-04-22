@@ -6,7 +6,7 @@
 [![CircleCI](https://circleci.com/gh/DEploid-dev/DEploid.svg?style=shield)](https://circleci.com/gh/DEploid-dev/DEploid)
 [![Coverage Status](https://coveralls.io/repos/github/DEploid-dev/DEploid/badge.svg)](https://coveralls.io/github/DEploid-dev/DEploid)
 [![Documentation Status](http://readthedocs.org/projects/deploid/badge/?version=latest)](http://deploid.readthedocs.io/en/latest/)
-[![Docker Status](https://img.shields.io/docker/pulls/shajoezhu/deploid.svg)](https://hub.docker.com/r/shajoezhu/deploid/)
+[![Docker Status](https://img.shields.io/docker/cloud/build/shajoezhu/deploid.svg)](https://hub.docker.com/r/shajoezhu/deploid/)
 
 `dEploid` is designed for deconvoluting mixed genomes with unknown proportions. Traditional ‘phasing’ programs are limited to diploid organisms. Our method modifies Li and Stephen’s algorithm with Markov chain Monte Carlo (MCMC) approaches, and builds a generic framework that allows haloptype searches in a multiple infection setting.
 
