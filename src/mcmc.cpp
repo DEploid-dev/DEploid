@@ -28,6 +28,7 @@
 #include <random>
 #include <limits>       // std::numeric_limits< double >::min()
 #include <numeric>      // std::accumulate, std::inner_product
+#include <fstream>      // std::ofstream
 #include "global.hpp"     // dout
 #include "updateHap.hpp"
 #include "mcmc.hpp"
@@ -279,6 +280,16 @@ void McmcMachinery::initializePropIBD() {
 
 
 void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR, bool averageP) {
+
+    string trace_filename = dEploidIO_->prefix_+".trace.log";
+    std::ofstream trace_log(trace_filename);
+    trace_log<<"iteration\tlikelihood\tK";
+    for(size_t i=0;i<this->currentProp_.size();i++)
+        trace_log<<"\tw"<<(i+1);
+    for(size_t i=0;i<this->currentProp_.size();i++)
+        trace_log<<"\tsorted-w"<<(i+1);
+    trace_log<<"\n";
+
     for ( this->currentMcmcIteration_ = 0 ; currentMcmcIteration_ < this->maxIteration_ ; currentMcmcIteration_++) {
         dout << endl;
         dout << "MCMC iteration: " << this->currentMcmcIteration_ << endl;
@@ -287,7 +298,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR, b
                 clog << "\r" << " MCMC step" << setw(4) << int(currentMcmcIteration_ * 100 / this->maxIteration_) << "% completed ("<<this->mcmcJob<<")"<<flush;
             #endif
         }
-        this->sampleMcmcEvent(useIBD);
+        this->sampleMcmcEvent(trace_log, useIBD);
 
         //printArray(this->currentProp_);
     }
@@ -421,7 +432,7 @@ vector <double> McmcMachinery::averageProportion() {
 }
 
 
-void McmcMachinery::sampleMcmcEvent( bool useIBD ) {
+void McmcMachinery::sampleMcmcEvent( std::ostream& trace_log, bool useIBD) {
     this->recordingMcmcBool_ = ( currentMcmcIteration_ > this->mcmcThresh_ && currentMcmcIteration_ % this->McmcMachineryRate_ == 0 );
     if ( useIBD == true ) {
         ibdSampleMcmcEventStep();
@@ -454,7 +465,7 @@ void McmcMachinery::sampleMcmcEvent( bool useIBD ) {
     assert(doutLLK());
 
     if ( this->recordingMcmcBool_ ) {
-        this->recordMcmcMachinery();
+        this->recordMcmcMachinery( trace_log );
     }
 }
 
@@ -495,7 +506,7 @@ void McmcMachinery::ibdSampleMcmcEventStep() {
 
     // this->currentSiteLikelihoods_ = updatedllkAtAllSites;
     this->currentSiteLikelihoods_.resize(updatedllkAtAllSites.size());
-    for(int i=0;i<updatedllkAtAllSites.size();i++)
+    for(size_t i=0;i<updatedllkAtAllSites.size();i++)
         currentSiteLikelihoods_[i] = exp_to<log_double_t>(updatedllkAtAllSites[i]);
 
     this->currentExpectedWsaf_ = this->calcExpectedWsaf( this->currentProp_ );
@@ -567,16 +578,63 @@ vector <double> McmcMachinery::calcExpectedWsaf(const vector <double> &proportio
 }
 
 
-void McmcMachinery::recordMcmcMachinery() {
+// NOTE: If there were 10 strains, then 0.01 isn't so large.
+
+int find_K1(const vector<double>& props, double threshold = 0.01)
+{
+    int K=0;
+    for(auto& prop: props)
+        if (prop > threshold)
+            K++;
+    return K;
+}
+
+// We could also consider how many strains we need so
+// sum to get (say) 0.95 total mass.
+
+int find_K2(vector<double> props)
+{
+    // This is 1 - 1/25 = 0.95 for 5 strains.
+    double cutoff = 1.0 - (1.0/props.size()/4.0);
+
+    // Sort in decreasing order;
+    std::sort(props.begin(), props.end(), [](int a, int b) {return a > b;});
+
+    int K=0;
+    double total = 0.0;
+    for(auto& prop: props)
+    {
+        total += prop;
+        K++;
+        if (total >= cutoff)
+            break;
+    }
+    return K;
+}
+
+void McmcMachinery::recordMcmcMachinery( std::ostream& trace_log ) {
     dout << "***Record mcmc sample " <<endl;
+    auto likelihood = product(this->currentSiteLikelihoods_);
+
     this->mcmcSample_->proportion.push_back(this->currentProp_);
-    this->mcmcSample_->sumLLKs.push_back(log(product(this->currentSiteLikelihoods_)));
+    this->mcmcSample_->sumLLKs.push_back(log(likelihood));
     this->mcmcSample_->moves.push_back(this->eventInt_);
 
     // Cumulate expectedWSAF for computing the mean expectedWSAF
     for ( size_t i = 0; i < this->cumExpectedWsaf_.size(); i++) {
         this->cumExpectedWsaf_[i] += this->currentExpectedWsaf_[i];
     }
+
+    trace_log<<this->currentMcmcIteration_;
+    trace_log<<"\t"<<log(likelihood)<<"\t"<<find_K1(this->currentProp_);
+    auto sortedProp = this->currentProp_;
+    std::sort(sortedProp.begin(), sortedProp.end());
+    for(auto& prop: this->currentProp_)
+        trace_log<<"\t"<<prop;
+    for(auto& prop: sortedProp)
+        trace_log<<"\t"<<prop;
+    trace_log<<"\n";
+    trace_log.flush();
 }
 
 

@@ -185,8 +185,8 @@ class McmcMachinery {
         dout << endl;
     }
 
-    void sampleMcmcEvent(bool useIBD = false);
-    void recordMcmcMachinery();
+    void sampleMcmcEvent(std::ostream&, bool useIBD = false);
+    void recordMcmcMachinery(std::ostream&);
     bool recordingMcmcBool_;
     void writeLastFwdProb(bool useIBD);
     void updateReferencePanel(size_t inbreedingPanelSizeSetTo,

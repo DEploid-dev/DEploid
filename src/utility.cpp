@@ -129,14 +129,38 @@ vector <log_double_t> calcSiteLikelihoods(const vector <double> &refCount,
     return siteLikelihoods;
 }
 
+log_double_t Beta(double x, double y)
+{
+    return exp_to<log_double_t>(Maths::Special::Gamma::logBeta(x,y));
+}
+
+// Probability of observing k from a beta-binominal(n,a,b)
+log_double_t beta_binomial_pr(int n, double a, double b, int k)
+{
+    if (k < 0) return 0;
+    if (k > n) return 0;
+
+    // pr = choose(n,k) * beta(k+a, n-k+b) / beta(a,b);
+    auto pr = Beta(k+a, n-k+b) / Beta(a,b);
+
+    // choose(n,k) = 1/[(n+1) * beta(n-k+1,k+1)]
+    pr /= Beta(n-k+1, k+1);
+    pr /= (n+1);
+
+    // Previously we were ignoring the choose(n,k) term.
+    // This might have been OK, since probabilities of (a,b) would be correct up to a constant.
+    // But lets include it, to be safe.
+
+    return pr;
+}
 
 log_double_t calcSiteLikelihood(double ref, double alt, double unadjustedWsaf, double err,
     double fac) {
+
+    // Adjusting for sequencing error
     double adjustedWsaf = unadjustedWsaf+err*(1-2*unadjustedWsaf);
-    double llk = Maths::Special::Gamma::logBeta(
-        alt+adjustedWsaf*fac, ref+(1-adjustedWsaf)*fac) -
-        Maths::Special::Gamma::logBeta(adjustedWsaf*fac, (1-adjustedWsaf)*fac);
-    return exp_to<log_double_t>(llk);
+
+    return beta_binomial_pr(ref + alt, adjustedWsaf*fac, (1-adjustedWsaf)*fac, alt);
 }
 
 
