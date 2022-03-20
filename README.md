@@ -26,7 +26,7 @@ $ apt-get install build-essential autoconf autoconf-archive libcppunit-dev zlib1
 
 On Mac OS:
 ```bash
-$ port install automake autoconf autoconf-archive cppunit
+$ brew install automake autoconf autoconf-archive cppunit
 ```
 
 Afterwards you can clone the code from the github repository,
