@@ -84,7 +84,7 @@ jobs:
 
   "20.04":
     docker:
-      - image: circleci/buildpack-deps:22.04
+      - image: circleci/buildpack-deps:20.04
     working_directory: /home/circleci/DEploid
     steps:
       - checkout
