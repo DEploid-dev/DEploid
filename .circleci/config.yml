@@ -82,9 +82,9 @@ jobs:
             ./tests/test-against-previous-version.sh
             ./tests/test_binaryReproducible.sh
 
-  "18.04":
+  "22.04":
     docker:
-      - image: circleci/buildpack-deps:18.04
+      - image: circleci/buildpack-deps:22.04
     working_directory: /home/circleci/DEploid
     steps:
       - checkout
@@ -127,6 +127,6 @@ workflows:
   version: 2
   build:
     jobs:
-      - "18.04"
+      - "22.04"
      # - "14.04"
      # - "16.04"
