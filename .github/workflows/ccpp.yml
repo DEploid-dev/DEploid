@@ -42,7 +42,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - uses: actions/setup-python@v3
       with:
@@ -100,10 +100,10 @@ jobs:
       run: ./bootstrap
 
     - name: make
-      run: make -j4
+      run: make -j2
 
     - name: make check
-      run: make -j4 check
+      run: make -j2 check
 
     - name: make install
       run: sudo make install
