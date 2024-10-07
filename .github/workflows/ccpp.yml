@@ -12,22 +12,16 @@ jobs:
   build:
     strategy:
       matrix:
-        name: [ubuntu-gcc-9,
-               ubuntu-gcc-10,
+        name: [ubuntu-gcc-11,
                ubuntu-clang-9,
                macos-xcode-12.3,
                ]
 
         include:
-          - name: ubuntu-gcc-9
+          - name: ubuntu-gcc-11
             os: ubuntu-latest
             compiler: gcc
-            version: "9"
-
-          - name: ubuntu-gcc-10
-            os: ubuntu-latest
-            compiler: gcc
-            version: "10"
+            version: "11"
 
           - name: ubuntu-clang-9
             os: ubuntu-latest
