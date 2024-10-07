@@ -14,8 +14,7 @@ jobs:
       matrix:
         name: [ubuntu-gcc-9,
                ubuntu-gcc-10,
-               ubuntu-clang-15,
-               macos-xcode-12.3,
+               ubuntu-clang-15
                ]
 
         include:
