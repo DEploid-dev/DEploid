@@ -33,11 +33,6 @@ jobs:
             compiler: clang
             version: "15"
 
-          - name: macos-xcode-12.3
-            os: macos-latest
-            compiler: xcode
-            version: "12.3"
-
     runs-on: ${{ matrix.os }}
 
     steps:
