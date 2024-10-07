@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         name: [ubuntu-gcc-11,
-               ubuntu-clang-9,
+               ubuntu-clang-15,
                macos-xcode-12.3,
                ]
 
@@ -23,10 +23,10 @@ jobs:
             compiler: gcc
             version: "11"
 
-          - name: ubuntu-clang-9
+          - name: ubuntu-clang-15
             os: ubuntu-latest
             compiler: clang
-            version: "9"
+            version: "15"
 
           - name: macos-xcode-12.3
             os: macos-latest
