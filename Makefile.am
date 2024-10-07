@@ -16,7 +16,7 @@ TESTS = unit_tests io_unit_tests
 check_PROGRAMS = unit_tests dEploid_dbg io_unit_tests current_unit_tests # dEploid_prof
 PROG = DEPLOID
 
-common_flags = -std=c++17 -Isrc/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DLASSOVERSION=\"${LASSOVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\" -Wall  -Wcast-function-type -Wclobbered -Wdangling-else -Wdeprecated-copy -Wempty-body -Wredundant-move -Wshift-negative-value -Wsign-compare -Wsized-deallocation -Wstring-compare -Wtype-limits -Wunused-parameter -Wunused-but-set-parameter -Winit-self
+common_flags = -std=c++17 -Isrc/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DLASSOVERSION=\"${LASSOVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\" -Wall  -Wcast-function-type -Wclobbered -Wdangling-else -Wdeprecated-copy -Wempty-body -Wredundant-move -Wshift-negative-value -Wsign-compare -Wsized-deallocation -Wtype-limits -Wunused-parameter -Wunused-but-set-parameter -Winit-self
 
 
 common_LDADD = -lz
