@@ -47,7 +47,7 @@ jobs:
       run: |
         sudo apt-get install libcppunit-dev valgrind r-base-core lcov doxygen graphviz ccache
         if [ "${{ matrix.compiler }}" = "gcc" ]; then
-          sudo apt-get install -y g++-${{ matrix.version }}
+          # sudo apt-get install -y g++-${{ matrix.version }}
           echo "CC=ccache gcc-${{ matrix.version }}" >> $GITHUB_ENV
           echo "CXX=ccache g++-${{ matrix.version }}" >> $GITHUB_ENV
         else
