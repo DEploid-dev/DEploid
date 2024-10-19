@@ -16,7 +16,8 @@ TESTS = unit_tests io_unit_tests
 check_PROGRAMS = unit_tests dEploid_dbg io_unit_tests current_unit_tests # dEploid_prof
 PROG = DEPLOID
 
-common_flags = -std=c++17 -Isrc/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DLASSOVERSION=\"${LASSOVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\" -Wall -Wextra
+common_flags = -std=c++17 -Isrc/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DLASSOVERSION=\"${LASSOVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\" -Wall  -Wextra
+
 common_LDADD = -lz
 
 common_src = src/random/fastfunc.cpp \
