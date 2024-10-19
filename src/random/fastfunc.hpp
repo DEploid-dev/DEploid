@@ -29,6 +29,7 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <cstdint>
 
 
 // Number of interpolation points.  If this is changed, several constants in fastlog must also be changed.

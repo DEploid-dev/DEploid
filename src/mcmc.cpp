@@ -340,7 +340,7 @@ void McmcMachinery::runMcmcChain( bool showProgress, bool useIBD, bool notInR, b
         this->mcmcSample_->siteOfOneMissCopyOne[atSiteI] /= (double)this->maxIteration_;
     }
 
-    if ( notInR & ((jobbrief == "lassoK") | (jobbrief == "ibd") | (jobbrief == "classic")) ) { // notInPython
+    if ( notInR & ((jobbrief == "lassoK") || (jobbrief == "ibd") || (jobbrief == "classic")) ) { // notInPython
         this->dEploidIO_->writeMcmcRelated(this->mcmcSample_, jobbrief, useIBD);
     }
 
