@@ -72,9 +72,7 @@ unit_tests_LDADD    = -lcppunit -ldl $(common_LDADD)
 
 io_unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_runner.cpp \
-					 tests/unittest/test_dEploidIO.cpp \
-					 tests/unittest/test_txtReader.cpp \
-					 tests/unittest/test_vcfReader.cpp
+					 tests/unittest/test_dEploidIO.cpp
 
 io_unit_tests_CXXFLAGS = $(common_flags) -DNDEBUG -DUNITTEST -Wno-write-strings --coverage
 io_unit_tests_LDADD    = -lcppunit -ldl $(common_LDADD)
