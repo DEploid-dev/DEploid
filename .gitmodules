@@ -7,3 +7,6 @@
 [submodule "utilities"]
 	path = utilities
 	url = https://github.com/DEploid-dev/DEploid-Utilities
+[submodule "src/vcf"]
+	path = src/vcf
+	url = https://github.com/DEploid-dev/DEploid-vcf-lib.git

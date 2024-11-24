@@ -16,7 +16,7 @@ TESTS = unit_tests io_unit_tests
 check_PROGRAMS = unit_tests dEploid_dbg io_unit_tests current_unit_tests # dEploid_prof
 PROG = DEPLOID
 
-common_flags = -std=c++17 -Isrc/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DLASSOVERSION=\"${LASSOVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\" -Wall  -Wextra
+common_flags = -std=c++17 -Isrc/ -Isrc/vcf/src/ -DDEPLOIDVERSION=\"${DEPLOIDVERSION}\" -DLASSOVERSION=\"${LASSOVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\" -Wall  -Wextra
 
 common_LDADD = -lz
 
@@ -32,17 +32,17 @@ common_src = src/random/fastfunc.cpp \
 			 src/dEploidIO-operation.cpp \
 			 src/dEploidIO-workflow.cpp \
 			 src/updateHap.cpp \
-			 src/txtReader.cpp \
-			 src/vcfReader.cpp \
-			 src/variantIndex.cpp \
-			 src/gzstream/gzstream.cpp \
+			 src/vcf/src/txtReader.cpp \
+			 src/vcf/src/vcfReader.cpp \
+			 src/vcf/src/variantIndex.cpp \
+			 src/vcf/src/gzstream/gzstream.cpp \
 			 src/export/dEploidIOExport.cpp \
 			 src/export/dEploidIOExportPosteriorProb.cpp \
 			 src/export/writeMcmcRelated.cpp \
 			 src/lasso/src/lasso.cpp \
 			 src/lasso/src/dEploidLasso.cpp
 
-debug_src = src/debug/mcmcDebug.cpp src/debug/vcfReaderDebug.cpp \
+debug_src = src/debug/mcmcDebug.cpp src/vcf/src/vcfReaderDebug.cpp \
 			src/lasso/src/lassoDBG.cpp
 
 dEploid_SOURCES = src/dEploid.cpp $(common_src)
@@ -72,9 +72,7 @@ unit_tests_LDADD    = -lcppunit -ldl $(common_LDADD)
 
 io_unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_runner.cpp \
-					 tests/unittest/test_dEploidIO.cpp \
-					 tests/unittest/test_txtReader.cpp \
-					 tests/unittest/test_vcfReader.cpp
+					 tests/unittest/test_dEploidIO.cpp
 
 io_unit_tests_CXXFLAGS = $(common_flags) -DNDEBUG -DUNITTEST -Wno-write-strings --coverage
 io_unit_tests_LDADD    = -lcppunit -ldl $(common_LDADD)
