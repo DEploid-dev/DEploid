@@ -1,6 +1,48 @@
 Frequently asked questions
 ==========================
 
+Where do I get the PLAF? or What PLAF should I use?
+---------------------------------------------------
+
+This is probably one of the most frequent questions that I was asked. To answer this question, let me explain "the role of a PLAF file" first.
+
+The PLAF provides a loose genetic structure at the population level.   
+In the following example, the first two plots show the number of reference strain allele count on the x-axis for Africa and Asia respectively, and Africa PLAF and Asia PLAF on the y-axis. You can see the points form clouds on the diagonal. However, because the parasite strains from Africa and Asia are vastly different. It is shown in the third figure that PLAF pairs (at the same genome position) are scattered everywhere.  
+
+![asia_africa_plaf](_static/asia_africa_plaf_example.png "Asia Africa PLAF")
+
+This is an extreme case to demonstrate how different PLAFs can vary at different geographical regions. PLAF provides prior information for our model to learn the exact structure of the mixed genome. Therefore, it is important to provide appropriate ones.
+
+#### How to manually compute the PLAF?
+
+In Pf3k studies, we use meta data to identify geographical regions of our sample, and divide samples into the following groups to extract the PLAF information.
+
+  1. Malawi, Congo.
+  2. Ghana (Navrongo).
+  3. Nigeria, Senegal, Mali.
+  4. The Gambia, Guinea, Ghana (Kintampo).
+  5. Cambodia (Pursat), Cambodia (Pailin), Thailand (Sisakhet).
+  6. Vietnam, Laos, Cambodia (Ratanakiri), Cambodia (Preah Vihear).
+  7. Bangladesh, Myanmar, Thailand (Mae Sot), Thailand (Ranong).
+
+Since the release of the Pf6 data, I recommand to compute the PLAF in each country.
+
+To compute the PLAF at each site, we simply take the ratio of *the sum of alternative allele of all samples* over *the sum of reference and alternative allele of all samples*. Then aggregate across all sites.
+
+#### Extract PLAF from the VCF file directly
+
+Since DEploid-BestPractice, we offer new DEploid functionality --- extracting PLAF from the VCF file, enabled by the flag `-plafFromVcf`. It will then extract the Allele Frequency (AF) attribute from the INFO field.
+
+NOTE: To archive a good deconvolution result, prior knowledge of an appropriate PLAF or reference haplotypes are important. I would still recommand to go through the manual computation process when possible.
+
+
+What reference panel should I use?
+----------------------------------
+
+1. Definitely use the clonal strains from your own study. Identifying the clonal strains, and inferring their haplotypes would be step one.
+2. Consider to use the clonal strains from the Pf3k or Pf6 dataset as well.
+
+
 Data filtering
 --------------
 Data filtering is an important step for deconvolution.
@@ -121,6 +163,8 @@ utilities/interpretDEploid.r -vcf data/exampleData/PG0400-C.eg.vcf.gz \
 
 <a name="PG0400_sigma10"></a>
 ![#PG0400_sigma10](_static/PG0400-Csigma10.ring.png "Correct PG0400-C deconvolution")
+
+
 
 
 Benchmark

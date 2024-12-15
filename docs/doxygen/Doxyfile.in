@@ -761,14 +761,18 @@ WARN_LOGFILE           =
 INPUT                  = @top_srcdir@/src/variantIndex.hpp @top_srcdir@/src/variantIndex.cpp \
                          @top_srcdir@/src/txtReader.hpp @top_srcdir@/src/txtReader.cpp \
                          @top_srcdir@/src/mcmc.hpp @top_srcdir@/src/mcmc.cpp   \
+                         @top_srcdir@/src/ibd.hpp @top_srcdir@/src/ibd.cpp   \
+                         @top_srcdir@/src/chooseK.hpp @top_srcdir@/src/chooseK.cpp   \
                          @top_srcdir@/src/panel.hpp @top_srcdir@/src/panel.cpp \
                          @top_srcdir@/src/dEploid.cpp @top_srcdir@/src/exceptions.hpp \
+                         @top_srcdir@/src/global.hpp @top_srcdir@/src/param.hpp \
                          @top_srcdir@/src/random/fastfunc.cpp @top_srcdir@/src/random/fastfunc.hpp \
                          @top_srcdir@/src/random/mersenne_twister.hpp @top_srcdir@/src/random/mersenne_twister.cpp \
                          @top_srcdir@/src/random/random_generator.hpp @top_srcdir@/src/random/random_generator.cpp \
                          @top_srcdir@/src/fastfunc.hpp @top_srcdir@/src/fastfunc.cpp \
                          @top_srcdir@/src/mersenne_twister.hpp @top_srcdir@/src/mersenne_twister.cpp \
                          @top_srcdir@/src/dEploidIO.hpp @top_srcdir@/src/dEploidIO.cpp \
+                         @top_srcdir@/src/dEploidIO-operation.cpp @top_srcdir@/src/dEploidIO-workflow.cpp \
                          @top_srcdir@/src/updateHap.hpp @top_srcdir@/src/updateHap.cpp \
                          @top_srcdir@/src/utility.hpp @top_srcdir@/src/utility.cpp \
                          @top_srcdir@/src/export/dEploidIOExport.cpp  @top_srcdir@/src/export/dEploidIOExportPosteriorProb.cpp \
