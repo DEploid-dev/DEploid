@@ -42,7 +42,7 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 16.x
-            
+
     - uses: actions/setup-python@v3
       with:
         python-version: 3.8
@@ -123,10 +123,10 @@ jobs:
     - name: docs
       run:  if [ $TRAVIS_OS_NAME == linux ]; then cd docs/doxygen; doxygen Doxyfile;  fi
 
-    - name: run coverage
-      if: matrix.name == 'ubuntu-gcc-10'
-      run: |
-         tests/test-coverage-coverall.sh
+#    - name: run coverage
+#      if: matrix.name == 'ubuntu-gcc-10'
+#      run: |
+#         tests/test-coverage-coverall.sh
 
 #  See: https://github.com/marketplace/actions/coveralls-github-action
     - name: Coveralls
