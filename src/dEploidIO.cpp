@@ -749,7 +749,6 @@ void DEploidIO::readPanel() {
 DEploidIO::DEploidIO(const DEploidIO &cpFrom) {
     this->setIsCopied(true);
     this->setDoExportRecombProb(cpFrom.doExportRecombProb());
-    //this->setrandomSeedWasGiven(cpFrom.randomSeedWasGiven());
     this->setCompressVcf(cpFrom.compressVcf());
     this->setInitialPropWasGiven(cpFrom.initialPropWasGiven());
     this->setInitialHapWasGiven(cpFrom.initialHapWasGiven());
