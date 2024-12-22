@@ -140,6 +140,10 @@ class DEploidIO{
     void workflow_ibd();
     void workflow_best();
 
+    // Make this public so it is also accessible from
+    Parameter <size_t> randomSeed_;
+    bool randomSeedWasSet() const {return this->randomSeed_.useUserDefined(); }
+
   private:
     void setBestPracticeParameters();
     void core();
@@ -233,7 +237,6 @@ class DEploidIO{
     Parameter <size_t> kStrain_;
     Parameter <size_t> precision_;
     Parameter <size_t> nMcmcSample_;
-    Parameter <size_t> randomSeed_;
     Parameter <size_t> mcmcMachineryRate_;
     Parameter <double> mcmcBurn_;
 

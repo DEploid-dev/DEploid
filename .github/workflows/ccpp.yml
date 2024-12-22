@@ -126,7 +126,7 @@ jobs:
 #  See: https://github.com/marketplace/actions/coveralls-github-action
     - name: Coveralls
       if: matrix.name == 'ubuntu-gcc-9'
-      uses: coverallsapp/github-action@v1.1.2
+      uses: coverallsapp/github-action@v2.3.4
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
       #run: coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --exclude src/gzstream/ --gcov-options '\-lp'
