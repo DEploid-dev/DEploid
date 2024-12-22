@@ -55,11 +55,6 @@ jobs:
           echo "CC=ccache clang-${{ matrix.version }}" >> $GITHUB_ENV
           echo "CXX=ccache clang++-${{ matrix.version }}" >> $GITHUB_ENV
         fi
-      if: matrix.name == 'ubuntu-gcc-9'
-      run: |
-         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 90
-         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
-         sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 90
 
     - name: Install dependencies (macOS)
       if: runner.os == 'macOS'
@@ -69,6 +64,13 @@ jobs:
           echo "CC=ccache clang" >> $GITHUB_ENV
           echo "CXX=ccache clang++" >> $GITHUB_ENV
           ccache --set-config=cache_dir=$HOME/.ccache
+
+    - name: align gcc gcov
+      if: matrix.name == 'ubuntu-gcc-9'
+      run: |
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 90
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
+        sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 90
 
     - name: Install python packages
       run: python3 -mpip install cpp-coveralls cpplint
