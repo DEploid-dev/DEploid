@@ -16,7 +16,7 @@
 
 #include <math.h>
 #include <float.h>
-#include "src/codeCogs/poly_eval.h"
+#include "poly_eval.h"
 
 namespace Maths
 {

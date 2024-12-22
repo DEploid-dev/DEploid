@@ -16,7 +16,7 @@
 
 #include <assert.h>
 #include <math.h>
-#include "src/codeCogs/log_gamma.h"
+#include "log_gamma.h"
 
 namespace Maths
 {

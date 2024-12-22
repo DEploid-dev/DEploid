@@ -14,7 +14,7 @@
 #define MATHS_SPECIAL_ERRORFN_H
 
 #include <assert.h>
-#include "src/codeCogs/poly_eval.h"
+#include "poly_eval.h"
 
 namespace Maths
 {
