@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Generate gcov output
-#make -mj
+make -mj
 
 # Generate html report
 lcov --base-directory . --directory . --zerocounters -q

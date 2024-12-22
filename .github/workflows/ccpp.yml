@@ -38,6 +38,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
+            
     - uses: actions/setup-python@v3
       with:
         python-version: 3.8
@@ -64,13 +69,6 @@ jobs:
           echo "CC=ccache clang" >> $GITHUB_ENV
           echo "CXX=ccache clang++" >> $GITHUB_ENV
           ccache --set-config=cache_dir=$HOME/.ccache
-
-    - name: align gcc gcov
-      if: matrix.name == 'ubuntu-gcc-9'
-      run: |
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 90
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
-        sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 90
 
     - name: Install python packages
       run: python3 -mpip install cpp-coveralls cpplint
@@ -126,13 +124,13 @@ jobs:
       run:  if [ $TRAVIS_OS_NAME == linux ]; then cd docs/doxygen; doxygen Doxyfile;  fi
 
     - name: run coverage
-      if: matrix.name == 'ubuntu-gcc-9'
+      if: matrix.name == 'ubuntu-gcc-10'
       run: |
          tests/test-coverage-coverall.sh
 
 #  See: https://github.com/marketplace/actions/coveralls-github-action
     - name: Coveralls
-      if: matrix.name == 'ubuntu-gcc-9'
+      if: matrix.name == 'ubuntu-gcc-10'
       uses: coverallsapp/github-action@v2.3.4
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
