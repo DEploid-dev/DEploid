@@ -133,5 +133,5 @@ workflows:
     jobs:
       - v2204
       - v2004
-      - v1804
+      # - v1804  # this is too old, bash_complete not available
 
