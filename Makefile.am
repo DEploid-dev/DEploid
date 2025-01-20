@@ -61,10 +61,11 @@ unit_tests_1_SOURCES = $(common_src) \
 					 tests/unittest/test_runner.cpp \
 					 tests/unittest/test_ibd.cpp \
 					 tests/unittest/test_updateSingleHap.cpp \
+					 tests/unittest/test_panel.cpp \
 					 tests/unittest/test_utilities.cpp
 
 unit_tests_2_SOURCES = $(common_src) \
-					 tests/unittest/test_panel.cpp \
+					 tests/unittest/test_runner.cpp \
 					 tests/unittest/test_mcmc.cpp \
 					 tests/unittest/test_updatePairHap.cpp \
 					 tests/unittest/test_workflow.cpp
