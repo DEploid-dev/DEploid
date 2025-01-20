@@ -128,10 +128,11 @@ orbs:
               coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
         - coveralls/upload
 
-workflows:
-  version: 2
-  build:
-    jobs:
-      - "20.04"
-      - "14.04"
-      - "16.04"
+  workflows:
+    version: 2
+    build:
+      jobs:
+        - "20.04"
+        - "14.04"
+        - "16.04"
+workflows: null
