@@ -1,138 +1,135 @@
-version: '2.1'
+version: "2.1"
 orbs:
   coveralls: coveralls/coveralls@2.2.5
 
-  jobs:
-    "14.04":
-      docker:
-        - image: circleci/buildpack-deps:14.04
-      working_directory: /home/circleci/DEploid
-      steps:
-        - checkout
-        - run: sudo chown -R circleci:circleci *
-        - restore_cache:
-            key: dEploid-{{ .Branch }}
-        - run:
-            name: Checkout submodules
-            command: |
-              git submodule update --init --recursive --remote
-        - run:
-            name: Install dependencies and set path
-            command: |
-              sudo apt-get update
-              curl -fsSL https://git.io/vHGMF | bash
-              sudo apt-get install libcppunit-dev
-              sudo apt-get install valgrind
-        - run:
-            name: Getting ready
-            command: |
-              g++ --version
-              ./bootstrap
-        - run:
-            name: Compile
-            command: |
-              make
-              sudo make install
-              make check
-        - run:
-            name: Run tests
-            command: |
-              ./tests/test_binary.sh
-              ./tests/testPOS.sh
-              ./tests/test_binaryVcfVsTxt.sh
-              ./tests/test-against-previous-version.sh
-              ./tests/test_binaryReproducible.sh
-          #- valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
-          #- coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
+jobs:
+  v1404:
+    docker:
+      - image: circleci/buildpack-deps:14.04
+    working_directory: /home/circleci/DEploid
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci *
+      - restore_cache:
+          key: dEploid-{{ .Branch }}
+      - run:
+          name: Checkout submodules
+          command: |
+            git submodule update --init --recursive --remote
+      - run:
+          name: Install dependencies and set path
+          command: |
+            sudo apt-get update
+            curl -fsSL https://git.io/vHGMF | bash
+            sudo apt-get install libcppunit-dev
+            sudo apt-get install valgrind
+      - run:
+          name: Getting ready
+          command: |
+            g++ --version
+            ./bootstrap
+      - run:
+          name: Compile
+          command: |
+            make
+            sudo make install
+            make check
+      - run:
+          name: Run tests
+          command: |
+            ./tests/test_binary.sh
+            ./tests/testPOS.sh
+            ./tests/test_binaryVcfVsTxt.sh
+            ./tests/test-against-previous-version.sh
+            ./tests/test_binaryReproducible.sh
+        #- valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
+        #- coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
 
-    "16.04":
-      docker:
-        - image: circleci/buildpack-deps:16.04
-      working_directory: /home/circleci/DEploid
-      steps:
-        - checkout
-        - run: sudo chown -R circleci:circleci *
-        - restore_cache:
-            key: dEploid-{{ .Branch }}
-        - run:
-            name: Checkout submodules
-            command: |
-              git submodule update --init --recursive --remote
-        - run:
-            name: Install dependencies and set path
-            command: |
-              sudo apt-get update
-              curl -fsSL https://git.io/vHGMF | bash
-              sudo apt-get install libcppunit-dev
-              sudo apt-get install valgrind
-        - run:
-            name: Getting ready
-            command: |
-              g++ --version
-              ./bootstrap
-        - run:
-            name: Compile
-            command: |
-              make
-              sudo make install
-              make check
-        - run:
-            name: Run tests
-            command: |
-              ./tests/test_binary.sh
-              ./tests/testPOS.sh
-              ./tests/test_binaryVcfVsTxt.sh
-              ./tests/test-against-previous-version.sh
-              ./tests/test_binaryReproducible.sh
+  v1604:
+    docker:
+      - image: circleci/buildpack-deps:16.04
+    working_directory: /home/circleci/DEploid
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci *
+      - restore_cache:
+          key: dEploid-{{ .Branch }}
+      - run:
+          name: Checkout submodules
+          command: |
+            git submodule update --init --recursive --remote
+      - run:
+          name: Install dependencies and set path
+          command: |
+            sudo apt-get update
+            curl -fsSL https://git.io/vHGMF | bash
+            sudo apt-get install libcppunit-dev
+            sudo apt-get install valgrind
+      - run:
+          name: Getting ready
+          command: |
+            g++ --version
+            ./bootstrap
+      - run:
+          name: Compile
+          command: |
+            make
+            sudo make install
+            make check
+      - run:
+          name: Run tests
+          command: |
+            ./tests/test_binary.sh
+            ./tests/testPOS.sh
+            ./tests/test_binaryVcfVsTxt.sh
+            ./tests/test-against-previous-version.sh
+            ./tests/test_binaryReproducible.sh
 
-    "20.04":
-      docker:
-        - image: circleci/buildpack-deps:20.04
-      working_directory: /home/circleci/DEploid
-      steps:
-        - checkout
-        - run: sudo chown -R circleci:circleci *
-        - restore_cache:
-            key: dEploid-{{ .Branch }}
-        - run:
-            name: Checkout submodules
-            command: |
-              git submodule update --init --recursive --remote
-        - run:
-            name: Install dependencies and set path
-            command: |
-              sudo apt-get update
-              curl -fsSL https://git.io/vHGMF | bash
-              sudo apt-get install libcppunit-dev
-              sudo apt-get install valgrind
-        - run:
-            name: Getting ready
-            command: |
-              g++ --version
-              ./bootstrap
-        - run:
-            name: Compile
-            command: |
-              make
-              sudo make install
-              make check
-        - run:
-            name: Run tests
-            command: |
-              ./tests/test_binary.sh
-              ./tests/testPOS.sh
-              ./tests/test_binaryVcfVsTxt.sh
-              ./tests/test-against-previous-version.sh
-              ./tests/test_binaryReproducible.sh
-              valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
-              coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
-        - coveralls/upload
+  v2004:
+    docker:
+      - image: circleci/buildpack-deps:20.04
+    working_directory: /home/circleci/DEploid
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci *
+      - restore_cache:
+          key: dEploid-{{ .Branch }}
+      - run:
+          name: Checkout submodules
+          command: |
+            git submodule update --init --recursive --remote
+      - run:
+          name: Install dependencies and set path
+          command: |
+            sudo apt-get update
+            curl -fsSL https://git.io/vHGMF | bash
+            sudo apt-get install libcppunit-dev
+            sudo apt-get install valgrind
+      - run:
+          name: Getting ready
+          command: |
+            g++ --version
+            ./bootstrap
+      - run:
+          name: Compile
+          command: |
+            make
+            sudo make install
+            make check
+      - run:
+          name: Run tests
+          command: |
+            ./tests/test_binary.sh
+            ./tests/testPOS.sh
+            ./tests/test_binaryVcfVsTxt.sh
+            ./tests/test-against-previous-version.sh
+            ./tests/test_binaryReproducible.sh
+            valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
+            coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
+      - coveralls/upload
 
-  workflows:
-    build:
-      jobs:
-        - "20.04"
-        - "14.04"
-        - "16.04"
+workflows:
+  myworkflow:
+    jobs:
+      - v2004
 
-workflows: null
