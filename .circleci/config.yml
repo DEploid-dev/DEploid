@@ -3,9 +3,9 @@ orbs:
   coveralls: coveralls/coveralls@2.2.5
 
 jobs:
-  v1404:
+  v1804:
     docker:
-      - image: circleci/buildpack-deps:14.04
+      - image: cimg/base:2020.07
     working_directory: /home/circleci/DEploid
     steps:
       - checkout
@@ -45,9 +45,9 @@ jobs:
         #- valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
         #- coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
 
-  v1604:
+  v2004:
     docker:
-      - image: circleci/buildpack-deps:16.04
+      - image: cimg/base:2022.08
     working_directory: /home/circleci/DEploid
     steps:
       - checkout
@@ -85,9 +85,9 @@ jobs:
             ./tests/test-against-previous-version.sh
             ./tests/test_binaryReproducible.sh
 
-  v2004:
+  v2204:
     docker:
-      - image: circleci/buildpack-deps:20.04
+      - image: cimg/base:2024.12
     working_directory: /home/circleci/DEploid
     steps:
       - checkout
@@ -131,5 +131,7 @@ jobs:
 workflows:
   myworkflow:
     jobs:
+      - v2204
       - v2004
+      - v1804
 
