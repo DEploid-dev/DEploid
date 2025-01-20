@@ -1,6 +1,7 @@
 version: '2.1'
 orbs:
   coveralls: coveralls/coveralls@2.2.5
+
   jobs:
     "14.04":
       docker:
@@ -18,32 +19,32 @@ orbs:
         - run:
             name: Install dependencies and set path
             command: |
-             sudo apt-get update
-             curl -fsSL https://git.io/vHGMF | bash
-             sudo apt-get install libcppunit-dev
-             sudo apt-get install valgrind
+              sudo apt-get update
+              curl -fsSL https://git.io/vHGMF | bash
+              sudo apt-get install libcppunit-dev
+              sudo apt-get install valgrind
         - run:
-             name: Getting ready
-             command: |
+            name: Getting ready
+            command: |
               g++ --version
               ./bootstrap
         - run:
-             name: Compile
-             command: |
+            name: Compile
+            command: |
               make
               sudo make install
               make check
         - run:
-             name: Run tests
-             command: |
+            name: Run tests
+            command: |
               ./tests/test_binary.sh
               ./tests/testPOS.sh
               ./tests/test_binaryVcfVsTxt.sh
               ./tests/test-against-previous-version.sh
               ./tests/test_binaryReproducible.sh
           #- valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
-      #- coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
-  
+          #- coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
+
     "16.04":
       docker:
         - image: circleci/buildpack-deps:16.04
@@ -60,30 +61,30 @@ orbs:
         - run:
             name: Install dependencies and set path
             command: |
-             sudo apt-get update
-             curl -fsSL https://git.io/vHGMF | bash
-             sudo apt-get install libcppunit-dev
-             sudo apt-get install valgrind
+              sudo apt-get update
+              curl -fsSL https://git.io/vHGMF | bash
+              sudo apt-get install libcppunit-dev
+              sudo apt-get install valgrind
         - run:
-             name: Getting ready
-             command: |
+            name: Getting ready
+            command: |
               g++ --version
               ./bootstrap
         - run:
-             name: Compile
-             command: |
+            name: Compile
+            command: |
               make
               sudo make install
               make check
         - run:
-             name: Run tests
-             command: |
+            name: Run tests
+            command: |
               ./tests/test_binary.sh
               ./tests/testPOS.sh
               ./tests/test_binaryVcfVsTxt.sh
               ./tests/test-against-previous-version.sh
               ./tests/test_binaryReproducible.sh
-  
+
     "20.04":
       docker:
         - image: circleci/buildpack-deps:20.04
@@ -100,39 +101,37 @@ orbs:
         - run:
             name: Install dependencies and set path
             command: |
-             sudo apt-get update
-             curl -fsSL https://git.io/vHGMF | bash
-             sudo apt-get install libcppunit-dev
-             sudo apt-get install valgrind
+              sudo apt-get update
+              curl -fsSL https://git.io/vHGMF | bash
+              sudo apt-get install libcppunit-dev
+              sudo apt-get install valgrind
         - run:
-             name: Getting ready
-             command: |
+            name: Getting ready
+            command: |
               g++ --version
               ./bootstrap
         - run:
-             name: Compile
-             command: |
+            name: Compile
+            command: |
               make
               sudo make install
               make check
         - run:
-             name: Run tests
-             command: |
+            name: Run tests
+            command: |
               ./tests/test_binary.sh
               ./tests/testPOS.sh
               ./tests/test_binaryVcfVsTxt.sh
               ./tests/test-against-previous-version.sh
               ./tests/test_binaryReproducible.sh
-              # ./tests/test-coverage-coverall.sh
               valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
               coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
         - coveralls/upload
-  
-  workflows:
-    version: 2
-    build:
-      jobs:
-        - "20.04"
-       # - "14.04"
-       # - "16.04"
-workflows: null
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - "20.04"
+      - "14.04"
+      - "16.04"
