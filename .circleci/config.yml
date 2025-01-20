@@ -123,7 +123,9 @@ orbs:
               ./tests/test_binaryVcfVsTxt.sh
               ./tests/test-against-previous-version.sh
               ./tests/test_binaryReproducible.sh
-              ./tests/test-coverage-coverall.sh
+              # ./tests/test-coverage-coverall.sh
+              valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests
+              coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
         - coveralls/upload
   
   workflows:
