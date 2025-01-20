@@ -124,8 +124,9 @@ jobs:
             ./tests/test_binaryVcfVsTxt.sh
             ./tests/test-against-previous-version.sh
             ./tests/test_binaryReproducible.sh
-            valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests_1
-            coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
+            # valgrind  --leak-check=full -v --show-leak-kinds=all ./unit_tests_1
+            # coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --gcov-options '\-lp'
+            ./tests/test-coverage-coverall.sh
       - coveralls/upload
 
 workflows:
