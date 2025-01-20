@@ -1,4 +1,7 @@
-version: 2.0
+version: '2.1'
+orbs:
+  coveralls: coveralls/coveralls@x.y.z
+  
 jobs:
   "14.04":
     docker:
@@ -121,7 +124,8 @@ jobs:
             ./tests/test_binaryVcfVsTxt.sh
             ./tests/test-against-previous-version.sh
             ./tests/test_binaryReproducible.sh
-
+            ./tests/test-coverage-coverall.sh
+      - coveralls/upload
 
 workflows:
   version: 2
