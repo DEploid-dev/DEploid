@@ -88,12 +88,17 @@ jobs:
         echo "::set-output name=timestamp::${stamp}"
 
     - name: ccache cache files
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
          path: ~/.ccache
          key: ${{ matrix.name }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
          restore-keys: |
            ${{ matrix.name }}-ccache-
+
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
 
     - name: configure
       run: ./bootstrap
@@ -123,15 +128,17 @@ jobs:
     - name: docs
       run:  if [ $TRAVIS_OS_NAME == linux ]; then cd docs/doxygen; doxygen Doxyfile;  fi
 
-#    - name: run coverage
-#      if: matrix.name == 'ubuntu-gcc-10'
-#      run: |
-#         tests/test-coverage-coverall.sh
+    # - name: run coverage
+    #  if: matrix.name == 'ubuntu-gcc-10'
+    #  run: |
+    #     tests/test-coverage-coverall.sh
 
 #  See: https://github.com/marketplace/actions/coveralls-github-action
-    - name: Coveralls
-      if: matrix.name == 'ubuntu-gcc-10'
-      uses: coverallsapp/github-action@v2.3.4
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-      #run: coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --exclude src/gzstream/ --gcov-options '\-lp'
+    # - name: Coveralls
+    #  if: matrix.name == 'ubuntu-gcc-10'
+    #  uses: coverallsapp/github-action@v2.3.4
+    #  with:
+    #    github-token: ${{ secrets.GITHUB_TOKEN }}
+      # run: coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --exclude src/gzstream/ --gcov-options '\-lp'
+
+
