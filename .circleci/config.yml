@@ -1,6 +1,6 @@
 version: '2.1'
 orbs:
-  coveralls: coveralls/coveralls@x.y.z
+  coveralls: coveralls/coveralls@2.2.5
   jobs:
     "14.04":
       docker:
