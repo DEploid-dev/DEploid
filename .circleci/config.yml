@@ -5,7 +5,7 @@ orbs:
 jobs:
   v1804:
     docker:
-      - image: cimg/base:2020.07
+      - image: cimg/base:2022.08-18.04
     working_directory: /home/circleci/DEploid
     steps:
       - checkout
@@ -47,7 +47,7 @@ jobs:
 
   v2004:
     docker:
-      - image: cimg/base:2022.08
+      - image: cimg/base:2022.08 # stable-20.04
     working_directory: /home/circleci/DEploid
     steps:
       - checkout
@@ -103,7 +103,7 @@ jobs:
           command: |
             sudo apt-get update
             curl -fsSL https://git.io/vHGMF | bash
-            sudo apt-get install libcppunit-dev
+            sudo apt-get install libcppunit-dev automake
             sudo apt-get install valgrind
       - run:
           name: Getting ready
