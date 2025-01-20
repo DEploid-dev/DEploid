@@ -79,12 +79,12 @@ friend class DEploidIO;
     }
 
  public:
-    Parameter <T> () { }
-    Parameter <T> (T value) {
+    Parameter() { }
+    Parameter(T value) {
         this->init(value);
     }
     T getValue() const;
-    Parameter <T> (const Parameter <T> &currentParam) {
+    Parameter(const Parameter<T> &currentParam) {
         this->makeCopy(currentParam);
     }
     ~Parameter() { }
