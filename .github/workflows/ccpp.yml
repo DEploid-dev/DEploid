@@ -123,10 +123,10 @@ jobs:
     - name: docs
       run:  if [ $TRAVIS_OS_NAME == linux ]; then cd docs/doxygen; doxygen Doxyfile;  fi
 
-    - name: run coverage
-      if: matrix.name == 'ubuntu-gcc-10'
-      run: |
-         tests/test-coverage-coverall.sh
+    # - name: run coverage
+    #  if: matrix.name == 'ubuntu-gcc-10'
+    #  run: |
+    #     tests/test-coverage-coverall.sh
 
 #  See: https://github.com/marketplace/actions/coveralls-github-action
     - name: Coveralls
@@ -134,4 +134,4 @@ jobs:
       uses: coverallsapp/github-action@v2.3.4
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-      #run: coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --exclude src/gzstream/ --gcov-options '\-lp'
+      run: coveralls --exclude lib --exclude tests --exclude src/random --exclude src/codeCogs/ --exclude src/export/ --exclude src/gzstream/ --gcov-options '\-lp'
