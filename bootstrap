@@ -23,5 +23,5 @@ echo " done."
 
 aclocal
 autoconf
-automake -a
+automake -a --force-missing --add-missing
 ./configure
