@@ -65,12 +65,14 @@ unit_tests_1_SOURCES = $(common_src) \
 					 tests/unittest/test_utilities.cpp
 
 unit_tests_2_SOURCES = $(common_src) \
-					 tests/unittest/test_runner.cpp \
 					 tests/unittest/test_mcmc.cpp \
 					 tests/unittest/test_updatePairHap.cpp \
 					 tests/unittest/test_workflow.cpp
 
-unit_tests_SOURCES = $(unit_tests_1_SOURCES) $(unit_tests_2_SOURCES)
+unit_tests_SOURCES = $(unit_tests_1_SOURCES) \
+                     $(unit_tests_2_SOURCES) \
+					 tests/unittest/test_runner.cpp
+
 
 unit_tests_CXXFLAGS = $(common_flags) -DNDEBUG -DUNITTEST -Wno-write-strings --coverage
 unit_tests_LDADD    = -lcppunit -ldl $(common_LDADD)
