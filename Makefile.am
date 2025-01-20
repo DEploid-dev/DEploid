@@ -58,11 +58,11 @@ dEploid_dbg_LDADD = $(common_LDADD)
 dEploid_prof_LDADD = $(common_LDADD)
 
 unit_tests_1_SOURCES_0 = tests/unittest/test_ibd.cpp \
-					 tests/unittest/test_updateSingleHap.cpp \
 					 tests/unittest/test_panel.cpp \
 					 tests/unittest/test_utilities.cpp
 
 unit_tests_2_SOURCES_0 = tests/unittest/test_mcmc.cpp \
+					 tests/unittest/test_updateSingleHap.cpp \
 					 tests/unittest/test_updatePairHap.cpp \
 					 tests/unittest/test_workflow.cpp
 
